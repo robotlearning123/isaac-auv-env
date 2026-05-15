@@ -1,0 +1,5 @@
+[feat/v0.1.0-run-references da5cc4c] docs(refs): R1.4 MarineGym source extraction — 7 reusable patterns + 1 critical correction
+ 4 files changed, 399 insertions(+)
+ create mode 100644 docs/marinegym_fossen_extract.md
+ create mode 100644 install_log/56_r11_commit.txt
+ create mode 100644 install_log/63_marinegym_clone.txt

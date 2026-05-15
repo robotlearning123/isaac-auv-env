@@ -162,3 +162,81 @@ Hover task obs/action/reward spec,
 See `docs/marinegym_fossen_extract.md` for full BibTeX (Chu et al. 2025 IROS).
 
 ---
+
+## REF-STONEFISH — `patrykcieslak/stonefish`
+
+- **status:** READ (build skipped — GPL-3 means no vendor possible regardless of build outcome)
+- **commit pinned:** `09208f91` (2025-12-04, "Added option to specify output data format for sonars")
+- **url:** https://github.com/patrykcieslak/stonefish
+- **license:** **GPL-3.0** (full `COPYING.txt` present). Copyright (c) 2014-2025 Patryk Cieślak.
+- **license status for us:** **ANTI-VENDOR** — GPL-3 outbound contamination would force all of OceanScale to GPL. Cite-only.
+- **install_attempted:** NO — build would not change vendor eligibility; skipped per plan §5 R1.5 to save 2-4 hours of cmake/make time.
+- **runs_at:** N/A (not built)
+
+### Key facts (from README + source grep)
+- C++ library, Bullet Physics base, OpenGL 4.3 rendering pipeline, requires Linux (no Mac, no Windows)
+- Stable, mature (since 2014), papers in OCEANS 2019 and ICRA 2025
+- **Hydrodynamic approach: GEOMETRY-BASED** (per README) — computes hydro forces from actual mesh geometry, NOT from a 6×6 M_A matrix
+- Companion repo `stonefish_ros2` adds standard ROS2 interface
+- Sensors: cameras (event + thermal added in 2025), multibeam sonar, FLS, side-scan, DVL, IMU, optical modem
+
+### key_files_inspected (surface-only)
+| File | What |
+|---|---|
+| `COPYING.txt` | GPL-3 license text |
+| `README.md` | Build steps, paper citations, sensor catalogue |
+| `Library/include/entities/SolidEntity.h` | hydro methods: `Vector3 getAddedMass()`, `ComputeFluidDynamicsApprox(GeometryApproxType)` |
+| `Library/include/entities/FeatherstoneEntity.h` | Multi-body articulation |
+| `Tests/UnderwaterTest/UnderwaterTestApp.h` | Generic underwater test (NOT BlueROV2-specific) |
+| (NO `Library/scenarios/` — example scenarios live in companion repos or external) |
+
+### Key observation — different impl approach vs MarineGym
+- **MarineGym**: analytic 6×6 M_A matrix, classical Fossen 6-DOF
+- **Stonefish**: geometry-based force integration over mesh surfaces, "actual geometry of bodies"
+  - `getAddedMass()` returns Vector3 (per-axis scalar), suggesting they use a simplified diagonal approximation derived from geometry
+  - `ComputeFluidDynamicsApprox(GeometryApproxType t)` suggests pluggable geometry-approximation methods (sphere/ellipsoid/cylinder per geom)
+
+→ Our Tier-1 Fossen kernel choice (analytic 6×6 like MarineGym) is the **lighter** path; Stonefish's geometry approach is closer to a CFD-lite simulator. Useful conceptual contrast.
+
+### reusable_pattern (concept-only, no code)
+1. **Geometry-based hydro approximation** — at-scale (8192 envs) infeasible for us, but worth knowing the alternative exists; could be useful for v0.3+ high-fidelity validation runs
+2. **Sensor catalogue breadth** — Stonefish has every sensor we'd want; their per-sensor module is a structure reference
+3. **`stonefish_ros2` package separation** — sim ↔ ROS bridge as separate repo; our v0.2/v0.3 Isaac Lab integration could mirror
+
+### anti_pattern / gotcha / why we don't use code
+1. **GPL-3 license** — incompatible with our Apache-2.0 outbound; viral; CANNOT copy/modify
+2. **C++ codebase** — would need rewrite to Python for our stack regardless
+3. **Linux + OpenGL 4.3 hard requirement** — Linux fine, but OpenGL 4.3 is for rendering; we use NVIDIA Warp + Newton, so this dep is unnecessary for us
+4. **Companion `stonefish_ros2` is separately licensed** (also GPL likely) — also not vendorable
+5. **No published BlueROV2 example in main repo** — the README focuses on AUVs generally; BlueROV-class examples likely in `stonefish_ros` companion or papers
+
+### what we DO use
+- **Citation in our paper** (Cieślak 2019 OCEANS + Grimaldi 2025 ICRA) for "geometry-based marine sim alternative"
+- **Sensor catalogue** as v0.2 design reference (NOT as code)
+
+### what we DON'T use
+- ANY code (GPL-3 vendor blocker)
+- C++ build artifacts
+- ROS-specific tooling
+- Their scenario XML format (different scope)
+
+### citation
+```bibtex
+@inproceedings{cieslak2019stonefish,
+  author={Cie{\'s}lak, Patryk},
+  title={{Stonefish: An Advanced Open-Source Simulation Tool Designed for Marine Robotics, With a ROS Interface}},
+  booktitle={Proceedings of MTS/IEEE OCEANS 2019},
+  month=jun, year=2019,
+  doi={10.1109/OCEANSE.2019.8867434}
+}
+
+@inproceedings{grimaldi2025stonefish,
+  author={Grimaldi, Michele and Cie{\'s}lak, Patryk and others},
+  title={{Stonefish: Supporting Machine Learning Research in Marine Robotics}},
+  booktitle={IEEE ICRA 2025},
+  month=may, year=2025,
+  doi={(arXiv:2502.11887)}
+}
+```
+
+---
