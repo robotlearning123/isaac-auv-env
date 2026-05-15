@@ -184,7 +184,14 @@ def tier1_added_mass(
     wp.atomic_add(wrench, i, wp.spatial_vector(f_lin, f_ang))  # ACCUMULATE (other kernels also write here)
 ```
 
-**ν̇ estimation**: explicit added-mass scheme — `ν̇ ≈ (ν[k] - ν[k-1]) / dt`. Use a `nu_prev` buffer.
+**ν̇ estimation**: explicit added-mass scheme with **α=0.3 EMA low-pass filter** (R1.4 finding from MarineGym `underwaterVehicle.py:229-236`):
+```
+acc_raw[k] = (ν[k] - ν_prev) / dt
+ν̇[k]      = (1 - α) · ν̇_prev + α · acc_raw[k]   # α = 0.3
+ν_prev    ← ν[k]
+ν̇_prev    ← ν̇[k]
+```
+Need TWO buffers per env: `nu_prev` (6,) and `nu_dot_prev` (6,). MarineGym shows this is essential for numerical stability.
 
 **Verification**:
 ```bash
@@ -227,21 +234,48 @@ test_autograd_dwrench_dnu_random:
   100 random ν, autograd vs torch finite-diff, rel-err < 1e-3
 ```
 
-**Kernel**:
+**Kernel** (with R1.4 cross-coupling per MarineGym `underwaterVehicle.py:239-244`):
 ```python
 @wp.kernel
 def tier1_damping(
-    nu: wp.array(dtype=wp.spatial_vectorf),
-    d_lin: wp.array(dtype=wp.vec6f),
-    d_quad: wp.array(dtype=wp.vec6f),
-    wrench: wp.array(dtype=wp.spatial_vectorf),
+    nu:     wp.array[wp.spatial_vectorf],  # (n_envs,) per-env body velocity
+    d_lin:  wp.array[wp.vec6f],            # (n_envs,) D_lin diag
+    d_quad: wp.array[wp.vec6f],            # (n_envs,) D_quad diag
+    wrench: wp.array[wp.spatial_vectorf],  # (n_envs,) output, ACCUMULATED
 ):
     i = wp.tid()
-    v = nu[i]
+    v = nu[i]            # spatial_vector = (vx, vy, vz, p, q, r)
     d_l = d_lin[i]
     d_q = d_quad[i]
-    f = wp.spatial_vector(...)  # F = -(D_lin + D_quad·|v|)·v componentwise
+    # Build 6x6 |nu_ext| diagonal + 4 cross terms (per MarineGym L239-244)
+    # Then apply D_quad componentwise to that, plus D_lin, multiply against v
+    # F = -(D_lin + D_quad·|ν_ext|) · v
+    #
+    # For diagonal axes (0,3): straightforward
+    # For axes 1,5: damping has extra term D_quad[1]·|v[5]|·v[5]   (sway depends on yaw)
+    # For axes 2,4: damping has extra term D_quad[2]·|v[4]|·v[4]   (heave depends on pitch)
+    # For axes 4,2: symmetric (pitch depends on heave)
+    # For axes 5,1: symmetric (yaw depends on sway)
+    f0 = -(d_l[0] + d_q[0] * wp.abs(v[0])) * v[0]
+    f1 = -(d_l[1] + d_q[1] * wp.abs(v[1])) * v[1] - d_q[1] * wp.abs(v[5]) * v[5]
+    f2 = -(d_l[2] + d_q[2] * wp.abs(v[2])) * v[2] - d_q[2] * wp.abs(v[4]) * v[4]
+    f3 = -(d_l[3] + d_q[3] * wp.abs(v[3])) * v[3]
+    f4 = -(d_l[4] + d_q[4] * wp.abs(v[4])) * v[4] - d_q[4] * wp.abs(v[2]) * v[2]
+    f5 = -(d_l[5] + d_q[5] * wp.abs(v[5])) * v[5] - d_q[5] * wp.abs(v[1]) * v[1]
+    f = wp.spatial_vector(wp.vec3f(f0, f1, f2), wp.vec3f(f3, f4, f5))
     wp.atomic_add(wrench, i, f)
+```
+
+**TDD additions**:
+```
+test_cross_coupling_sway_yaw:
+  ν = [0, 1.0, 0,  0, 0, 1.0]
+  Expected: f[1] = -(D_lin[1] + D_quad[1]·1·1) - D_quad[1]·1·1 (= linear + 2 quadratic)
+  Expected: f[5] = -(D_lin[5] + D_quad[5]·1·1) - D_quad[5]·1·1
+  Verify both magnitudes include cross-coupling contribution.
+
+test_cross_coupling_heave_pitch:
+  Similar at [2, 4] axes.
 ```
 
 **Commit**: `feat(hydro): T2.3 damping D(ν)ν Warp kernel with autograd`

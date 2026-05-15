@@ -114,18 +114,20 @@ M_A = -diag( X_u̇, Y_v̇, Z_ẇ, K_ṗ, M_q̇, N_ṙ )                (11)
 
 (Note: signs follow Fossen — coefficients X_u̇ etc. are negative, so `M_A` entries are positive added-mass values.)
 
-Source values (BlueROV2 Heavy, from MarineGym `BlueROVHeavy.py`):
+Source values (**BlueROV basic, 6 rotors** — verified via R1.4 inspection 2026-05-15):
 
-| Coeff | Value | Units |
-|---|---|---|
-| X_u̇  | -5.5 | kg |
-| Y_v̇  | -12.7 | kg |
-| Z_ẇ  | -14.57 | kg |
-| K_ṗ  | -0.12 | kg·m² |
-| M_q̇  | -0.12 | kg·m² |
-| N_ṙ  | -0.12 | kg·m² |
+| Coeff | Value | Units | Source |
+|---|---|---|---|
+| X_u̇  | -5.5 | kg | MarineGym `BlueROV/BlueROV.yaml` (NOT Heavy) |
+| Y_v̇  | -12.7 | kg | same |
+| Z_ẇ  | -14.57 | kg | same |
+| K_ṗ  | -0.12 | kg·m² | same |
+| M_q̇  | -0.12 | kg·m² | same |
+| N_ṙ  | -0.12 | kg·m² | same |
 
-(These values are **to be verified against Wu 2018** at T3.3.)
+**Correction (R1.4, 2026-05-15)**: previously labeled "BlueROV2 Heavy" — was wrong. MarineGym repo does NOT ship a `usd/BlueROVHeavy/` directory despite `BlueROVHeavy.py` referencing it. These are the **basic 6-rotor BlueROV** values.
+
+**For BlueROV2 Heavy (8-rotor)**: source = **von Benzon et al. 2022 (JMSE 10(12):1898, DOI 10.3390/jmse10121898, CC-BY-4.0)**. T3.3 will resolve via that paper's open Simulink simulator.
 
 ### 5.3 C_RB(ν), C_A(ν) — Coriolis-centripetal (Fossen §3.3.2, §6.3)
 
@@ -150,18 +152,35 @@ C_A(ν)  = [ 0_3          -S(M_A_11 · v_b) ]                (13b)
 
 These are bilinear in `ν` and must be re-evaluated every step.
 
-### 5.4 D(ν) — damping (Fossen §6.4)
+### 5.4 D(ν) — damping (Fossen §6.4, MarineGym cross-coupling pattern)
 
-Decomposes into linear + quadratic drag:
+Decomposes into linear + quadratic drag, **with 4 off-diagonal cross-coupling terms** (sway-yaw + heave-pitch) per MarineGym `underwaterVehicle.py:239-244` (R1.4 finding 2026-05-15):
 
 ```
-D(ν) · ν = D_lin · ν + D_quad(ν) · ν                       (14)
+D(ν) · ν = (D_lin + D_quad · |ν_extended|) · ν              (14)
 
 D_lin = diag( X_u, Y_v, Z_w, K_p, M_q, N_r )               (15)
 
-D_quad(ν) = diag( X_{u|u|}·|u|, Y_{v|v|}·|v|, Z_{w|w|}·|w|,
-                  K_{p|p|}·|p|, M_{q|q|}·|q|, N_{r|r|}·|r| )  (16)
+|ν_extended| matrix (6×6) — diagonal + 4 cross terms:        (16)
+  |ν_ext|[0,0] = |u|
+  |ν_ext|[1,1] = |v|, |ν_ext|[1,5] = |r|       ← sway-yaw coupling
+  |ν_ext|[2,2] = |w|, |ν_ext|[2,4] = |q|       ← heave-pitch coupling
+  |ν_ext|[3,3] = |p|
+  |ν_ext|[4,4] = |q|, |ν_ext|[4,2] = |w|       ← pitch-heave (symmetric)
+  |ν_ext|[5,5] = |r|, |ν_ext|[5,1] = |v|       ← yaw-sway (symmetric)
+  (all other entries zero)
+
+D_quad applied via componentwise multiply against the |ν_extended| matrix,
+then matrix-vector multiply with ν. Replicates MarineGym's:
+  maintained_body_vels = torch.diag_embed(body_vels)
+  maintained_body_vels[:, 1, 5] = body_vels[:, 5]
+  maintained_body_vels[:, 2, 4] = body_vels[:, 4]
+  maintained_body_vels[:, 4, 2] = body_vels[:, 2]
+  maintained_body_vels[:, 5, 1] = body_vels[:, 1]
+  damping_matrix = D_lin + D_quad * abs(maintained_body_vels)
 ```
+
+**Why cross-coupling matters**: a yawing AUV with side velocity experiences extra drag from the lateral hull motion sweep; similarly for pitch+heave. Diagonal-only damping misses ~10-20% of true drag in turning maneuvers.
 
 Source values (BlueROV2 Heavy, MarineGym + clydemcqueen):
 
