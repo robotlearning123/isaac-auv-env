@@ -1,0 +1,16 @@
+[feat/v0.1.0-worlds-poc b9fc9a5] docs(goal): goals/W2_tier1_fossen.md — detailed /goal plan for Tier-1 Fossen kernels
+ 14 files changed, 877 insertions(+)
+ create mode 100644 goals/W2_tier1_fossen.md
+ create mode 100644 install_log/47_review_commit.txt
+ create mode 100644 install_log/48_dr_retry.txt
+ create mode 100644 install_log/49_dr_retry2.txt
+ create mode 100644 install_log/50_dr_retry3.txt
+ create mode 100644 research/dr-2026-05-15-v0.1-review-r2/events.jsonl
+ create mode 100644 research/dr-2026-05-15-v0.1-review-r2/report.md
+ create mode 100644 research/dr-2026-05-15-v0.1-review-r2/status.txt
+ create mode 100644 research/dr-2026-05-15-v0.1-review-r3/events.jsonl
+ create mode 100644 research/dr-2026-05-15-v0.1-review-r3/report.md
+ create mode 100644 research/dr-2026-05-15-v0.1-review-r3/status.txt
+ create mode 100644 research/dr-2026-05-15-v0.1-review-retry/events.jsonl
+ create mode 100644 research/dr-2026-05-15-v0.1-review-retry/report.md
+ create mode 100644 research/dr-2026-05-15-v0.1-review-retry/status.txt

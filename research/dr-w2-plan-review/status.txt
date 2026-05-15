@@ -1,0 +1,1 @@
+DONE	2026-05-15 16:21:12	mode=light	elapsed=21s	events=43	body_chars=8078	refs=8	tool_calls=3	connector_failed=False

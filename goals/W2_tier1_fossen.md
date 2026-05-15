@@ -109,10 +109,20 @@ test_inject_per_world_different_force:
   step once, assert v_surge[i] proportional to i.
 ```
 
+**Architecture note (DR-W2-review BLOCKER resolved, 2026-05-15)**: Newton 1.2 has **no callback / hook registration API**. The "pre-step" pattern is simply: our env-step Python loop writes to `state.body_f` BEFORE calling `solver.step(state_0, state_1, control, None, dt)`. This is exactly what `tests/test_worlds_poc.py` already does (line 53). Confirmed working pattern.
+
 **Implementation**:
-- `Tier1` is a dataclass holding per-env wp.arrays for hydro state
-- `injector.attach(model, tier1)` registers a pre-step callback
-- Callback launches kernels, accumulates into a `wp.spatial_vectorf wrench_buffer`, then a final kernel copies wrench_buffer → state.body_f
+- `Tier1` is a dataclass holding per-env wp.arrays for hydro state (M_A, D_lin, D_quad, r_b_b, T, hydro coefs).
+- `Tier1.compute_wrench(model, state) -> None` launches all 6 Warp kernels into a shared `wrench_buffer: wp.array(dtype=wp.spatial_vectorf, shape=(n_worlds,))`.
+- `Tier1.write_to_state(state, wrench_buffer) -> None` copies wrench_buffer → `state.body_f` via a single Warp kernel.
+- Caller's env loop:
+  ```python
+  tier1.compute_wrench(model, state_0)   # populate wrench_buffer
+  tier1.write_to_state(state_0, wrench_buffer)
+  solver.step(state_0, state_1, control, None, dt)
+  state_0, state_1 = state_1, state_0
+  ```
+- NO callbacks, NO hooks, NO solver patching. Just ordered writes.
 
 **Verification**:
 ```bash
@@ -157,13 +167,13 @@ test_autograd_dwrench_dnudot:
   100 random states, max rel-err < 1e-4
 ```
 
-**Kernel signature (Warp pseudocode)**:
+**Kernel signature (Warp 1.13 idiom — using subscript type hints per DR-W2-review MEDIUM #4)**:
 ```python
 @wp.kernel
 def tier1_added_mass(
-    nu_dot: wp.array(dtype=wp.spatial_vectorf),   # (n_envs,) per-env accel
-    M_A: wp.array(dtype=wp.vec6f),                # (n_envs,) per-env diag M_A
-    wrench: wp.array(dtype=wp.spatial_vectorf),   # (n_envs,) output, ACCUMULATED
+    nu_dot: wp.array[wp.spatial_vectorf],   # (n_envs,) per-env accel
+    M_A:    wp.array[wp.vec6f],             # (n_envs,) per-env diag M_A
+    wrench: wp.array[wp.spatial_vectorf],   # (n_envs,) output, ACCUMULATED
 ):
     i = wp.tid()
     nu_dot_i = nu_dot[i]
@@ -335,22 +345,30 @@ test_autograd_through_T:
 
 ### T2.7 — Full-pipeline autograd correctness
 
-**TDD spec**:
+**TDD spec** (updated per DR-W2-review MEDIUM #5 — prefer `torch.autograd.gradcheck` over manual finite-diff):
+
 ```
 test_full_pipeline_forward_consistent:
   Hand-compute wrench from random (η, ν, ν̇, u) using numpy reference;
   compare vs Warp pipeline output within 1e-4.
 
-test_full_pipeline_autograd_vs_finite_diff:
-  100 random states (η, ν, ν̇, u);
-  for each: compute wp.Tape gradient of sum(wrench) wrt ν;
-  compare against torch finite-diff (h = 1e-3) of same scalar wrt ν;
-  max rel-err < 1e-3 across all 100 samples.
+test_full_pipeline_gradcheck_via_torch_bridge:
+  Use wp.to_torch to expose Warp outputs as torch tensors;
+  wrap Tier1.compute_wrench in a torch.autograd.Function with custom
+  backward (re-using wp.Tape internally).
+  Run torch.autograd.gradcheck(fn, inputs, eps=1e-4, atol=1e-3).
+  Falls back to manual finite-diff vs wp.Tape if gradcheck wrapper proves
+  brittle on first attempt.
 
 test_autograd_through_full_step:
   Build N=64 worlds, step solver under Tier-1, take final position;
   compute dP_final / dnu_initial via wp.Tape;
   verify gradient is finite (no NaN) and matches a hand-derived approximation.
+
+test_nonsmooth_gradient_at_zero_velocity (DR-W2-review HIGH #3):
+  ν → 0 in damping kernel: abs(v)·v has subgradient ambiguity at v=0.
+  Verify wp.Tape returns ONE of the valid subgradients (does not NaN).
+  At least one of {left-deriv, right-deriv, 0} must match within 1e-5.
 ```
 
 **Critical R20 mitigation**: this test must be writable BEFORE we write the kernels. Write it now (in T2.1 effectively) as the spec for what each kernel must satisfy.
@@ -380,16 +398,19 @@ benchmarks/tier1_throughput.py
 
 ---
 
-## 6. Failure modes + recovery (R20-R24 from RISKS.md)
+## 6. Failure modes + recovery (R20-R24 from RISKS.md + DR-W2-review)
 
 | Failure | Recovery |
 |---|---|
 | **Warp autograd test fails** (R20) | Step 1: re-read `tests/test_warp_smoke.py::test_quad_drag_autograd_matches_analytic` for working pattern. Step 2: simplify kernel to scalar version, get gradient match, scale up. Step 3: file Warp GitHub issue if intractable; fall back to torch primary + Warp port at v0.2 (cost: throughput drops to ~10M env-steps/s instead of 100M, still meets target). |
-| **Newton pre-step hook doesn't exist or doesn't work** | Use post-step `state.body_f` write between kernel and solver.step. Document. |
-| **Numerical instability at dt=1/240** | Tighten to dt=1/500. Update STATUS.md. |
+| **No pre-step hook** (DR-W2-review BLOCKER, RESOLVED) | NOT a real failure — Newton 1.2 by design has no callback API. Our pattern is: write to `state.body_f` in our env loop BEFORE `solver.step()`. Already validated in `tests/test_worlds_poc.py:53`. |
+| **Non-smooth gradient at v=0 in damping** (DR-W2-review HIGH) | `abs(v)·v` has subgradient ambiguity at v=0. wp.Tape returns ONE valid subgradient. Test `test_nonsmooth_gradient_at_zero_velocity` accepts any of {left-deriv, right-deriv, 0}. If wp.Tape returns NaN, optionally smooth abs() with `sqrt(v²+ε)` (Huber-style) — but try unsmoothed first. |
+| **Kernel launch sync overhead dominates** (DR-W2-review HIGH) | Profile via `WARP_KERNEL_TIMING=1`. If 6 separate launches per env step are the bottleneck, fuse into a single kernel that computes all 6 wrench addends in one pass. Cost: ~4 hours refactor. |
+| **Numerical instability at dt=1/240** | Tighten to dt=1/500. Update STATUS.md. Trade-off: throughput drops 2× (more steps per sec). Acceptable for v0.1 (target 100k = ~50k @ 1/500 ≈ still 100× over baseline real-time-per-env). |
 | **Throughput < 100k @ 8192** | Per T2.8 fallback plan. |
 | **MarineGym coefficient values differ from clydemcqueen by 3×** | Cross-validate against von Benzon 2022 Simulink simulator (R23). Pick the published value with most-recent citation chain. |
 | **Sign convention error caught in restoring test** | Document in `docs/math/fossen.md` errata; update unit tests; commit fix. |
+| **wp.array[dtype] subscript syntax error** (Warp < 1.12) | Verify `warp-lang==1.13.0` is installed; otherwise fall back to `wp.array(dtype=...)` legacy syntax. |
 
 ---
 
@@ -445,11 +466,13 @@ Output must contain `W2 PASS` on last line. Goal-driven loop checks for this str
 
 | Resource | Budget | Notes |
 |---|---|---|
-| Wall-clock | 12-20 hours focused work (R21 reward iteration N/A here, this is hydro only) | Per DR review, Warp autograd debug = 5 days budget if stuck |
+| Wall-clock (optimistic) | 12-20 hours focused work | Per DR review, Warp autograd debug = 5 days budget if R20 triggers |
+| Wall-clock (realistic, DR-W2-review HIGH #2) | **16-30 hours** with AD validation slack | Bumped per finding: AD validation alone is ~1 workday |
+| Wall-clock (pessimistic) | up to 1 week if R20+sync-overhead+non-smooth all trigger | Worst-case planning bound |
 | GPU memory | < 8 GB peak (Tier-1 pipeline at 8192 envs) | We have 31 GB free |
 | Disk | < 1 GB new artifacts | Cache + test outputs |
 | DR / WebSearch calls | 0 (planning done) | All references already collected |
-| Risk activation | R20, R22 likely to trigger; R23 unlikely | Mitigations documented above |
+| Risk activation | R20, R22 likely; R23 unlikely; sync-overhead / non-smooth AD = NEW watch items per DR-W2-review | Mitigations documented in §6 |
 
 ---
 
