@@ -1,0 +1,18 @@
+=== newton dir ===
+['Axis', 'AxisType', 'BodyFlags', 'CollisionPipeline', 'Contacts', 'Control', 'EqType', 'Gaussian', 'GeoType', 'Heightfield', 'JointTargetMode', 'JointType', 'MAXVAL', 'Mesh', 'Model', 'ModelBuilder', 'ParticleFlags', 'SDF', 'ShapeFlags', 'State', 'TetMesh', 'actuators', 'eval_fk', 'eval_ik', 'eval_jacobian', 'eval_mass_matrix', 'geometry', 'ik', 'math', 'selection', 'sensors', 'solvers', 'usd', 'utils', 'viewer']
+
+=== newton.ModelBuilder methods ===
+Warp 1.13.0 initialized:
+   CUDA Toolkit 12.9, Driver 13.0
+   Devices:
+     "cpu"      : "x86_64"
+     "cuda:0"   : "NVIDIA GeForce RTX 5090" (31 GiB, sm_120, mempool enabled)
+   Kernel cache:
+     /home/robot/.cache/warp/1.13.0
+['add_actuator', 'add_articulation', 'add_body', 'add_builder', 'add_cloth_grid', 'add_cloth_mesh', 'add_constraint_mimic', 'add_custom_attribute', 'add_custom_frequency', 'add_custom_values', 'add_custom_values_batch', 'add_edge', 'add_edges', 'add_equality_constraint', 'add_equality_constraint_connect', 'add_equality_constraint_joint', 'add_equality_constraint_weld', 'add_ground_plane', 'add_joint', 'add_joint_ball', 'add_joint_cable', 'add_joint_d6', 'add_joint_distance', 'add_joint_fixed', 'add_joint_free', 'add_joint_prismatic', 'add_joint_revolute', 'add_link', 'add_mjcf', 'add_muscle', 'add_particle', 'add_particle_grid', 'add_particles', 'add_rod', 'add_rod_graph', 'add_shape', 'add_shape_box', 'add_shape_capsule', 'add_shape_collision_filter_pair', 'add_shape_cone', 'add_shape_convex_hull', 'add_shape_cylinder', 'add_shape_ellipsoid', 'add_shape_gaussian', 'add_shape_heightfield', 'add_shape_mesh', 'add_shape_plane', 'add_shape_sphere', 'add_site', 'add_soft_grid', 'add_soft_mesh', 'add_spring', 'add_tetrahedron', 'add_triangle', 'add_triangles', 'add_urdf', 'add_usd', 'add_world']
+
+=== add_body signature ===
+(xform: 'Transform | None' = None, armature: 'float | None' = None, com: 'Vec3 | None' = None, inertia: 'Mat33 | None' = None, mass: 'float' = 0.0, label: 'str | None' = None, lock_inertia: 'bool' = False, is_kinematic: 'bool' = False, custom_attributes: 'dict[str, Any] | None' = None) -> 'int'
+
+=== gravity ===
+-9.81

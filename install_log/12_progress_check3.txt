@@ -1,0 +1,12 @@
+2026-05-15T16:53:24Z
+=== uv sync ===
+    ELAPSED %CPU STAT CMD
+      15:14 14.1 Sl   uv sync --extra dev
+=== cache ===
+17G	/home/robot/.cache/uv
+=== venv populated? ===
+3
+=== log tail ===
+2 install_log/05_uv_sync_retry.txt
+=== STEP 3-retry: uv sync --extra dev ===
+2026-05-15T16:38:10Z

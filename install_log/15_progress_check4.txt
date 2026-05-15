@@ -1,0 +1,12 @@
+2026-05-15T16:54:24Z
+=== sync still alive? ===
+yes, elapsed=16:14
+
+=== open files (currently extracting) ===
+43972037 /mnt/storage/robot-home/.cache/uv/.tmpZHER0y/nvidia/cudnn/lib/libcudnn_ops.so.9
+
+=== cache size ===
+18G	/home/robot/.cache/uv
+
+=== venv site-packages ===
+3

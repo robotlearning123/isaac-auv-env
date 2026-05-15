@@ -1,0 +1,27 @@
+=== newton.math contents ===
+['boltzmann', 'leaky_max', 'leaky_min', 'normalize_with_norm', 'orthonormal_basis', 'quat_between_axes', 'quat_between_vectors_robust', 'quat_decompose', 'quat_velocity', 'safe_div', 'smooth_max', 'smooth_min', 'transform_twist', 'transform_wrench', 'vec_abs', 'vec_allclose', 'vec_inside_limits', 'vec_leaky_max', 'vec_leaky_min', 'vec_max', 'vec_min', 'velocity_at_point']
+
+=== warp Transform ===
+<class 'warp._src.types.transformf'> None
+
+=== ModelBuilder defaults ===
+Warp 1.13.0 initialized:
+   CUDA Toolkit 12.9, Driver 13.0
+   Devices:
+     "cpu"      : "x86_64"
+     "cuda:0"   : "NVIDIA GeForce RTX 5090" (31 GiB, sm_120, mempool enabled)
+   Kernel cache:
+     /home/robot/.cache/warp/1.13.0
+gravity= -9.81 <class 'float'>
+
+=== minimal scene attempt ===
+body idx: 0
+shape added
+
+=== finalize ===
+Module validate_and_correct_inertia_kernel_524fb5ef 524fb5e load on device 'cuda:0' took 265.23 ms  (compiled)
+model: Model
+=== state ===
+State body_qd shape: (1,)
+=== solvers ===
+['SolverBase', 'SolverFeatherstone', 'SolverImplicitMPM', 'SolverKamino', 'SolverMuJoCo', 'SolverNotifyFlags', 'SolverSemiImplicit', 'SolverStyle3D', 'SolverVBD', 'SolverXPBD', 'style3d']

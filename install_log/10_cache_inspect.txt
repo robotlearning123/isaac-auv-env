@@ -1,0 +1,27 @@
+=== uv cache contents (top) ===
+16G	/home/robot/.cache/uv
+13G	/home/robot/.cache/uv/archive-v0
+1.6G	/home/robot/.cache/uv/archive-v0/z1m4KRRLxHyDr3N0ytxfX
+1.2G	/home/robot/.cache/uv/archive-v0/BXEh1tSUuaMIvIg06MF5v
+1.1G	/home/robot/.cache/uv/archive-v0/g0vypXGd_L32g8RE8FE46
+639M	/home/robot/.cache/uv/archive-v0/sEYiFFCNLxm5EJzTOUAdq
+627M	/home/robot/.cache/uv/.tmpZ0kUFd/triton
+627M	/home/robot/.cache/uv/.tmpZ0kUFd
+573M	/home/robot/.cache/uv/.tmpA8WwPv/open3d
+573M	/home/robot/.cache/uv/.tmpA8WwPv
+570M	/home/robot/.cache/uv/archive-v0/4b66GQO3c_pztC91o8tDZ
+534M	/home/robot/.cache/uv/archive-v0/PoAiYMmrQw_NZtFEcPDjZ
+528M	/home/robot/.cache/uv/archive-v0/aYvYgHCx-uo2KDIrjB84k
+472M	/home/robot/.cache/uv/archive-v0/fmpJ5wjaktdLvK6M3zRa9
+357M	/home/robot/.cache/uv/archive-v0/_aq7brgAFTjbg1zD_aY5i
+321M	/home/robot/.cache/uv/.tmpGe8pfl/nvidia
+321M	/home/robot/.cache/uv/.tmpGe8pfl
+296M	/home/robot/.cache/uv/.tmpMrnV0S/nvidia
+296M	/home/robot/.cache/uv/.tmpMrnV0S
+275M	/home/robot/.cache/uv/archive-v0/i6mpepSgtrcqyXZEnJu-E
+
+=== disk usage now ===
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/nvme0n1p5  979G  759G  171G  82% /
+
+=== check if torch wheel downloaded ===

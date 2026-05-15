@@ -1,0 +1,84 @@
+2026-05-15T18:14:33Z
+=== pytest tests/test_newton_smoke.py -v -s ===
+============================= test session starts ==============================
+platform linux -- Python 3.12.13, pytest-8.4.2, pluggy-1.6.0 -- /home/robot/workspace/46-marine/.venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/robot/workspace/46-marine
+configfile: pyproject.toml
+plugins: hydra-core-1.3.2, hypothesis-6.152.7, dash-4.1.0, cov-7.1.0
+collecting ... collected 4 items
+
+tests/test_newton_smoke.py::test_newton_model_metadata Warp 1.13.0 initialized:
+   CUDA Toolkit 12.9, Driver 13.0
+   Devices:
+     "cpu"      : "x86_64"
+     "cuda:0"   : "NVIDIA GeForce RTX 5090" (31 GiB, sm_120, mempool enabled)
+   Kernel cache:
+     /home/robot/.cache/warp/1.13.0
+Module validate_and_correct_inertia_kernel_524fb5ef 524fb5e load on device 'cuda:0' took 0.38 ms  (cached)
+PASSED
+tests/test_newton_smoke.py::test_newton_free_body_falls_semi_implicit Module newton._src.sim.articulation 9875313 load on device 'cuda:0' took 5491.86 ms  (compiled)
+Module newton._src.solvers.semi_implicit.kernels_body f783ad7 load on device 'cuda:0' took 1.47 ms  (cached)
+Module newton._src.solvers.solver 1cb4740 load on device 'cuda:0' took 0.54 ms  (cached)
+
+SemiImplicit body_qd: [ 0.        0.       -0.040875  0.        0.        0.      ]
+FAILED
+tests/test_newton_smoke.py::test_newton_free_body_falls_mujoco_warp Module newton._src.solvers.mujoco.kernels f5ae6c7 load on device 'cuda:0' took 6152.70 ms  (compiled)
+Module mujoco_warp._src.io 00dd7e1 load on device 'cuda:0' took 2118.15 ms  (compiled)
+Module mujoco_warp._src.smooth 976a5d7 load on device 'cuda:0' took 2833.80 ms  (compiled)
+Module _tile_cholesky_factorize__locals__cholesky_factorize_201bf3be 0845b3e load on device 'cuda:0' took 4083.34 ms  (compiled)
+Module _tile_cholesky_solve__locals__cholesky_solve_a1e03640 ac8cfda load on device 'cuda:0' took 822.82 ms  (compiled)
+Module mujoco_warp._src.collision_driver fbb0ee0 load on device 'cuda:0' took 84.77 ms  (compiled)
+Module _primitive_narrowphase__locals__primitive_narrowphase_cf1dcf09 cf1dcf0 load on device 'cuda:0' took 135.48 ms  (compiled)
+Module mujoco_warp._src.constraint eb0e24d load on device 'cuda:0' took 1427.41 ms  (compiled)
+Module _efc_contact_init__locals__kernel_9ba4ce0a 9ba4ce0 load on device 'cuda:0' took 109.59 ms  (compiled)
+Module _efc_contact_jac_dense__locals__kernel_01c4be66 7acc2da load on device 'cuda:0' took 319.35 ms  (compiled)
+Module _efc_contact_update__locals__kernel_17621467 1762146 load on device 'cuda:0' took 126.29 ms  (compiled)
+Module mujoco_warp._src.passive 616927b load on device 'cuda:0' took 691.81 ms  (compiled)
+Module mujoco_warp._src.forward 398750d load on device 'cuda:0' took 964.65 ms  (compiled)
+Module mujoco_warp._src.support f32a4f8 load on device 'cuda:0' took 142.68 ms  (compiled)
+Module _tile_cholesky_factorize_solve__locals__cholesky_factorize_solve_c6062390 0f245a2 load on device 'cuda:0' took 1166.61 ms  (compiled)
+Module mujoco_warp._src.solver 7df28c9 load on device 'cuda:0' took 1073.02 ms  (compiled)
+Module solve_init_jaref__locals__kernel_d96f1a1b d96f1a1 load on device 'cuda:0' took 69.70 ms  (compiled)
+Module mul_m_dense__locals___mul_m_dense_c3290970 c329097 load on device 'cuda:0' took 106.57 ms  (compiled)
+Module update_constraint_efc__locals__kernel_6bfb2757 6bfb275 load on device 'cuda:0' took 101.95 ms  (compiled)
+Module update_constraint_gauss_cost__locals__kernel_df23460d df23460 load on device 'cuda:0' took 79.86 ms  (compiled)
+Module update_gradient_JTDAJ_dense_tiled__locals__kernel_55e75a89 451da00 load on device 'cuda:0' took 346.13 ms  (compiled)
+Module update_gradient_cholesky__locals__kernel_2cd76fb1 de0d1f7 load on device 'cuda:0' took 3701.87 ms  (compiled)
+Module linesearch_iterative__locals__kernel_f36803d7 4679980 load on device 'cuda:0' took 304.35 ms  (compiled)
+Module update_constraint_efc__locals__kernel_8ad6290a 8ad6290 load on device 'cuda:0' took 105.50 ms  (compiled)
+Module mujoco_warp._src.sensor bee2d80 load on device 'cuda:0' took 2773.01 ms  (compiled)
+Module mujoco_warp._src.derivative f06cf21 load on device 'cuda:0' took 508.48 ms  (compiled)
+
+MuJoCo-Warp body_qd: [ 0.          0.         -0.04087501  0.          0.          0.        ]
+FAILED
+tests/test_newton_smoke.py::test_newton_8192_envs_finalize 
+8192-body model: shape_count=8192, mass[0]=4.1888
+PASSED
+
+=================================== FAILURES ===================================
+__________________ test_newton_free_body_falls_semi_implicit ___________________
+
+    @pytest.mark.gpu
+    def test_newton_free_body_falls_semi_implicit() -> None:
+        """Free body under gravity gains negative z-velocity after one step."""
+        import newton
+    
+        builder = newton.ModelBuilder()  # default gravity=-9.81 along Z
+        body = builder.add_body()
+        builder.add_shape_sphere(body, radius=0.1)
+        # add_body() auto-creates a free joint with joint_q = (xyz, quat-xyzw), len=7
+        builder.joint_q = [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+        builder.joint_qd = [0.0] * 6  # 6 DOFs (3 angular + 3 linear)
+    
+        model = builder.finalize(device="cuda")
+        state_0, state_1 = model.state(), model.state()
+        control = model.control()
+    
+        newton.eval_fk(model, model.joint_q, model.joint_qd, state_0)
+    
+        solver = newton.solvers.SolverSemiImplicit(model)
+        dt = 1.0 / 240.0
+=== exit: 1 ===
+2026-05-15T18:15:24Z

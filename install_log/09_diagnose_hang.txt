@@ -1,0 +1,29 @@
+=== all processes related ===
+  10345   10179 robot    Sl    1-01:08:19  0.0  0.0 /home/robot/.local/bin/uv tool uvx --python 3.13 chroma-mcp --client-type persistent --data-dir /home/robot/.claude-mem/chroma
+3653808 3089652 robot    Ss         12:02  0.0  0.0 /bin/bash -c source /home/robot/.claude/shell-snapshots/snapshot-bash-1778854919234-0rdze9.sh 2>/dev/null || true && shopt -u extglob 2>/dev/null || true && eval '{ echo "=== STEP 3-retry: uv sync --extra dev ==="; date -u +"%Y-%m-%dT%H:%M:%SZ"; time uv sync --extra dev 2>&1 | tail -100; echo "=== exit: ${PIPESTATUS[0]} ==="; date -u +"%Y-%m-%dT%H:%M:%SZ"; } | tee install_log/05_uv_sync_retry.txt' < /dev/null && pwd -P >| /tmp/claude-5928-cwd
+3653810 3653808 robot    S          12:02  0.0  0.0 /bin/bash -c source /home/robot/.claude/shell-snapshots/snapshot-bash-1778854919234-0rdze9.sh 2>/dev/null || true && shopt -u extglob 2>/dev/null || true && eval '{ echo "=== STEP 3-retry: uv sync --extra dev ==="; date -u +"%Y-%m-%dT%H:%M:%SZ"; time uv sync --extra dev 2>&1 | tail -100; echo "=== exit: ${PIPESTATUS[0]} ==="; date -u +"%Y-%m-%dT%H:%M:%SZ"; } | tee install_log/05_uv_sync_retry.txt' < /dev/null && pwd -P >| /tmp/claude-5928-cwd
+3653811 3653808 robot    S          12:02  0.0  0.0 tee install_log/05_uv_sync_retry.txt
+3653813 3653810 robot    Sl         12:02 13.3  0.2 uv sync --extra dev
+3684260 3684257 robot    S          00:00  0.0  0.0 tee install_log/09_diagnose_hang.txt
+
+=== uv processes specifically ===
+  10345   10179 robot    Sl    1-01:08:19 /home/robot/.local/bin/uv tool uvx --python 3.13 chroma-mcp --client-type persistent --data-dir /home/robot/.claude-mem/chroma
+3653813 3653810 robot    Sl         12:02 uv sync --extra dev
+
+=== check network for active downloads ===
+0      0               10.247.159.74:41880          160.79.104.10:443         
+0      69328           10.247.159.74:37446           101.126.7.76:443         
+0      0               10.247.159.74:47378         199.38.181.104:443         
+0      0               10.247.159.74:56048          160.79.104.10:443         
+0      0               10.247.159.74:56114          160.79.104.10:443         
+0      0               10.247.159.74:44446          160.79.104.10:443         
+0      0               10.247.159.74:35732          160.79.104.10:443         
+0      0               10.247.159.74:35334            23.52.99.50:443         
+0      0               10.247.159.74:35656          160.79.104.10:443         
+0      0               10.247.159.74:54096            104.16.8.34:443         
+
+=== uv cache size growing? ===
+16G	/home/robot/.cache/uv
+
+=== log file size and timestamp ===
+-rw-rw-r-- 1 robot robot 63 May 15 12:38 install_log/05_uv_sync_retry.txt

@@ -1,0 +1,491 @@
+2026-05-15T18:13:51Z
+=== pytest tests/test_newton_smoke.py -v -s ===
+============================= test session starts ==============================
+platform linux -- Python 3.12.13, pytest-8.4.2, pluggy-1.6.0 -- /home/robot/workspace/46-marine/.venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/robot/workspace/46-marine
+configfile: pyproject.toml
+plugins: hydra-core-1.3.2, hypothesis-6.152.7, dash-4.1.0, cov-7.1.0
+collecting ... collected 3 items
+
+tests/test_newton_smoke.py::test_newton_model_metadata Warp 1.13.0 initialized:
+   CUDA Toolkit 12.9, Driver 13.0
+   Devices:
+     "cpu"      : "x86_64"
+     "cuda:0"   : "NVIDIA GeForce RTX 5090" (31 GiB, sm_120, mempool enabled)
+   Kernel cache:
+     /home/robot/.cache/warp/1.13.0
+Module validate_and_correct_inertia_kernel_524fb5ef 524fb5e load on device 'cuda:0' took 0.32 ms  (cached)
+PASSED
+tests/test_newton_smoke.py::test_newton_free_body_falls FAILED
+tests/test_newton_smoke.py::test_newton_solver_mujoco_warp_falls FAILED
+
+=================================== FAILURES ===================================
+_________________________ test_newton_free_body_falls __________________________
+
+    @pytest.mark.gpu
+    def test_newton_free_body_falls() -> None:
+        """Free body under gravity gains negative z-velocity after one step."""
+        import newton
+        import warp as wp
+    
+        builder = newton.ModelBuilder()  # gravity defaults: 0,0,-9.81, up_axis Z
+        body = builder.add_body()
+        builder.add_shape_sphere(body, radius=0.1)
+    
+        # explicit free joint so the body has 6 DOFs
+        builder.add_joint_free(child=body)
+    
+        # initial pose: at origin, identity orientation
+        builder.joint_q = [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]  # xyz + quat (x,y,z,w)
+        builder.joint_qd = [0.0] * 6  # 6-dof velocity, all zero
+    
+>       model = builder.finalize(device="cuda")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_newton_smoke.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/newton/_src/sim/builder.py:9752: in finalize
+    self._validate_structure()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <newton._src.sim.builder.ModelBuilder object at 0x7af31d14c0e0>
+
+    def _validate_structure(self) -> None:
+        """Validate structural invariants of the model.
+    
+        This method performs consolidated validation of all structural constraints,
+        using vectorized numpy operations for efficiency:
+    
+        - Body references: shape_body, joint_parent, joint_child, equality_constraint_body1/2
+        - Joint references: equality_constraint_joint1/2
+        - Self-referential joints: joint_parent[i] != joint_child[i]
+        - Start array monotonicity: joint_q_start, joint_qd_start, articulation_start
+        - Array length consistency: per-DOF and per-coord arrays
+    
+        Raises:
+            ValueError: If any structural validation check fails.
+        """
+        body_count = self.body_count
+        joint_count = self.joint_count
+    
+        # Validate per-body flags: each body must be either dynamic or
+        # kinematic. Filter masks such as BodyFlags.ALL are not valid stored
+        # body states.
+        if len(self.body_flags) != body_count:
+            raise ValueError(f"Invalid body_flags length: expected {body_count} entries, got {len(self.body_flags)}.")
+        if body_count > 0:
+            body_flags = np.array(self.body_flags, dtype=np.int32)
+            valid_mask = (body_flags == int(BodyFlags.DYNAMIC)) | (body_flags == int(BodyFlags.KINEMATIC))
+            if not np.all(valid_mask):
+                idx = int(np.where(~valid_mask)[0][0])
+                body_label = self.body_label[idx] if idx < len(self.body_label) else f"body_{idx}"
+                raise ValueError(
+                    f"Invalid body flag for body {idx} ('{body_label}'): got {int(body_flags[idx])}, "
+                    f"but expected exactly one of BodyFlags.DYNAMIC or BodyFlags.KINEMATIC."
+                )
+    
+        # Validate shape_body references: must be in [-1, body_count-1]
+        if self.shape_count > 0:
+            shape_body = np.array(self.shape_body, dtype=np.int32)
+            invalid_mask = (shape_body < -1) | (shape_body >= body_count)
+            if np.any(invalid_mask):
+                invalid_indices = np.where(invalid_mask)[0]
+                idx = invalid_indices[0]
+                shape_label = self.shape_label[idx] or f"shape_{idx}"
+                raise ValueError(
+                    f"Invalid body reference in shape_body: shape {idx} ('{shape_label}') references body {shape_body[idx]}, "
+                    f"but valid range is [-1, {body_count - 1}] (body_count={body_count})."
+                )
+    
+        # Validate joint_parent references: must be in [-1, body_count-1]
+        if joint_count > 0:
+            joint_parent = np.array(self.joint_parent, dtype=np.int32)
+            invalid_mask = (joint_parent < -1) | (joint_parent >= body_count)
+            if np.any(invalid_mask):
+                invalid_indices = np.where(invalid_mask)[0]
+                idx = invalid_indices[0]
+                joint_label = self.joint_label[idx] or f"joint_{idx}"
+                raise ValueError(
+                    f"Invalid body reference in joint_parent: joint {idx} ('{joint_label}') references parent body {joint_parent[idx]}, "
+                    f"but valid range is [-1, {body_count - 1}] (body_count={body_count})."
+                )
+    
+            # Validate joint_child references: must be in [0, body_count-1] (child cannot be world)
+            joint_child = np.array(self.joint_child, dtype=np.int32)
+            invalid_mask = (joint_child < 0) | (joint_child >= body_count)
+            if np.any(invalid_mask):
+                invalid_indices = np.where(invalid_mask)[0]
+                idx = invalid_indices[0]
+                joint_label = self.joint_label[idx] or f"joint_{idx}"
+                raise ValueError(
+                    f"Invalid body reference in joint_child: joint {idx} ('{joint_label}') references child body {joint_child[idx]}, "
+                    f"but valid range is [0, {body_count - 1}] (body_count={body_count}). Child cannot be the world (-1)."
+                )
+    
+            # Validate self-referential joints: parent != child
+            self_ref_mask = joint_parent == joint_child
+            if np.any(self_ref_mask):
+                invalid_indices = np.where(self_ref_mask)[0]
+                idx = invalid_indices[0]
+                joint_label = self.joint_label[idx] or f"joint_{idx}"
+                raise ValueError(
+                    f"Self-referential joint: joint {idx} ('{joint_label}') has parent and child both set to body {joint_parent[idx]}."
+                )
+    
+        # Validate equality constraint body references
+        equality_count = len(self.equality_constraint_type)
+        if equality_count > 0:
+            eq_body1 = np.array(self.equality_constraint_body1, dtype=np.int32)
+            invalid_mask = (eq_body1 < -1) | (eq_body1 >= body_count)
+            if np.any(invalid_mask):
+                invalid_indices = np.where(invalid_mask)[0]
+                idx = invalid_indices[0]
+                eq_key = self.equality_constraint_label[idx] or f"equality_constraint_{idx}"
+                raise ValueError(
+                    f"Invalid body reference in equality_constraint_body1: constraint {idx} ('{eq_key}') references body {eq_body1[idx]}, "
+                    f"but valid range is [-1, {body_count - 1}] (body_count={body_count})."
+                )
+    
+            eq_body2 = np.array(self.equality_constraint_body2, dtype=np.int32)
+            invalid_mask = (eq_body2 < -1) | (eq_body2 >= body_count)
+            if np.any(invalid_mask):
+                invalid_indices = np.where(invalid_mask)[0]
+                idx = invalid_indices[0]
+                eq_key = self.equality_constraint_label[idx] or f"equality_constraint_{idx}"
+                raise ValueError(
+                    f"Invalid body reference in equality_constraint_body2: constraint {idx} ('{eq_key}') references body {eq_body2[idx]}, "
+                    f"but valid range is [-1, {body_count - 1}] (body_count={body_count})."
+                )
+    
+            # Validate equality constraint joint references
+            eq_joint1 = np.array(self.equality_constraint_joint1, dtype=np.int32)
+            invalid_mask = (eq_joint1 < -1) | (eq_joint1 >= joint_count)
+            if np.any(invalid_mask):
+                invalid_indices = np.where(invalid_mask)[0]
+                idx = invalid_indices[0]
+                eq_key = self.equality_constraint_label[idx] or f"equality_constraint_{idx}"
+                raise ValueError(
+                    f"Invalid joint reference in equality_constraint_joint1: constraint {idx} ('{eq_key}') references joint {eq_joint1[idx]}, "
+                    f"but valid range is [-1, {joint_count - 1}] (joint_count={joint_count})."
+                )
+    
+            eq_joint2 = np.array(self.equality_constraint_joint2, dtype=np.int32)
+            invalid_mask = (eq_joint2 < -1) | (eq_joint2 >= joint_count)
+            if np.any(invalid_mask):
+                invalid_indices = np.where(invalid_mask)[0]
+                idx = invalid_indices[0]
+                eq_key = self.equality_constraint_label[idx] or f"equality_constraint_{idx}"
+                raise ValueError(
+                    f"Invalid joint reference in equality_constraint_joint2: constraint {idx} ('{eq_key}') references joint {eq_joint2[idx]}, "
+                    f"but valid range is [-1, {joint_count - 1}] (joint_count={joint_count})."
+                )
+    
+        # Validate start array monotonicity
+        if joint_count > 0:
+            joint_q_start = np.array(self.joint_q_start, dtype=np.int32)
+            if len(joint_q_start) > 1:
+                diffs = np.diff(joint_q_start)
+                if np.any(diffs < 0):
+                    idx = np.where(diffs < 0)[0][0]
+                    raise ValueError(
+                        f"joint_q_start is not monotonically increasing: "
+                        f"joint_q_start[{idx}]={joint_q_start[idx]} > joint_q_start[{idx + 1}]={joint_q_start[idx + 1]}."
+                    )
+    
+            joint_qd_start = np.array(self.joint_qd_start, dtype=np.int32)
+            if len(joint_qd_start) > 1:
+                diffs = np.diff(joint_qd_start)
+                if np.any(diffs < 0):
+                    idx = np.where(diffs < 0)[0][0]
+                    raise ValueError(
+                        f"joint_qd_start is not monotonically increasing: "
+                        f"joint_qd_start[{idx}]={joint_qd_start[idx]} > joint_qd_start[{idx + 1}]={joint_qd_start[idx + 1]}."
+                    )
+    
+        articulation_count = self.articulation_count
+        if articulation_count > 0:
+            articulation_start = np.array(self.articulation_start, dtype=np.int32)
+            if len(articulation_start) > 1:
+                diffs = np.diff(articulation_start)
+                if np.any(diffs < 0):
+                    idx = np.where(diffs < 0)[0][0]
+                    raise ValueError(
+                        f"articulation_start is not monotonically increasing: "
+                        f"articulation_start[{idx}]={articulation_start[idx]} > articulation_start[{idx + 1}]={articulation_start[idx + 1]}."
+                    )
+    
+        # Validate array length consistency
+        if joint_count > 0:
+            # Per-DOF arrays should have length == joint_dof_count
+            dof_arrays = [
+                ("joint_axis", self.joint_axis),
+                ("joint_armature", self.joint_armature),
+                ("joint_target_ke", self.joint_target_ke),
+                ("joint_target_kd", self.joint_target_kd),
+                ("joint_limit_lower", self.joint_limit_lower),
+                ("joint_limit_upper", self.joint_limit_upper),
+                ("joint_limit_ke", self.joint_limit_ke),
+                ("joint_limit_kd", self.joint_limit_kd),
+                ("joint_target_pos", self.joint_target_pos),
+                ("joint_target_vel", self.joint_target_vel),
+                ("joint_effort_limit", self.joint_effort_limit),
+                ("joint_velocity_limit", self.joint_velocity_limit),
+                ("joint_friction", self.joint_friction),
+                ("joint_target_mode", self.joint_target_mode),
+            ]
+            for name, arr in dof_arrays:
+                if len(arr) != self.joint_dof_count:
+                    raise ValueError(
+                        f"Array length mismatch: {name} has length {len(arr)}, "
+                        f"but expected {self.joint_dof_count} (joint_dof_count)."
+                    )
+    
+            # Per-coord arrays should have length == joint_coord_count
+            coord_arrays = [
+                ("joint_q", self.joint_q),
+            ]
+            for name, arr in coord_arrays:
+                if len(arr) != self.joint_coord_count:
+>                   raise ValueError(
+                        f"Array length mismatch: {name} has length {len(arr)}, "
+                        f"but expected {self.joint_coord_count} (joint_coord_count)."
+                    )
+E                   ValueError: Array length mismatch: joint_q has length 7, but expected 14 (joint_coord_count).
+
+.venv/lib/python3.12/site-packages/newton/_src/sim/builder.py:9403: ValueError
+_____________________ test_newton_solver_mujoco_warp_falls _____________________
+
+    @pytest.mark.gpu
+    def test_newton_solver_mujoco_warp_falls() -> None:
+        """Same test but with the SolverMuJoCo backend (MuJoCo-Warp, Newton's primary)."""
+        import newton
+    
+        builder = newton.ModelBuilder()
+        body = builder.add_body()
+        builder.add_shape_sphere(body, radius=0.1)
+        builder.add_joint_free(child=body)
+        builder.joint_q = [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+        builder.joint_qd = [0.0] * 6
+    
+>       model = builder.finalize(device="cuda")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_newton_smoke.py:81: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/newton/_src/sim/builder.py:9752: in finalize
+    self._validate_structure()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <newton._src.sim.builder.ModelBuilder object at 0x7af2ff01d190>
+
+    def _validate_structure(self) -> None:
+        """Validate structural invariants of the model.
+    
+        This method performs consolidated validation of all structural constraints,
+        using vectorized numpy operations for efficiency:
+    
+        - Body references: shape_body, joint_parent, joint_child, equality_constraint_body1/2
+        - Joint references: equality_constraint_joint1/2
+        - Self-referential joints: joint_parent[i] != joint_child[i]
+        - Start array monotonicity: joint_q_start, joint_qd_start, articulation_start
+        - Array length consistency: per-DOF and per-coord arrays
+    
+        Raises:
+            ValueError: If any structural validation check fails.
+        """
+        body_count = self.body_count
+        joint_count = self.joint_count
+    
+        # Validate per-body flags: each body must be either dynamic or
+        # kinematic. Filter masks such as BodyFlags.ALL are not valid stored
+        # body states.
+        if len(self.body_flags) != body_count:
+            raise ValueError(f"Invalid body_flags length: expected {body_count} entries, got {len(self.body_flags)}.")
+        if body_count > 0:
+            body_flags = np.array(self.body_flags, dtype=np.int32)
+            valid_mask = (body_flags == int(BodyFlags.DYNAMIC)) | (body_flags == int(BodyFlags.KINEMATIC))
+            if not np.all(valid_mask):
+                idx = int(np.where(~valid_mask)[0][0])
+                body_label = self.body_label[idx] if idx < len(self.body_label) else f"body_{idx}"
+                raise ValueError(
+                    f"Invalid body flag for body {idx} ('{body_label}'): got {int(body_flags[idx])}, "
+                    f"but expected exactly one of BodyFlags.DYNAMIC or BodyFlags.KINEMATIC."
+                )
+    
+        # Validate shape_body references: must be in [-1, body_count-1]
+        if self.shape_count > 0:
+            shape_body = np.array(self.shape_body, dtype=np.int32)
+            invalid_mask = (shape_body < -1) | (shape_body >= body_count)
+            if np.any(invalid_mask):
+                invalid_indices = np.where(invalid_mask)[0]
+                idx = invalid_indices[0]
+                shape_label = self.shape_label[idx] or f"shape_{idx}"
+                raise ValueError(
+                    f"Invalid body reference in shape_body: shape {idx} ('{shape_label}') references body {shape_body[idx]}, "
+                    f"but valid range is [-1, {body_count - 1}] (body_count={body_count})."
+                )
+    
+        # Validate joint_parent references: must be in [-1, body_count-1]
+        if joint_count > 0:
+            joint_parent = np.array(self.joint_parent, dtype=np.int32)
+            invalid_mask = (joint_parent < -1) | (joint_parent >= body_count)
+            if np.any(invalid_mask):
+                invalid_indices = np.where(invalid_mask)[0]
+                idx = invalid_indices[0]
+                joint_label = self.joint_label[idx] or f"joint_{idx}"
+                raise ValueError(
+                    f"Invalid body reference in joint_parent: joint {idx} ('{joint_label}') references parent body {joint_parent[idx]}, "
+                    f"but valid range is [-1, {body_count - 1}] (body_count={body_count})."
+                )
+    
+            # Validate joint_child references: must be in [0, body_count-1] (child cannot be world)
+            joint_child = np.array(self.joint_child, dtype=np.int32)
+            invalid_mask = (joint_child < 0) | (joint_child >= body_count)
+            if np.any(invalid_mask):
+                invalid_indices = np.where(invalid_mask)[0]
+                idx = invalid_indices[0]
+                joint_label = self.joint_label[idx] or f"joint_{idx}"
+                raise ValueError(
+                    f"Invalid body reference in joint_child: joint {idx} ('{joint_label}') references child body {joint_child[idx]}, "
+                    f"but valid range is [0, {body_count - 1}] (body_count={body_count}). Child cannot be the world (-1)."
+                )
+    
+            # Validate self-referential joints: parent != child
+            self_ref_mask = joint_parent == joint_child
+            if np.any(self_ref_mask):
+                invalid_indices = np.where(self_ref_mask)[0]
+                idx = invalid_indices[0]
+                joint_label = self.joint_label[idx] or f"joint_{idx}"
+                raise ValueError(
+                    f"Self-referential joint: joint {idx} ('{joint_label}') has parent and child both set to body {joint_parent[idx]}."
+                )
+    
+        # Validate equality constraint body references
+        equality_count = len(self.equality_constraint_type)
+        if equality_count > 0:
+            eq_body1 = np.array(self.equality_constraint_body1, dtype=np.int32)
+            invalid_mask = (eq_body1 < -1) | (eq_body1 >= body_count)
+            if np.any(invalid_mask):
+                invalid_indices = np.where(invalid_mask)[0]
+                idx = invalid_indices[0]
+                eq_key = self.equality_constraint_label[idx] or f"equality_constraint_{idx}"
+                raise ValueError(
+                    f"Invalid body reference in equality_constraint_body1: constraint {idx} ('{eq_key}') references body {eq_body1[idx]}, "
+                    f"but valid range is [-1, {body_count - 1}] (body_count={body_count})."
+                )
+    
+            eq_body2 = np.array(self.equality_constraint_body2, dtype=np.int32)
+            invalid_mask = (eq_body2 < -1) | (eq_body2 >= body_count)
+            if np.any(invalid_mask):
+                invalid_indices = np.where(invalid_mask)[0]
+                idx = invalid_indices[0]
+                eq_key = self.equality_constraint_label[idx] or f"equality_constraint_{idx}"
+                raise ValueError(
+                    f"Invalid body reference in equality_constraint_body2: constraint {idx} ('{eq_key}') references body {eq_body2[idx]}, "
+                    f"but valid range is [-1, {body_count - 1}] (body_count={body_count})."
+                )
+    
+            # Validate equality constraint joint references
+            eq_joint1 = np.array(self.equality_constraint_joint1, dtype=np.int32)
+            invalid_mask = (eq_joint1 < -1) | (eq_joint1 >= joint_count)
+            if np.any(invalid_mask):
+                invalid_indices = np.where(invalid_mask)[0]
+                idx = invalid_indices[0]
+                eq_key = self.equality_constraint_label[idx] or f"equality_constraint_{idx}"
+                raise ValueError(
+                    f"Invalid joint reference in equality_constraint_joint1: constraint {idx} ('{eq_key}') references joint {eq_joint1[idx]}, "
+                    f"but valid range is [-1, {joint_count - 1}] (joint_count={joint_count})."
+                )
+    
+            eq_joint2 = np.array(self.equality_constraint_joint2, dtype=np.int32)
+            invalid_mask = (eq_joint2 < -1) | (eq_joint2 >= joint_count)
+            if np.any(invalid_mask):
+                invalid_indices = np.where(invalid_mask)[0]
+                idx = invalid_indices[0]
+                eq_key = self.equality_constraint_label[idx] or f"equality_constraint_{idx}"
+                raise ValueError(
+                    f"Invalid joint reference in equality_constraint_joint2: constraint {idx} ('{eq_key}') references joint {eq_joint2[idx]}, "
+                    f"but valid range is [-1, {joint_count - 1}] (joint_count={joint_count})."
+                )
+    
+        # Validate start array monotonicity
+        if joint_count > 0:
+            joint_q_start = np.array(self.joint_q_start, dtype=np.int32)
+            if len(joint_q_start) > 1:
+                diffs = np.diff(joint_q_start)
+                if np.any(diffs < 0):
+                    idx = np.where(diffs < 0)[0][0]
+                    raise ValueError(
+                        f"joint_q_start is not monotonically increasing: "
+                        f"joint_q_start[{idx}]={joint_q_start[idx]} > joint_q_start[{idx + 1}]={joint_q_start[idx + 1]}."
+                    )
+    
+            joint_qd_start = np.array(self.joint_qd_start, dtype=np.int32)
+            if len(joint_qd_start) > 1:
+                diffs = np.diff(joint_qd_start)
+                if np.any(diffs < 0):
+                    idx = np.where(diffs < 0)[0][0]
+                    raise ValueError(
+                        f"joint_qd_start is not monotonically increasing: "
+                        f"joint_qd_start[{idx}]={joint_qd_start[idx]} > joint_qd_start[{idx + 1}]={joint_qd_start[idx + 1]}."
+                    )
+    
+        articulation_count = self.articulation_count
+        if articulation_count > 0:
+            articulation_start = np.array(self.articulation_start, dtype=np.int32)
+            if len(articulation_start) > 1:
+                diffs = np.diff(articulation_start)
+                if np.any(diffs < 0):
+                    idx = np.where(diffs < 0)[0][0]
+                    raise ValueError(
+                        f"articulation_start is not monotonically increasing: "
+                        f"articulation_start[{idx}]={articulation_start[idx]} > articulation_start[{idx + 1}]={articulation_start[idx + 1]}."
+                    )
+    
+        # Validate array length consistency
+        if joint_count > 0:
+            # Per-DOF arrays should have length == joint_dof_count
+            dof_arrays = [
+                ("joint_axis", self.joint_axis),
+                ("joint_armature", self.joint_armature),
+                ("joint_target_ke", self.joint_target_ke),
+                ("joint_target_kd", self.joint_target_kd),
+                ("joint_limit_lower", self.joint_limit_lower),
+                ("joint_limit_upper", self.joint_limit_upper),
+                ("joint_limit_ke", self.joint_limit_ke),
+                ("joint_limit_kd", self.joint_limit_kd),
+                ("joint_target_pos", self.joint_target_pos),
+                ("joint_target_vel", self.joint_target_vel),
+                ("joint_effort_limit", self.joint_effort_limit),
+                ("joint_velocity_limit", self.joint_velocity_limit),
+                ("joint_friction", self.joint_friction),
+                ("joint_target_mode", self.joint_target_mode),
+            ]
+            for name, arr in dof_arrays:
+                if len(arr) != self.joint_dof_count:
+                    raise ValueError(
+                        f"Array length mismatch: {name} has length {len(arr)}, "
+                        f"but expected {self.joint_dof_count} (joint_dof_count)."
+                    )
+    
+            # Per-coord arrays should have length == joint_coord_count
+            coord_arrays = [
+                ("joint_q", self.joint_q),
+            ]
+            for name, arr in coord_arrays:
+                if len(arr) != self.joint_coord_count:
+>                   raise ValueError(
+                        f"Array length mismatch: {name} has length {len(arr)}, "
+                        f"but expected {self.joint_coord_count} (joint_coord_count)."
+                    )
+E                   ValueError: Array length mismatch: joint_q has length 7, but expected 14 (joint_coord_count).
+
+.venv/lib/python3.12/site-packages/newton/_src/sim/builder.py:9403: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_newton_smoke.py::test_newton_free_body_falls - ValueError: ...
+FAILED tests/test_newton_smoke.py::test_newton_solver_mujoco_warp_falls - Val...
+========================= 2 failed, 1 passed in 1.67s ==========================
+=== exit: 1 ===
+2026-05-15T18:13:54Z

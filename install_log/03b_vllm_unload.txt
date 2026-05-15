@@ -1,0 +1,9 @@
+=== vLLM graceful shutdown via tmux Ctrl-C ===
+sent Ctrl-C, waiting 8s for graceful exit...
+
+=== verify processes ===
+UID          PID    PPID  C STIME TTY      STAT   TIME CMD
+
+=== nvidia-smi after ===
+memory.used [MiB], memory.free [MiB]
+660 MiB, 31442 MiB

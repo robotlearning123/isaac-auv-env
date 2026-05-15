@@ -1,0 +1,8 @@
+=== check home dir mount ===
+total 64
+drwxrwxr-x  10 robot robot  4096 May 15 12:53 .
+
+/dev/nvme0n1p2 on /mnt/storage type ext4 (rw,relatime)
+
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/nvme0n1p2  853G  374G  436G  47% /mnt/storage

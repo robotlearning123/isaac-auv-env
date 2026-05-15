@@ -1,0 +1,38 @@
+=== find newton examples ===
+.venv/lib/python3.12/site-packages/newton/tests/test_examples.py
+.venv/lib/python3.12/site-packages/newton/tests/test_example_browser.py
+.venv/lib/python3.12/site-packages/newton/tests/test_example_browser_args.py
+.venv/lib/python3.12/site-packages/newton/examples/__init__.py
+.venv/lib/python3.12/site-packages/newton/examples/__main__.py
+.venv/lib/python3.12/site-packages/newton/examples/sensors/example_sensor_contact.py
+.venv/lib/python3.12/site-packages/newton/examples/sensors/example_sensor_imu.py
+.venv/lib/python3.12/site-packages/newton/examples/sensors/example_sensor_tiled_camera.py
+.venv/lib/python3.12/site-packages/newton/examples/robot/example_robot_ur10.py
+.venv/lib/python3.12/site-packages/newton/examples/robot/example_robot_g1.py
+
+=== find any falling-body / gravity demo ===
+.venv/lib/python3.12/site-packages/newton/tests/test_remesh_convex_hull.py
+.venv/lib/python3.12/site-packages/newton/tests/test_mujoco_solver.py
+.venv/lib/python3.12/site-packages/newton/tests/test_sensor_imu.py
+.venv/lib/python3.12/site-packages/newton/tests/test_rigid_contact.py
+.venv/lib/python3.12/site-packages/newton/tests/test_control_force.py
+
+=== inspect ModelBuilder.gravity setter ===
+Warp 1.13.0 initialized:
+   CUDA Toolkit 12.9, Driver 13.0
+   Devices:
+     "cpu"      : "x86_64"
+     "cuda:0"   : "NVIDIA GeForce RTX 5090" (31 GiB, sm_120, mempool enabled)
+   Kernel cache:
+     /home/robot/.cache/warp/1.13.0
+gravity attr: -9.81 <class 'float'>
+up_vector: (0.0, 0.0, 1.0)
+up_axis: Z
+
+add_shape_sphere sig: (body: 'int', xform: 'Transform | None' = None, radius: 'float' = 1.0, cfg: 'ShapeConfig | None' = None, as_site: 'bool' = False, color: 'Vec3 | None' = None, label: 'str | None' = None, custom_attributes: 'dict[str, Any] | None' = None) -> 'int'
+
+Module validate_and_correct_inertia_kernel_524fb5ef 524fb5e load on device 'cuda:0' took 0.38 ms  (cached)
+model.body_mass: [5.1887903]
+model.body_inv_mass: [0.19272314]
+model.gravity: [[-0.   -0.   -9.81]]
+model.up_axis: Z

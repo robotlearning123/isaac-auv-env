@@ -1,0 +1,26 @@
+=== check vLLM process ===
+UID          PID    PPID  C STIME TTY          TIME CMD
+robot    1840775 1840479 22 May14 pts/4    03:05:44 VLLM::EngineCore
+
+=== check parent / who started it ===
+robot    1840477    1912  0 May14 ?        00:00:12 tmux new-session -d -s vllm-5090 /tmp/vllm020/bin/vllm serve /mnt/data/huggingface/hub/models--RedHatAI--Qwen3.6-35B-A3B-NVFP4/snapshots/e850c696e6d75f965367e816c16bc7dacd955ffa --served-model-name qwen36-nvfp4 --host 0.0.0.0 --port 8000 --max-model-len 16384 --max-num-seqs 16 --max-num-batched-tokens 16384 --gpu-memory-utilization 0.92 --kv-cache-dtype fp8 --moe-backend flashinfer_cutlass --reasoning-parser qwen3 --enable-prefix-caching --enable-chunked-prefill --enable-expert-parallel --language-model-only --no-enable-log-requests 2>&1 | tee /tmp/vllm-5090-native.log
+robot    1840478 1840477  0 May14 pts/4    00:00:00 bash -c /tmp/vllm020/bin/vllm serve /mnt/data/huggingface/hub/models--RedHatAI--Qwen3.6-35B-A3B-NVFP4/snapshots/e850c696e6d75f965367e816c16bc7dacd955ffa --served-model-name qwen36-nvfp4 --host 0.0.0.0 --port 8000 --max-model-len 16384 --max-num-seqs 16 --max-num-batched-tokens 16384 --gpu-memory-utilization 0.92 --kv-cache-dtype fp8 --moe-backend flashinfer_cutlass --reasoning-parser qwen3 --enable-prefix-caching --enable-chunked-prefill --enable-expert-parallel --language-model-only --no-enable-log-requests 2>&1 | tee /tmp/vllm-5090-native.log
+robot    1840479 1840478  0 May14 pts/4    00:03:30 /tmp/vllm020/bin/python /tmp/vllm020/bin/vllm serve /mnt/data/huggingface/hub/models--RedHatAI--Qwen3.6-35B-A3B-NVFP4/snapshots/e850c696e6d75f965367e816c16bc7dacd955ffa --served-model-name qwen36-nvfp4 --host 0.0.0.0 --port 8000 --max-model-len 16384 --max-num-seqs 16 --max-num-batched-tokens 16384 --gpu-memory-utilization 0.92 --kv-cache-dtype fp8 --moe-backend flashinfer_cutlass --reasoning-parser qwen3 --enable-prefix-caching --enable-chunked-prefill --enable-expert-parallel --language-model-only --no-enable-log-requests
+robot    1840480 1840478  0 May14 pts/4    00:00:01 tee /tmp/vllm-5090-native.log
+robot    1840774 1840479  0 May14 pts/4    00:00:00 /tmp/vllm020/bin/python -c from multiprocessing.resource_tracker import main;main(54)
+robot    1840775 1840479 22 May14 pts/4    03:05:44 VLLM::EngineCore
+robot    3647482 3647479  0 12:36 ?        00:00:00 tee install_log/03a_vllm_investigate.txt
+
+=== systemd user services with vllm ===
+
+=== systemd system services with vllm ===
+
+=== docker containers ===
+CONTAINER ID   IMAGE                        COMMAND                  CREATED        STATUS                  PORTS                                                             NAMES
+8432fd032a91   shenlab-app                  "/usr/local/bin/dock…"   5 weeks ago    Up 25 hours (healthy)   8000/tcp                                                          shenlab-app-1
+6bb2847fc04c   caddy:2.9.1-alpine           "caddy run --config …"   5 weeks ago    Up 25 hours             443/tcp, 0.0.0.0:80->80/tcp, [::]:80->80/tcp, 2019/tcp, 443/udp   shenlab-caddy-1
+2ca40a28c493   postgres:17.4-alpine         "docker-entrypoint.s…"   5 weeks ago    Up 25 hours (healthy)   127.0.0.1:5432->5432/tcp                                          shenlab-db-1
+e788af236d26   getmeili/meilisearch:v1.12   "tini -- /bin/sh -c …"   5 weeks ago    Up 25 hours (healthy)   127.0.0.1:7700->7700/tcp                                          shenlab-search-1
+a23d18a2f6ff   upki-backend-api             "/opt/nvidia/nvidia_…"   3 months ago   Up 25 hours (healthy)   0.0.0.0:5002->5002/tcp, [::]:5002->5002/tcp, 8082/tcp             upki-backend-api-1
+266dc5c56e4b   upki-backend-worker          "sh -c 'Xvfb :99 -sc…"   3 months ago   Up 25 hours             5002/tcp                                                          upki-backend-worker-1
+e9810a09fef9   redis:7-alpine               "docker-entrypoint.s…"   3 months ago   Up 25 hours             6379/tcp                                                          upki-backend-redis-1

@@ -1,0 +1,15 @@
+=== uv sync still running? ===
+3653813 uv sync --extra dev
+    ELAPSED %CPU CMD
+      13:52 13.9 uv sync --extra dev
+
+=== cache size now ===
+17G	/home/robot/.cache/uv
+
+=== latest log lines ===
+=== STEP 3-retry: uv sync --extra dev ===
+2026-05-15T16:38:10Z
+
+=== .venv site-packages count ===
+3
+(when sync finishes, this should be ~50-100+ packages)

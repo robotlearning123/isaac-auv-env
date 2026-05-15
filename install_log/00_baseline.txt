@@ -1,0 +1,73 @@
+=== Date ===
+2026-05-15T16:35:39Z
+=== uname ===
+Linux robot-INTEL 6.14.0-27-generic #27~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Tue Jul 22 17:38:49 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+=== OS ===
+PRETTY_NAME="Ubuntu 24.04.2 LTS"
+NAME="Ubuntu"
+VERSION_ID="24.04"
+VERSION="24.04.2 LTS (Noble Numbat)"
+VERSION_CODENAME=noble
+=== CPU ===
+Architecture:                         x86_64
+CPU op-mode(s):                       32-bit, 64-bit
+Address sizes:                        46 bits physical, 48 bits virtual
+Byte Order:                           Little Endian
+CPU(s):                               32
+On-line CPU(s) list:                  0-31
+Vendor ID:                            GenuineIntel
+Model name:                           Intel(R) Core(TM) i9-14900K
+CPU family:                           6
+Model:                                183
+Thread(s) per core:                   2
+Core(s) per socket:                   24
+Socket(s):                            1
+Stepping:                             1
+CPU(s) scaling MHz:                   57%
+=== Mem ===
+               total        used        free      shared  buff/cache   available
+Mem:            62Gi        19Gi        11Gi       707Mi        32Gi        42Gi
+Swap:           63Gi       8.9Gi        55Gi
+=== Disk ===
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/nvme0n1p5  979G  759G  171G  82% /
+=== nvidia-smi ===
+Fri May 15 12:35:39 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 5090        Off |   00000000:01:00.0  On |                  N/A |
+| 30%   32C    P8             45W /  575W |   30303MiB /  32607MiB |      5%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A            5399      G   /usr/lib/xorg/Xorg                      200MiB |
+|    0   N/A  N/A            5723      G   /usr/bin/gnome-shell                     43MiB |
+|    0   N/A  N/A            6000      G   .../teamviewer/tv_bin/TeamViewer         16MiB |
+|    0   N/A  N/A            6318      G   /opt/freedownloadmanager/fdm              6MiB |
+|    0   N/A  N/A            6716      G   /usr/bin/ghostty                        162MiB |
+|    0   N/A  N/A            6718      G   ...exec/xdg-desktop-portal-gnome         16MiB |
+|    0   N/A  N/A            7452    C+G   ...rack-uuid=3190708988185955192        135MiB |
+|    0   N/A  N/A         1840775      C   VLLM::EngineCore                      29602MiB |
++-----------------------------------------------------------------------------------------+
+=== nvcc ===
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2025 NVIDIA Corporation
+Built on Wed_Jan_15_19:20:09_PST_2025
+Cuda compilation tools, release 12.8, V12.8.61
+Build cuda_12.8.r12.8/compiler.35404655_0
+=== which python ===
+/home/robot/miniconda3/bin/python3
+/home/robot/.local/bin/python3.12
+/home/robot/.local/bin/python3.13
+=== uv version ===
+uv 0.9.18

@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+build/
+dist/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# uv
+.venv/
+uv.lock.bak
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Project artifacts
+install_log/         # generated logs, not source of truth
+outputs/             # hydra outputs
+runs/                # tensorboard runs
+wandb/
+*.log
+.env.local
+.env.*.local
+
+# Warp / NVIDIA caches
+.warp/
+warp_cache/
+
+# Data
+data/
+checkpoints/
+*.pt
+*.pth
+*.onnx
+*.usd
+*.usdc
+!assets/*.usd        # except sample assets
+!assets/*.usdc
+
+# OS
+.DS_Store
+Thumbs.db

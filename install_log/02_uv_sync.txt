@@ -1,0 +1,19 @@
+=== STEP 3: uv sync --extra dev ===
+2026-05-15T16:36:23Z
+  × No solution found when resolving dependencies:
+  ╰─▶ Because oceanscale[rl] depends on rl-games>=1.6.0 and only the following
+      versions of rl-games are available:
+          rl-games<=1.6.0
+          rl-games==1.6.1
+          rl-games==1.6.5
+      we can conclude that oceanscale[rl] depends on rl-games>=1.6.0.
+      And because rl-games>=1.6.0 depends on psutil>=5.9.0,<6.0.0, we can
+      conclude that oceanscale[rl] depends on psutil>=5.9.0,<6.0.0.
+      And because warp-lang[torch-cu12]==1.13.0 depends on psutil>=7.1.0 and
+      only warp-lang[torch-cu12]<=1.13.0 is available, we can conclude that
+      oceanscale[rl] and warp-lang[torch-cu12]>=1.13.0 are incompatible.
+      And because your project depends on warp-lang[torch-cu12]>=1.13.0
+      and your project requires oceanscale[rl], we can conclude that your
+      project's requirements are unsatisfiable.
+=== exit: 1 ===
+2026-05-15T16:36:30Z

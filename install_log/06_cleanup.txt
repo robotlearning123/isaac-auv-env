@@ -1,0 +1,46 @@
+=== verify empty files ===
+.env: size=0
+.env.development: size=0
+.env.production: size=0
+.env.test: size=0
+.env.development.local: size=0
+.env.local: size=0
+.env.production.local: size=0
+.env.test.local: size=0
+.npmrc: size=0
+.yarnrc: size=0
+.yarnrc.yml: size=0
+.gitmodules: size=0
+
+=== remove empty scaffolding ===
+removed '.env'
+removed '.env.development'
+removed '.env.production'
+removed '.env.test'
+removed '.env.development.local'
+removed '.env.local'
+removed '.env.production.local'
+removed '.env.test.local'
+removed '.npmrc'
+removed '.yarnrc'
+removed '.yarnrc.yml'
+removed '.gitmodules'
+
+=== ls -la now ===
+total 468
+drwxrwxr-x  6 robot robot   4096 May 15 12:49 .
+drwxrwxr-x 80 robot robot   4096 May 15 00:25 ..
+drwxrwxr-x  4 robot robot   4096 May 14 23:47 .claude
+-rw-rw-r--  1 robot robot  13856 May 15 10:29 DESIGN.md
+drwxrwxr-x  7 robot robot   4096 May 15 12:38 .git
+-rw-rw-r--  1 robot robot    206 May 15 12:37 .gitattributes
+-rw-rw-r--  1 robot robot    629 May 15 12:37 .gitignore
+drwxrwxr-x  2 robot robot   4096 May 15 12:49 install_log
+-rw-rw-r--  1 robot robot    718 May 15 12:37 .pre-commit-config.yaml
+-rw-rw-r--  1 robot robot   1467 May 15 12:36 pyproject.toml
+-rw-rw-r--  1 robot robot    193 May 15 12:36 README.md
+-rw-rw-r--  1 robot robot  62502 May 15 11:11 STACK.md
+-rw-rw-r--  1 robot robot  12906 May 15 10:28 SURVEY.md
+-rw-rw-r--  1 robot robot 319652 May 15 12:38 uv.lock
+drwxrwxr-x  4 robot robot   4096 May 15 12:36 .venv
+-rw-rw-r--  1 robot robot   9385 May 15 12:32 VERSIONS.md

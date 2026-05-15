@@ -1,0 +1,106 @@
+2026-05-15T18:12:10Z
+=== pytest tests/test_newton_smoke.py -v ===
+============================= test session starts ==============================
+platform linux -- Python 3.12.13, pytest-8.4.2, pluggy-1.6.0 -- /home/robot/workspace/46-marine/.venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/robot/workspace/46-marine
+configfile: pyproject.toml
+plugins: hydra-core-1.3.2, hypothesis-6.152.7, dash-4.1.0, cov-7.1.0
+collecting ... collected 3 items
+
+tests/test_newton_smoke.py::test_newton_smallest_step FAILED             [ 33%]
+tests/test_newton_smoke.py::test_newton_model_metadata PASSED            [ 66%]
+tests/test_newton_smoke.py::test_newton_two_bodies_drop FAILED           [100%]
+
+=================================== FAILURES ===================================
+__________________________ test_newton_smallest_step ___________________________
+
+    @pytest.mark.gpu
+    def test_newton_smallest_step() -> None:
+        """Spawn a single rigid body, step once, confirm it moved under gravity."""
+        import newton
+    
+        builder = newton.ModelBuilder()
+        body_idx = builder.add_body(mass=1.0)
+        builder.add_shape_sphere(body=body_idx, radius=0.1)
+    
+        model = builder.finalize(device="cuda")
+        state_0 = model.state()
+        state_1 = model.state()
+        control = model.control()
+    
+        solver = newton.solvers.SolverSemiImplicit(model)
+    
+        dt = 1.0 / 240.0
+        contacts = model.collide(state_0)
+        solver.step(state_0, state_1, control, contacts, dt)
+    
+        # body_qd is array(n_bodies, dtype=spatial_vectorf); .numpy() → (n, 6)
+        v_after = state_1.body_qd.numpy()
+        assert v_after.shape == (1, 6), f"got {v_after.shape}"
+    
+        # Newton spatial vector layout: (angular_xyz, linear_xyz)
+        # gravity is scalar -9.81 applied along Z
+        v_lin_z = v_after[0, 5]
+        expected = -9.81 * dt
+>       assert v_lin_z < 0, f"expected negative z-velocity (gravity), got {v_lin_z}"
+E       AssertionError: expected negative z-velocity (gravity), got 0.0
+E       assert np.float32(0.0) < 0
+
+tests/test_newton_smoke.py:43: AssertionError
+----------------------------- Captured stdout call -----------------------------
+Warp 1.13.0 initialized:
+   CUDA Toolkit 12.9, Driver 13.0
+   Devices:
+     "cpu"      : "x86_64"
+     "cuda:0"   : "NVIDIA GeForce RTX 5090" (31 GiB, sm_120, mempool enabled)
+   Kernel cache:
+     /home/robot/.cache/warp/1.13.0
+Module validate_and_correct_inertia_kernel_524fb5ef 524fb5e load on device 'cuda:0' took 0.33 ms  (cached)
+Module newton._src.sim.collide 0e6be4c load on device 'cuda:0' took 510.31 ms  (compiled)
+Module narrow_phase_primitive_write_contact e070310 load on device 'cuda:0' took 849.64 ms  (compiled)
+Module narrow_phase_gjk_mpr_True_write_contact_support_map_lean_post_process_minkowski_only cd2b420 load on device 'cuda:0' took 3347.01 ms  (compiled)
+Module newton._src.geometry.narrow_phase 75afa93 load on device 'cuda:0' took 618.01 ms  (compiled)
+Module newton._src.solvers.semi_implicit.kernels_body f783ad7 load on device 'cuda:0' took 2458.21 ms  (compiled)
+Module newton._src.solvers.semi_implicit.kernels_contact f7034ac load on device 'cuda:0' took 1142.77 ms  (compiled)
+Module newton._src.solvers.solver 1cb4740 load on device 'cuda:0' took 450.58 ms  (compiled)
+_________________________ test_newton_two_bodies_drop __________________________
+
+    @pytest.mark.gpu
+    def test_newton_two_bodies_drop() -> None:
+        """Two bodies, step a few times, both should have moved downward."""
+        import newton
+    
+        builder = newton.ModelBuilder()
+        for i in range(2):
+            idx = builder.add_body(mass=1.0)
+            builder.add_shape_sphere(body=idx, radius=0.1)
+    
+        model = builder.finalize(device="cuda")
+        state_a = model.state()
+        state_b = model.state()
+        control = model.control()
+        solver = newton.solvers.SolverSemiImplicit(model)
+    
+        dt = 1.0 / 240.0
+        for step in range(5):
+            contacts = model.collide(state_a)
+            solver.step(state_a, state_b, control, contacts, dt)
+            state_a, state_b = state_b, state_a
+    
+        v = state_a.body_qd.numpy()
+        # both bodies z-linear velocity should be ~ -9.81 * 5 * dt
+        for i in range(2):
+>           assert v[i, 5] < 0
+E           assert np.float32(0.0) < 0
+
+tests/test_newton_smoke.py:90: AssertionError
+----------------------------- Captured stdout call -----------------------------
+Module newton._src.geometry.broad_phase_nxn 4aedc5e load on device 'cuda:0' took 121.86 ms  (compiled)
+=========================== short test summary info ============================
+FAILED tests/test_newton_smoke.py::test_newton_smallest_step - AssertionError...
+FAILED tests/test_newton_smoke.py::test_newton_two_bodies_drop - assert np.fl...
+========================= 2 failed, 1 passed in 11.29s =========================
+=== exit: 1 ===
+2026-05-15T18:12:23Z

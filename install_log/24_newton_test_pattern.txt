@@ -1,0 +1,98 @@
+=== look at test_control_force.py for canonical step pattern ===
+# SPDX-FileCopyrightText: Copyright (c) 2025 The Newton Developers
+# SPDX-License-Identifier: Apache-2.0
+
+import unittest
+
+import numpy as np
+import warp as wp
+
+import newton
+from newton.tests.unittest_utils import add_function_test, get_test_devices
+
+
+class TestControlForce(unittest.TestCase):
+    pass
+
+
+def _build_rotated_parent_descendant_free_model(device, child_com=None):
+    builder = newton.ModelBuilder(gravity=0.0, up_axis=newton.Axis.Y)
+    if child_com is None:
+        child_com = wp.vec3()
+
+    base = builder.add_link(is_kinematic=True, mass=1.0)
+    child = builder.add_link(mass=1.0)
+    builder.add_shape_sphere(base, radius=0.1)
+    builder.add_shape_sphere(child, radius=0.1)
+    builder.body_com[child] = child_com
+
+    j0 = builder.add_joint_fixed(
+        parent=-1,
+        child=base,
+        parent_xform=wp.transform(
+            wp.vec3(),
+            wp.quat_from_axis_angle(wp.vec3(0.0, 0.0, 1.0), wp.pi * 0.5),
+        ),
+        child_xform=wp.transform_identity(),
+    )
+    j1 = builder.add_joint_free(parent=base, child=child)
+    builder.add_articulation([j0, j1])
+
+    return builder.finalize(device=device), base, child
+
+
+def _rotate_into_parent_frame(q_parent_xyzw: np.ndarray, v_world: np.ndarray) -> np.ndarray:
+    q_parent = wp.quat(*q_parent_xyzw.astype(np.float32))
+    v_parent = wp.quat_rotate_inv(q_parent, wp.vec3(*v_world.astype(np.float32)))
+    return np.array(v_parent, dtype=np.float32)
+
+
+def test_floating_body(test: TestControlForce, device, solver_fn, test_angular=True):
+    builder = newton.ModelBuilder(up_axis=newton.Axis.Y, gravity=0.0)
+
+    # easy case: identity transform, zero center of mass
+    b = builder.add_body()
+    builder.add_shape_box(b)
+    builder.joint_q = [1.0, 2.0, 3.0, *wp.quat_rpy(-1.3, 0.8, 2.4)]
+
+    model = builder.finalize(device=device)
+
+    solver = solver_fn(model)
+
+    state_0, state_1 = model.state(), model.state()
+
+    newton.eval_fk(model, model.joint_q, model.joint_qd, state_0)
+
+    control = model.control()
+    if test_angular:
+        control.joint_f.assign(np.array([0.0, 0.0, 0.0, 0.0, 0.0, 100.0], dtype=np.float32))
+        test_index = 5
+    else:
+        control.joint_f.assign(np.array([0.0, 100.0, 0.0, 0.0, 0.0, 0.0], dtype=np.float32))
+        test_index = 1
+
+    sim_dt = 1.0 / 10.0
+
+    for _ in range(4):
+        solver.step(state_0, state_1, control, None, sim_dt)
+        state_0, state_1 = state_1, state_0
+
+    body_qd = state_0.body_qd.numpy()[0]
+    test.assertGreater(body_qd[test_index], 0.04)
+
+=== look at semi_implicit solver source briefly ===
+__init__.py
+kernels_body.py
+kernels_contact.py
+kernels_muscle.py
+kernels_particle.py
+__pycache__
+solver_semi_implicit.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 The Newton Developers
+# SPDX-License-Identifier: Apache-2.0
+
+from .solver_semi_implicit import SolverSemiImplicit
+
+__all__ = [
+    "SolverSemiImplicit",
+]

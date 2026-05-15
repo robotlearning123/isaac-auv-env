@@ -1,0 +1,42 @@
+2026-05-15T18:15:51Z
+=== pytest -v -s ===
+cachedir: .pytest_cache
+tests/test_newton_smoke.py::test_newton_model_metadata Warp 1.13.0 initialized:
+PASSED
+tests/test_newton_smoke.py::test_newton_free_body_falls_semi_implicit Module newton._src.sim.articulation 9875313 load on device 'cuda:0' took 3.62 ms  (cached)
+SemiImplicit body_qd: [ 0.        0.       -0.040875  0.        0.        0.      ]
+PASSED
+tests/test_newton_smoke.py::test_newton_free_body_falls_mujoco_warp Module newton._src.solvers.mujoco.kernels f5ae6c7 load on device 'cuda:0' took 7.47 ms  (cached)
+MuJoCo-Warp body_qd: [ 0.          0.         -0.04087501  0.          0.          0.        ]
+PASSED
+tests/test_newton_smoke.py::test_newton_8192_envs_finalize 
+8192-body model: shape_count=8192, mass[0]=4.1888
+PASSED
+
+=== full test suite ===
+rootdir: /home/robot/workspace/46-marine
+configfile: pyproject.toml
+plugins: hydra-core-1.3.2, hypothesis-6.152.7, dash-4.1.0, cov-7.1.0
+collecting ... collected 18 items
+
+tests/test_environment.py::test_python_version PASSED                    [  5%]
+tests/test_environment.py::test_oceanscale_importable PASSED             [ 11%]
+tests/test_environment.py::test_numpy PASSED                             [ 16%]
+tests/test_environment.py::test_scipy PASSED                             [ 22%]
+tests/test_environment.py::test_torch_import PASSED                      [ 27%]
+tests/test_environment.py::test_torch_cuda_available PASSED              [ 33%]
+tests/test_environment.py::test_warp_import PASSED                       [ 38%]
+tests/test_environment.py::test_warp_gpu_devices PASSED                  [ 44%]
+tests/test_environment.py::test_newton_import PASSED                     [ 50%]
+tests/test_environment.py::test_usd_import PASSED                        [ 55%]
+tests/test_newton_smoke.py::test_newton_model_metadata PASSED            [ 61%]
+tests/test_newton_smoke.py::test_newton_free_body_falls_semi_implicit PASSED [ 66%]
+tests/test_newton_smoke.py::test_newton_free_body_falls_mujoco_warp PASSED [ 72%]
+tests/test_newton_smoke.py::test_newton_8192_envs_finalize PASSED        [ 77%]
+tests/test_warp_smoke.py::test_quad_drag_forward_matches_numpy PASSED    [ 83%]
+tests/test_warp_smoke.py::test_quad_drag_autograd_matches_analytic PASSED [ 88%]
+tests/test_warp_smoke.py::test_multi_launch_consistency PASSED           [ 94%]
+tests/test_warp_smoke.py::test_device_is_rtx5090 PASSED                  [100%]
+
+============================= 18 passed in 13.39s ==============================
+2026-05-15T18:16:21Z

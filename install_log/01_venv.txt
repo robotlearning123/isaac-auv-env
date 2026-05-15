@@ -1,0 +1,11 @@
+=== STEP 1: uv venv --python 3.12 ===
+Using CPython 3.12.13
+Creating virtual environment at: .venv
+Activate with: source .venv/bin/activate
+=== exit: 0 ===
+
+=== STEP 2: check venv ===
+lrwxrwxrwx 1 robot robot 79 May 15 12:36 .venv/bin/python -> /home/robot/.local/share/uv/python/cpython-3.12-linux-x86_64-gnu/bin/python3.12
+lrwxrwxrwx 1 robot robot  6 May 15 12:36 .venv/bin/python3 -> python
+lrwxrwxrwx 1 robot robot  6 May 15 12:36 .venv/bin/python3.12 -> python
+Python 3.12.13
