@@ -1,0 +1,26 @@
+2026-05-15T21:22:42Z
+=== ruff check final ===
+125 |     g = nu.grad.numpy()[0]
+126 |     # Diagonal: d/dν_0 [-(D_lin[0] + D_quad[0]·|ν_0|)·ν_0] = -(D_lin[0] + 2·D_quad[0]·|ν_0|) at ν_0=1
+    |                                                                                                     ^
+127 |     # = -(4.03 + 2·18.18) = -40.39
+128 |     expected_d0 = -(d_lin[0] + 2 * d_quad[0])
+    |
+
+Found 2 errors.
+exit: 1
+
+=== final regression (W2 §9 acceptance) ===
+...............................                                          [100%]
+31 passed in 14.08s
+     "cuda:0"   : "NVIDIA GeForce RTX 5090" (31 GiB, sm_120, mempool enabled)
+   Kernel cache:
+     /home/robot/.cache/warp/1.13.0
+    64     10765.1      0.093           0.689       0.019  ✓
+   256     10533.1      0.095           2.696       0.019  ✓
+  1024     10594.2      0.094          10.848       0.019  ✓
+  4096     10539.7      0.095          43.171       0.019  ✓
+  8192     10790.1      0.093          88.392       0.019  ✓
+
+Target: ≥ 100k env-steps/s @ N=8192 (per goals/W2 §2)
+2026-05-15T21:23:01Z

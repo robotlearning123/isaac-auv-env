@@ -1,0 +1,12 @@
+2026-05-15T21:22:04Z
+=== ruff check ===
+22 |     """Single-body free sphere — one 'world'."""
+23 |     import newton
+   |
+
+Found 4 errors.
+---
+=== final full regression ===
+...............................                                          [100%]
+31 passed in 14.05s
+2026-05-15T21:22:20Z

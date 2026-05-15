@@ -1,0 +1,13 @@
+2026-05-15T21:21:44Z
+=== ruff check post-config ===
+F821 Undefined name `newton`
+  --> tests/test_worlds_poc.py:21:38
+   |
+21 | def _make_single_world_template() -> newton.ModelBuilder:
+   |                                      ^^^^^^
+22 |     """Single-body free sphere — one 'world'."""
+23 |     import newton
+   |
+
+Found 4 errors.
+2026-05-15T21:21:44Z

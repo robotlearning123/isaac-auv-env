@@ -7,6 +7,7 @@ Smallest possible kernels:
 
 These tests are the canary for the whole Warp pipeline.
 """
+
 from __future__ import annotations
 
 import numpy as np

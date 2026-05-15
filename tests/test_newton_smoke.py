@@ -3,6 +3,7 @@
 Pattern: `add_body()` auto-creates a free joint. joint_q layout = (xyz, quat-xyzw).
 Use `eval_fk` to initialize state from joint coords before stepping.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -105,5 +106,7 @@ def test_newton_8192_envs_finalize() -> None:
 
     model = builder.finalize(device="cuda")
     assert model.body_count == 8192
-    print(f"\n8192-body model: shape_count={model.shape_count}, "
-          f"mass[0]={model.body_mass.numpy()[0]:.4f}")
+    print(
+        f"\n8192-body model: shape_count={model.shape_count}, "
+        f"mass[0]={model.body_mass.numpy()[0]:.4f}"
+    )

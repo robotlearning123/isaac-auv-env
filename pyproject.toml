@@ -52,6 +52,17 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "B", "UP", "RUF"]
+ignore = [
+    "RUF001",  # Ambiguous unicode characters in strings (we use × ν for math notation)
+    "RUF002",  # Ambiguous unicode in docstrings (× ν)
+    "RUF003",  # Ambiguous unicode in comments
+    "N806",    # Variable in function should be lowercase (we use M_A, M_RB, etc., from Fossen)
+    "N803",    # Argument name should be lowercase (M_A, M_RB Fossen notation)
+    "B008",    # Function call in argument defaults (acceptable here)
+    "E741",    # Ambiguous variable name 'I' (used for inertia per Fossen)
+    "E501",    # Line too long — math comments need wide width for readability
+]
+per-file-ignores = {"tests/**/*.py" = ["B011"]}
 
 [tool.mypy]
 python_version = "3.12"

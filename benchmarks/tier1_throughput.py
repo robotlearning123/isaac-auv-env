@@ -5,6 +5,7 @@ Gate: ≥ 100,000 env-steps/s.
 Replicate(N) BlueROV-like body, attach Tier1 with full 6-kernel pipeline,
 inject wrench, step Newton SolverSemiImplicit. Measure env-steps/s.
 """
+
 from __future__ import annotations
 
 import time

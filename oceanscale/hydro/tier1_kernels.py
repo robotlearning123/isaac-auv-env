@@ -4,6 +4,7 @@ thruster allocation. All operate per-world on (n_envs,) sized arrays.
 Math reference: docs/math/fossen.md.
 Algorithm port: MarineGym underwaterVehicle.py:229-277 (MIT).
 """
+
 from __future__ import annotations
 
 import warp as wp
@@ -15,8 +16,8 @@ import warp as wp
 @wp.kernel
 def tier1_added_mass(
     nu_dot: wp.array(dtype=wp.spatial_vectorf),  # (n_envs,) per-env body accel (linear, angular)
-    M_A: wp.array(dtype=wp.vec3f),               # (n_envs, 2) flattened: [lin, ang] diag values
-    M_A_ang: wp.array(dtype=wp.vec3f),           # (n_envs,) angular diag of M_A
+    M_A: wp.array(dtype=wp.vec3f),  # (n_envs, 2) flattened: [lin, ang] diag values
+    M_A_ang: wp.array(dtype=wp.vec3f),  # (n_envs,) angular diag of M_A
     wrench: wp.array(dtype=wp.spatial_vectorf),  # (n_envs,) output, ACCUMULATED
 ) -> None:
     i = wp.tid()
@@ -37,16 +38,16 @@ def tier1_added_mass(
 # ----------------------------------------------------------------------------
 @wp.kernel
 def tier1_damping(
-    nu: wp.array(dtype=wp.spatial_vectorf),    # (n_envs,) body velocity (vx,vy,vz, p,q,r)
-    d_lin_lin: wp.array(dtype=wp.vec3f),       # (n_envs,) linear-damping linear part
-    d_lin_ang: wp.array(dtype=wp.vec3f),       # (n_envs,) linear-damping angular part
-    d_quad_lin: wp.array(dtype=wp.vec3f),      # (n_envs,) quadratic-damping linear part
-    d_quad_ang: wp.array(dtype=wp.vec3f),      # (n_envs,) quadratic-damping angular part
+    nu: wp.array(dtype=wp.spatial_vectorf),  # (n_envs,) body velocity (vx,vy,vz, p,q,r)
+    d_lin_lin: wp.array(dtype=wp.vec3f),  # (n_envs,) linear-damping linear part
+    d_lin_ang: wp.array(dtype=wp.vec3f),  # (n_envs,) linear-damping angular part
+    d_quad_lin: wp.array(dtype=wp.vec3f),  # (n_envs,) quadratic-damping linear part
+    d_quad_ang: wp.array(dtype=wp.vec3f),  # (n_envs,) quadratic-damping angular part
     wrench: wp.array(dtype=wp.spatial_vectorf),  # (n_envs,) output, ACCUMULATED
 ) -> None:
     i = wp.tid()
     v = nu[i]
-    v_lin = wp.spatial_top(v)     # (vx, vy, vz)
+    v_lin = wp.spatial_top(v)  # (vx, vy, vz)
     v_ang = wp.spatial_bottom(v)  # (p, q, r)
     dll = d_lin_lin[i]
     dla = d_lin_ang[i]
@@ -78,8 +79,8 @@ def tier1_damping(
 @wp.kernel
 def tier1_coriolis_a(
     nu: wp.array(dtype=wp.spatial_vectorf),
-    M_A_lin: wp.array(dtype=wp.vec3f),   # diag entries of M_A linear block
-    M_A_ang: wp.array(dtype=wp.vec3f),   # diag entries of M_A angular block
+    M_A_lin: wp.array(dtype=wp.vec3f),  # diag entries of M_A linear block
+    M_A_ang: wp.array(dtype=wp.vec3f),  # diag entries of M_A angular block
     wrench: wp.array(dtype=wp.spatial_vectorf),
 ) -> None:
     i = wp.tid()
@@ -105,12 +106,14 @@ def tier1_coriolis_a(
 # ----------------------------------------------------------------------------
 @wp.kernel
 def tier1_restoring(
-    quat: wp.array(dtype=wp.quatf),       # (n_envs,) body orientation in world (x,y,z,w)
-    mass: wp.array(dtype=wp.float32),     # (n_envs,)
-    volume: wp.array(dtype=wp.float32),   # (n_envs,)
-    coBM: wp.array(dtype=wp.float32),     # (n_envs,) COG-COB distance scalar (positive = COB above COG in body z)
-    rho_water: wp.float32,                # kg/m^3 (default 1025 salt, 997 fresh)
-    g_accel: wp.float32,                  # 9.81
+    quat: wp.array(dtype=wp.quatf),  # (n_envs,) body orientation in world (x,y,z,w)
+    mass: wp.array(dtype=wp.float32),  # (n_envs,)
+    volume: wp.array(dtype=wp.float32),  # (n_envs,)
+    coBM: wp.array(
+        dtype=wp.float32
+    ),  # (n_envs,) COG-COB distance scalar (positive = COB above COG in body z)
+    rho_water: wp.float32,  # kg/m^3 (default 1025 salt, 997 fresh)
+    g_accel: wp.float32,  # 9.81
     wrench: wp.array(dtype=wp.spatial_vectorf),
 ) -> None:
     i = wp.tid()
@@ -118,7 +121,7 @@ def tier1_restoring(
     m = mass[i]
     V = volume[i]
     d = coBM[i]
-    W = m * g_accel        # weight (positive scalar)
+    W = m * g_accel  # weight (positive scalar)
     B = rho_water * V * g_accel  # buoyancy (positive scalar)
 
     # World-down unit vector in world frame: (0, 0, -1) for Newton z-up
@@ -142,26 +145,30 @@ def tier1_restoring(
 # ----------------------------------------------------------------------------
 @wp.kernel
 def tier1_thruster_alloc(
-    u_cmd: wp.array2d(dtype=wp.float32),     # (n_envs, n_thrusters) commanded throttle in [-1, +1]
+    u_cmd: wp.array2d(dtype=wp.float32),  # (n_envs, n_thrusters) commanded throttle in [-1, +1]
     u_eff_prev: wp.array2d(dtype=wp.float32),  # (n_envs, n_thrusters) previous effective throttle
-    u_eff_out: wp.array2d(dtype=wp.float32),   # (n_envs, n_thrusters) updated effective throttle (writeback)
-    T_matrix: wp.array(dtype=wp.float32, ndim=3),  # (n_envs, 6, n_thrusters) per-env allocation matrix
-    max_thrust: wp.float32,                  # N per thruster (saturation magnitude)
-    deadband: wp.float32,                    # |u| below this → 0
-    tau_lag: wp.float32,                     # 1st-order time-constant (seconds)
-    dt: wp.float32,                          # timestep
+    u_eff_out: wp.array2d(
+        dtype=wp.float32
+    ),  # (n_envs, n_thrusters) updated effective throttle (writeback)
+    T_matrix: wp.array(
+        dtype=wp.float32, ndim=3
+    ),  # (n_envs, 6, n_thrusters) per-env allocation matrix
+    max_thrust: wp.float32,  # N per thruster (saturation magnitude)
+    deadband: wp.float32,  # |u| below this → 0
+    tau_lag: wp.float32,  # 1st-order time-constant (seconds)
+    dt: wp.float32,  # timestep
     wrench: wp.array(dtype=wp.spatial_vectorf),
 ) -> None:
     i = wp.tid()
     n_thrusters = u_cmd.shape[1]
     # First-order lag + deadband + saturation per thruster
     alpha = dt / (tau_lag + dt)  # discrete-time approx of dt/τ
-    fx = float(0.0)
-    fy = float(0.0)
-    fz = float(0.0)
-    mx = float(0.0)
-    my = float(0.0)
-    mz = float(0.0)
+    fx = 0.0
+    fy = 0.0
+    fz = 0.0
+    mx = 0.0
+    my = 0.0
+    mz = 0.0
     for k in range(n_thrusters):
         u_raw = u_cmd[i, k]
         # saturation in [-1, +1]
@@ -203,7 +210,7 @@ def tier1_zero_wrench(
 @wp.kernel
 def tier1_accumulate_to_body_f(
     wrench_buf: wp.array(dtype=wp.spatial_vectorf),  # per-env (n_envs,)
-    body_f: wp.array(dtype=wp.spatial_vectorf),      # Newton state.body_f (n_envs,)
+    body_f: wp.array(dtype=wp.spatial_vectorf),  # Newton state.body_f (n_envs,)
 ) -> None:
     i = wp.tid()
     # Add hydro wrench to body_f (replaces previous + adds; thrust + gravity etc.
@@ -214,9 +221,9 @@ def tier1_accumulate_to_body_f(
 @wp.kernel
 def tier1_update_nu_dot_ema(
     nu_curr: wp.array(dtype=wp.spatial_vectorf),
-    nu_prev: wp.array(dtype=wp.spatial_vectorf),     # in-out: updated to nu_curr
-    nu_dot_prev: wp.array(dtype=wp.spatial_vectorf), # in-out: updated to filtered nu_dot
-    alpha: wp.float32,                               # EMA filter (0.3 per MarineGym L230)
+    nu_prev: wp.array(dtype=wp.spatial_vectorf),  # in-out: updated to nu_curr
+    nu_dot_prev: wp.array(dtype=wp.spatial_vectorf),  # in-out: updated to filtered nu_dot
+    alpha: wp.float32,  # EMA filter (0.3 per MarineGym L230)
     dt: wp.float32,
 ) -> None:
     i = wp.tid()
@@ -225,7 +232,7 @@ def tier1_update_nu_dot_ema(
     nd_prev = nu_dot_prev[i]
     # Componentwise raw acceleration
     diff = v_curr - v_prev
-    inv_dt = float(1.0) / dt
+    inv_dt = 1.0 / dt
     nd_raw_lin = wp.spatial_top(diff) * inv_dt
     nd_raw_ang = wp.spatial_bottom(diff) * inv_dt
     # EMA: nd_filtered = (1-α)*nd_prev + α*nd_raw

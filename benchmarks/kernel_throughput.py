@@ -5,6 +5,7 @@ Tests:
 2. Newton SemiImplicit — free bodies in vacuum at various scales
 3. Newton MuJoCo-Warp — same task, primary Newton solver
 """
+
 from __future__ import annotations
 
 import time
@@ -81,6 +82,7 @@ def newton_throughput(
 
     # warmup (compiles kernels)
     import warp as wp
+
     for _ in range(5):
         solver.step(state_a, state_b, control, None, dt)
         state_a, state_b = state_b, state_a
@@ -114,8 +116,10 @@ if __name__ == "__main__":
     print("-" * 70)
     for n in (1024, 8192, 65536, 262144):
         r = warp_drag_throughput(n_envs=n, n_steps=500)
-        print(f"   n_envs={n:>6}  → {r['step_rate_hz']:>10.1f} kernel-launches/s  "
-              f"= {r['env_step_rate_per_sec'] / 1e6:>7.2f} M env-steps/s")
+        print(
+            f"   n_envs={n:>6}  → {r['step_rate_hz']:>10.1f} kernel-launches/s  "
+            f"= {r['env_step_rate_per_sec'] / 1e6:>7.2f} M env-steps/s"
+        )
     print()
 
     print("2) Newton SolverSemiImplicit — free bodies in vacuum")
@@ -123,9 +127,11 @@ if __name__ == "__main__":
     for n in (64, 256, 1024, 4096, 8192):
         try:
             r = newton_throughput(n_envs=n, n_steps=200, solver_name="SolverSemiImplicit")
-            print(f"   n_envs={n:>5}  → {r['step_rate_hz']:>8.1f} steps/s  "
-                  f"({r['wall_per_step_ms']:>5.2f} ms/step)  "
-                  f"= {r['env_steps_per_sec'] / 1e6:>6.3f} M env-steps/s")
+            print(
+                f"   n_envs={n:>5}  → {r['step_rate_hz']:>8.1f} steps/s  "
+                f"({r['wall_per_step_ms']:>5.2f} ms/step)  "
+                f"= {r['env_steps_per_sec'] / 1e6:>6.3f} M env-steps/s"
+            )
         except Exception as e:
             print(f"   n_envs={n:>5}  FAILED: {type(e).__name__}: {e}")
     print()
@@ -135,9 +141,11 @@ if __name__ == "__main__":
     for n in (64, 256, 1024, 4096, 8192):
         try:
             r = newton_throughput(n_envs=n, n_steps=200, solver_name="SolverMuJoCo")
-            print(f"   n_envs={n:>5}  → {r['step_rate_hz']:>8.1f} steps/s  "
-                  f"({r['wall_per_step_ms']:>5.2f} ms/step)  "
-                  f"= {r['env_steps_per_sec'] / 1e6:>6.3f} M env-steps/s")
+            print(
+                f"   n_envs={n:>5}  → {r['step_rate_hz']:>8.1f} steps/s  "
+                f"({r['wall_per_step_ms']:>5.2f} ms/step)  "
+                f"= {r['env_steps_per_sec'] / 1e6:>6.3f} M env-steps/s"
+            )
         except Exception as e:
             print(f"   n_envs={n:>5}  FAILED: {type(e).__name__}: {e}")
     print()

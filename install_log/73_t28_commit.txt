@@ -1,0 +1,5 @@
+[feat/v0.1.0-tier1-fossen 5cc3935] bench(hydro): T2.8 Tier-1 throughput — 90 M env-steps/s @ 8192 envs (900× target)
+ 3 files changed, 165 insertions(+)
+ create mode 100644 benchmarks/tier1_throughput.py
+ create mode 100644 install_log/71_w2_t21_t26_commit.txt
+ create mode 100644 install_log/72_t28_throughput.txt

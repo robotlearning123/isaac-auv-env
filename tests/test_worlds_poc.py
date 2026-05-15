@@ -12,12 +12,13 @@ matrices stay tiny.
 Reference: agent newton-worlds-api report; canonical pattern from
 .venv/lib/python3.12/site-packages/newton/examples/robot/example_robot_cartpole.py
 """
+
 from __future__ import annotations
 
 import pytest
 
 
-def _make_single_world_template() -> "newton.ModelBuilder":
+def _make_single_world_template():
     """Single-body free sphere — one 'world'."""
     import newton
 

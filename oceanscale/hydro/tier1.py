@@ -9,6 +9,7 @@ Usage pattern (env loop):
     tier1.write_to_body_f(state_curr)   # adds wrench to state_curr.body_f
     solver.step(state_curr, state_next, control, None, dt)
 """
+
 from __future__ import annotations
 
 import warp as wp
@@ -27,7 +28,7 @@ from oceanscale.hydro.tier1_kernels import (
 DEFAULT_RHO = 1025.0  # salt water (kg/m³)
 DEFAULT_G = 9.81
 DEFAULT_DT = 1.0 / 240.0
-DEFAULT_EMA_ALPHA = 0.3   # per MarineGym L230
+DEFAULT_EMA_ALPHA = 0.3  # per MarineGym L230
 
 
 class Tier1:
@@ -52,9 +53,9 @@ class Tier1:
         device: str = "cuda",
         rho_water: float = DEFAULT_RHO,
         g_accel: float = DEFAULT_G,
-        max_thrust: float = 51.5,   # BlueROV2 T200 max ~5.25 kgf ≈ 51.5 N at full throttle
+        max_thrust: float = 51.5,  # BlueROV2 T200 max ~5.25 kgf ≈ 51.5 N at full throttle
         deadband: float = 0.05,
-        tau_lag: float = 0.1,        # MarineGym uses 0.01; we plan 0.1 conservative
+        tau_lag: float = 0.1,  # MarineGym uses 0.01; we plan 0.1 conservative
         ema_alpha: float = DEFAULT_EMA_ALPHA,
     ) -> None:
         self.n_envs = n_envs
@@ -119,9 +120,15 @@ class Tier1:
         self.d_quad_lin = wp.array(dql_np, dtype=wp.vec3f, device=self.device)
         self.d_quad_ang = wp.array(dqa_np, dtype=wp.vec3f, device=self.device)
 
-        self.mass_arr = wp.array(np.full(n, mass, dtype=np.float32), dtype=wp.float32, device=self.device)
-        self.volume_arr = wp.array(np.full(n, volume, dtype=np.float32), dtype=wp.float32, device=self.device)
-        self.coBM_arr = wp.array(np.full(n, coBM, dtype=np.float32), dtype=wp.float32, device=self.device)
+        self.mass_arr = wp.array(
+            np.full(n, mass, dtype=np.float32), dtype=wp.float32, device=self.device
+        )
+        self.volume_arr = wp.array(
+            np.full(n, volume, dtype=np.float32), dtype=wp.float32, device=self.device
+        )
+        self.coBM_arr = wp.array(
+            np.full(n, coBM, dtype=np.float32), dtype=wp.float32, device=self.device
+        )
 
         if T_matrix is None:
             # Default identity-like allocation: first 6 thrusters = unit axis;
@@ -142,9 +149,9 @@ class Tier1:
 
     def compute_wrench(
         self,
-        nu: wp.array,          # current body velocity (n_envs,) spatial_vectorf
-        quat: wp.array,        # body orientation (n_envs,) quatf
-        u_cmd: wp.array,       # (n_envs, n_thrusters)
+        nu: wp.array,  # current body velocity (n_envs,) spatial_vectorf
+        quat: wp.array,  # body orientation (n_envs,) quatf
+        u_cmd: wp.array,  # (n_envs, n_thrusters)
         dt: float = DEFAULT_DT,
     ) -> None:
         """Launch all 5 hydro kernels + thruster, accumulating into wrench_buf.
@@ -176,8 +183,10 @@ class Tier1:
             dim=self.n_envs,
             inputs=[
                 nu,
-                self.d_lin_lin, self.d_lin_ang,
-                self.d_quad_lin, self.d_quad_ang,
+                self.d_lin_lin,
+                self.d_lin_ang,
+                self.d_quad_lin,
+                self.d_quad_ang,
                 self.wrench_buf,
             ],
             device=self.device,

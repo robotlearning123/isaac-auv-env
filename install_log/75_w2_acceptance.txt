@@ -1,0 +1,42 @@
+2026-05-15T21:19:50Z
+=== W2 final acceptance — §9 of goals/W2_tier1_fossen.md ===
+============================= test session starts ==============================
+platform linux -- Python 3.12.13, pytest-8.4.2, pluggy-1.6.0 -- /home/robot/workspace/46-marine/.venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/robot/workspace/46-marine
+configfile: pyproject.toml
+plugins: hydra-core-1.3.2, hypothesis-6.152.7, dash-4.1.0, cov-7.1.0
+collecting ... collected 9 items
+
+tests/hydro/test_tier1_autograd.py::test_added_mass_autograd_analytic_diagonal PASSED [ 11%]
+tests/hydro/test_tier1_autograd.py::test_added_mass_autograd_random_samples PASSED [ 22%]
+tests/hydro/test_tier1_autograd.py::test_damping_autograd_at_unit_velocity PASSED [ 33%]
+tests/hydro/test_tier1_autograd.py::test_torch_finite_diff_added_mass PASSED [ 44%]
+tests/hydro/test_tier1_smoke.py::test_tier1_import PASSED                [ 55%]
+tests/hydro/test_tier1_smoke.py::test_tier1_construct PASSED             [ 66%]
+tests/hydro/test_tier1_smoke.py::test_tier1_zero_wrench PASSED           [ 77%]
+tests/hydro/test_tier1_smoke.py::test_tier1_compute_wrench_runs PASSED   [ 88%]
+tests/hydro/test_tier1_smoke.py::test_tier1_neutral_buoyancy_at_rest PASSED [100%]
+
+============================== 9 passed in 0.69s ===============================
+---
+     "cuda:0"   : "NVIDIA GeForce RTX 5090" (31 GiB, sm_120, mempool enabled)
+   Kernel cache:
+     /home/robot/.cache/warp/1.13.0
+    64      9799.1      0.102           0.627       0.020  ✓
+   256     10822.4      0.092           2.771       0.018  ✓
+  1024     10739.5      0.093          10.997       0.019  ✓
+  4096     10756.3      0.093          44.058       0.019  ✓
+  8192     10844.5      0.092          88.838       0.018  ✓
+
+Target: ≥ 100k env-steps/s @ N=8192 (per goals/W2 §2)
+---
+
+Found 76 errors.
+[*] 12 fixable with the `--fix` option.
+---
+=== full suite regression ===
+...............................                                          [100%]
+31 passed in 13.82s
+2026-05-15T21:20:10Z

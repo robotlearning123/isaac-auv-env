@@ -8,6 +8,7 @@ own world and MuJoCo handles it as N tiny independent worlds.
 Goal: measure (steps/s, ms/step, env-steps/s) for both SolverSemiImplicit
 and SolverMuJoCo at N in {64, 256, 1024, 4096, 8192} on RTX 5090.
 """
+
 from __future__ import annotations
 
 import time
@@ -15,7 +16,7 @@ import time
 import warp as wp
 
 
-def _make_template() -> "newton.ModelBuilder":
+def _make_template():
     import newton
 
     t = newton.ModelBuilder()

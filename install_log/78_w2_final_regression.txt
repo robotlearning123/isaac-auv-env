@@ -1,0 +1,44 @@
+2026-05-15T21:21:08Z
+=== full suite ===
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/robot/workspace/46-marine
+configfile: pyproject.toml
+plugins: hydra-core-1.3.2, hypothesis-6.152.7, dash-4.1.0, cov-7.1.0
+collecting ... collected 31 items
+
+tests/hydro/test_tier1_autograd.py::test_added_mass_autograd_analytic_diagonal PASSED [  3%]
+tests/hydro/test_tier1_autograd.py::test_added_mass_autograd_random_samples PASSED [  6%]
+tests/hydro/test_tier1_autograd.py::test_damping_autograd_at_unit_velocity PASSED [  9%]
+tests/hydro/test_tier1_autograd.py::test_torch_finite_diff_added_mass PASSED [ 12%]
+tests/hydro/test_tier1_smoke.py::test_tier1_import PASSED                [ 16%]
+tests/hydro/test_tier1_smoke.py::test_tier1_construct PASSED             [ 19%]
+tests/hydro/test_tier1_smoke.py::test_tier1_zero_wrench PASSED           [ 22%]
+tests/hydro/test_tier1_smoke.py::test_tier1_compute_wrench_runs PASSED   [ 25%]
+tests/hydro/test_tier1_smoke.py::test_tier1_neutral_buoyancy_at_rest PASSED [ 29%]
+tests/test_environment.py::test_python_version PASSED                    [ 32%]
+tests/test_environment.py::test_oceanscale_importable PASSED             [ 35%]
+tests/test_environment.py::test_numpy PASSED                             [ 38%]
+tests/test_environment.py::test_scipy PASSED                             [ 41%]
+tests/test_environment.py::test_torch_import PASSED                      [ 45%]
+tests/test_environment.py::test_torch_cuda_available PASSED              [ 48%]
+tests/test_environment.py::test_warp_import PASSED                       [ 51%]
+tests/test_environment.py::test_warp_gpu_devices PASSED                  [ 54%]
+tests/test_environment.py::test_newton_import PASSED                     [ 58%]
+tests/test_environment.py::test_usd_import PASSED                        [ 61%]
+tests/test_newton_smoke.py::test_newton_model_metadata PASSED            [ 64%]
+tests/test_newton_smoke.py::test_newton_free_body_falls_semi_implicit PASSED [ 67%]
+tests/test_newton_smoke.py::test_newton_free_body_falls_mujoco_warp PASSED [ 70%]
+tests/test_newton_smoke.py::test_newton_8192_envs_finalize PASSED        [ 74%]
+tests/test_warp_smoke.py::test_quad_drag_forward_matches_numpy PASSED    [ 77%]
+tests/test_warp_smoke.py::test_quad_drag_autograd_matches_analytic PASSED [ 80%]
+tests/test_warp_smoke.py::test_multi_launch_consistency PASSED           [ 83%]
+tests/test_warp_smoke.py::test_device_is_rtx5090 PASSED                  [ 87%]
+tests/test_worlds_poc.py::test_replicate_64_semi_implicit_steps_correctly PASSED [ 90%]
+tests/test_worlds_poc.py::test_replicate_64_mujoco_no_oom PASSED         [ 93%]
+tests/test_worlds_poc.py::test_replicate_256_mujoco_no_oom PASSED        [ 96%]
+tests/test_worlds_poc.py::test_replicate_per_world_index_layout PASSED   [100%]
+
+============================= 31 passed in 13.89s ==============================
+=== exit: 0 ===
+2026-05-15T21:21:24Z

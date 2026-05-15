@@ -1,4 +1,5 @@
 """Environment validation tests — verify the stack itself, before any sim code."""
+
 from __future__ import annotations
 
 import sys
