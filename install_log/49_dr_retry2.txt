@@ -1,0 +1,20 @@
+=== retry DR with imperative directive ===
+2026-05-15T19:46:09Z
+[done] mode=light elapsed=11s body=302 refs=0 -> /home/robot/workspace/46-marine/research/dr-2026-05-15-v0.1-review-r2/report.md
+2026-05-15T19:46:20Z
+
+=== status ===
+DONE	2026-05-15 15:46:20	mode=light	elapsed=11s	events=18	body_chars=302	refs=0	tool_calls=0	connector_failed=False
+
+=== report.md head 80 ===
+# Deep Research Report
+
+- Generated: 2026-05-15 15:46:20
+- Mode: `light`
+- Elapsed: 11s
+- Events: 18 (tool=0, meta=0)
+- Tool: `none`
+
+---
+
+Thanks — I’m starting deep research. Just one key clarification: for Q4, are you looking for *only* new references from 2024–2026 that are *not already in your list*, or do you want a ranked assessment of all recent works including those you've already listed? This will impact how I filter the corpus.

@@ -1,0 +1,10 @@
+=== openai-mcp version ===
+
+=== quota ===
+deep_research remaining = 221  reset = 2026-05-21T21:52:15.564367+00:00
+
+=== fire DR light, same query ===
+2026-05-15T19:55:41Z
+[done] mode=light elapsed=25s body=10434 refs=11 -> /home/robot/workspace/46-marine/research/dr-2026-05-15-v0.1-review-r3/report.md
+
+2026-05-15T19:56:06Z

@@ -1,0 +1,23 @@
+=== quota ===
+deep_research remaining = 221  reset = 2026-05-21T21:52:15.142369+00:00
+
+=== retry light DR (same query) ===
+2026-05-15T19:44:24Z
+[done] mode=light elapsed=51s body=387 refs=0 -> /home/robot/workspace/46-marine/research/dr-2026-05-15-v0.1-review-retry/report.md
+2026-05-15T19:45:15Z
+
+=== status ===
+DONE	2026-05-15 15:45:15	mode=light	elapsed=51s	events=42	body_chars=387	refs=0	tool_calls=0	connector_failed=False
+
+=== report.md preview ===
+# Deep Research Report
+
+- Generated: 2026-05-15 15:45:15
+- Mode: `light`
+- Elapsed: 51s
+- Events: 42 (tool=0, meta=0)
+- Tool: `none`
+
+---
+
+Thanks for the detailed context. Before I dive into research, could you confirm if you'd like a full academic-grade deep-dive for each of the 7 questions (including citations, comparisons, error budgets, and timeline data), or should I prioritize just the top 2–3 for now? Also, would you prefer PDF-style export formatting or plain text markdown for integration into your planning docs?
