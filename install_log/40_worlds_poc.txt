@@ -1,0 +1,61 @@
+2026-05-15T19:10:30Z
+=== pytest tests/test_worlds_poc.py -v -s ===
+============================= test session starts ==============================
+platform linux -- Python 3.12.13, pytest-8.4.2, pluggy-1.6.0 -- /home/robot/workspace/46-marine/.venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/robot/workspace/46-marine
+configfile: pyproject.toml
+plugins: hydra-core-1.3.2, hypothesis-6.152.7, dash-4.1.0, cov-7.1.0
+collecting ... collected 4 items
+
+tests/test_worlds_poc.py::test_replicate_64_semi_implicit_steps_correctly Warp 1.13.0 initialized:
+   CUDA Toolkit 12.9, Driver 13.0
+   Devices:
+     "cpu"      : "x86_64"
+     "cuda:0"   : "NVIDIA GeForce RTX 5090" (31 GiB, sm_120, mempool enabled)
+   Kernel cache:
+     /home/robot/.cache/warp/1.13.0
+Module validate_and_correct_inertia_kernel_524fb5ef 524fb5e load on device 'cuda:0' took 1.17 ms  (cached)
+Module newton._src.sim.articulation 9875313 load on device 'cuda:0' took 5.81 ms  (cached)
+Module newton._src.solvers.semi_implicit.kernels_body f783ad7 load on device 'cuda:0' took 2.77 ms  (cached)
+Module newton._src.solvers.solver 1cb4740 load on device 'cuda:0' took 1.38 ms  (cached)
+PASSED
+tests/test_worlds_poc.py::test_replicate_64_mujoco_no_oom Module newton._src.solvers.mujoco.kernels f5ae6c7 load on device 'cuda:0' took 9.95 ms  (cached)
+Module repeat_array_kernel_55f75567 e350b02 load on device 'cuda:0' took 242.98 ms  (compiled)
+Module repeat_array_kernel_55f75567 f1e5dda load on device 'cuda:0' took 79.58 ms  (compiled)
+Module repeat_array_kernel_55f75567 d1ee0ac load on device 'cuda:0' took 98.64 ms  (compiled)
+Module repeat_array_kernel_55f75567 e000316 load on device 'cuda:0' took 119.29 ms  (compiled)
+Module repeat_array_kernel_55f75567 d3838e7 load on device 'cuda:0' took 153.18 ms  (compiled)
+Module mujoco_warp._src.io 00dd7e1 load on device 'cuda:0' took 4.89 ms  (cached)
+Module mujoco_warp._src.smooth 976a5d7 load on device 'cuda:0' took 3.75 ms  (cached)
+Module _tile_cholesky_factorize__locals__cholesky_factorize_201bf3be 0845b3e load on device 'cuda:0' took 50.26 ms  (cached)
+Module _tile_cholesky_solve__locals__cholesky_solve_a1e03640 ac8cfda load on device 'cuda:0' took 15.43 ms  (cached)
+Module mujoco_warp._src.collision_driver fbb0ee0 load on device 'cuda:0' took 0.76 ms  (cached)
+Module _primitive_narrowphase__locals__primitive_narrowphase_cf1dcf09 cf1dcf0 load on device 'cuda:0' took 0.82 ms  (cached)
+Module mujoco_warp._src.constraint eb0e24d load on device 'cuda:0' took 2.66 ms  (cached)
+Module _efc_contact_init__locals__kernel_9ba4ce0a 9ba4ce0 load on device 'cuda:0' took 0.80 ms  (cached)
+Module _efc_contact_jac_dense__locals__kernel_01c4be66 7acc2da load on device 'cuda:0' took 0.79 ms  (cached)
+Module _efc_contact_update__locals__kernel_17621467 1762146 load on device 'cuda:0' took 0.88 ms  (cached)
+Module mujoco_warp._src.passive 616927b load on device 'cuda:0' took 1.49 ms  (cached)
+Module mujoco_warp._src.forward 398750d load on device 'cuda:0' took 2.15 ms  (cached)
+Module mujoco_warp._src.support f32a4f8 load on device 'cuda:0' took 0.71 ms  (cached)
+Module _tile_cholesky_factorize_solve__locals__cholesky_factorize_solve_c6062390 0f245a2 load on device 'cuda:0' took 59.80 ms  (cached)
+Module mujoco_warp._src.solver 7df28c9 load on device 'cuda:0' took 3.06 ms  (cached)
+Module solve_init_jaref__locals__kernel_d96f1a1b d96f1a1 load on device 'cuda:0' took 0.62 ms  (cached)
+Module mul_m_dense__locals___mul_m_dense_c3290970 c329097 load on device 'cuda:0' took 0.74 ms  (cached)
+Module update_constraint_efc__locals__kernel_6bfb2757 6bfb275 load on device 'cuda:0' took 0.65 ms  (cached)
+Module update_constraint_gauss_cost__locals__kernel_df23460d df23460 load on device 'cuda:0' took 0.64 ms  (cached)
+Module update_gradient_JTDAJ_dense_tiled__locals__kernel_55e75a89 451da00 load on device 'cuda:0' took 0.86 ms  (cached)
+Module update_gradient_cholesky__locals__kernel_2cd76fb1 de0d1f7 load on device 'cuda:0' took 57.35 ms  (cached)
+Module linesearch_iterative__locals__kernel_f36803d7 4679980 load on device 'cuda:0' took 0.97 ms  (cached)
+Module update_constraint_efc__locals__kernel_8ad6290a 8ad6290 load on device 'cuda:0' took 1.08 ms  (cached)
+Module mujoco_warp._src.sensor bee2d80 load on device 'cuda:0' took 3.49 ms  (cached)
+Module mujoco_warp._src.derivative f06cf21 load on device 'cuda:0' took 1.39 ms  (cached)
+PASSED
+tests/test_worlds_poc.py::test_replicate_256_mujoco_no_oom PASSED
+tests/test_worlds_poc.py::test_replicate_per_world_index_layout PASSED
+
+============================== 4 passed in 3.59s ===============================
+=== exit: 0 ===
+2026-05-15T19:10:36Z

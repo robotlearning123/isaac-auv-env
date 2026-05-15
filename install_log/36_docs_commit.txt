@@ -1,0 +1,10 @@
+[feat/v0.1.0-scaffold fa48d02] docs(refs): rewrite REFERENCES as verified knowledge base + add NOTICES + IMPLEMENTATION_PLAN
+ 10 files changed, 1028 insertions(+), 9 deletions(-)
+ create mode 100644 IMPLEMENTATION_PLAN.md
+ create mode 100644 REFERENCES.md
+ create mode 100644 THIRD_PARTY_NOTICES.md
+ create mode 100644 install_log/30_pre_commit_review.txt
+ create mode 100644 install_log/32_branch.txt
+ create mode 100644 install_log/33_commit.txt
+ create mode 100644 install_log/34_final_state.txt
+ create mode 100644 install_log/35_pre_docs_commit.txt
