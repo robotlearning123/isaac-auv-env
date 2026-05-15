@@ -1,0 +1,77 @@
+2026-05-15T21:15:55Z
+=== T2.1 smoke pytest ===
+    
+        For BlueROV basic: mass=11.4 kg, volume=0.0113459 m³, ρ=1025 → W=111.8 N, B=114.1 N.
+        B-W ≈ +2.3 N (slightly positive → vehicle floats up). Body z-down convention.
+        """
+        import warp as wp
+    
+        n = tier1.n_envs
+        nu = wp.zeros(n, dtype=wp.spatial_vectorf, device="cuda")
+        quat = wp.array(
+            np.tile(np.array([0.0, 0.0, 0.0, 1.0], dtype=np.float32), (n, 1)),
+            dtype=wp.quatf,
+            device="cuda",
+        )
+        u_cmd = wp.zeros((n, 8), dtype=wp.float32, device="cuda")
+    
+        # Step twice to settle the EMA filter (first step has nu_prev=0, nu_dot will be 0 anyway)
+        for _ in range(2):
+            tier1.compute_wrench(nu, quat, u_cmd, dt=1.0 / 240.0)
+        wp.synchronize()
+        w = tier1.wrench_buf.numpy()
+    
+        # Linear z should be net buoyancy minus weight (since orientation is identity,
+        # quaternion (0,0,0,1) → body z = world z). With ρ=1025, m=11.4, V=0.0113459:
+        # W = 11.4 * 9.81 = 111.83 N
+        # B = 1025 * 0.0113459 * 9.81 = 114.06 N
+        # W - B = -2.23 N → f_z ≈ +2.23 N (since formula is (W-B)*z_body, z_body=(0,0,-1) for identity quat)
+        # Actually for identity quat: z_body=quat_rotate_inv(I, (0,0,-1)) = (0,0,-1).
+        # f_body = (W - B) * z_body = -2.23 * (0,0,-1) = (0, 0, +2.23). So f_z > 0 (upward in body frame).
+        # All envs identical at this state — variance should be 0.
+        assert np.allclose(w[:, 0], w[0, 0]), "all envs should be identical"
+        fz = w[0, 2]
+        expected = -(11.4 * 9.81 - 1025.0 * 0.0113459 * 9.81) * -1.0  # (W-B) * z_body where z_body[2]=-1
+        # expected = -(W - B) = B - W ≈ +2.23
+>       np.testing.assert_allclose(fz, expected, rtol=0.05), (
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            f"net z-force {fz} should be approx B-W={expected:.3f}"
+        )
+E       AssertionError: 
+E       Not equal to tolerance rtol=0.05, atol=0
+E       
+E       Mismatched elements: 1 / 1 (100%)
+E       Max absolute difference among violations: 4.50372112
+E       Max relative difference among violations: 1.99999963
+E        ACTUAL: array(2.25186, dtype=float32)
+E        DESIRED: array(-2.251861)
+
+tests/hydro/test_tier1_smoke.py:118: AssertionError
+=========================== short test summary info ============================
+FAILED tests/hydro/test_tier1_smoke.py::test_tier1_neutral_buoyancy_at_rest
+========================= 1 failed, 4 passed in 1.39s ==========================
+=== exit: 1 ===
+2026-05-15T21:15:57Z
+2026-05-15T21:16:26Z
+=== T2.1 smoke pytest re-run ===
+platform linux -- Python 3.12.13, pytest-8.4.2, pluggy-1.6.0 -- /home/robot/workspace/46-marine/.venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/robot/workspace/46-marine
+configfile: pyproject.toml
+plugins: hydra-core-1.3.2, hypothesis-6.152.7, dash-4.1.0, cov-7.1.0
+collecting ... collected 5 items
+
+tests/hydro/test_tier1_smoke.py::test_tier1_import PASSED                [ 20%]
+tests/hydro/test_tier1_smoke.py::test_tier1_construct PASSED             [ 40%]
+tests/hydro/test_tier1_smoke.py::test_tier1_zero_wrench PASSED           [ 60%]
+tests/hydro/test_tier1_smoke.py::test_tier1_compute_wrench_runs PASSED   [ 80%]
+tests/hydro/test_tier1_smoke.py::test_tier1_neutral_buoyancy_at_rest PASSED [100%]
+
+============================== 5 passed in 0.54s ===============================
+=== exit: 0 ===
+
+=== run all tests (regression baseline) ===
+...........................                                              [100%]
+27 passed in 13.91s
+2026-05-15T21:16:43Z
