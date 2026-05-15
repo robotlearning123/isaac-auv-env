@@ -13,6 +13,12 @@
 6. Autograd through the kernel matches torch numerical-grad within 1e-3.
 7. Tagged release `v0.1.0` on `feat/v0.1.0-station-keep` branch ready for merge into `main`.
 
+**Timeline acknowledgement (DR review F1, 2026-05-15)**: 4 weeks solo is **a stretch goal**. DR review found realistic timeline = 6-9 weeks for this scope (Cai=3-author lab, Chu=7-author team, Chaffre=PhD-scale). Decision: keep 4w as **aggressive target**, treat W4 slip into W5-W6 as expected, not failure. If on-track at W2 gate, hold 4w; if not, slip ship date, not scope.
+
+**TDD rule (DR review F1 → R20)**: every Tier-1 kernel (T2.2-T2.6) must be written **AFTER** a torch numerical-diff harness for it exists in `tests/hydro/test_*_autograd.py`. The harness is the spec; the kernel passes it.
+
+**Thruster nonlinearity rule (DR review F4 → R22)**: T2.6 must include saturation, deadband, and 1st-order time-constant. NOT just `τ = T · u`. MarineGym's likely-linear-only thrust model is insufficient for zero-shot sim-to-real.
+
 ---
 
 ## Iron principles for this sprint

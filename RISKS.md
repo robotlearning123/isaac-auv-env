@@ -238,3 +238,76 @@ If any of the above ⇒ open §17 main-stack-lock review (per `STACK.md §17.3`)
 ## 8. Update history
 
 - 2026-05-15 — register created, 18 risks logged, all initial states.
+- 2026-05-15 — added R19-R25 from DR review forks (see `research/dr-2026-05-15-v0.1-review/SYNTHESIS.md`).
+
+---
+
+## R19 🔴 Newton sub-minor breaking changes faster than expected (DR-Q5)
+| Field | Value |
+|---|---|
+| Trigger | Newton 1.3 ships breaking-change in a function we depend on |
+| Monitor | Newton release notes; CI pin |
+| Probability | High — 3 minors in 30 days, documented breaks 1.1→1.2 (raycast return, SDF API, VBD defaults) |
+| Impact | High — could block T2.* mid-sprint |
+| Fallback | Pin `<1.3` until v0.3 sprint absorbs known-good 1.3.x |
+| Decision deadline | When 1.3 ships |
+
+## R20 🔴 Warp autograd debugging burns 5 days (DR-Q1)
+| Field | Value |
+|---|---|
+| Trigger | T2.7 autograd correctness test fails on first kernel ports |
+| Monitor | Warp issue tracker; daily progress on T2.2-T2.5 |
+| Probability | High — Warp issues archive shows ~5 days typical for nontrivial autograd debug |
+| Impact | High — directly blocks W2 |
+| Fallback | Write torch numerical-diff harness BEFORE writing each kernel (TDD); fall back to torch primary + Warp port at v0.2 if intractable |
+| Decision deadline | After T2.2 ships — if autograd test fails, allocate +4 days to T2.3 |
+
+## R21 🔴 Reward shaping needs 2-3 iterations not 1 (DR-Q1)
+| Field | Value |
+|---|---|
+| Trigger | First-pass PPO does not converge to ≤0.1m within 10M env-steps |
+| Monitor | Learning curve dashboard in W4 |
+| Probability | High — Cai 2024 explicitly notes 17-D obs reward shaping is nontrivial |
+| Impact | High — could push ship slip by 1-2 weeks |
+| Fallback | Plan W4 with 2-iteration buffer; mirror REF-ISAACAUV reward exactly for first attempt |
+| Decision deadline | W4 day 3 |
+
+## R22 🔴 Thruster nonlinearity required for zero-shot (DR-Q3)
+| Field | Value |
+|---|---|
+| Trigger | Trained policy fails on BlueROV2 Heavy hardware due to thrust curve mismatch |
+| Monitor | Inspect MarineGym `BlueROVHeavy.py` thrust function at T2.6 |
+| Probability | High — empirical sim2real residual taxonomy shows 30% of failures are thrust allocation |
+| Impact | High — blocks v0.5 real-hardware claim |
+| Fallback | Add deadband + saturation + 1st-order time-constant explicitly in T2.6, not "later" |
+| Decision deadline | T2.6 design |
+
+## R23 🔴 No open packaged tank-test dataset for BlueROV2 Heavy (DR-Q7)
+| Field | Value |
+|---|---|
+| Trigger | We need to validate Tier-1 coefficients but cannot find ground-truth trajectories |
+| Monitor | n/a — already true |
+| Probability | n/a — confirmed |
+| Impact | Medium — can't claim sim-to-real until hardware arrives |
+| Fallback | Use **von Benzon 2022 (DOI 10.3390/jmse10121898) Simulink simulator** to generate reference trajectories; add `tests/hydro/test_vonbenzon_parity.py` as v0.1 gate |
+| Decision deadline | T3.3 |
+
+## R24 🟡 MarineGym frozen on Isaac Sim 4.1 (DR-Q2)
+| Field | Value |
+|---|---|
+| Trigger | We vendor their tensor Fossen and bug-fix it ourselves indefinitely |
+| Monitor | Watch upstream commits |
+| Probability | High — last commit 2026-01-27, 9 open issues |
+| Impact | Low for v0.1 (we port to Warp; don't depend on their code at runtime) |
+| Fallback | OK — our Warp port becomes the maintained version. Credit MarineGym in NOTICE. |
+| Decision deadline | n/a (managed) |
+
+## R25 🟡 Hydroelastic contact regression in Newton 1.2.0 (DR-Q5)
+| Field | Value |
+|---|---|
+| Trigger | v0.3 manipulator + cable tasks need hydroelastic; 1.2.0 is 30× too weak |
+| Monitor | Newton issue tracker for fix |
+| Probability | Documented in open Newton issue |
+| Impact | Medium — affects v0.3+ only |
+| Fallback | Hold hydroelastic until Newton 1.3.x ships with fix; or use SDF collision as v0.3 alternative |
+| Decision deadline | v0.3 sprint start |

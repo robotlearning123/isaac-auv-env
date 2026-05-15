@@ -1,0 +1,9 @@
+[feat/v0.1.0-worlds-poc 41c5191] docs(math): T1.3 6-DOF Fossen math sketch — implementation reference for T2.*
+ 7 files changed, 357 insertions(+)
+ create mode 100644 docs/math/fossen.md
+ create mode 100644 install_log/43_t12_commit.txt
+ create mode 100644 install_log/44_dr_check.txt
+ create mode 100644 install_log/45_dr_run.txt
+ create mode 100644 research/dr-2026-05-15-v0.1-review/events.jsonl
+ create mode 100644 research/dr-2026-05-15-v0.1-review/report.md
+ create mode 100644 research/dr-2026-05-15-v0.1-review/status.txt

@@ -59,7 +59,14 @@ Anything failing 1-3 → §5 Anti-references.
 | `REF-EASYUUV` | arXiv 2510.22126 | Paper | Cite (DR strategy) | 2026-02 | G5 | No clear public code |
 | `REF-CHAFFRE25` | Chaffre IJRR 2025 | Paper + closed code | Cite | 2025 | G5 | DR ranges + hardware methodology |
 | `REF-HOLOOCEAN` | byu-holoocean | MIT (verify) | Cite (validation method) | A | G3 | UE5-coupled; not vendorable as code |
-| `REF-WU2018` | Wu 2018 BlueROV2 paper | Paper | Cite (parameter values) | 2018 | G4 | Standard parameter source |
+| `REF-WU2018` | Wu 2018 Flinders **MS thesis** | Thesis (no peer review) | **Demoted to caveat-cite** | 2018 | G4 | Author never received the BlueROV2 Heavy hardware; values are extrapolated from non-Heavy specs |
+| `REF-VONBENZON22` | von Benzon et al. 2022 JMSE 10(12):1898 | CC-BY-4.0 paper + Simulink sim | **GOLD validation reference** | 2022 | G4, R23 | Tank-validated complete simulator. Supersedes Wu 2018. |
+| `REF-SIM2SWIM` | Tunçay et al. *Sim2Swim* arXiv 2512.08656 | Paper | Cite + benchmark target | 2025-12 | G5 | 3-min training claim for 6-DOF zero-shot — direct G5 competitor |
+| `REF-LEARNTODOCK` | Singh et al. arXiv 2506.17823 | Paper | Cite + mirror obs/reward design | 2025-06 | G5 | Only published BlueROV2-Heavy Isaac Sim RL with DR ablations |
+| `REF-DIFFSPH` | diffSPH arXiv 2507.21684 | OSS (license check) | v0.3 watchlist | 2025-07 | v0.3 manipulator wake | Differentiable SPH, PyTorch+GPU, weakly compressible + free surface |
+| `REF-CENTRALENANTES` | CentraleNantesROV/bluerov2 GitHub | License check | Vendor rosbag schema | 2024+ | G4 validation logging | ROS2+Gazebo BlueROV2; exact `thruster_cmd → pose_gt` topic schema |
+| `REF-OSLOMET` | OsloMet-OceanLab/BlueROV2 GitHub | License check | Study (Fossen+Wu 2018 Simulink alt) | 2024+ | G4 cross-check | Simulink 6-DOF Fossen model — alternative coefs |
+| `REF-PRIVDREAMER` | PrivilegedDreamer ICRA 2025 | Paper | Cite | 2025 | G5 + R23 | Hidden-parameter MDP world model; sim-to-real on AUV/marine |
 
 ---
 
@@ -277,14 +284,23 @@ Anything failing 1-3 → §5 Anti-references.
 
 Sources for BlueROV2 Heavy parameter cross-checks. Numerical values from these papers/datasheets are factual (not copyrightable) and may be quoted with citation.
 
-| Source | Parameters available | Use |
-|---|---|---|
-| **BlueRobotics datasheet** (https://bluerobotics.com/store/rov/bluerov2/) | Mass, dimensions, thrust per motor, depth rating | Geometry sanity check |
-| **Wu 2018** (BlueROV2 modeling) | M_A diag, drag, COB-COM offset | Primary M_A source |
-| **von Benzon et al. 2022** (Frontiers in Robotics) | Identified system parameters | Cross-validation |
-| **Manhães et al. 2016** (UUV Simulator paper) | Generic UUV parameters | Sanity bounds |
-| **Eidsvik 2015** (MS thesis, NTNU) | Modeling reference | Cross-validation |
-| **HoloOcean 2.0 paper** (arXiv 2510.06160) | REMUS-validated <2% methodology | Validation procedure |
+**Per DR review F2 (2026-05-15)**: previous primary "Wu 2018" turns out to be a Flinders MS thesis where the author never received the BlueROV2 Heavy hardware (thesis explicitly states this). Demoted. **Gold reference is now von Benzon 2022 JMSE 10(12):1898 (CC-BY-4.0)**.
+
+| Source | License | Parameters available | Use |
+|---|---|---|---|
+| **von Benzon et al. 2022** [JMSE 10(12):1898, DOI 10.3390/jmse10121898](https://doi.org/10.3390/jmse10121898) | CC-BY-4.0 | Complete Fossen + thruster + tether model; tank-validated; published Simulink simulator | **GOLD primary** — generate reference trajectories for our Tier-1 unit tests |
+| **BlueRobotics datasheet** (https://bluerobotics.com/store/rov/bluerov2/) | n/a (factual) | Mass, dimensions, thrust per motor, depth rating | Geometry sanity check |
+| **Wu 2018 Flinders MS thesis** (PDF link in §9) | n/a | Approximate Fossen coefs **extrapolated from non-Heavy BlueROV** (thesis states tank tests not done) | **Caveat-cite only**; cross-check against von Benzon |
+| **MarineGym `BlueROVHeavy.py` constants** | MIT | Eidsvik-method M_A + drag coefs (10-20% trans err, 30-100% rot err per their paper) | Cross-check; flagged for porting at T2.2 |
+| **Manhães et al. 2016** (UUV Simulator paper) | Apache-2.0 | Generic UUV parameters | Sanity bounds |
+| **Eidsvik 2015** (NTNU MS thesis) | n/a | Modeling reference | Cross-validation |
+| **HoloOcean 2.0 paper** (arXiv 2510.06160) | MIT | REMUS-validated <2% methodology | Validation procedure |
+| **FloWave tethered tank tests** (Heriot-Watt, ResearchGate 352310776) | Variable | 8-tether load-cell measurements, 1 m/s currents + regular waves | Concrete tank-test reference |
+| **Cerrada et al. 2025** (Jornadas de Automática) | OA | BlueROV2 Heavy Depth-Hold mode least-squares ID with on-board sensors | Recent identification source |
+| **MDPI 8(9):688 OpenFOAM + experimental hybrid** | OA | RANS surge/sway/heave/yaw + tank cross-validation | CFD-level cross-check |
+| **CentraleNantesROV/bluerov2** (GitHub) | License TBV | Exact `thruster_cmd → pose_gt` rosbag schema | Future-hardware data logging template |
+
+**Open dataset reality**: no packaged open-access (thruster_cmd → pose) dataset for BlueROV2 Heavy exists. Fallback: generate from von Benzon 2022 Simulink simulator.
 
 We will record our final BlueROV2 Heavy parameters in `assets/vehicles/bluerov2_heavy.hydro.yaml` with citations per coefficient.
 
@@ -447,6 +463,9 @@ done
 | 2026-05-15 | Station-keep design = **REF-ISAACAUV** (17-D obs, 6-D action) | Closest stack match + real-hardware-validated |
 | 2026-05-15 | Anti-reference Stonefish (GPL-3) | License taint risk |
 | 2026-05-15 | Anti-reference bluerov2_gz | No LICENSE = cannot vendor; study-only |
+| 2026-05-15 (DR-F2) | **Gold validation = von Benzon 2022** (DOI 10.3390/jmse10121898); Wu 2018 demoted | Wu 2018 is Flinders MS thesis; author never received hardware; von Benzon is tank-validated + CC-BY |
+| 2026-05-15 (DR-F3) | Newton pin tightened to `>=1.2.0,<1.3` | 3 minors in 30 days; sub-minor breaking changes documented; hydroelastic 30× regression in 1.2 |
+| 2026-05-15 (DR-F6) | Added 6 refs: Sim2Swim, Learning-to-Dock, diffSPH, CentraleNantesROV, OsloMet-OceanLab, PrivilegedDreamer | Closes gaps surfaced by DR review |
 
 ---
 
