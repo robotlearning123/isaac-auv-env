@@ -1,0 +1,35 @@
+=== final repo state ===
+94ffe1d feat(scaffold): initialize OceanScale v0.1.0 — verified Newton+Warp stack on RTX 5090
+
+=== branch ===
+* feat/v0.1.0-scaffold
+
+=== file count ===
+52
+files tracked
+
+=== summary of repo ===
+total 536
+drwxrwxr-x 11 robot robot   4096 May 15 14:26 .
+drwxrwxr-x 79 robot robot   4096 May 15 14:19 ..
+drwxrwxr-x  2 robot robot   4096 May 15 14:17 benchmarks
+drwxrwxr-x  4 robot robot   4096 May 14 23:47 .claude
+-rw-rw-r--  1 robot robot  13856 May 15 10:29 DESIGN.md
+drwxrwxr-x  8 robot robot   4096 May 15 14:27 .git
+-rw-rw-r--  1 robot robot    206 May 15 12:37 .gitattributes
+-rw-rw-r--  1 robot robot    641 May 15 14:26 .gitignore
+drwxrwxr-x  2 robot robot   4096 May 15 14:27 install_log
+-rw-rw-r--  1 robot robot  14108 May 15 12:52 LAYOUT.md
+-rw-rw-r--  1 robot robot  11061 May 15 12:49 LICENSE
+drwxrwxr-x  3 robot robot   4096 May 15 14:10 oceanscale
+-rw-rw-r--  1 robot robot    718 May 15 12:37 .pre-commit-config.yaml
+-rw-rw-r--  1 robot robot   1467 May 15 12:36 pyproject.toml
+drwxrwxr-x  3 robot robot   4096 May 15 14:10 .pytest_cache
+-rw-rw-r--  1 robot robot    193 May 15 12:36 README.md
+-rw-rw-r--  1 robot robot   9877 May 15 12:53 RISKS.md
+drwxrwxr-x  3 robot robot   4096 May 15 14:26 .ruff_cache
+-rw-rw-r--  1 robot robot  62502 May 15 11:11 STACK.md
+
+=== GPU still healthy ===
+memory.used [MiB], memory.free [MiB], temperature.gpu
+710 MiB, 31391 MiB, 32

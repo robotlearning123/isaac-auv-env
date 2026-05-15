@@ -28,11 +28,12 @@ uv.lock.bak
 *.swo
 .DS_Store
 
-# Project artifacts
-install_log/         # generated logs, not source of truth
-outputs/             # hydra outputs
-runs/                # tensorboard runs
+# Hydra / training outputs
+outputs/
+runs/
 wandb/
+
+# Local env overrides
 *.log
 .env.local
 .env.*.local
@@ -41,17 +42,16 @@ wandb/
 .warp/
 warp_cache/
 
-# Data
+# Data (binary, downloaded, generated)
 data/
 checkpoints/
 *.pt
 *.pth
 *.onnx
-*.usd
-*.usdc
-!assets/*.usd        # except sample assets
-!assets/*.usdc
 
 # OS
 .DS_Store
 Thumbs.db
+
+# Note: install_log/ contained in initial commit as historical record;
+# subsequent install_log/* are tracked or not at developer discretion.

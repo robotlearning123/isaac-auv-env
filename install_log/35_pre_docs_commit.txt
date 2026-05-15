@@ -1,0 +1,15 @@
+feat/v0.1.0-scaffold
+---
+ M .gitignore
+ M install_log/29_pre_commit.txt
+?? IMPLEMENTATION_PLAN.md
+?? REFERENCES.md
+?? THIRD_PARTY_NOTICES.md
+?? install_log/30_pre_commit_review.txt
+?? install_log/32_branch.txt
+?? install_log/33_commit.txt
+?? install_log/34_final_state.txt
+?? install_log/35_pre_docs_commit.txt
+---
+ruff check...
+All checks passed!

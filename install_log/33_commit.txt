@@ -1,0 +1,58 @@
+feat/v0.1.0-scaffold
+---
+[feat/v0.1.0-scaffold (root-commit) 94ffe1d] feat(scaffold): initialize OceanScale v0.1.0 — verified Newton+Warp stack on RTX 5090
+ 52 files changed, 7281 insertions(+)
+ create mode 100644 .gitattributes
+ create mode 100644 .gitignore
+ create mode 100644 .pre-commit-config.yaml
+ create mode 100644 DESIGN.md
+ create mode 100644 LAYOUT.md
+ create mode 100644 LICENSE
+ create mode 100644 README.md
+ create mode 100644 RISKS.md
+ create mode 100644 STACK.md
+ create mode 100644 STATUS.md
+ create mode 100644 SURVEY.md
+ create mode 100644 VERSIONS.md
+ create mode 100644 benchmarks/__init__.py
+ create mode 100644 benchmarks/kernel_throughput.py
+ create mode 100644 install_log/00_baseline.txt
+ create mode 100644 install_log/01_venv.txt
+ create mode 100644 install_log/02_uv_sync.txt
+ create mode 100644 install_log/03a_vllm_investigate.txt
+ create mode 100644 install_log/03b_vllm_unload.txt
+ create mode 100644 install_log/04_git_init.txt
+ create mode 100644 install_log/05_uv_sync_retry.txt
+ create mode 100644 install_log/06_cleanup.txt
+ create mode 100644 install_log/07_post_sync_check.txt
+ create mode 100644 install_log/08_progress_check.txt
+ create mode 100644 install_log/09_diagnose_hang.txt
+ create mode 100644 install_log/10_cache_inspect.txt
+ create mode 100644 install_log/11_progress_check2.txt
+ create mode 100644 install_log/12_progress_check3.txt
+ create mode 100644 install_log/13_diag_lsof.txt
+ create mode 100644 install_log/14_mount_check.txt
+ create mode 100644 install_log/15_progress_check4.txt
+ create mode 100644 install_log/16_sync_done.txt
+ create mode 100644 install_log/17_pytest_env.txt
+ create mode 100644 install_log/18_pytest_warp.txt
+ create mode 100644 install_log/19_pytest_newton.txt
+ create mode 100644 install_log/20_newton_api.txt
+ create mode 100644 install_log/21_newton_api2.txt
+ create mode 100644 install_log/22_pytest_newton2.txt
+ create mode 100644 install_log/23_newton_debug.txt
+ create mode 100644 install_log/24_newton_test_pattern.txt
+ create mode 100644 install_log/25_pytest_newton3.txt
+ create mode 100644 install_log/26_pytest_newton4.txt
+ create mode 100644 install_log/27_pytest_final.txt
+ create mode 100644 install_log/28_benchmark.txt
+ create mode 100644 install_log/29_pre_commit.txt
+ create mode 100644 oceanscale/__init__.py
+ create mode 100644 pyproject.toml
+ create mode 100644 tests/__init__.py
+ create mode 100644 tests/test_environment.py
+ create mode 100644 tests/test_newton_smoke.py
+ create mode 100644 tests/test_warp_smoke.py
+ create mode 100644 uv.lock
+---
+94ffe1d feat(scaffold): initialize OceanScale v0.1.0 — verified Newton+Warp stack on RTX 5090

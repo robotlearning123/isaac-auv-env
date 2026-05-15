@@ -30,3 +30,33 @@ Untracked files:
 nothing added to commit but untracked files present (use "git add" to track)
 
 === git add ===
+A  .gitattributes
+A  .gitignore
+A  .pre-commit-config.yaml
+A  DESIGN.md
+A  LAYOUT.md
+A  LICENSE
+A  README.md
+A  RISKS.md
+A  STACK.md
+A  STATUS.md
+A  SURVEY.md
+A  VERSIONS.md
+A  benchmarks/__init__.py
+A  benchmarks/kernel_throughput.py
+A  install_log/00_baseline.txt
+A  install_log/01_venv.txt
+A  install_log/02_uv_sync.txt
+A  install_log/03a_vllm_investigate.txt
+A  install_log/03b_vllm_unload.txt
+A  install_log/04_git_init.txt
+A  install_log/05_uv_sync_retry.txt
+A  install_log/06_cleanup.txt
+A  install_log/07_post_sync_check.txt
+A  install_log/08_progress_check.txt
+A  install_log/09_diagnose_hang.txt
+A  install_log/10_cache_inspect.txt
+A  install_log/11_progress_check2.txt
+A  install_log/12_progress_check3.txt
+A  install_log/13_diag_lsof.txt
+A  install_log/14_mount_check.txt
