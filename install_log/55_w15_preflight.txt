@@ -1,0 +1,25 @@
+=== W1.5 PRE-FLIGHT ===
+2026-05-15T20:49:31Z
+
+--- branch ---
+Switched to a new branch 'feat/v0.1.0-run-references'
+feat/v0.1.0-run-references
+
+--- scratch dir ---
+mkdir: created directory '/tmp/oceanscale-refs'
+total 2584
+drwxrwxr-x   2 robot robot    4096 May 15 16:49 .
+drwxrwxrwt 915 root  root  2637824 May 15 16:49 ..
+
+--- disk ---
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/nvme0n1p5  979G  769G  161G  83% /
+/dev/nvme0n1p2  853G  375G  436G  47% /mnt/storage
+
+--- GPU ---
+memory.used [MiB], memory.free [MiB], memory.total [MiB], temperature.gpu
+788 MiB, 31314 MiB, 32607 MiB, 32
+
+--- existing tests baseline ---
+......................                                                   [100%]
+22 passed in 13.99s
