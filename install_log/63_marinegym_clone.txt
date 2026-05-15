@@ -1,0 +1,44 @@
+2026-05-15T21:03:01Z
+=== R1.4 clone MarineGym ===
+Cloning into 'MarineGym'...
+
+ebdca1bf25fec0394276f43adf1590b2895faa96 2026-01-21 16:23:36 +0800 Update README.md
+
+=== LICENSE ===
+MIT License
+
+Copyright (c) 2025 Shuguang Chu, Zhejiang University
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+
+=== top-level ===
+total 44
+drwxrwxr-x  8 robot robot 4096 May 15 17:03 .
+drwxrwxr-x  4 robot robot 4096 May 15 17:03 ..
+drwxrwxr-x  4 robot robot 4096 May 15 17:03 cfg
+drwxrwxr-x  3 robot robot 4096 May 15 17:03 conda_setup
+drwxrwxr-x  2 robot robot 4096 May 15 17:03 docs
+drwxrwxr-x  8 robot robot 4096 May 15 17:03 .git
+-rw-rw-r--  1 robot robot 1090 May 15 17:03 LICENSE
+drwxrwxr-x 10 robot robot 4096 May 15 17:03 marinegym
+-rw-rw-r--  1 robot robot 3641 May 15 17:03 README.md
+drwxrwxr-x  2 robot robot 4096 May 15 17:03 scripts
+-rw-rw-r--  1 robot robot  462 May 15 17:03 setup.py
+
+=== drone dir (Fossen source) ===
+total 36
+drwxrwxr-x 2 robot robot  4096 May 15 17:03 .
+drwxrwxr-x 4 robot robot  4096 May 15 17:03 ..
+-rw-rw-r-- 1 robot robot   413 May 15 17:03 BlueROVHeavy.py
+-rw-rw-r-- 1 robot robot   373 May 15 17:03 BlueROV.py
+-rw-rw-r-- 1 robot robot   138 May 15 17:03 __init__.py
+-rw-rw-r-- 1 robot robot 15603 May 15 17:03 underwaterVehicle.py
+  361 marinegym/robots/drone/underwaterVehicle.py
+    9 marinegym/robots/drone/BlueROV.py
+    9 marinegym/robots/drone/BlueROVHeavy.py
+  260 marinegym/envs/single/hover.py
+   25 cfg/task/Hover.yaml
+   30 cfg/task/randomization.yaml
+   20 cfg/task/disturbances.yaml
+   64 marinegym/robots/assets/usd/BlueROV/BlueROV.yaml
+  778 total

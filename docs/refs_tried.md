@@ -83,3 +83,82 @@ citation: URL + commit SHA + date tested
 ```
 
 ---
+
+## REF-MARINEGYM — `Marine-RL/MarineGym`
+
+- **status:** READ (per plan: Isaac Sim 4.1 stack too stale to install on RTX 5090 Blackwell)
+- **commit pinned:** `ebdca1bf` (2026-01-21)
+- **url:** https://github.com/Marine-RL/MarineGym
+- **license:** **MIT (full LICENSE file)**, Copyright (c) 2025 Shuguang Chu, Zhejiang University ✓
+- **install_attempted:** NO — read-only per plan §5 R1.4
+- **runs_at:** N/A (paper reports 250k FPS @ 8000 envs on RTX 3060; not verified locally)
+
+### what they actually ship
+- ✓ `marinegym/robots/assets/usd/BlueROV/BlueROV.usd` (basic BlueROV, **6 rotors**)
+- ❌ `marinegym/robots/assets/usd/BlueROVHeavy/` — **directory DOES NOT EXIST** despite `BlueROVHeavy.py:8` referencing it. **Critical correction** vs prior REFERENCES.md claims.
+
+### key_files_inspected (778 LOC total across 8 files)
+| File | LOC | Purpose |
+|---|---|---|
+| `marinegym/robots/drone/underwaterVehicle.py` | 361 | Full Fossen 6-DOF impl in PyTorch tensors |
+| `marinegym/robots/drone/BlueROV.py` | 9 | Points to BlueROV.usd + yaml |
+| `marinegym/robots/drone/BlueROVHeavy.py` | 9 | Points to MISSING BlueROVHeavy.usd |
+| `marinegym/envs/single/hover.py` | 260 | Station-keep env design |
+| `cfg/task/Hover.yaml` | 25 | Task config |
+| `cfg/task/randomization.yaml` | 30 | DR scale ranges |
+| `cfg/task/disturbances.yaml` | 20 | Flow + payload disturbances |
+| `marinegym/robots/assets/usd/BlueROV/BlueROV.yaml` | 64 | Hydro coefs |
+
+### extraction → `docs/marinegym_fossen_extract.md` (~12 KB)
+Per-Fossen-term method mapping (calculate_added_mass → T2.2, etc.),  
+BlueROV (basic) numerical hydro coefs,  
+Hover task obs/action/reward spec,  
+9 DR parameter ranges,  
+5+ implementation gotchas.
+
+### reusable_pattern
+1. **Fossen impl structure** — 6 functions per term, M_RB/C_RB delegated to physics engine
+2. **YAML hydro coef schema** (`added_mass`, `linear_damping`, `quadratic_damping` 6-vectors + volume + coBM) — mirror exactly
+3. **DR ranges** (9 body + 2 rotor params) — directly applicable to T4.*
+4. **α=0.3 EMA filter on ν̇** — stability trick we missed in our T2.2 plan
+5. **Damping cross-coupling** — 4 off-diagonal terms (sway-yaw, heave-pitch); our `docs/math/fossen.md §5.4` had pure diagonal → patch
+6. **Coriolis = C_A only** — let physics engine handle C_RB
+7. **Hover initial pose distributions** — Uniform([-2.5, 2.5]) xy, [1.5, 2.5] z; RPY ±0.2π; yaw 0-2π
+
+### anti_pattern / gotcha
+1. **BlueROV2 Heavy USD missing** despite Python class referencing it
+2. **`print(view.dof_names)` debug at L86-87** — production code smell
+3. **g=9.8, ρ=997 (fresh water)** — we use g=9.81, ρ=1025 (salt); be explicit
+4. **DR disabled in TRAIN by default**, enabled in EVALUATE — backwards from common practice
+5. **RPY-based restoring** — uses Euler; we'll do quaternion (gimbal-lock safe)
+6. **Frame correction `[1,2,4,5] *= -1`** — Isaac Sim ↔ marine NED axis fix
+7. **TorchRL trainer** — different stack from our stable-baselines3 v0.1 plan
+8. **functorch + make_functional** — older PyTorch idiom; `torch.func` is cleaner
+
+### what we DO use
+- **Fossen impl as porting source** for T2.2-T2.5 (torch → Warp; same equations)
+- **Hydro coef YAML schema** (mirror exactly, fill with our Heavy values from von Benzon 2022)
+- **DR ranges** for T4.* DR toolkit
+- **Hover task obs/action/reward** as T4.1 baseline
+- **Damping cross-coupling pattern** (update `docs/math/fossen.md §5.4`)
+- **α=0.3 EMA filter** (update `goals/W2_tier1_fossen.md T2.2`)
+
+### what we DON'T use
+- BlueROV basic (6-rotor) parameters — we need Heavy (8-rotor)
+- Isaac Sim 4.1 / PhysX-specific force injection API
+- TorchRL trainer
+- LeePositionController
+- `print()` debug
+
+### updates required (T1.4 patch list)
+- `docs/math/fossen.md §5.2`: "MarineGym coefs are BlueROV basic, not Heavy"
+- `docs/math/fossen.md §5.4`: add 4 damping cross-coupling terms
+- `goals/W2_tier1_fossen.md T2.2`: add α=0.3 EMA filter
+- `goals/W2_tier1_fossen.md T2.3`: kernel must include cross-coupling
+- `goals/W2_tier1_fossen.md T3.3`: source = von Benzon 2022, NOT MarineGym
+- `REFERENCES.md §1`: REF-MARINEGYM "ships Heavy USD" → "ships BlueROV basic only"
+
+### citation
+See `docs/marinegym_fossen_extract.md` for full BibTeX (Chu et al. 2025 IROS).
+
+---

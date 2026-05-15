@@ -1,0 +1,6 @@
+[feat/v0.1.0-run-references f7d96b5] chore(refs): R1.1 bluerov2_gym install + run + docs entry (11,435 FPS single-env)
+ 4 files changed, 374 insertions(+)
+ create mode 100644 docs/refs_tried.md
+ create mode 100644 install_log/53_w15_plan_commit.txt
+ create mode 100644 install_log/55_w15_preflight.txt
+ create mode 100644 install_log/60_bluerov2_gym_step1.txt
