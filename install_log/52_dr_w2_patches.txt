@@ -1,0 +1,6 @@
+[feat/v0.1.0-worlds-poc 19b9a7a] docs(goal): patch W2 plan with DR-review findings (1 BLOCKER resolved + 2 HIGH + 2 MED)
+ 5 files changed, 248 insertions(+), 18 deletions(-)
+ create mode 100644 install_log/51_w2_plan_commit.txt
+ create mode 100644 research/dr-w2-plan-review/events.jsonl
+ create mode 100644 research/dr-w2-plan-review/report.md
+ create mode 100644 research/dr-w2-plan-review/status.txt
