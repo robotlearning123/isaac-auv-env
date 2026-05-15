@@ -1,0 +1,6 @@
+=== preconditions ===
+openai-mcp ✓
+auth ✓
+
+=== quota ===
+deep_research remaining = 221  reset = 2026-05-21T21:52:15.313706+00:00
