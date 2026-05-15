@@ -1,0 +1,11 @@
+ 7 files changed, 703 insertions(+)
+ create mode 100644 install_log/65_r14_patches.txt
+ create mode 100644 install_log/70_t21_smoke.txt
+ create mode 100644 oceanscale/hydro/__init__.py
+ create mode 100644 oceanscale/hydro/tier1.py
+ create mode 100644 oceanscale/hydro/tier1_kernels.py
+ create mode 100644 tests/hydro/__init__.py
+ create mode 100644 tests/hydro/test_tier1_smoke.py
+711ad8b feat(hydro): T2.1-T2.6 Tier-1 Fossen Warp kernels — 5/5 smoke + 27/27 total tests pass
+bab6ba5 docs(patches): apply R1.4 findings to fossen.md + W2 plan + flag T3.3 source
+e4e8311 docs(refs): R1.5 stonefish read-only — GPL-3 anti-vendor confirmed, cite-only
