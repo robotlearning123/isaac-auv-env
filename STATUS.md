@@ -41,26 +41,42 @@ Pure GPU ceiling: **~47 B env-steps/s at 256 k envs**. Launch overhead dominates
 
 Step rate ~27 kHz **regardless of batch size** — perfectly parallel. vs real-time 240 Hz that's **112× faster per env, 8192 envs concurrent**. Beats MarineGym's RTX 3060 number (250 k FPS) by ~880× before any hydrodynamics.
 
-### 3. Newton **SolverMuJoCo** (MuJoCo-Warp, the "primary" backend)
+### 3. Newton **SolverMuJoCo** (MuJoCo-Warp) — historical (broken pattern, flat-list bodies)
 | n_envs | result |
 |---|---|
-| 64 | 262 steps/s, **3.82 ms/step**, 0.017 M env-steps/s |
+| 64 | 262 steps/s, 3.82 ms/step, 0.017 M env-steps/s |
 | 256 | ❌ `IndexError: index 19 is out of bounds for axis 0 with size 19` |
 | 1024 | ❌ `mj_stackAlloc: out of memory, MakeHessian, line 1695` |
 | 4096 | ❌ `mj_stackAlloc: out of memory, PrimalAllocate, line 1106` |
 | 8192 | ❌ same, requesting 19 GB host RAM |
 
-### Interpretation
-- SolverMuJoCo is **~100× slower per step** than SolverSemiImplicit at low n (3.82 ms vs 0.04 ms)
-- SolverMuJoCo **CPU-side stack-allocs** scale O(n × constraint-count) — it treats 8192 free spheres as ONE giant articulation
-- The "475× faster than MJX" claim in NVIDIA marketing is for a **single multi-DOF robot**, not for parallel-RL many-body workloads
-- **Implication**: for parallel-env RL, our path is either:
-  - **(a)** Use **SolverSemiImplicit** as the Tier-0/1 default (proven 220 M env-steps/s at 8 k envs)
-  - **(b)** Use Newton's `world` mechanism — replicate per-env models with proper isolation, so MuJoCo sees N independent worlds, not 1 mega-world
-  - **(c)** Lift our scene model so each env is a single 6-DOF body (this is the typical Isaac Lab pattern; we just need to figure out Newton's equivalent)
+### Architectural fix applied (T1.1 + T1.2, 2026-05-15)
 
-### Decision (provisional)
-**v0.1 uses SolverSemiImplicit as primary**, defers SolverMuJoCo to v0.2 once we learn the worlds API. SemiImplicit gives us 200× our STACK.md throughput target without optimization. We can swap later.
+The 256+ OOM was because all bodies lived in `world=-1` → MuJoCo treated them as one giant articulation. **Fix**: `newton.ModelBuilder.replicate(template, world_count=N)` distributes the bodies into N independent worlds. MuJoCo's `separate_worlds` path then handles them correctly.
+
+### 4. Newton throughput with `replicate(world_count=N)` — CORRECTED (T1.2)
+
+`benchmarks/newton_worlds_throughput.py`, RTX 5090, free spheres, no contacts.
+
+| N | SolverSemiImplicit | SolverMuJoCo (now works) |
+|---|---|---|
+| 64 | 1.72 M env-steps/s (26.9 k Hz, 0.04 ms/step) | 0.043 M env-steps/s (678 Hz, 1.47 ms/step) |
+| 256 | 6.92 M | 0.176 M (was OOM) |
+| 1024 | 27.6 M | 0.707 M (was OOM) |
+| 4096 | 111.9 M | 2.84 M (was OOM) |
+| 8192 | **221 M** | **5.5 M** (was OOM) |
+
+**Key observations**:
+- **SolverMuJoCo no longer OOMs** at any tested N. Architectural fix verified.
+- **SolverSemiImplicit ≈ 40× faster** than SolverMuJoCo on this workload (free spheres, no contacts). MuJoCo has ~1.5 ms host-side per-step overhead that dominates at this batch size.
+- The "475× faster than MJX" marketing claim is for a single complex robot, not N parallel free bodies.
+- **For our v0.1 station-keep target (≥100k env-steps/s at 8192 envs)**, both solvers have headroom:
+  - SemiImplicit: 221 M / 100 k = **2200× margin** before Tier-1 hydro overhead
+  - MuJoCo: 5.5 M / 100 k = **55× margin**
+
+### Decision (LOCKED 2026-05-15 by T1.2 evidence)
+
+**v0.1 default solver = SolverSemiImplicit.** SolverMuJoCo viable as v0.2 alternative when richer physics (contacts, joints, articulations) actually warrants the overhead.
 
 ---
 
