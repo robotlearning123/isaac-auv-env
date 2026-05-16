@@ -1,0 +1,29 @@
+---
+import { getLangFromUrl, useTranslations, getOtherLangUrl } from '../i18n/utils';
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const otherUrl = getOtherLangUrl(lang, Astro.url.pathname);
+const isZh = lang === 'zh';
+---
+<nav class="sticky top-0 z-50 backdrop-blur-xl bg-[var(--color-abyss-0)]/75 border-b border-[var(--color-border-deep)]">
+  <div class="max-w-[1280px] mx-auto px-6 py-4 flex items-center justify-between gap-6">
+    <a
+      href={isZh ? '/' : '/en/'}
+      class="font-display text-2xl font-bold tracking-tight text-[var(--color-paper)] hover:text-[var(--color-lumen)] transition-colors"
+    >
+      {isZh ? '沧渊' : 'OceanScale'}
+    </a>
+    <div class="flex items-center gap-7 text-sm">
+      <a href="#what" class="text-[var(--color-paper-dim)] hover:text-[var(--color-lumen)] transition-colors">{t('nav.what')}</a>
+      <a href="#demos" class="text-[var(--color-paper-dim)] hover:text-[var(--color-lumen)] transition-colors hidden sm:inline">{t('nav.demos')}</a>
+      <a href="#benchmarks" class="text-[var(--color-paper-dim)] hover:text-[var(--color-lumen)] transition-colors hidden sm:inline">{t('nav.benchmarks')}</a>
+      <a href="#contact" class="text-[var(--color-paper-dim)] hover:text-[var(--color-lumen)] transition-colors">{t('nav.contact')}</a>
+      <a
+        href={otherUrl}
+        class="font-mono text-xs border border-[var(--color-border-deep)] px-2.5 py-1 rounded-sm text-[var(--color-paper)] hover:border-[var(--color-lumen)] hover:text-[var(--color-lumen)] transition-colors"
+      >
+        {t('lang.other')}
+      </a>
+    </div>
+  </div>
+</nav>

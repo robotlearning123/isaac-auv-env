@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+@theme {
+  /* Abyss palette */
+  --color-abyss-0: #02050C;
+  --color-abyss-1: #0A1628;
+  --color-abyss-2: #122438;
+  --color-border-deep: #1F3047;
+
+  /* Bioluminescent accents */
+  --color-lumen: #4DEEEA;
+  --color-coral: #FF6B6B;
+
+  /* Paper text (cream, not pure white) */
+  --color-paper: #F7F4EE;
+  --color-paper-dim: #A8B5C2;
+
+  /* Fonts */
+  --font-display: "Fraunces", serif;
+  --font-display-zh: "LXGW WenKai", "LXGW WenKai Screen", serif;
+  --font-body: "Geist", system-ui, sans-serif;
+  --font-body-zh: "LXGW WenKai", "LXGW WenKai Screen", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    color: var(--color-paper);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse at 50% 100%, rgba(77, 238, 234, 0.06) 0%, transparent 50%),
+      linear-gradient(180deg, #02050C 0%, #0A1628 100%);
+    background-attachment: fixed;
+    position: relative;
+  }
+
+  /* Subtle architect's-paper horizontal lines */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: linear-gradient(0deg, transparent 0, transparent 95%, rgba(31, 48, 71, 0.35) 95.5%, transparent 96%);
+    background-size: 100% 6rem;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Lang-routed display fonts */
+  html[lang="zh"] .font-display { font-family: var(--font-display-zh); font-weight: 400; letter-spacing: 0; }
+  html[lang="en"] .font-display { font-family: var(--font-display); font-variation-settings: "opsz" 144, "SOFT" 50; }
+  html[lang="zh"] body { font-family: var(--font-body-zh); }
+  html[lang="en"] body { font-family: var(--font-body); }
+
+  code, pre, .font-mono { font-family: var(--font-mono); }
+
+  /* Selection */
+  ::selection { background: var(--color-lumen); color: var(--color-abyss-0); }
+}
+
+@layer components {
+  .btn-lumen {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.75rem;
+    background: var(--color-lumen);
+    color: var(--color-abyss-0);
+    border-radius: 2px;
+    font-weight: 600;
+    font-family: var(--font-body);
+    letter-spacing: 0.02em;
+    border: 1px solid var(--color-lumen);
+    transition: transform 200ms ease-out, box-shadow 200ms ease-out;
+  }
+  .btn-lumen:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px -8px var(--color-lumen);
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.75rem;
+    background: transparent;
+    color: var(--color-lumen);
+    border: 1px solid rgba(77, 238, 234, 0.4);
+    border-radius: 2px;
+    font-weight: 600;
+    font-family: var(--font-body);
+    letter-spacing: 0.02em;
+    transition: border-color 200ms ease-out, background 200ms ease-out;
+  }
+  .btn-ghost:hover {
+    border-color: var(--color-lumen);
+    background: rgba(77, 238, 234, 0.06);
+  }
+
+  /* Sonar ping rings */
+  @keyframes sonar-ping {
+    0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0.55; }
+    100% { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
+  }
+  .sonar-ping {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 320px;
+    height: 320px;
+    border: 1px solid var(--color-lumen);
+    border-radius: 50%;
+    animation: sonar-ping 8s ease-out infinite;
+  }
+  .sonar-ping:nth-child(2) { animation-delay: 2.7s; }
+  .sonar-ping:nth-child(3) { animation-delay: 5.3s; }
+
+  /* Page-load staggered reveals */
+  @keyframes fade-rise {
+    from { opacity: 0; transform: translateY(1.5rem); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .anim-rise { animation: fade-rise 900ms ease-out both; }
+  .delay-150 { animation-delay: 150ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-500 { animation-delay: 500ms; }
+  .delay-700 { animation-delay: 700ms; }
+}

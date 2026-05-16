@@ -1,0 +1,43 @@
+---
+import zhData from '../content/zh/demos';
+import enData from '../content/en/demos';
+import { getLangFromUrl } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const fm: any = lang === 'zh' ? zhData : enData;
+const { title, eyebrow, items } = fm;
+---
+<section id="demos" class="relative max-w-[1280px] mx-auto px-6 py-24 md:py-32">
+  <div class="font-mono text-[var(--color-lumen)] text-xs uppercase tracking-[0.3em] mb-3">/03 · {eyebrow}</div>
+  <h2 class="font-display text-4xl md:text-6xl font-bold text-[var(--color-paper)] mb-16 tracking-tight max-w-4xl">{title}</h2>
+
+  <div class="grid md:grid-cols-3 gap-6">
+    {items.map((d: { title: string; body: string; video?: string; status?: string; comingLabel?: string }) => (
+      <div class="border border-[var(--color-border-deep)] bg-[var(--color-abyss-1)]/50 overflow-hidden group hover:border-[var(--color-lumen)]/40 transition-colors">
+        <div class="aspect-video bg-[var(--color-abyss-0)] relative flex items-center justify-center overflow-hidden">
+          {d.video ? (
+            <video class="w-full h-full object-cover" autoplay muted loop playsinline preload="metadata">
+              <source src={d.video} type="video/mp4" />
+            </video>
+          ) : (
+            <div class="text-center px-4">
+              <div class="w-14 h-14 mx-auto rounded-full border border-[var(--color-border-deep)] flex items-center justify-center mb-3">
+                <div class="w-2 h-2 bg-[var(--color-lumen)] rounded-full animate-pulse"></div>
+              </div>
+              <div class="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-lumen)]">{d.comingLabel}</div>
+            </div>
+          )}
+          {d.status && (
+            <div class="absolute top-3 left-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-lumen)] bg-[var(--color-abyss-0)]/80 backdrop-blur px-2 py-1">
+              {d.status}
+            </div>
+          )}
+        </div>
+        <div class="p-5">
+          <h3 class="font-display text-lg font-semibold text-[var(--color-paper)] mb-2 leading-snug">{d.title}</h3>
+          <p class="text-[var(--color-paper-dim)] text-sm leading-relaxed">{d.body}</p>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
