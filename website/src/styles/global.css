@@ -15,8 +15,8 @@
   --color-paper: #F7F4EE;
   --color-paper-dim: #A8B5C2;
 
-  /* Fonts */
-  --font-display: "Fraunces", serif;
+  /* Fonts (Fraunces dropped — SpaceX-style en display is Geist 800) */
+  --font-display: "Geist", system-ui, sans-serif;
   --font-display-zh: "LXGW WenKai", "LXGW WenKai Screen", serif;
   --font-body: "Geist", system-ui, sans-serif;
   --font-body-zh: "LXGW WenKai", "LXGW WenKai Screen", system-ui, sans-serif;
@@ -50,14 +50,9 @@
     z-index: 0;
   }
 
-  /* Lang-routed display fonts — SpaceX-style: bold sans for en, calligraphic for zh */
-  html[lang="zh"] .font-display { font-family: var(--font-display-zh); font-weight: 400; letter-spacing: -0.005em; }
-  html[lang="en"] .font-display {
-    font-family: var(--font-body);
-    font-weight: 800;
-    letter-spacing: -0.035em;
-    line-height: 0.98;
-  }
+  /* (lang-routed font rules moved to @layer utilities — Tailwind v4 cascade
+     layers put .font-display utility above @layer base, so base-layer overrides
+     lose regardless of selector specificity) */
   html[lang="zh"] body { font-family: var(--font-body-zh); }
   html[lang="en"] body { font-family: var(--font-body); }
 
@@ -133,4 +128,20 @@
   .delay-300 { animation-delay: 300ms; }
   .delay-500 { animation-delay: 500ms; }
   .delay-700 { animation-delay: 700ms; }
+}
+
+@layer utilities {
+  /* Lang-routed display fonts — defined HERE so they win over the auto-generated
+     .font-display utility from @theme. zh = calligraphic, en = SpaceX-style heavy sans. */
+  html[lang="zh"] .font-display {
+    font-family: var(--font-display-zh);
+    font-weight: 400;
+    letter-spacing: -0.005em;
+  }
+  html[lang="en"] .font-display {
+    font-family: var(--font-body);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+  }
 }
