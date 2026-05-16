@@ -8,7 +8,10 @@ const fm: any = lang === 'zh' ? zhData : enData;
 const { eyebrow, title, stanzas } = fm;
 ---
 <section class="relative min-h-screen flex items-center overflow-hidden">
-  <div class="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-[var(--color-abyss-1)]/40 to-transparent"></div>
+  <div class="absolute inset-0 -z-10">
+    <img src="/images/manifesto-bg.jpg" alt="" class="w-full h-full object-cover opacity-25" loading="lazy" decoding="async" />
+    <div class="absolute inset-0 bg-gradient-to-b from-[var(--color-abyss-1)]/70 via-[var(--color-abyss-1)]/82 to-[var(--color-abyss-1)]/90"></div>
+  </div>
   <div class="max-w-[1280px] mx-auto px-6 w-full py-24 md:py-32">
     <div class="grid lg:grid-cols-12 gap-10 lg:gap-16">
       <div class="lg:col-span-4">

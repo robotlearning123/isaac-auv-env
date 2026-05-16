@@ -7,7 +7,12 @@ const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
 const { title, eyebrow, intro, emails, codeAccessNote } = fm;
 ---
-<section id="contact" class="relative min-h-screen flex items-center text-center"><div class="max-w-[1280px] mx-auto px-6 py-24 md:py-32 w-full">
+<section id="contact" class="relative overflow-hidden min-h-screen flex items-center text-center">
+  <div class="absolute inset-0 -z-10">
+    <img src="/images/contact-bg.jpg" alt="" class="w-full h-full object-cover opacity-30" loading="lazy" decoding="async" />
+    <div class="absolute inset-0 bg-gradient-to-b from-[var(--color-abyss-1)]/70 via-[var(--color-abyss-1)]/85 to-[var(--color-abyss-1)]"></div>
+  </div>
+  <div class="relative max-w-[1280px] mx-auto px-6 py-24 md:py-32 w-full">
   <div class="font-mono text-[var(--color-lumen)] text-xs uppercase eyebrow-tracking mb-3 inline-flex items-center gap-3">
     <span class="w-8 h-px bg-[var(--color-lumen)]"></span>
     /05 · {eyebrow}

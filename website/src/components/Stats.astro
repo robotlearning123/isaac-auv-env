@@ -7,8 +7,12 @@ const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
 const { items } = fm;
 ---
-<section class="relative border-y border-[var(--color-border-deep)] bg-[var(--color-abyss-0)]/40 backdrop-blur-sm min-h-screen flex items-center">
-  <div class="max-w-[1280px] mx-auto px-6 py-20 w-full">
+<section class="relative overflow-hidden border-y border-[var(--color-border-deep)] min-h-screen flex items-center">
+  <div class="absolute inset-0 -z-10">
+    <img src="/images/stats-bg.jpg" alt="" class="w-full h-full object-cover opacity-25" loading="lazy" decoding="async" />
+    <div class="absolute inset-0 bg-gradient-to-b from-[var(--color-abyss-1)]/80 via-[var(--color-abyss-0)]/75 to-[var(--color-abyss-1)]"></div>
+  </div>
+  <div class="relative max-w-[1280px] mx-auto px-6 py-20 w-full">
     <div class="font-mono text-[var(--color-lumen)] text-xs uppercase eyebrow-tracking mb-16 text-center">
       /00 · {lang === 'zh' ? '硬指标' : 'Numbers in production'}
     </div>
