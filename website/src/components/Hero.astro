@@ -9,10 +9,20 @@ const fm: any = lang === 'zh' ? zhData : enData;
 const { h1, sub, eyebrow } = fm;
 ---
 <section class="relative overflow-hidden pt-36 pb-32 md:pt-52 md:pb-44 min-h-[88vh] flex items-center">
-  {/* Cinematic background image (SpaceX-style) */}
+  {/* Cinematic video background (SpaceX-style ambient loop, with image poster fallback) */}
   <div class="absolute inset-0 -z-10">
-    <img src="/images/hero-bg.jpg" alt="" class="w-full h-full object-cover opacity-55" loading="eager" decoding="async" />
-    <div class="absolute inset-0 bg-gradient-to-b from-[var(--color-abyss-0)]/40 via-[var(--color-abyss-0)]/65 to-[var(--color-abyss-1)]"></div>
+    <video
+      class="w-full h-full object-cover opacity-50"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      poster="/images/hero-bg.jpg"
+    >
+      <source src="/videos/hero-ambient.mp4" type="video/mp4" />
+    </video>
+    <div class="absolute inset-0 bg-gradient-to-b from-[var(--color-abyss-0)]/35 via-[var(--color-abyss-0)]/60 to-[var(--color-abyss-1)]"></div>
     <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[var(--color-abyss-1)] to-transparent"></div>
   </div>
 

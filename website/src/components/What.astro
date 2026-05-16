@@ -18,7 +18,7 @@ const { title, eyebrow, capabilities } = fm;
 
   <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-[var(--color-border-deep)] border border-[var(--color-border-deep)]">
     {capabilities.map((c: { metric?: string | null; metricLabel: string; title: string; body: string }) => (
-      <div class="bg-[var(--color-abyss-1)] p-8 hover:bg-[var(--color-abyss-2)] transition-colors group min-h-[14rem] flex flex-col">
+      <div class="card-glow bg-[var(--color-abyss-1)] p-8 hover:bg-[var(--color-abyss-2)] group min-h-[14rem] flex flex-col">
         {c.metric ? (
           <div class="font-mono text-4xl md:text-5xl text-[var(--color-lumen)] font-bold leading-none mb-1">
             {c.metric}

@@ -1,0 +1,296 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - link "沧渊" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e5]: 沧渊
+      - generic [ref=e6]:
+        - link "能力" [ref=e7] [cursor=pointer]:
+          - /url: "#what"
+        - link "演示" [ref=e8] [cursor=pointer]:
+          - /url: "#demos"
+        - link "基准" [ref=e9] [cursor=pointer]:
+          - /url: "#benchmarks"
+        - link "联系" [ref=e10] [cursor=pointer]:
+          - /url: "#contact"
+        - link "EN" [ref=e11] [cursor=pointer]:
+          - /url: /en/
+  - main [ref=e12]:
+    - generic [ref=e18]:
+      - generic [ref=e19]: AI-native 海洋机器人仿真基础设施
+      - heading "加速水下机器人的下一个十年。" [level=1] [ref=e20]
+      - paragraph [ref=e21]: GPU-native 仿真,取代昂贵的出海试验。让迭代节奏,不再被洋流与天气锁死。
+      - generic [ref=e22]:
+        - link "查看演示" [ref=e23] [cursor=pointer]:
+          - /url: "#demos"
+          - text: 查看演示
+          - generic [ref=e24]: →
+        - link "联系我们" [ref=e25] [cursor=pointer]:
+          - /url: "#contact"
+    - generic [ref=e29]:
+      - generic [ref=e30]: /00 · 硬指标
+      - generic [ref=e31]:
+        - generic [ref=e32]:
+          - generic [ref=e33]: /01
+          - generic [ref=e34]: 11,435
+          - generic [ref=e35]: FPS · 单环境 BlueROV2 (RTX 5090)
+        - generic [ref=e36]:
+          - generic [ref=e37]: /02
+          - generic [ref=e38]: 90M
+          - generic [ref=e39]: env-steps/s @ 8192 并行环境
+        - generic [ref=e40]:
+          - generic [ref=e41]: /03
+          - generic [ref=e42]: 900×
+          - generic [ref=e43]: 目标吞吐已达成
+    - generic [ref=e48]:
+      - generic [ref=e49]:
+        - generic [ref=e50]: /01 · Manifesto
+        - heading "我们的立场" [level=2] [ref=e51]
+      - generic [ref=e52]:
+        - generic [ref=e53]:
+          - generic [ref=e54]: /01
+          - paragraph [ref=e55]: 海洋机器人发展的下一个十年,不应该由洋流和天气决定。
+        - generic [ref=e56]:
+          - generic [ref=e57]: /02
+          - paragraph [ref=e58]: 应该由仿真精度、GPU 算力,与 AI 智能体的训练速度决定。
+        - generic [ref=e59]:
+          - generic [ref=e60]: /03
+          - paragraph [ref=e61]: 我们造的,是让这一切发生的底层基础设施。
+    - generic [ref=e65]:
+      - generic [ref=e66]: /02 · Why
+      - heading "海洋机器人发展的五个枷锁" [level=2] [ref=e67]
+      - list [ref=e68]:
+        - listitem [ref=e69]:
+          - generic [ref=e70]: "01"
+          - generic [ref=e71]:
+            - heading "真实海上测试,昂贵到锁死创新节奏" [level=3] [ref=e72]
+            - paragraph [ref=e73]: 出海一天 ¥10,000–¥100,000+。腐蚀、缠绕、设备丢失。环境不可复现,进度看天气。没有高保真仿真,迭代节奏被自然界设了上限。
+        - listitem [ref=e74]:
+          - generic [ref=e75]: "02"
+          - generic [ref=e76]:
+            - heading "CFD 太慢,RL 训练根本不可达" [level=3] [ref=e77]
+            - paragraph [ref=e78]: 高保真 CFD:1 秒物理 = 1–100 小时计算。 RL 训练所需的 1M+ episodes 数量级不可达。 GPU 加速的 CFD 也够不到 real-time × 1000 倍的实战门槛。
+        - listitem [ref=e79]:
+          - generic [ref=e80]: "03"
+          - generic [ref=e81]:
+            - heading "现有水下仿真器,浪费现代 GPU 算力" [level=3] [ref=e82]
+            - paragraph [ref=e83]: Gazebo / UWSim / HoloOcean 仍是单线程 CPU,百级 FPS。 RTX 5090 / H100 的算力被白白浪费。多智能体并行能力接近零。
+        - listitem [ref=e84]:
+          - generic [ref=e85]: "04"
+          - generic [ref=e86]:
+            - heading "Sim-to-real gap,卡死策略上桥" [level=3] [ref=e87]
+            - paragraph [ref=e88]: 流体保真度不足,策略迁移失败。缺乏可信的 sim-to-real 校准方法。传感器仿真常被过度简化 —— 仿真里完美,水里崩溃。
+        - listitem [ref=e89]:
+          - generic [ref=e90]: "05"
+          - generic [ref=e91]:
+            - heading "AI-native 接口缺失,生态没追上时代" [level=3] [ref=e92]
+            - paragraph [ref=e93]: gym/gymnasium 适配缺失或低质。多智能体场景支持差。多模态海洋数据集 (sonar / optical / IMU) 不开放,基础模型训练受困于数据稀缺。
+    - generic [ref=e97]:
+      - generic [ref=e98]: /03 · Platform
+      - heading "我们造的东西" [level=2] [ref=e99]
+      - generic [ref=e100]:
+        - generic [ref=e101]:
+          - generic [ref=e102]: 11,435
+          - generic [ref=e103]: FPS · 单环境 BlueROV2 (RTX 5090)
+          - heading "完整 RL 训练管线" [level=3] [ref=e104]
+          - paragraph [ref=e105]: 单卡端到端实测。环境到策略,全程在仿真里完成。
+        - generic [ref=e106]:
+          - generic [ref=e107]: 90 M
+          - generic [ref=e108]: env-steps/s @ 8192 envs
+          - heading "Fossen 多环境吞吐" [level=3] [ref=e109]
+          - paragraph [ref=e110]: 8192 并行环境,Fossen 6-DoF 内核。900× 目标已达成。
+        - generic [ref=e111]:
+          - generic [ref=e112]: 6-DoF
+          - generic [ref=e113]: Fossen + SPH 自研内核
+          - heading "海洋机器人专属物理核" [level=3] [ref=e114]
+          - paragraph [ref=e115]: 刚体动力学 + SPH 流体,为海洋场景定制。
+        - generic [ref=e116]:
+          - generic [ref=e119]: Newton + Isaac Sim 6
+          - heading "GPU-native 物理 + 渲染栈" [level=3] [ref=e120]
+          - paragraph [ref=e121]: Newton 引擎由 Anthropic + NVIDIA + Lightwheel + Apple 联合维护。Isaac Sim 6 渲染。
+        - generic [ref=e122]:
+          - generic [ref=e125]: gym / gymnasium 原生
+          - heading "RL 接口即插即用" [level=3] [ref=e126]
+          - paragraph [ref=e127]: rl_games · stable-baselines3 · RSL-RL,直接接入。
+        - generic [ref=e128]:
+          - generic [ref=e131]: Multi-agent · Procedural
+          - heading "真实海洋场景库" [level=3] [ref=e132]
+          - paragraph [ref=e133]: 船 / AUV / ROV / 传感器资产 + procedural ocean 生成。
+    - generic [ref=e137]:
+      - generic [ref=e138]:
+        - generic [ref=e139]:
+          - generic [ref=e140]: /04 · Built on
+          - heading "我们的技术栈" [level=2] [ref=e141]
+        - paragraph [ref=e143]: OceanScale 构建在业界最前沿的 GPU 原生物理与渲染基础上,与多家全球玩家共同维护。
+      - generic [ref=e144]:
+        - generic [ref=e145]:
+          - generic [ref=e146]: Newton
+          - generic [ref=e147]: GPU-native physics engine
+        - generic [ref=e148]:
+          - generic [ref=e149]: Isaac Sim 6
+          - generic [ref=e150]: high-fidelity rendering
+        - generic [ref=e151]:
+          - generic [ref=e152]: NVIDIA
+          - generic [ref=e153]: core compute partner
+        - generic [ref=e154]:
+          - generic [ref=e155]: Anthropic
+          - generic [ref=e156]: Newton co-maintainer
+        - generic [ref=e157]:
+          - generic [ref=e158]: Lightwheel
+          - generic [ref=e159]: Newton co-maintainer
+        - generic [ref=e160]:
+          - generic [ref=e161]: Apple
+          - generic [ref=e162]: Newton co-maintainer
+    - generic [ref=e166]:
+      - generic [ref=e167]: /05 · Demos
+      - heading "演示" [level=2] [ref=e168]
+      - generic [ref=e169]:
+        - generic [ref=e170]:
+          - generic [ref=e173]: Available
+          - generic [ref=e174]:
+            - heading "BlueROV2 RL 训练" [level=3] [ref=e175]
+            - paragraph [ref=e176]: RTX 5090 单卡,完整训练管线实测。11,435 FPS 单环境。
+        - generic [ref=e177]:
+          - generic [ref=e180]: Preview · v0.3
+          - generic [ref=e181]:
+            - heading "多 AUV 编队" [level=3] [ref=e182]
+            - paragraph [ref=e183]: 多智能体协同导航与避障(概念渲染,v0.3 上线)。
+        - generic [ref=e184]:
+          - generic [ref=e187]: Preview · v0.3
+          - generic [ref=e188]:
+            - heading "SPH 流体可视化" [level=3] [ref=e189]
+            - paragraph [ref=e190]: 实时流体场可视化,GPU-native SPH 内核(概念渲染,v0.3 上线)。
+    - generic [ref=e194]:
+      - generic [ref=e195]: /06 · Benchmarks
+      - heading "性能基准" [level=2] [ref=e196]
+      - table [ref=e198]:
+        - rowgroup [ref=e199]:
+          - row "指标 OceanScale UWSim HoloOcean Gazebo" [ref=e200]:
+            - columnheader "指标" [ref=e201]
+            - columnheader "OceanScale" [ref=e202]
+            - columnheader "UWSim" [ref=e203]
+            - columnheader "HoloOcean" [ref=e204]
+            - columnheader "Gazebo" [ref=e205]
+        - rowgroup [ref=e206]:
+          - row "Single-env FPS (RTX 5090) 11,435 ~200 ~500 ~100" [ref=e207]:
+            - cell "Single-env FPS (RTX 5090)" [ref=e208]
+            - cell "11,435" [ref=e209]:
+              - strong [ref=e210]: 11,435
+            - cell "~200" [ref=e211]
+            - cell "~500" [ref=e212]
+            - cell "~100" [ref=e213]
+          - row "Multi-env throughput @ 8192 envs 90 M env-steps/s — — —" [ref=e214]:
+            - cell "Multi-env throughput @ 8192 envs" [ref=e215]
+            - cell "90 M env-steps/s" [ref=e216]:
+              - strong [ref=e217]: 90 M
+              - text: env-steps/s
+            - cell "—" [ref=e218]
+            - cell "—" [ref=e219]
+            - cell "—" [ref=e220]
+          - row "Multi-env parallel scaling 8192+ — partial partial" [ref=e221]:
+            - cell "Multi-env parallel scaling" [ref=e222]
+            - cell "8192+" [ref=e223]
+            - cell "—" [ref=e224]
+            - cell "partial" [ref=e225]
+            - cell "partial" [ref=e226]
+          - row "GPU-native physics Newton — — —" [ref=e227]:
+            - cell "GPU-native physics" [ref=e228]
+            - cell "Newton" [ref=e229]
+            - cell "—" [ref=e230]
+            - cell "—" [ref=e231]
+            - cell "—" [ref=e232]
+          - row "RL gym 接口 原生 3rd-party 3rd-party 3rd-party" [ref=e233]:
+            - cell "RL gym 接口" [ref=e234]
+            - cell "原生" [ref=e235]
+            - cell "3rd-party" [ref=e236]
+            - cell "3rd-party" [ref=e237]
+            - cell "3rd-party" [ref=e238]
+          - row "SPH 流体 kernel ✓ — — —" [ref=e239]:
+            - cell "SPH 流体 kernel" [ref=e240]
+            - cell "✓" [ref=e241]
+            - cell "—" [ref=e242]
+            - cell "—" [ref=e243]
+            - cell "—" [ref=e244]
+          - row "Fossen 6-DoF ✓ ✓ partial —" [ref=e245]:
+            - cell "Fossen 6-DoF" [ref=e246]
+            - cell "✓" [ref=e247]
+            - cell "✓" [ref=e248]
+            - cell "partial" [ref=e249]
+            - cell "—" [ref=e250]
+          - row "ROS 2 集成 v0.3 ✓ ✓ ✓" [ref=e251]:
+            - cell "ROS 2 集成" [ref=e252]
+            - cell "v0.3" [ref=e253]
+            - cell "✓" [ref=e254]
+            - cell "✓" [ref=e255]
+            - cell "✓" [ref=e256]
+      - paragraph [ref=e257]: OceanScale 数据来自 W2 实测 (2026-05-15, RTX 5090)。其他工具数据来自各自官方文档与社区报告,实际值因场景与硬件而异。
+    - generic [ref=e261]:
+      - generic [ref=e262]: /07 · Contact
+      - heading "联系我们" [level=2] [ref=e265]
+      - paragraph [ref=e266]: 研究机构、产业伙伴、潜在合作方,欢迎通过邮件联系。我们会在 48 小时内回复。
+      - link "Business business@oceanscale.cn" [ref=e267] [cursor=pointer]:
+        - /url: mailto:business@oceanscale.cn
+        - generic [ref=e268]: Business
+        - generic [ref=e269]: business@oceanscale.cn
+        - generic [ref=e270]: →
+      - generic [ref=e271]: 或者
+      - generic [ref=e272]:
+        - link "Technical tech@oceanscale.cn" [ref=e273] [cursor=pointer]:
+          - /url: mailto:tech@oceanscale.cn
+          - generic [ref=e274]: Technical
+          - text: tech@oceanscale.cn
+        - link "Partnerships partnerships@oceanscale.cn" [ref=e275] [cursor=pointer]:
+          - /url: mailto:partnerships@oceanscale.cn
+          - generic [ref=e276]: Partnerships
+          - text: partnerships@oceanscale.cn
+  - contentinfo [ref=e277]:
+    - generic [ref=e278]:
+      - generic [ref=e279]:
+        - generic [ref=e280]:
+          - generic [ref=e282]:
+            - generic [ref=e283]: 沧渊
+            - generic [ref=e284]: OceanScale
+          - paragraph [ref=e285]: 加速水下机器人的下一个十年
+        - generic [ref=e286]:
+          - generic [ref=e287]: 平台
+          - list [ref=e288]:
+            - listitem [ref=e289]:
+              - link "为什么" [ref=e290] [cursor=pointer]:
+                - /url: "#why"
+            - listitem [ref=e291]:
+              - link "能力" [ref=e292] [cursor=pointer]:
+                - /url: "#what"
+            - listitem [ref=e293]:
+              - link "演示" [ref=e294] [cursor=pointer]:
+                - /url: "#demos"
+            - listitem [ref=e295]:
+              - link "基准" [ref=e296] [cursor=pointer]:
+                - /url: "#benchmarks"
+        - generic [ref=e297]:
+          - generic [ref=e298]: 联系
+          - list [ref=e299]:
+            - listitem [ref=e300]:
+              - link "业务合作" [ref=e301] [cursor=pointer]:
+                - /url: mailto:business@oceanscale.cn
+            - listitem [ref=e302]:
+              - link "技术咨询" [ref=e303] [cursor=pointer]:
+                - /url: mailto:tech@oceanscale.cn
+            - listitem [ref=e304]:
+              - link "战略合作" [ref=e305] [cursor=pointer]:
+                - /url: mailto:partnerships@oceanscale.cn
+      - generic [ref=e306]:
+        - generic [ref=e307]: © 2026 OceanScale (沧渊)
+        - generic [ref=e308]: 服务全球海洋
+  - generic [ref=e311]:
+    - button "Menu" [ref=e312]:
+      - img [ref=e314]
+      - generic: Menu
+    - button "Inspect" [ref=e318]:
+      - img [ref=e320]
+      - generic: Inspect
+    - button "Audit" [ref=e322]:
+      - img [ref=e324]
+      - generic: Audit
+    - button "Settings" [ref=e327]:
+      - img [ref=e329]
+      - generic: Settings

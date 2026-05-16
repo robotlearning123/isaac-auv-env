@@ -18,7 +18,7 @@ const { title, eyebrow, items } = fm;
 
   <div class="grid md:grid-cols-3 gap-6">
     {items.map((d: { title: string; body: string; video?: string; status?: string; comingLabel?: string }) => (
-      <div class="border border-[var(--color-border-deep)] bg-[var(--color-abyss-1)]/50 overflow-hidden group hover:border-[var(--color-lumen)]/40 transition-colors">
+      <div class="card-glow border border-[var(--color-border-deep)] bg-[var(--color-abyss-1)]/50 overflow-hidden group hover:border-[var(--color-lumen)]/40">
         <div class="aspect-video bg-[var(--color-abyss-0)] relative flex items-center justify-center overflow-hidden">
           {d.video ? (
             <video class="w-full h-full object-cover" autoplay muted loop playsinline preload="metadata">

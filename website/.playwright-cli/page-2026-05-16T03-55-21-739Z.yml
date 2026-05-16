@@ -1,0 +1,296 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - link "OceanScale" [ref=e4] [cursor=pointer]:
+        - /url: /en/
+        - generic [ref=e5]: OceanScale
+      - generic [ref=e6]:
+        - link "Platform" [ref=e7] [cursor=pointer]:
+          - /url: "#what"
+        - link "Demos" [ref=e8] [cursor=pointer]:
+          - /url: "#demos"
+        - link "Benchmarks" [ref=e9] [cursor=pointer]:
+          - /url: "#benchmarks"
+        - link "Contact" [ref=e10] [cursor=pointer]:
+          - /url: "#contact"
+        - link "中" [ref=e11] [cursor=pointer]:
+          - /url: /
+  - main [ref=e12]:
+    - generic [ref=e18]:
+      - generic [ref=e19]: AI-native marine robotics infrastructure
+      - heading "Accelerating the next decade." [level=1] [ref=e20]
+      - paragraph [ref=e21]: GPU-native simulation for marine robotics. Hours of training instead of months at sea. Built for labs, industry, and defense.
+      - generic [ref=e22]:
+        - link "See demos" [ref=e23] [cursor=pointer]:
+          - /url: "#demos"
+          - text: See demos
+          - generic [ref=e24]: →
+        - link "Get in touch" [ref=e25] [cursor=pointer]:
+          - /url: "#contact"
+    - generic [ref=e29]:
+      - generic [ref=e30]: /00 · Numbers in production
+      - generic [ref=e31]:
+        - generic [ref=e32]:
+          - generic [ref=e33]: /01
+          - generic [ref=e34]: 11,435
+          - generic [ref=e35]: FPS · single-env BlueROV2 (RTX 5090)
+        - generic [ref=e36]:
+          - generic [ref=e37]: /02
+          - generic [ref=e38]: 90M
+          - generic [ref=e39]: env-steps/s @ 8192 parallel envs
+        - generic [ref=e40]:
+          - generic [ref=e41]: /03
+          - generic [ref=e42]: 900×
+          - generic [ref=e43]: target throughput achieved
+    - generic [ref=e48]:
+      - generic [ref=e49]:
+        - generic [ref=e50]: /01 · Manifesto
+        - heading "What we stand for" [level=2] [ref=e51]
+      - generic [ref=e52]:
+        - generic [ref=e53]:
+          - generic [ref=e54]: /01
+          - paragraph [ref=e55]: The next decade of marine robotics shouldn't be paced by currents and weather.
+        - generic [ref=e56]:
+          - generic [ref=e57]: /02
+          - paragraph [ref=e58]: It should be paced by simulation fidelity, GPU compute, and how fast AI agents can learn.
+        - generic [ref=e59]:
+          - generic [ref=e60]: /03
+          - paragraph [ref=e61]: We're building the infrastructure that makes that pace possible.
+    - generic [ref=e65]:
+      - generic [ref=e66]: /02 · Why
+      - heading "Five constraints holding marine robotics back" [level=2] [ref=e67]
+      - list [ref=e68]:
+        - listitem [ref=e69]:
+          - generic [ref=e70]: "01"
+          - generic [ref=e71]:
+            - heading "Real ocean trials cost so much they cap iteration" [level=3] [ref=e72]
+            - paragraph [ref=e73]: "A day at sea: ¥10k–¥100k+. Corrosion, entanglement, gear loss. Non-reproducible currents. Progress gated by weather. Without high-fidelity simulation, iteration speed is locked to nature's clock."
+        - listitem [ref=e74]:
+          - generic [ref=e75]: "02"
+          - generic [ref=e76]:
+            - heading "CFD is too slow for RL to even start" [level=3] [ref=e77]
+            - paragraph [ref=e78]: "Hi-fi CFD: 1 second of physics takes 1–100 hours to compute. The 1M+ episodes RL needs is mathematically unreachable. Even GPU-accelerated CFD can't approach the real-time × 1000× threshold the field actually requires."
+        - listitem [ref=e79]:
+          - generic [ref=e80]: "03"
+          - generic [ref=e81]:
+            - heading "Legacy underwater sims waste modern GPUs" [level=3] [ref=e82]
+            - paragraph [ref=e83]: "Gazebo / UWSim / HoloOcean: single-threaded CPU at hundreds of FPS. RTX 5090 / H100 compute is wasted. Multi-agent parallelism is near zero."
+        - listitem [ref=e84]:
+          - generic [ref=e85]: "04"
+          - generic [ref=e86]:
+            - heading "The sim-to-real gap kills policy transfer" [level=3] [ref=e87]
+            - paragraph [ref=e88]: Insufficient fluid fidelity — sim policies collapse in water. No principled sim-to-real calibration. Sensor simulation (sonar, underwater camera) is oversimplified, creating false confidence.
+        - listitem [ref=e89]:
+          - generic [ref=e90]: "05"
+          - generic [ref=e91]:
+            - heading "AI-native interfaces are missing" [level=3] [ref=e92]
+            - paragraph [ref=e93]: Gym/gymnasium adapters absent or low-quality. Poor multi-agent scene support. Multimodal marine datasets (sonar, optical, IMU) aren't open — foundation-model training is gated by data scarcity.
+    - generic [ref=e97]:
+      - generic [ref=e98]: /03 · Platform
+      - heading "What we're building" [level=2] [ref=e99]
+      - generic [ref=e100]:
+        - generic [ref=e101]:
+          - generic [ref=e102]: 11,435
+          - generic [ref=e103]: FPS · single-env BlueROV2 (RTX 5090)
+          - heading "Full RL training pipeline" [level=3] [ref=e104]
+          - paragraph [ref=e105]: End-to-end on a single RTX 5090. Environment to policy, all in simulation.
+        - generic [ref=e106]:
+          - generic [ref=e107]: 90 M
+          - generic [ref=e108]: env-steps/s @ 8192 envs
+          - heading "Fossen multi-env throughput" [level=3] [ref=e109]
+          - paragraph [ref=e110]: 8192 parallel envs on the Fossen 6-DoF kernel. 900× target achieved.
+        - generic [ref=e111]:
+          - generic [ref=e112]: 6-DoF
+          - generic [ref=e113]: Custom Fossen + SPH
+          - heading "Marine-specific physics" [level=3] [ref=e114]
+          - paragraph [ref=e115]: Rigid body dynamics + fluid simulation, built for the ocean.
+        - generic [ref=e116]:
+          - generic [ref=e119]: Newton + Isaac Sim 6
+          - heading "GPU-native physics + render" [level=3] [ref=e120]
+          - paragraph [ref=e121]: Newton engine maintained by Anthropic + NVIDIA + Lightwheel + Apple. Isaac Sim 6 rendering.
+        - generic [ref=e122]:
+          - generic [ref=e125]: gym / gymnasium native
+          - heading "Drop-in RL interfaces" [level=3] [ref=e126]
+          - paragraph [ref=e127]: rl_games · stable-baselines3 · RSL-RL — direct integration.
+        - generic [ref=e128]:
+          - generic [ref=e131]: Multi-agent · Procedural
+          - heading "Real-world ocean scenes" [level=3] [ref=e132]
+          - paragraph [ref=e133]: Ships / AUVs / ROVs / sensors + procedural ocean generation.
+    - generic [ref=e137]:
+      - generic [ref=e138]:
+        - generic [ref=e139]:
+          - generic [ref=e140]: /04 · Built on
+          - heading "Our stack" [level=2] [ref=e141]
+        - paragraph [ref=e143]: OceanScale is built on the most advanced GPU-native physics and rendering stack, co-maintained by some of the most consequential teams in the field.
+      - generic [ref=e144]:
+        - generic [ref=e145]:
+          - generic [ref=e146]: Newton
+          - generic [ref=e147]: GPU-native physics engine
+        - generic [ref=e148]:
+          - generic [ref=e149]: Isaac Sim 6
+          - generic [ref=e150]: high-fidelity rendering
+        - generic [ref=e151]:
+          - generic [ref=e152]: NVIDIA
+          - generic [ref=e153]: core compute partner
+        - generic [ref=e154]:
+          - generic [ref=e155]: Anthropic
+          - generic [ref=e156]: Newton co-maintainer
+        - generic [ref=e157]:
+          - generic [ref=e158]: Lightwheel
+          - generic [ref=e159]: Newton co-maintainer
+        - generic [ref=e160]:
+          - generic [ref=e161]: Apple
+          - generic [ref=e162]: Newton co-maintainer
+    - generic [ref=e166]:
+      - generic [ref=e167]: /05 · Demos
+      - heading "See it run" [level=2] [ref=e168]
+      - generic [ref=e169]:
+        - generic [ref=e170]:
+          - generic [ref=e173]: Available
+          - generic [ref=e174]:
+            - heading "BlueROV2 RL training" [level=3] [ref=e175]
+            - paragraph [ref=e176]: RTX 5090 single card, full training pipeline measured. 11,435 FPS single-env.
+        - generic [ref=e177]:
+          - generic [ref=e180]: Preview · v0.3
+          - generic [ref=e181]:
+            - heading "Multi-AUV formation" [level=3] [ref=e182]
+            - paragraph [ref=e183]: Multi-agent navigation and collision avoidance (concept render, v0.3 ship).
+        - generic [ref=e184]:
+          - generic [ref=e187]: Preview · v0.3
+          - generic [ref=e188]:
+            - heading "SPH fluid visualization" [level=3] [ref=e189]
+            - paragraph [ref=e190]: Real-time fluid field rendering, GPU-native SPH kernel (concept render, v0.3 ship).
+    - generic [ref=e194]:
+      - generic [ref=e195]: /06 · Benchmarks
+      - heading "Numbers, side by side" [level=2] [ref=e196]
+      - table [ref=e198]:
+        - rowgroup [ref=e199]:
+          - row "Metric OceanScale UWSim HoloOcean Gazebo" [ref=e200]:
+            - columnheader "Metric" [ref=e201]
+            - columnheader "OceanScale" [ref=e202]
+            - columnheader "UWSim" [ref=e203]
+            - columnheader "HoloOcean" [ref=e204]
+            - columnheader "Gazebo" [ref=e205]
+        - rowgroup [ref=e206]:
+          - row "Single-env FPS (RTX 5090) 11,435 ~200 ~500 ~100" [ref=e207]:
+            - cell "Single-env FPS (RTX 5090)" [ref=e208]
+            - cell "11,435" [ref=e209]:
+              - strong [ref=e210]: 11,435
+            - cell "~200" [ref=e211]
+            - cell "~500" [ref=e212]
+            - cell "~100" [ref=e213]
+          - row "Multi-env throughput @ 8192 envs 90 M env-steps/s — — —" [ref=e214]:
+            - cell "Multi-env throughput @ 8192 envs" [ref=e215]
+            - cell "90 M env-steps/s" [ref=e216]:
+              - strong [ref=e217]: 90 M
+              - text: env-steps/s
+            - cell "—" [ref=e218]
+            - cell "—" [ref=e219]
+            - cell "—" [ref=e220]
+          - row "Multi-env parallel scaling 8192+ — partial partial" [ref=e221]:
+            - cell "Multi-env parallel scaling" [ref=e222]
+            - cell "8192+" [ref=e223]
+            - cell "—" [ref=e224]
+            - cell "partial" [ref=e225]
+            - cell "partial" [ref=e226]
+          - row "GPU-native physics Newton — — —" [ref=e227]:
+            - cell "GPU-native physics" [ref=e228]
+            - cell "Newton" [ref=e229]
+            - cell "—" [ref=e230]
+            - cell "—" [ref=e231]
+            - cell "—" [ref=e232]
+          - row "RL gym interface Native 3rd-party 3rd-party 3rd-party" [ref=e233]:
+            - cell "RL gym interface" [ref=e234]
+            - cell "Native" [ref=e235]
+            - cell "3rd-party" [ref=e236]
+            - cell "3rd-party" [ref=e237]
+            - cell "3rd-party" [ref=e238]
+          - row "SPH fluid kernel ✓ — — —" [ref=e239]:
+            - cell "SPH fluid kernel" [ref=e240]
+            - cell "✓" [ref=e241]
+            - cell "—" [ref=e242]
+            - cell "—" [ref=e243]
+            - cell "—" [ref=e244]
+          - row "Fossen 6-DoF ✓ ✓ partial —" [ref=e245]:
+            - cell "Fossen 6-DoF" [ref=e246]
+            - cell "✓" [ref=e247]
+            - cell "✓" [ref=e248]
+            - cell "partial" [ref=e249]
+            - cell "—" [ref=e250]
+          - row "ROS 2 integration v0.3 ✓ ✓ ✓" [ref=e251]:
+            - cell "ROS 2 integration" [ref=e252]
+            - cell "v0.3" [ref=e253]
+            - cell "✓" [ref=e254]
+            - cell "✓" [ref=e255]
+            - cell "✓" [ref=e256]
+      - paragraph [ref=e257]: OceanScale figures measured by W2 benchmark (2026-05-15, RTX 5090). Other tools' figures sourced from public documentation and community reports; actual values depend on scene and hardware.
+    - generic [ref=e261]:
+      - generic [ref=e262]: /07 · Contact
+      - heading "Get in touch" [level=2] [ref=e265]
+      - paragraph [ref=e266]: Research institutions, industry partners, and prospective collaborators — we'd love to hear from you. We respond within 48 hours.
+      - link "Business business@oceanscale.cn" [ref=e267] [cursor=pointer]:
+        - /url: mailto:business@oceanscale.cn
+        - generic [ref=e268]: Business
+        - generic [ref=e269]: business@oceanscale.cn
+        - generic [ref=e270]: →
+      - generic [ref=e271]: or
+      - generic [ref=e272]:
+        - link "Technical tech@oceanscale.cn" [ref=e273] [cursor=pointer]:
+          - /url: mailto:tech@oceanscale.cn
+          - generic [ref=e274]: Technical
+          - text: tech@oceanscale.cn
+        - link "Partnerships partnerships@oceanscale.cn" [ref=e275] [cursor=pointer]:
+          - /url: mailto:partnerships@oceanscale.cn
+          - generic [ref=e276]: Partnerships
+          - text: partnerships@oceanscale.cn
+  - contentinfo [ref=e277]:
+    - generic [ref=e278]:
+      - generic [ref=e279]:
+        - generic [ref=e280]:
+          - generic [ref=e282]:
+            - generic [ref=e283]: OceanScale
+            - generic [ref=e284]: 沧渊
+          - paragraph [ref=e285]: Accelerating the next decade of underwater robotics
+        - generic [ref=e286]:
+          - generic [ref=e287]: Platform
+          - list [ref=e288]:
+            - listitem [ref=e289]:
+              - link "Why" [ref=e290] [cursor=pointer]:
+                - /url: "#why"
+            - listitem [ref=e291]:
+              - link "Platform" [ref=e292] [cursor=pointer]:
+                - /url: "#what"
+            - listitem [ref=e293]:
+              - link "Demos" [ref=e294] [cursor=pointer]:
+                - /url: "#demos"
+            - listitem [ref=e295]:
+              - link "Benchmarks" [ref=e296] [cursor=pointer]:
+                - /url: "#benchmarks"
+        - generic [ref=e297]:
+          - generic [ref=e298]: Connect
+          - list [ref=e299]:
+            - listitem [ref=e300]:
+              - link "Business" [ref=e301] [cursor=pointer]:
+                - /url: mailto:business@oceanscale.cn
+            - listitem [ref=e302]:
+              - link "Technical" [ref=e303] [cursor=pointer]:
+                - /url: mailto:tech@oceanscale.cn
+            - listitem [ref=e304]:
+              - link "Partnerships" [ref=e305] [cursor=pointer]:
+                - /url: mailto:partnerships@oceanscale.cn
+      - generic [ref=e306]:
+        - generic [ref=e307]: © 2026 OceanScale
+        - generic [ref=e308]: Serving the world's oceans
+  - generic [ref=e311]:
+    - button "Menu" [ref=e312]:
+      - img [ref=e314]
+      - generic: Menu
+    - button "Inspect" [ref=e318]:
+      - img [ref=e320]
+      - generic: Inspect
+    - button "Audit" [ref=e322]:
+      - img [ref=e324]
+      - generic: Audit
+    - button "Settings" [ref=e327]:
+      - img [ref=e329]
+      - generic: Settings
