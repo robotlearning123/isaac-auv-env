@@ -168,7 +168,8 @@ This landing page is **sub-project F of 7** in the OceanScale startup work:
 
 ### What — 能力 (实数 + 实测)
 
-- **11,435 FPS** BlueROV2 训练 (RTX 5090, 单卡, 已实测 — 来源 `install_log/56_r11_commit.txt`)
+- **11,435 FPS** BlueROV2 单环境训练 (RTX 5090, 单卡, 已实测 — 来源 `install_log/56_r11_commit.txt`)
+- **90 M env-steps/s** Fossen 多环境 throughput @ 8192 parallel envs (RTX 5090, 900× 目标 — 来源 commit `5cc3935` T2.8 benchmark, W2 完成时实测)
 - **Newton 物理** (Anthropic + NVIDIA + Lightwheel + Apple 联合维护) + **Isaac Sim 6** 渲染
 - 自研 **Fossen 6-DoF + SPH 流体 kernel**
 - 即插即用 **gym/gymnasium** + RL 库 (rl_games, stable-baselines3, RSL-RL)
@@ -187,7 +188,8 @@ v0.1 上线时只有视频 1 是真实数据。
 | 指标 | OceanScale | UWSim | HoloOcean | Gazebo |
 |---|---|---|---|---|
 | Single-env FPS (RTX 5090) | **11,435** | ~200 | ~500 | ~100 |
-| Multi-env parallel | ✅ 1024+ | ❌ | 部分 | 部分 |
+| Multi-env throughput @ 8192 envs | **90 M env-steps/s** | ❌ | ❌ | ❌ |
+| Multi-env parallel scaling | ✅ 8192+ | ❌ | 部分 | 部分 |
 | GPU-native physics | ✅ Newton | ❌ | ❌ | ❌ |
 | RL gym interface | ✅ 原生 | 第三方 | 第三方 | 第三方 |
 | SPH fluid kernel | ✅ | ❌ | ❌ | ❌ |
@@ -357,3 +359,4 @@ wrangler pages deploy dist/ \
 8. Why structure: multi-problem (5), ocean test cost #1
 9. Hero CTAs: "查看演示" / "See demos" + "联系我们" / "Get in touch"
 10. Hosting: Cloudflare Pages first, optional 阿里云镜像 later
+11. Benchmarks: single-env 11,435 FPS (BlueROV2) + multi-env 90 M env-steps/s @ 8192 envs (Fossen kernel, T2.8 benchmark 2026-05-15, commit `5cc3935`)
