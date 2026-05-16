@@ -1,11 +1,10 @@
 export default {
   eyebrow: "Contact",
   title: "联系我们",
-  intro: "欢迎研究机构、产业伙伴、潜在 design partners 通过邮件联系。代码访问仅向 design partners 开放。",
+  intro: "研究机构、产业伙伴、潜在合作方,欢迎通过邮件联系。我们会在 48 小时内回复。",
   emails: [
     { label: "Business", email: "business@oceanscale.cn" },
     { label: "Technical", email: "tech@oceanscale.cn" },
-    { label: "Design partners", email: "design-partners@oceanscale.cn" },
+    { label: "Partnerships", email: "partnerships@oceanscale.cn" },
   ],
-  codeAccessNote: "代码仓库私有 (GitHub) · 仅向 design partners 开放访问。",
 };

@@ -5,7 +5,7 @@ import { getLangFromUrl } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
-const { title, eyebrow, intro, emails, codeAccessNote } = fm;
+const { title, eyebrow, intro, emails } = fm;
 ---
 <section id="contact" class="relative max-w-[1280px] mx-auto px-6 py-24 md:py-32 text-center">
   <div class="font-mono text-[var(--color-lumen)] text-xs uppercase tracking-[0.3em] mb-3 inline-flex items-center gap-3">
@@ -28,5 +28,4 @@ const { title, eyebrow, intro, emails, codeAccessNote } = fm;
     ))}
   </div>
 
-  <p class="text-xs text-[var(--color-paper-dim)] italic mt-6">{codeAccessNote}</p>
 </section>

@@ -6,11 +6,14 @@ const isZh = lang === 'zh';
 ---
 <footer class="relative z-10 border-t border-[var(--color-border-deep)] mt-32">
   <div class="max-w-[1280px] mx-auto px-6 py-12 grid gap-8 md:grid-cols-[1fr_auto] items-center">
-    <div>
-      <div class="font-display text-2xl text-[var(--color-paper)] mb-1">
-        {isZh ? '沧渊' : 'OceanScale'}
+    <div class="flex items-start gap-4">
+      <img src="/images/logo.png" alt="" class="w-10 h-10 mt-1" />
+      <div>
+        <div class="font-display text-2xl text-[var(--color-paper)] mb-1">
+          {isZh ? '沧渊' : 'OceanScale'}
+        </div>
+        <div class="text-[var(--color-paper-dim)] text-sm">{t('footer.tagline')}</div>
       </div>
-      <div class="text-[var(--color-paper-dim)] text-sm">{t('footer.tagline')}</div>
     </div>
     <div class="font-mono text-xs text-[var(--color-paper-dim)] md:text-right">
       {t('footer.copyright')}

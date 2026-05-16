@@ -50,9 +50,14 @@
     z-index: 0;
   }
 
-  /* Lang-routed display fonts */
-  html[lang="zh"] .font-display { font-family: var(--font-display-zh); font-weight: 400; letter-spacing: 0; }
-  html[lang="en"] .font-display { font-family: var(--font-display); font-variation-settings: "opsz" 144, "SOFT" 50; }
+  /* Lang-routed display fonts — SpaceX-style: bold sans for en, calligraphic for zh */
+  html[lang="zh"] .font-display { font-family: var(--font-display-zh); font-weight: 400; letter-spacing: -0.005em; }
+  html[lang="en"] .font-display {
+    font-family: var(--font-body);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+  }
   html[lang="zh"] body { font-family: var(--font-body-zh); }
   html[lang="en"] body { font-family: var(--font-body); }
 

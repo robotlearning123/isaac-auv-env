@@ -7,7 +7,12 @@ const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
 const { title, problems } = fm;
 ---
-<section id="why" class="relative max-w-[1280px] mx-auto px-6 py-24 md:py-32">
+<section id="why" class="relative overflow-hidden py-24 md:py-32">
+  <div class="absolute inset-0 -z-10">
+    <img src="/images/why-bg.jpg" alt="" class="w-full h-full object-cover opacity-25" loading="lazy" decoding="async" />
+    <div class="absolute inset-0 bg-gradient-to-b from-[var(--color-abyss-1)] via-[var(--color-abyss-1)]/88 to-[var(--color-abyss-1)]"></div>
+  </div>
+  <div class="relative max-w-[1280px] mx-auto px-6">
   <div class="font-mono text-[var(--color-lumen)] text-xs uppercase tracking-[0.3em] mb-3">/01 · Why</div>
   <h2 class="font-display text-4xl md:text-6xl font-bold text-[var(--color-paper)] mb-16 tracking-tight max-w-4xl">{title}</h2>
 
@@ -26,4 +31,5 @@ const { title, problems } = fm;
       </li>
     ))}
   </ol>
+  </div>
 </section>

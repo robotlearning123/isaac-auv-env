@@ -1,12 +1,12 @@
 export default {
   eyebrow: "Platform",
-  title: "OceanScale 的能力",
+  title: "我们造的东西",
   capabilities: [
     {
       metric: "11,435",
       metricLabel: "FPS · 单环境 BlueROV2 (RTX 5090)",
       title: "完整 RL 训练管线",
-      body: "RTX 5090 单卡实测。环境到策略,端到端在仿真里跑通。",
+      body: "单卡端到端实测。环境到策略,全程在仿真里完成。",
     },
     {
       metric: "90 M",
@@ -16,21 +16,21 @@ export default {
     },
     {
       metric: "6-DoF",
-      metricLabel: "Fossen + SPH 自研",
+      metricLabel: "Fossen + SPH 自研内核",
       title: "海洋机器人专属物理核",
-      body: "刚体动力学 + SPH 流体仿真,为海洋场景定制。",
+      body: "刚体动力学 + SPH 流体,为海洋场景定制。",
     },
     {
       metric: null,
       metricLabel: "Newton + Isaac Sim 6",
       title: "GPU-native 物理 + 渲染栈",
-      body: "Anthropic + NVIDIA + Lightwheel + Apple 联合维护的 Newton 引擎。",
+      body: "Newton 引擎由 Anthropic + NVIDIA + Lightwheel + Apple 联合维护。Isaac Sim 6 渲染。",
     },
     {
       metric: null,
       metricLabel: "gym / gymnasium 原生",
       title: "RL 接口即插即用",
-      body: "rl_games / stable-baselines3 / RSL-RL 直接接入。",
+      body: "rl_games · stable-baselines3 · RSL-RL,直接接入。",
     },
     {
       metric: null,

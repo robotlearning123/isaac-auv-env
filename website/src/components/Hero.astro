@@ -8,9 +8,16 @@ const t = useTranslations(lang);
 const fm: any = lang === 'zh' ? zhData : enData;
 const { h1, sub, eyebrow } = fm;
 ---
-<section class="relative overflow-hidden pt-32 pb-24 md:pt-44 md:pb-36">
+<section class="relative overflow-hidden pt-36 pb-32 md:pt-52 md:pb-44 min-h-[88vh] flex items-center">
+  {/* Cinematic background image (SpaceX-style) */}
+  <div class="absolute inset-0 -z-10">
+    <img src="/images/hero-bg.jpg" alt="" class="w-full h-full object-cover opacity-55" loading="eager" decoding="async" />
+    <div class="absolute inset-0 bg-gradient-to-b from-[var(--color-abyss-0)]/40 via-[var(--color-abyss-0)]/65 to-[var(--color-abyss-1)]"></div>
+    <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[var(--color-abyss-1)] to-transparent"></div>
+  </div>
+
   {/* Sonar ping rings, decorative */}
-  <div class="absolute top-1/2 right-[-8rem] md:right-[-4rem] opacity-40 pointer-events-none -z-0">
+  <div class="absolute top-1/2 right-[-8rem] md:right-[-4rem] opacity-30 pointer-events-none -z-0">
     <div class="sonar-ping"></div>
     <div class="sonar-ping"></div>
     <div class="sonar-ping"></div>

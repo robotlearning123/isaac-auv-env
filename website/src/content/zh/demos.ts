@@ -10,13 +10,15 @@ export default {
     },
     {
       title: "多 AUV 编队",
-      body: "多智能体协同导航与避障。",
-      comingLabel: "Coming v0.3",
+      body: "多智能体协同导航与避障(概念渲染,v0.3 上线)。",
+      video: "/videos/auv-demo.mp4",
+      status: "Preview · v0.3",
     },
     {
       title: "SPH 流体可视化",
-      body: "实时流体场可视化,GPU-native SPH 内核。",
-      comingLabel: "Coming v0.3",
+      body: "实时流体场可视化,GPU-native SPH 内核(概念渲染,v0.3 上线)。",
+      video: "/videos/sph-demo.mp4",
+      status: "Preview · v0.3",
     },
   ],
 };

@@ -10,13 +10,15 @@ export default {
     },
     {
       title: "Multi-AUV formation",
-      body: "Multi-agent navigation and collision avoidance.",
-      comingLabel: "Coming v0.3",
+      body: "Multi-agent navigation and collision avoidance (concept render, v0.3 ship).",
+      video: "/videos/auv-demo.mp4",
+      status: "Preview · v0.3",
     },
     {
       title: "SPH fluid visualization",
-      body: "Real-time fluid field rendering, GPU-native SPH kernel.",
-      comingLabel: "Coming v0.3",
+      body: "Real-time fluid field rendering, GPU-native SPH kernel (concept render, v0.3 ship).",
+      video: "/videos/sph-demo.mp4",
+      status: "Preview · v0.3",
     },
   ],
 };

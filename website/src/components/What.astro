@@ -7,7 +7,12 @@ const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
 const { title, eyebrow, capabilities } = fm;
 ---
-<section id="what" class="relative max-w-[1280px] mx-auto px-6 py-24 md:py-32">
+<section id="what" class="relative overflow-hidden py-24 md:py-32">
+  <div class="absolute inset-0 -z-10">
+    <img src="/images/what-bg.jpg" alt="" class="w-full h-full object-cover opacity-20" loading="lazy" decoding="async" />
+    <div class="absolute inset-0 bg-gradient-to-b from-[var(--color-abyss-0)]/80 via-[var(--color-abyss-1)]/85 to-[var(--color-abyss-1)]"></div>
+  </div>
+  <div class="relative max-w-[1280px] mx-auto px-6">
   <div class="font-mono text-[var(--color-lumen)] text-xs uppercase tracking-[0.3em] mb-3">/02 · {eyebrow}</div>
   <h2 class="font-display text-4xl md:text-6xl font-bold text-[var(--color-paper)] mb-16 tracking-tight max-w-4xl">{title}</h2>
 
@@ -30,5 +35,6 @@ const { title, eyebrow, capabilities } = fm;
         <p class="text-[var(--color-paper-dim)] text-sm leading-relaxed">{c.body}</p>
       </div>
     ))}
+  </div>
   </div>
 </section>

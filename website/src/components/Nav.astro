@@ -9,9 +9,12 @@ const isZh = lang === 'zh';
   <div class="max-w-[1280px] mx-auto px-6 py-4 flex items-center justify-between gap-6">
     <a
       href={isZh ? '/' : '/en/'}
-      class="font-display text-2xl font-bold tracking-tight text-[var(--color-paper)] hover:text-[var(--color-lumen)] transition-colors"
+      class="flex items-center gap-3 group"
     >
-      {isZh ? '沧渊' : 'OceanScale'}
+      <img src="/images/logo.png" alt="" class="w-8 h-8 transition-transform duration-300 group-hover:rotate-[30deg]" />
+      <span class="font-display text-2xl font-bold tracking-tight text-[var(--color-paper)] group-hover:text-[var(--color-lumen)] transition-colors">
+        {isZh ? '沧渊' : 'OceanScale'}
+      </span>
     </a>
     <div class="flex items-center gap-7 text-sm">
       <a href="#what" class="text-[var(--color-paper-dim)] hover:text-[var(--color-lumen)] transition-colors">{t('nav.what')}</a>
