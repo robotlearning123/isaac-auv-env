@@ -5,9 +5,9 @@ import { getLangFromUrl } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
-const { title, eyebrow, intro, emails } = fm;
+const { title, eyebrow, intro, emails, codeAccessNote } = fm;
 ---
-<section id="contact" class="relative max-w-[1280px] mx-auto px-6 py-24 md:py-32 text-center">
+<section id="contact" class="relative min-h-screen flex items-center text-center"><div class="max-w-[1280px] mx-auto px-6 py-24 md:py-32 w-full">
   <div class="font-mono text-[var(--color-lumen)] text-xs uppercase eyebrow-tracking mb-3 inline-flex items-center gap-3">
     <span class="w-8 h-px bg-[var(--color-lumen)]"></span>
     /05 · {eyebrow}

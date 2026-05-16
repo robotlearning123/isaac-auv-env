@@ -1,0 +1,32 @@
+---
+import zhData from '../content/zh/manifesto';
+import enData from '../content/en/manifesto';
+import { getLangFromUrl } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const fm: any = lang === 'zh' ? zhData : enData;
+const { eyebrow, title, stanzas } = fm;
+---
+<section class="relative min-h-screen flex items-center overflow-hidden">
+  <div class="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-[var(--color-abyss-1)]/40 to-transparent"></div>
+  <div class="max-w-[1280px] mx-auto px-6 w-full py-24 md:py-32">
+    <div class="grid lg:grid-cols-12 gap-10 lg:gap-16">
+      <div class="lg:col-span-4">
+        <div class="font-mono text-[var(--color-lumen)] text-xs uppercase eyebrow-tracking mb-4">/01 · {eyebrow}</div>
+        <h2 class="font-display text-3xl md:text-5xl font-bold text-[var(--color-paper)] tracking-tight leading-[1.05] sticky top-32">{title}</h2>
+      </div>
+      <div class="lg:col-span-8 space-y-10">
+        {stanzas.map((line: string, i: number) => (
+          <div class="grid grid-cols-[auto_1fr] gap-6 items-start">
+            <div class="font-mono text-sm text-[var(--color-lumen)] pt-3 select-none">
+              /0{i + 1}
+            </div>
+            <p class="font-display text-2xl md:text-3xl lg:text-[2.25rem] leading-[1.3] text-[var(--color-paper)] tracking-tight">
+              {line}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
