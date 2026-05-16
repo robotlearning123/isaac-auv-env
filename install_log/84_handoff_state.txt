@@ -1,0 +1,37 @@
+=== current branch ===
+feat/v0.1.0-tier1-fossen
+
+=== uncommitted ===
+?? install_log/83_w2_final_commit.txt
+?? install_log/84_handoff_state.txt
+
+=== branch list ===
+  feat/v0.1.0-run-references bab6ba5 docs(patches): apply R1.4 findings to fossen.md + W2 plan + flag T3.3 source
+  feat/v0.1.0-scaffold       fa48d02 docs(refs): rewrite REFERENCES as verified knowledge base + add NOTICES + IMPLEMENTATION_PLAN
+* feat/v0.1.0-tier1-fossen   d57935e feat(hydro): T2.7 autograd + ruff config — W2 COMPLETE
+  feat/v0.1.0-worlds-poc     1d88c70 docs(goal): goals/W1.5_run_references.md — run reference projects before kernel impl
+
+=== last 10 commits on current branch ===
+d57935e feat(hydro): T2.7 autograd + ruff config — W2 COMPLETE
+5cc3935 bench(hydro): T2.8 Tier-1 throughput — 90 M env-steps/s @ 8192 envs (900× target)
+711ad8b feat(hydro): T2.1-T2.6 Tier-1 Fossen Warp kernels — 5/5 smoke + 27/27 total tests pass
+bab6ba5 docs(patches): apply R1.4 findings to fossen.md + W2 plan + flag T3.3 source
+e4e8311 docs(refs): R1.5 stonefish read-only — GPL-3 anti-vendor confirmed, cite-only
+da5cc4c docs(refs): R1.4 MarineGym source extraction — 7 reusable patterns + 1 critical correction
+f7d96b5 chore(refs): R1.1 bluerov2_gym install + run + docs entry (11,435 FPS single-env)
+1d88c70 docs(goal): goals/W1.5_run_references.md — run reference projects before kernel impl
+19b9a7a docs(goal): patch W2 plan with DR-review findings (1 BLOCKER resolved + 2 HIGH + 2 MED)
+b9fc9a5 docs(goal): goals/W2_tier1_fossen.md — detailed /goal plan for Tier-1 Fossen kernels
+
+=== all tests last run ===
+...............................                                          [100%]
+31 passed in 14.17s
+
+=== file count ===
+  oceanscale/: 4 .py files
+  tests/: 8 .py files
+  benchmarks/: 4 .py files
+  docs/: 3 .md files
+  goals/: 2 .md files
+  install_log/: 75 log files
+  research/: 6 reports
