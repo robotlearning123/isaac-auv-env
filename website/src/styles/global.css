@@ -155,4 +155,18 @@
   table, th, td, strong, em, b, i, code, pre, kbd, samp, q, blockquote {
     font-family: inherit;
   }
+
+  /* Scroll-reveal: SpaceX-style fade-rise as section enters viewport */
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(2.5rem);
+    transition: opacity 900ms cubic-bezier(0.22, 1, 0.36, 1), transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .scroll-reveal.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-reveal { opacity: 1; transform: none; transition: none; }
+  }
 }

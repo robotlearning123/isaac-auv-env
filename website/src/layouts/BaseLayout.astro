@@ -46,5 +46,25 @@ const lang = getLangFromUrl(Astro.url);
       <slot />
     </main>
     <Footer />
+    <script is:inline>
+      // Scroll-reveal: fade + rise each section after Hero as it enters viewport
+      (function () {
+        const sections = document.querySelectorAll('main > section, main section');
+        if (!('IntersectionObserver' in window) || sections.length < 2) return;
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add('in-view');
+              observer.unobserve(e.target);
+            }
+          });
+        }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+        // Skip first section (Hero) — it has its own page-load animation
+        Array.from(sections).slice(1).forEach((s) => {
+          s.classList.add('scroll-reveal');
+          observer.observe(s);
+        });
+      })();
+    </script>
   </body>
 </html>
