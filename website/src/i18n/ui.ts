@@ -12,6 +12,7 @@ export const ui = {
     'lang.other': 'EN',
     'footer.tagline': '加速水下机器人的下一个十年',
     'footer.copyright': '© 2026 OceanScale (沧渊) · Beijing',
+    'hero.sonarLabel': '声纳 · 在线',
   },
   en: {
     'nav.what': 'Platform',
@@ -23,6 +24,7 @@ export const ui = {
     'lang.other': '中',
     'footer.tagline': 'Accelerating the next decade of underwater robotics',
     'footer.copyright': '© 2026 OceanScale · Beijing',
+    'hero.sonarLabel': 'SONAR · ACTIVE',
   },
 } as const;
 

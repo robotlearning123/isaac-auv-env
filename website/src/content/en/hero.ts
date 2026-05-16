@@ -1,5 +1,5 @@
 export default {
   eyebrow: "AI-native marine robotics infrastructure · Beijing",
-  h1: "Accelerating the next decade of underwater robotics",
-  sub: "GPU-native simulation that replaces months of ocean trials with hours of training. Built for the labs, companies, and defense programs shaping marine robotics.",
+  h1: "Accelerating the next decade.",
+  sub: "GPU-native simulation for marine robotics. Hours of training instead of months at sea. Built for labs, industry, and defense.",
 };

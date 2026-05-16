@@ -144,4 +144,15 @@
     letter-spacing: -0.035em;
     line-height: 0.98;
   }
+
+  /* Lang-routed eyebrow letter-spacing — CJK can't use the same wide tracking as latin uppercase.
+     Replace tracking-[0.3em] with eyebrow-tracking class on all section eyebrows. */
+  html[lang="zh"] .eyebrow-tracking { letter-spacing: 0.08em; }
+  html[lang="en"] .eyebrow-tracking { letter-spacing: 0.3em; }
+
+  /* Defensive: native HTML elements that browsers sometimes default to Times New Roman.
+     Force them to inherit from html/body which is Geist/LXGW. */
+  table, th, td, strong, em, b, i, code, pre, kbd, samp, q, blockquote {
+    font-family: inherit;
+  }
 }
