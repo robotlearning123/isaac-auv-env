@@ -1,6 +1,6 @@
 export default {
   eyebrow: "Benchmarks",
-  title: "Numbers, side by side",
+  title: "Measured against current underwater simulators",
   headers: ["Metric", "OceanScale", "UWSim", "HoloOcean", "Gazebo"],
   rows: [
     ["Single-env FPS (RTX 5090)", "**11,435**", "~200", "~500", "~100"],

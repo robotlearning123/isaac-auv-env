@@ -1,5 +1,5 @@
 export default {
-  eyebrow: "AI-native marine robotics infrastructure",
-  h1: "Train underwater robots before they touch water.",
-  sub: "GPU-native simulation replaces months of ocean trials with hours of training. Built for the labs, companies, and defense programs shaping the next decade of marine robotics.",
+  eyebrow: "AI-native simulation infrastructure to accelerate marine robotics deployment",
+  h1: "The simulation engine powering AI-native marine robotics.",
+  sub: "OceanScale is a marine robotics simulation infrastructure company, building GPU-native physics, AI-ready training environments, and benchmarking platforms that accelerate research, industry, and defense deployment at scale.",
 };

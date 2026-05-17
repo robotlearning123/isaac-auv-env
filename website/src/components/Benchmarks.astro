@@ -13,42 +13,54 @@ const { title, eyebrow, headers, rows, caveat } = fm;
     <div class="absolute inset-0 bg-gradient-to-b from-[var(--color-abyss-1)] via-[var(--color-abyss-1)]/88 to-[var(--color-abyss-1)]"></div>
   </div>
   <div class="relative max-w-[1280px] mx-auto px-6 w-full">
-  <div class="font-mono text-[var(--color-lumen)] text-xs uppercase eyebrow-tracking mb-3">/06 · {eyebrow}</div>
-  <h2 class="font-display text-4xl md:text-6xl font-bold text-[var(--color-paper)] mb-12 tracking-tight max-w-4xl">{title}</h2>
+    <div class="font-mono text-[var(--color-lumen)] text-xs uppercase eyebrow-tracking mb-3">/06 · {eyebrow}</div>
+    <h2 class="font-display text-4xl md:text-6xl font-bold text-[var(--color-paper)] mb-12 tracking-tight max-w-4xl leading-[1.05]">{title}</h2>
 
-  <div class="overflow-x-auto border border-[var(--color-border-deep)]">
-    <table class="w-full text-left text-sm min-w-[680px]">
-      <thead class="bg-[var(--color-abyss-1)]">
-        <tr>
-          {headers.map((h: string, i: number) => (
-            <th class:list={[
-              "px-4 py-4 font-mono uppercase tracking-[0.15em] text-[11px]",
-              i === 1 ? "text-[var(--color-lumen)]" : "text-[var(--color-paper-dim)]"
-            ]}>
-              {h}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((row: string[]) => (
-          <tr class="border-t border-[var(--color-border-deep)] hover:bg-[var(--color-abyss-1)]/40 transition-colors">
-            {row.map((cell: string, i: number) => (
-              <td class:list={[
-                "px-4 py-3",
-                i === 0 ? "text-[var(--color-paper)]" :
-                i === 1 ? "text-[var(--color-lumen)] font-mono font-semibold bg-[var(--color-lumen)]/[0.04]" :
-                "text-[var(--color-paper-dim)] font-mono"
-              ]} set:html={cell.replace(/\*\*(.+?)\*\*/g, '<strong class="text-[var(--color-paper)]">$1</strong>')}>
-              </td>
+    {/* Sonar-display table: OceanScale column gets a luminous pillar treatment */}
+    <div class="relative overflow-x-auto border border-[var(--color-border-deep)]">
+      <table class="w-full text-left text-sm min-w-[760px] border-collapse">
+        <thead>
+          <tr class="bg-[var(--color-abyss-1)]">
+            {headers.map((h: string, i: number) => (
+              <th class:list={[
+                'px-5 py-5 font-mono uppercase tracking-[0.15em] text-[11px] align-bottom',
+                i === 0 ? 'text-[var(--color-paper-dim)] w-[34%]' :
+                i === 1 ? 'text-[var(--color-abyss-0)] bg-[var(--color-lumen)] relative' :
+                'text-[var(--color-paper-dim)]'
+              ]}>
+                {i === 1 ? (
+                  <span class="flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-abyss-0)] animate-pulse"></span>
+                    {h}
+                  </span>
+                ) : h}
+              </th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-  {caveat && (
-    <p class="mt-5 text-xs text-[var(--color-paper-dim)] italic max-w-2xl leading-relaxed">{caveat}</p>
-  )}
+        </thead>
+        <tbody>
+          {rows.map((row: string[], ri: number) => (
+            <tr class:list={[
+              'border-t border-[var(--color-border-deep)] transition-colors',
+              ri % 2 === 1 ? 'bg-[var(--color-abyss-0)]/30' : '',
+              'hover:bg-[var(--color-abyss-2)]/40'
+            ]}>
+              {row.map((cell: string, i: number) => (
+                <td class:list={[
+                  'px-5 py-4 align-middle',
+                  i === 0 ? 'text-[var(--color-paper)] font-medium' :
+                  i === 1 ? 'text-[var(--color-lumen)] font-mono font-semibold bg-[var(--color-lumen)]/[0.06] border-l border-r border-[var(--color-lumen)]/30 text-base' :
+                  'text-[var(--color-paper-dim)] font-mono'
+                ]} set:html={cell.replace(/\*\*(.+?)\*\*/g, '<strong class="text-[var(--color-paper)] text-base">$1</strong>')}>
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    {caveat && (
+      <p class="mt-6 text-xs text-[var(--color-paper-dim)] italic max-w-2xl leading-relaxed border-l-2 border-[var(--color-border-deep)] pl-4">{caveat}</p>
+    )}
   </div>
 </section>

@@ -137,6 +137,11 @@
     font-family: var(--font-display-zh);
     font-weight: 400;
     letter-spacing: -0.005em;
+    /* CJK-safe wrapping: keep compounds (e.g. 机器人) intact; only break at marked
+       boundaries (ZWSP U+200B inserted in source) or punctuation. */
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    text-wrap: pretty;
   }
   html[lang="en"] .font-display {
     font-family: var(--font-body);

@@ -55,3 +55,4 @@ Thumbs.db
 
 # Note: install_log/ contained in initial commit as historical record;
 # subsequent install_log/* are tracked or not at developer discretion.
+.gstack/

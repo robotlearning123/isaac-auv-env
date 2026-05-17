@@ -1,0 +1,59 @@
+================================================================================
+SESSION HANDOFF — website v0.5.0
+================================================================================
+Date:    2026-05-16
+Branch:  feat/oceanscale-website-v0.1.0
+Shipped: Lightwheel-voice brand rewrite + UI/UX bento overhaul
+
+CONTENT REWRITE (Lightwheel pattern: eyebrow=positioning+outcome,
+                 H1=engine claim, sub=company definition+product list,
+                 section title="How [Company] builds [X] for [Y]")
+
+  ZH Hero H1 BEFORE: 让水下机器人在下水之前,先学会一切。
+  ZH Hero H1 AFTER:  驱动 AI 时代海洋机器人的仿真引擎。
+
+  EN Hero H1 BEFORE: Train underwater robots before they touch water.
+  EN Hero H1 AFTER:  The simulation engine powering AI-native marine robotics.
+
+  Section titles rewritten: Platform, Why, Benchmarks, Demos, Contact
+  Footer tagline aligned to positioning, not poetic future-pacing
+
+UI/UX OVERHAUL (5 surgical edits)
+  1. global.css         — CJK word-break: keep-all + text-wrap: pretty
+  2. zh/hero.ts         — H1 has U+200B at word boundaries (preserves
+                          compounds 海洋机器人 / 仿真引擎 across wrap)
+  3. Stats.astro        — Bloomberg poster: huge hero stat
+                          clamp(4.5rem,13vw,15rem), 2-col secondary below
+  4. What.astro         — Bento grid breaks 6-card AI-slop symmetry;
+                          featured 11,435 card spans col-2 row-2
+  5. Manifesto.astro    — Centered poster, big stanzas with lumen dividers
+  6. Benchmarks.astro   — OceanScale column gets cyan pillar +
+                          pulse-dot badge in header
+
+VERIFICATION
+  Build: npm run build  →  pass (695ms, 2 pages)
+  Screenshots: /tmp/oceanscale-shots/  (zh-01..10 + en-01..10 + zh-full + en-full)
+  Playwright direct (chromiumSandbox: false) since gstack browse sandboxes out
+
+FILES CHANGED (21)
+  .gitignore                              (+1: .gstack/)
+  website/src/styles/global.css           (CJK rules)
+  website/src/i18n/ui.ts                  (footer tagline)
+  website/src/components/{Benchmarks,Manifesto,Stats,What}.astro
+  website/src/content/{en,zh}/{benchmarks,contact,demos,hero,manifesto,what,why}.ts
+
+NEXT (v0.5.1 polish, priority order)
+  1. EN hero eyebrow wraps to 2 lines at desktop — tighten or shorten
+  2. BuiltOn 6-card grid still symmetric — add real logos / re-rank
+  3. Demos: feature Available BlueROV2 card, demote v0.3 previews
+  4. Hero CTAs below fold at desktop — adjust min-h-[88vh]
+  5. Mobile audit (only desktop verified this session)
+  6. Audit /videos/*.mp4 — may be placeholders
+  7. Footer has too much empty space above
+
+SIMULATOR WORK (unchanged, parked)
+  Branch: feat/v0.1.0-tier1-fossen @ d57935e
+  State:  W2 COMPLETE (Tier-1 Fossen, 90M env-steps/s @ 8192 envs, 31/31 tests)
+  Next:   W3 (multi-agent + ROS 2 bridge) — see goals/ for plan
+
+================================================================================

@@ -1,6 +1,6 @@
 export default {
   eyebrow: "Benchmarks",
-  title: "性能基准",
+  title: "对照现有水下仿真器,关键指标实测",
   headers: ["指标", "OceanScale", "UWSim", "HoloOcean", "Gazebo"],
   rows: [
     ["Single-env FPS (RTX 5090)", "**11,435**", "~200", "~500", "~100"],
@@ -12,5 +12,5 @@ export default {
     ["Fossen 6-DoF", "✓", "✓", "partial", "—"],
     ["ROS 2 集成", "v0.3", "✓", "✓", "✓"],
   ],
-  caveat: "OceanScale 数据来自 W2 实测 (2026-05-15, RTX 5090)。其他工具数据来自各自官方文档与社区报告,实际值因场景与硬件而异。",
+  caveat: "OceanScale 数据来自 W2 实测(2026-05-15, RTX 5090)。其他工具数据来自各自官方文档与社区报告,实际值因场景与硬件而异。",
 };

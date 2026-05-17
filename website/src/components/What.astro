@@ -6,6 +6,19 @@ import { getLangFromUrl } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
 const { title, eyebrow, capabilities } = fm;
+type Cap = { metric?: string | null; metricLabel: string; title: string; body: string };
+const caps = capabilities as Cap[];
+
+// Bento spans — breaks the AI-slop symmetric 3-col grid.
+// Featured cards (11,435 FPS, Newton stack) get extra width.
+const spans = [
+  'lg:col-span-2 lg:row-span-2', // 0: hero capability (11,435 FPS)
+  'lg:col-span-1',                // 1: 90M throughput
+  'lg:col-span-1',                // 2: 6-DoF
+  'lg:col-span-2',                // 3: Newton stack (wide)
+  'lg:col-span-1',                // 4: RL interfaces
+  'lg:col-span-2',                // 5: Real-world ocean scenes (wide)
+];
 ---
 <section id="what" class="relative overflow-hidden py-24 md:py-32 min-h-screen flex items-center">
   <div class="absolute inset-0 -z-10">
@@ -13,28 +26,47 @@ const { title, eyebrow, capabilities } = fm;
     <div class="absolute inset-0 bg-gradient-to-b from-[var(--color-abyss-0)]/80 via-[var(--color-abyss-1)]/85 to-[var(--color-abyss-1)]"></div>
   </div>
   <div class="relative max-w-[1280px] mx-auto px-6 w-full">
-  <div class="font-mono text-[var(--color-lumen)] text-xs uppercase eyebrow-tracking mb-3">/03 · {eyebrow}</div>
-  <h2 class="font-display text-4xl md:text-6xl font-bold text-[var(--color-paper)] mb-16 tracking-tight max-w-4xl">{title}</h2>
+    <div class="font-mono text-[var(--color-lumen)] text-xs uppercase eyebrow-tracking mb-3">/03 · {eyebrow}</div>
+    <h2 class="font-display text-4xl md:text-6xl font-bold text-[var(--color-paper)] mb-16 tracking-tight max-w-4xl leading-[1.05]">{title}</h2>
 
-  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-[var(--color-border-deep)] border border-[var(--color-border-deep)]">
-    {capabilities.map((c: { metric?: string | null; metricLabel: string; title: string; body: string }) => (
-      <div class="card-glow bg-[var(--color-abyss-1)] p-8 hover:bg-[var(--color-abyss-2)] group min-h-[14rem] flex flex-col">
-        {c.metric ? (
-          <div class="font-mono text-4xl md:text-5xl text-[var(--color-lumen)] font-bold leading-none mb-1">
-            {c.metric}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:auto-rows-[minmax(14rem,auto)] gap-px bg-[var(--color-border-deep)] border border-[var(--color-border-deep)]">
+      {caps.map((c, i) => {
+        const featured = i === 0;
+        return (
+          <div class:list={[
+            'card-glow bg-[var(--color-abyss-1)] hover:bg-[var(--color-abyss-2)] group flex flex-col',
+            featured ? 'p-10 lg:p-12' : 'p-8',
+            spans[i] ?? 'lg:col-span-1',
+          ]}>
+            {c.metric ? (
+              <div class:list={[
+                'font-mono text-[var(--color-lumen)] font-bold leading-none mb-2 tracking-tight',
+                featured ? 'text-7xl md:text-8xl lg:text-9xl' : 'text-4xl md:text-5xl',
+              ]}>
+                {c.metric}
+              </div>
+            ) : (
+              <div class="w-10 h-10 mb-3 flex items-center justify-center border border-[var(--color-border-deep)] group-hover:border-[var(--color-lumen)] transition-colors">
+                <div class="w-1.5 h-1.5 bg-[var(--color-lumen)] rounded-full"></div>
+              </div>
+            )}
+            <div class:list={[
+              'font-mono uppercase tracking-[0.2em] text-[var(--color-paper-dim)] mb-5 mt-1',
+              featured ? 'text-[11px]' : 'text-[10px]',
+            ]}>
+              {c.metricLabel}
+            </div>
+            <h3 class:list={[
+              'font-display font-semibold text-[var(--color-paper)] mb-3 leading-tight',
+              featured ? 'text-2xl md:text-3xl lg:text-4xl' : 'text-lg md:text-xl',
+            ]}>{c.title}</h3>
+            <p class:list={[
+              'text-[var(--color-paper-dim)] leading-relaxed',
+              featured ? 'text-base md:text-lg max-w-md' : 'text-sm',
+            ]}>{c.body}</p>
           </div>
-        ) : (
-          <div class="w-10 h-10 mb-2 flex items-center justify-center border border-[var(--color-border-deep)] group-hover:border-[var(--color-lumen)] transition-colors">
-            <div class="w-1.5 h-1.5 bg-[var(--color-lumen)] rounded-full"></div>
-          </div>
-        )}
-        <div class="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-paper-dim)] mb-5 mt-1">
-          {c.metricLabel}
-        </div>
-        <h3 class="font-display text-lg md:text-xl font-semibold text-[var(--color-paper)] mb-2 leading-tight">{c.title}</h3>
-        <p class="text-[var(--color-paper-dim)] text-sm leading-relaxed">{c.body}</p>
-      </div>
-    ))}
-  </div>
+        );
+      })}
+    </div>
   </div>
 </section>
