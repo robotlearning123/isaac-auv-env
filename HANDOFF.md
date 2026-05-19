@@ -1,130 +1,38 @@
-# Session Handoff — 2026-05-16
+# Session Handoff — 2026-05-19
 
 **Workspace**: `/home/robot/workspace/46-marine/`
-**Branch (current)**: `feat/oceanscale-website-v0.1.0` ★
-**Brand**: OceanScale / 沧渊 — AI-native simulation infrastructure for marine robotics
-**This session shipped**: **website v0.5.0** — Lightwheel-voice brand rewrite + UI/UX bento overhaul
+**Branch**: `main`
+**This session shipped**: **deploy infrastructure** — Cloudflare Pages migrated to Git integration, tag-driven release pipeline, account-wide CF API token in 1Password.
 
-> Previous handoff (simulator W2 Tier-1 Fossen, 2026-05-15) is at `install_log/86_handoff_website_v0.5.0.txt` reference, and the simulator branch lives at `feat/v0.1.0-tier1-fossen` @ `d57935e`. That work is complete and shipped to its own branch — resume independently.
+## What changed
 
----
+1. **Git** — branch consolidation. 5 legacy branches deleted; `main` is now the single source of truth, both locally and on origin. GitHub default branch flipped to `main`.
 
-## 1. What shipped this session — website v0.5.0
+2. **Cloudflare Pages** — `oceanscale-web` migrated from direct-upload to Git-integration with `robotlearning123/46-marine @ main`. Monorepo watch path set to `website/*` so non-website commits don't trigger builds. Production auto-deploy is **disabled**; tags trigger production via GitHub Actions.
 
-### Phase 1 — full brand-voice rewrite (Lightwheel pattern)
+3. **GitHub Actions** — `.github/workflows/release.yml` triggers on `v*.*.*` tag push. Reads `CLOUDFLARE_API_TOKEN` from repo secret, calls CF Pages API, polls deployment, verifies live URL. ~30s end-to-end.
 
-Calibrated against [Lightwheel](https://www.lightwheel.ai/) — extracted their `eyebrow=positioning+outcome / H1=engine claim / sub=company definition+product list / section title=How [Company] builds [X] for [Y]` skeleton and applied it across every content file.
+4. **1Password** — account-wide CF API token (18 permissions) saved to Dev vault: `op://Dev/Cloudflare Account Master Token/credential`. Use in any session.
 
-**Hero (both langs)**
-- `eyebrow`: positioning + outcome verb (was: pure positioning)
-- `h1`: engine claim ("驱动 AI 时代海洋机器人的仿真引擎。" / "The simulation engine powering AI-native marine robotics.")
-- `sub`: company definition + 3-product list
+5. **Docs** — `CLAUDE.md`, `CHANGELOG.md`, `VERSION` created. `README.md` updated with deployment contract.
 
-**Section titles rewritten in "[Company] builds [X] for [Y]" pattern**
-- Platform: "OceanScale 如何为海洋机器人,打造 GPU-native 仿真引擎" / "How OceanScale builds the GPU-native simulation engine for marine robotics"
-- Why: "为什么海洋机器人需要专门的仿真基础设施" / "Why marine robotics needs purpose-built simulation infrastructure"
-- Benchmarks: "对照现有水下仿真器,关键指标实测" / "Measured against current underwater simulators"
-- Demos: "在 RTX 5090 上运行的实测演示" / "Running on RTX 5090, measured end-to-end"
-- Contact: "联系 OceanScale" / "Talk to OceanScale"
-
-**Footer tagline** aligned to positioning (was poetic future-pacing).
-
-### Phase 2 — UI/UX bento overhaul (5 surgical edits)
-
-| # | File | Change |
-|---|---|---|
-| 1 | `styles/global.css` | ZH `.font-display` adds `word-break: keep-all` + `text-wrap: pretty` |
-| 2 | `content/zh/hero.ts` | H1 inserts U+200B at word boundaries — preserves 机器人 / 仿真引擎 compounds during wrap |
-| 3 | `components/Stats.astro` | Asymmetric Bloomberg-terminal poster — hero stat full-width (`clamp(4.5rem, 13vw, 15rem)`), secondary stats 2-col below |
-| 4 | `components/What.astro` | Bento grid breaks 6-card AI-slop symmetry — featured 11,435 card spans `col-span-2 row-span-2`, Newton + Ocean cards span 2 cols |
-| 5 | `components/Manifesto.astro` | Centered poster — small eyebrow up top, 3 huge stanzas (`text-3xl md:text-5xl lg:text-[3.5rem]`), 12-px lumen dividers between |
-| 6 | `components/Benchmarks.astro` | OceanScale column gets cyan pillar treatment — `bg-lumen` header with pulse-dot badge, column has `border-l border-r border-lumen/30` |
-
-### Verification
+## Deploy workflow
 
 ```
-npm run build  →  ✓ Completed in 695ms · 2 page(s) built
+git push origin main                # preview only (no production change)
+git tag v0.5.1 && git push --tags   # → GH Action → CF API → live in ~30s
 ```
 
-Live verification via Playwright screenshots at `1440x900` (zh + en) + per-section captures stored at `/tmp/oceanscale-shots/` during the session. All 10 sections inspected, before/after comparison documented in conversation log.
+## v0.5.1 polish queued (from prior session §4)
 
----
+1. EN eyebrow wrap (mobile)
+2. BuiltOn region logos
+3. Demos featured card styling
+4. Hero CTAs above the fold
+5. Mobile pass
 
-## 2. File scope (21 modified)
+## Reference
 
-```
-.gitignore                              (+1: .gstack/)
-website/src/components/Benchmarks.astro (UI: sonar-pillar table)
-website/src/components/Manifesto.astro  (UI: centered poster)
-website/src/components/Stats.astro      (UI: Bloomberg poster)
-website/src/components/What.astro       (UI: bento grid)
-website/src/content/{en,zh}/benchmarks.ts
-website/src/content/{en,zh}/contact.ts
-website/src/content/{en,zh}/demos.ts
-website/src/content/{en,zh}/hero.ts
-website/src/content/{en,zh}/manifesto.ts
-website/src/content/{en,zh}/what.ts
-website/src/content/{en,zh}/why.ts
-website/src/i18n/ui.ts                  (footer tagline)
-website/src/styles/global.css           (CJK word-break)
-```
-
-Two untracked files **not** included in this commit:
-- `AGENTS.md` — auto-generated by a memory hook, not project content
-- `install_log/85_handoff_final.txt` — `git branch -v` capture from the prior session; left as artifact
-
----
-
-## 3. Tech stack (website)
-
-- **Framework**: Astro v6 + Tailwind v4 (static SSG)
-- **i18n**: `/` = zh (default), `/en/` = English, key-based `src/i18n/ui.ts`
-- **Fonts**: Geist 800 (en display) + LXGW WenKai (zh display) + JetBrains Mono (telemetry)
-- **Palette**: Abyss `#02050C → #0A1628`, Lumen cyan `#4DEEEA`, Coral `#FF6B6B`, Paper `#F7F4EE`
-- **Hero**: video ambient bg (`/videos/hero-ambient.mp4`) + sonar dial SVG + live telemetry ticker (RAF-driven, 90M env-steps/s sim)
-- **Deploy target**: Cloudflare Pages (static)
-
----
-
-## 4. Next priorities (specific + actionable)
-
-### v0.5.1 polish candidates (in priority order)
-
-1. **EN hero `text-balance` review** — the eyebrow "AI-NATIVE SIMULATION INFRASTRUCTURE TO ACCELERATE MARINE ROBOTICS DEPLOYMENT" wraps to 2 lines at desktop. Either shorten or tighten the wrap.
-2. **BuiltOn section** — currently 6 text-only "partner" cards (Newton / Isaac Sim 6 / NVIDIA / Anthropic / Lightwheel / Apple) read as AI-slop uniform grid. Add real SVG logos OR re-rank visually (Newton + Isaac Sim 6 are LOAD-BEARING; the others are upstream context).
-3. **Demos section** — 3-card grid still symmetric. Feature the BlueROV2 (Available) card BIG, demote the two `Preview · v0.3` cards.
-4. **Hero CTAs visibility** — at desktop the buttons are below the fold. Either reduce hero `min-h-[88vh]` or move CTAs higher.
-5. **Mobile audit** — only desktop verified this session. Need mobile screenshot pass.
-6. **Real video assets** — `/videos/bluerov2-demo.mp4`, `/videos/auv-demo.mp4`, `/videos/sph-demo.mp4` may be placeholders. Audit.
-7. **Footer huge empty space** — there's a noticeable gap between Contact section and Footer (zh-10 screenshot). Tighten.
-
-### Out-of-scope but on the radar
-
-- Simulator side (`oceanscale/`, `tests/`, `benchmarks/`) — W2 complete on `feat/v0.1.0-tier1-fossen`. Next is W3 (multi-agent + ROS 2 bridge). NOT touched this session.
-- Asana/Linear setup if the team grows.
-- Domain + deploy automation (Cloudflare Pages CI hook).
-
----
-
-## 5. How to resume
-
-```bash
-cd /home/robot/workspace/46-marine
-git checkout feat/oceanscale-website-v0.1.0
-git log --oneline -5            # confirm v0.5.0 commit is on top
-cd website && npm install        # if fresh checkout
-npm run dev                      # http://127.0.0.1:4321/ (zh) + /en/
-```
-
-Branch is ahead of `main` by all of the v0.x.x website history — `main` is intentionally empty per repo convention (worktree workflow). When ready to publish, merge this branch to `main` via PR.
-
----
-
-## 6. Outside voices / agents used
-
-- Lightwheel homepage scrape via WebFetch (verified URL `lightwheel.ai`)
-- `frontend-design` skill loaded for UI/UX phase
-- Playwright direct (sandbox disabled via `chromiumSandbox: false`) for per-section screenshots — gstack `browse` binary sandboxed-out on this host
-- No subagents dispatched this session
-
-Local /tmp artifacts (will be cleared by next reboot): `/tmp/oceanscale-shots/*.png`, `/tmp/shot.mjs`, `/tmp/astro-dev.log`
+- **Live**: https://oceanscale-web.pages.dev/
+- **Full session report (CN)**: `artifacts/infra-migration-2026-05-19.html`
+- **CF token retrieval**: `CF_TOKEN=$(op read 'op://Dev/Cloudflare Account Master Token/credential')`

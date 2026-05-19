@@ -1,0 +1,86 @@
+name: Release Deploy
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to deploy (e.g. v0.5.1). Leave blank to deploy current main.'
+        required: false
+        default: ''
+
+concurrency:
+  group: release-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy ${{ github.ref_name }} to Cloudflare Pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    env:
+      CF_API: https://api.cloudflare.com/client/v4
+      CF_ACCT: 49718ea9db23f551054b2774e5c0e7fb
+      CF_PROJECT: oceanscale-web
+    steps:
+      - name: Resolve ref
+        id: ref
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "ref=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+            echo "Triggered by tag push: ${{ github.ref_name }}"
+          else
+            REF="${{ github.event.inputs.tag }}"
+            [ -z "$REF" ] && REF="main"
+            echo "ref=$REF" >> "$GITHUB_OUTPUT"
+            echo "Triggered manually for ref: $REF"
+          fi
+
+      - name: Trigger Cloudflare Pages production deploy
+        id: trigger
+        run: |
+          set -euo pipefail
+          RESP=$(curl -sf -X POST \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            "$CF_API/accounts/$CF_ACCT/pages/projects/$CF_PROJECT/deployments" \
+            -F "branch=main")
+          echo "$RESP" | jq .
+          DEPLOY_ID=$(echo "$RESP" | jq -r '.result.short_id')
+          echo "deploy_id=$DEPLOY_ID" >> "$GITHUB_OUTPUT"
+          echo "Triggered deploy: $DEPLOY_ID"
+
+      - name: Poll deploy until success or failure
+        timeout-minutes: 8
+        env:
+          DEPLOY_ID: ${{ steps.trigger.outputs.deploy_id }}
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 32); do
+            RAW=$(curl -sf -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+              "$CF_API/accounts/$CF_ACCT/pages/projects/$CF_PROJECT/deployments/$DEPLOY_ID")
+            LATEST=$(echo "$RAW" | jq -r '.result.latest_stage.name + "/" + .result.latest_stage.status')
+            ALL=$(echo "$RAW" | jq -r '.result.stages | map(.name + "=" + .status) | join(",")')
+            echo "[poll $i/32] $LATEST | $ALL"
+            case "$LATEST" in
+              deploy/success) echo "DEPLOY SUCCESS"; exit 0 ;;
+              *failure*|*canceled*) echo "DEPLOY FAILED"; exit 1 ;;
+            esac
+            sleep 15
+          done
+          echo "Timed out after 8 minutes" >&2
+          exit 1
+
+      - name: Verify live URL serves expected content
+        run: |
+          set -euo pipefail
+          PROD_HTML=$(curl -sf https://oceanscale-web.pages.dev/)
+          if echo "$PROD_HTML" | grep -q "OceanScale\|沧渊"; then
+            echo "Production URL serving expected content."
+          else
+            echo "Warning: production URL did not contain expected markers." >&2
+            exit 1
+          fi
