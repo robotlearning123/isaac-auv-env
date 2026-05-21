@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Tier-1 Fossen orchestrator — owns per-env buffers, calls kernels in order,
 writes wrench to Newton's state.body_f.
 
@@ -10,8 +12,9 @@ Usage pattern (env loop):
     solver.step(state_curr, state_next, control, None, dt)
 """
 
-from __future__ import annotations
+from dataclasses import dataclass
 
+import numpy as np
 import warp as wp
 
 from oceanscale.hydro.tier1_kernels import (
@@ -29,6 +32,22 @@ DEFAULT_RHO = 1025.0  # salt water (kg/m³)
 DEFAULT_G = 9.81
 DEFAULT_DT = 1.0 / 240.0
 DEFAULT_EMA_ALPHA = 0.3  # per MarineGym L230
+
+
+@dataclass
+class RandomizationRanges:
+    """Per-coefficient multiplicative variation range (fraction of base value).
+
+    Each field is a float in [0, 1]. The actual per-env coefficient is sampled as:
+        coeff_i = base * (1 + uniform(-range, +range))
+    """
+
+    mass: float = 0.20
+    added_mass: float = 0.25
+    d_lin: float = 0.30
+    d_quad: float = 0.30
+    volume: float = 0.15
+    coBM: float = 0.50
 
 
 class Tier1:
@@ -143,6 +162,86 @@ class Tier1:
             )
             T = np.tile(T_arr, (n, 1, 1))
         self.T_matrix = wp.array(T, dtype=wp.float32, device=self.device)
+
+        # Store base values for domain randomization
+        self._base_coeffs = {
+            "added_mass": np.array(added_mass, dtype=np.float32),
+            "d_lin": np.array(d_lin, dtype=np.float32),
+            "d_quad": np.array(d_quad, dtype=np.float32),
+            "mass": float(mass),
+            "volume": float(volume),
+            "coBM": float(coBM),
+        }
+
+    def randomize_coeffs(
+        self,
+        env_ids: np.ndarray | list[int] | None = None,
+        ranges: RandomizationRanges | None = None,
+        rng: np.random.Generator | None = None,
+    ) -> None:
+        """Sample per-env coefficient variation around base values.
+
+        Modifies GPU coefficient arrays in-place for the specified envs.
+        Must be called after set_coeffs().
+
+        Args:
+            env_ids: Env indices to randomize. None = all envs.
+            ranges: Variation fractions. Uses defaults if None.
+            rng: NumPy RNG for reproducibility. Fresh default if None.
+        """
+        assert hasattr(self, "_base_coeffs"), "Call set_coeffs() before randomize_coeffs()"
+        if ranges is None:
+            ranges = RandomizationRanges()
+        if rng is None:
+            rng = np.random.default_rng()
+        if env_ids is None:
+            env_ids = np.arange(self.n_envs)
+        ids = np.asarray(env_ids)
+        n = len(ids)
+        base = self._base_coeffs
+
+        # Added mass (6-DOF): per-env, per-axis
+        ma_scale = 1.0 + rng.uniform(-ranges.added_mass, ranges.added_mass, (n, 6)).astype(np.float32)
+        ma_rand = base["added_mass"][np.newaxis, :] * ma_scale
+        ma_lin_np = self.M_A_lin.numpy()
+        ma_ang_np = self.M_A_ang.numpy()
+        ma_lin_np[ids] = ma_rand[:, :3]
+        ma_ang_np[ids] = ma_rand[:, 3:]
+        self.M_A_lin = wp.array(ma_lin_np, dtype=wp.vec3f, device=self.device)
+        self.M_A_ang = wp.array(ma_ang_np, dtype=wp.vec3f, device=self.device)
+
+        # Damping linear (6-DOF)
+        dl_scale = 1.0 + rng.uniform(-ranges.d_lin, ranges.d_lin, (n, 6)).astype(np.float32)
+        dl_rand = base["d_lin"][np.newaxis, :] * dl_scale
+        dll_np = self.d_lin_lin.numpy()
+        dla_np = self.d_lin_ang.numpy()
+        dll_np[ids] = dl_rand[:, :3]
+        dla_np[ids] = dl_rand[:, 3:]
+        self.d_lin_lin = wp.array(dll_np, dtype=wp.vec3f, device=self.device)
+        self.d_lin_ang = wp.array(dla_np, dtype=wp.vec3f, device=self.device)
+
+        # Damping quadratic (6-DOF)
+        dq_scale = 1.0 + rng.uniform(-ranges.d_quad, ranges.d_quad, (n, 6)).astype(np.float32)
+        dq_rand = base["d_quad"][np.newaxis, :] * dq_scale
+        dql_np = self.d_quad_lin.numpy()
+        dqa_np = self.d_quad_ang.numpy()
+        dql_np[ids] = dq_rand[:, :3]
+        dqa_np[ids] = dq_rand[:, 3:]
+        self.d_quad_lin = wp.array(dql_np, dtype=wp.vec3f, device=self.device)
+        self.d_quad_ang = wp.array(dqa_np, dtype=wp.vec3f, device=self.device)
+
+        # Mass, volume, coBM (scalar per env)
+        m_np = self.mass_arr.numpy()
+        m_np[ids] = base["mass"] * (1.0 + rng.uniform(-ranges.mass, ranges.mass, n).astype(np.float32))
+        self.mass_arr = wp.array(m_np, dtype=wp.float32, device=self.device)
+
+        v_np = self.volume_arr.numpy()
+        v_np[ids] = base["volume"] * (1.0 + rng.uniform(-ranges.volume, ranges.volume, n).astype(np.float32))
+        self.volume_arr = wp.array(v_np, dtype=wp.float32, device=self.device)
+
+        c_np = self.coBM_arr.numpy()
+        c_np[ids] = base["coBM"] * (1.0 + rng.uniform(-ranges.coBM, ranges.coBM, n).astype(np.float32))
+        self.coBM_arr = wp.array(c_np, dtype=wp.float32, device=self.device)
 
     def zero_wrench(self) -> None:
         wp.launch(tier1_zero_wrench, dim=self.n_envs, inputs=[self.wrench_buf], device=self.device)

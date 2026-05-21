@@ -5,7 +5,7 @@ Adapted from MarineGym marinegym/robots/drone/underwaterVehicle.py
 commit ebdca1bf 2026-01-21). See THIRD_PARTY_NOTICES.md.
 """
 
-from oceanscale.hydro.tier1 import Tier1
+from oceanscale.hydro.tier1 import RandomizationRanges, Tier1
 from oceanscale.hydro.tier1_kernels import (
     tier1_accumulate_to_body_f,
     tier1_added_mass,
@@ -16,6 +16,7 @@ from oceanscale.hydro.tier1_kernels import (
 )
 
 __all__ = [
+    "RandomizationRanges",
     "Tier1",
     "tier1_accumulate_to_body_f",
     "tier1_added_mass",
