@@ -56,9 +56,14 @@ def _coriolis_a_ref(
 
 
 def _quat_rotate(q: torch.Tensor, v: torch.Tensor) -> torch.Tensor:
-    qxyz, qw = q[..., :3], q[..., 3:4]
-    t = 2.0 * torch.cross(qxyz, v, dim=-1)
-    return v + qw * t + torch.cross(qxyz, t, dim=-1)
+    qx, qy, qz, qw = q[..., 0], q[..., 1], q[..., 2], q[..., 3]
+    vx, vy, vz = v[..., 0], v[..., 1], v[..., 2]
+    c = 2 * qw * qw - 1
+    d = 2 * (qx * vx + qy * vy + qz * vz)
+    rx = vx * c + qx * d + (qy * vz - qz * vy) * 2 * qw
+    ry = vy * c + qy * d + (qz * vx - qx * vz) * 2 * qw
+    rz = vz * c + qz * d + (qx * vy - qy * vx) * 2 * qw
+    return torch.stack([rx, ry, rz], dim=-1)
 
 
 def _quat_rotate_inv(q: torch.Tensor, v: torch.Tensor) -> torch.Tensor:
@@ -354,14 +359,6 @@ def test_damping_full_jacobian_vs_torch() -> None:
 
 
 @pytest.mark.gpu
-@pytest.mark.skip(
-    reason=(
-        "TODO(v0.1.x): Warp 1.9.0 backward through wp.quat ops disagrees with torch "
-        "reference (forward matches <1e-4, gradient diverges up to ~22x). Either Warp "
-        "autograd bug in quaternion path or _restoring_ref normalization convention "
-        "mismatch. See RISKS.md R20 (Warp autograd debug ~5 days budget)."
-    )
-)
 def test_restoring_autograd_vs_torch() -> None:
     """Restoring force gradient w.r.t. quaternion matches torch at tilted orientations.
 
