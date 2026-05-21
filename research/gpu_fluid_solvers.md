@@ -99,7 +99,7 @@ MPM (Material Point Method) is Newton/Warp's native simulation method. It uses a
 
 ### Newton Physics Engine Integration
 
-Newton (https://github.com/newton-physics/newton) is built on NVIDIA Warp and uses MuJoCo Warp for rigid body dynamics. It does NOT currently have a native MPM fluid solver, but GeoWarp (above) demonstrates MPM is feasible on the Warp platform. Key facts:
+Newton (https://github.com/newton-physics/newton) is built on NVIDIA Warp and uses MuJoCo Warp for rigid body dynamics. Newton has MPM support (see newton_mpm_analysis.md — 8 functional MPM examples). Key facts:
 
 - **Newton**: Open-source, GPU-accelerated physics by NVIDIA + Google DeepMind + Disney Research (March 2025)
 - Built on NVIDIA Warp (Python, differentiable, CUDA)

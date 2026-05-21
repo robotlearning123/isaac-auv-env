@@ -46,7 +46,7 @@ Key contributions:
 |-------|-------|
 | Name | Newton Physics Engine |
 | URL | https://developer.nvidia.com/blog/announcing-newton-an-open-source-physics-engine-for-robotics-simulation/ |
-| Year | Announced March 2025 (GTC 2025), Newton 1.0 at GTC 2026 |
+| Year | Announced March 2025 (GTC 2025), Newton 1.2.0 (1.0 GA at GTC 2026 as initial reference) |
 | Type | Open-source, GPU-accelerated physics engine for robotics |
 
 Key contributions:

@@ -54,7 +54,7 @@ All Warp fluid/FEM examples passed on RTX 5090 with CUDA 12.8. Key findings:
 - **Soft body**: 0.13 ms/step
 - **Granular**: 0.03 ms/step
 
-Note: Warp examples must be run from system Python 3.13 (where Warp 1.9.0 is installed), not from the project venv (which has Warp 1.13.0). Examples requiring USD rendering need `pip install usd-core`.
+Note: Warp examples must be run from system Python 3.13 (where Warp 1.9.0 was installed at time of survey), not from the project venv (Warp 1.13.0, pinned via pyproject.toml). Examples requiring USD rendering need `pip install usd-core`.
 
 ---
 

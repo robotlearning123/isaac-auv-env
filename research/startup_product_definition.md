@@ -1,4 +1,4 @@
-# OceanScale (沧渊) — Product Definition & Pitch Content
+# OceanScale — Product Definition & Pitch Content
 
 **Date:** 2026-05-20
 **Status:** Draft for review
@@ -54,7 +54,7 @@ Today, each stage uses different, disconnected tools:
 
 ### What it is (one sentence)
 
-OceanScale is the first GPU-native, closed-loop underwater robotics simulation platform — built on NVIDIA Newton and Warp — that takes a robot from design configuration through parallel RL training to sim-to-real verification on a single RTX 5090.
+OceanScale is the first GPU-native, closed-loop underwater robotics simulation platform — built on NVIDIA Newton and Warp — that supports design configuration through parallel RL training on a single RTX 5090; sim-to-real verification is a v1.0 research goal.
 
 ### How it works (the closed loop)
 
@@ -71,9 +71,9 @@ OceanScale is the first GPU-native, closed-loop underwater robotics simulation p
 ```
 
 1. **Design Config**: YAML/Python configuration → auto-generates USD scene (vehicle + environment + sensors)
-2. **GPU Simulation**: Custom Warp fluid kernels (Fossen 6-DOF + SPH + wave models) running at 26.9 kHz step rate on RTX 5090 ([STATUS.md, Section 2](../STATUS.md))
+2. **GPU Simulation**: Custom Warp fluid kernels (Fossen 6-DOF + SPH + wave models) running at Newton kernel baseline 26.9 kHz step rate (single env, no hydrodynamics) on RTX 5090 ([STATUS.md, Section 2](../STATUS.md))
 3. **RL Training**: Isaac Lab 3.0 environments with skrl/rl_games backends; 8192+ parallel worlds
-4. **Sim-to-Real Verify**: Domain randomization toolkit + digital twin import (Gaussian Splat NuRec)
+4. **Sim-to-Real (planned v1.0)**: Domain randomization toolkit + digital twin import (Gaussian Splat NuRec)
 5. **Feedback**: Real-world deployment data feeds back into simulation parameters
 
 ### Why it's different
@@ -81,8 +81,8 @@ OceanScale is the first GPU-native, closed-loop underwater robotics simulation p
 | Differentiator | Detail |
 |---------------|--------|
 | **Newton-native** | First underwater simulator built on NVIDIA Newton 1.2 (Apache-2.0, Linux Foundation). Early adopter with deep integration — not a bolt-on plugin. |
-| **GPU-native fluid** | Custom Warp kernels for hydrodynamics, not CPU fallback. 26.9 kHz physics step rate regardless of world count (measured on RTX 5090, STATUS.md). |
-| **Batched RL** | 8192+ parallel environments from day one. Measured 220M env-steps/s with Newton SemiImplicit solver ([STATUS.md](../STATUS.md)). |
+| **GPU-native fluid** | Custom Warp kernels for hydrodynamics, not CPU fallback. Newton kernel baseline: 26.9 kHz physics step rate (single env, no hydrodynamics) on RTX 5090 (STATUS.md). |
+| **Batched RL** | 8192+ parallel environments from day one. Newton SemiImplicit solver baseline: 220M env-steps/s (raw kernel, upstream) ([STATUS.md](../STATUS.md)). |
 | **Closed loop** | Design → Sim → Train → Verify → Deploy → Feedback. No other underwater tool covers more than 2 stages. |
 | **Sensor fidelity** | Ray-traced sonar, Jaffe-McGlamery underwater vision, DVL, IMU — all GPU-parallelized Warp kernels. |
 | **Differentiable** | Gradients through analytic hydrodynamics for system identification and policy gradient methods. |
@@ -99,7 +99,7 @@ OceanScale replaces the current fragmented toolchain:
 | MarineGym (RL only, no sensors) | Full-lifecycle with sensor simulation |
 | Custom Python RL scripts | Isaac Lab 3.0 env framework |
 | DAVE/Stonefish (desktop rendering) | Omniverse RTX rendering |
-| Physical test tank iterations | Domain-randomized sim-to-real |
+| Physical test tank iterations | Domain-randomized sim-to-real (planned) |
 
 ---
 
@@ -123,13 +123,13 @@ OceanScale replaces the current fragmented toolchain:
 - **How they buy:** Enterprise procurement; requires safety certifications (DNV, ABS); 12-18 month sales cycle
 - **Example buyers:** CNOOC, Sinopec, offshore wind operators
 
-### Persona 3: Defense Contractor (Underwater Vehicle RL Training)
+### Persona 3: Maritime Engineering Firm (Autonomous Underwater Systems)
 
-- **Profile:** Military/defense company developing autonomous underwater systems
-- **Pain points:** Cannot do physical sea trials for classified vehicles; need massive parallel RL for navigation; existing tools (DAVE, US Navy simulators) are CPU-bound
-- **Willingness to pay:** Very high — defense budgets are large and simulation reduces risk
-- **Budget:** $500K-2M/yr for simulation platform
-- **How they buy:** Government procurement; requires on-premise deployment (no cloud); security clearance requirements
+- **Profile:** Engineering firm developing autonomous underwater systems for inspection, survey, and offshore operations
+- **Pain points:** Physical sea trials are expensive and weather-dependent; need massive parallel RL for navigation; existing tools (DAVE, Gazebo) are CPU-bound
+- **Willingness to pay:** High — simulation reduces risk and shortens development cycles by months
+- **Budget:** $200K-1M/yr for simulation platform
+- **How they buy:** Technical evaluation → pilot → annual subscription; often requires on-premise deployment for data security
 - **Relevant market:** Global UUV market $5.93B (2025) → $8.72B (2030) ([MarketsandMarkets/Yahoo Finance](https://finance.yahoo.com/news/unmanned-underwater-vehicles-market-worth-151500884.html))
 
 ### Persona 4: Research Lab (Marine Robotics Research)
@@ -156,7 +156,7 @@ OceanScale replaces the current fragmented toolchain:
 
 ### v0.2 — Newton Bridge + Basic Underwater Dynamics (8 weeks from now)
 
-- Newton 1.2 integration with world replication (already measured: 26.9 kHz step rate)
+- Newton 1.2 integration with world replication (Newton kernel baseline: 26.9 kHz step rate)
 - Fossen 6-DOF hydrodynamic kernels (Tier 0 + Tier 1 already implemented in `oceanscale/hydro/tier1_kernels.py`)
 - BlueROV2 Heavy USD/MJCF asset
 - Basic RL environment: station-keeping task
@@ -169,7 +169,7 @@ OceanScale replaces the current fragmented toolchain:
 - DVL + IMU + pressure sensor models
 - Isaac Lab 3.0 env integration
 - Domain randomization toolkit
-- **Success metric:** Full RL training loop — train AUV navigation policy in simulation, transfer to real BlueROV2
+- **Success metric:** Full RL training loop — train AUV navigation policy in simulation; hardware transfer is v1.0 research goal
 
 ### v0.5 — Design Config → Auto-Sim Pipeline (6 months)
 
@@ -184,7 +184,7 @@ OceanScale replaces the current fragmented toolchain:
 
 - Full closed loop: Design → Sim → Train → Verify → Deploy → Feedback
 - Digital twin import (Gaussian Splat / NuRec)
-- Sim-to-real verification pipeline
+- Sim-to-real verification pipeline (research goal)
 - Enterprise tier: cloud rendering, HPC scaling, scene editor UI
 - Marketplace for underwater scenes/assets
 - **Success metric:** 3+ paying enterprise customers or $200K ARR
@@ -197,11 +197,11 @@ OceanScale replaces the current fragmented toolchain:
 
 | Moat Layer | Detail | Evidence |
 |-----------|--------|----------|
-| **Newton integration depth** | First underwater simulator built natively on Newton 1.2. Deep integration with MuJoCo-Warp solver, world replication, USD scene graph. Not a plugin — it is an extension of the physics engine itself. | Newton 1.2 GA (GTC 2026), Apache-2.0, Linux Foundation ([Newton GitHub](https://github.com/newton-physics/newton)) |
-| **Custom Warp fluid kernels** | Hand-written CUDA-quality kernels in Warp Python for Fossen 6-DOF, SPH, wave models. NVIDIA's own Warp blog shows ~8x speedup over JAX on 134M-cell fluid benchmarks ([NVIDIA Warp Blog](https://developer.nvidia.com/blog/build-accelerated-differentiable-computational-physics-code-for-ai-with-nvidia-warp/)). OceanScale's kernels are marine-specific — cannot be replaced by general-purpose physics. | Measured 26.9 kHz step rate, 220M env-steps/s (STATUS.md) |
+| **Newton integration depth** | First underwater simulator built natively on Newton 1.2. Deep integration with MuJoCo-Warp solver, world replication, USD scene graph. Not a plugin — it is an extension of the physics engine itself. | Newton 1.2.0 (current pin; Newton 1.0 GA referenced GTC 2026), Apache-2.0, Linux Foundation ([Newton GitHub](https://github.com/newton-physics/newton)) |
+| **Custom Warp fluid kernels** | Hand-written CUDA-quality kernels in Warp Python for Fossen 6-DOF, SPH, wave models. NVIDIA's own Warp blog shows ~8x speedup over JAX on 134M-cell fluid benchmarks ([NVIDIA Warp Blog](https://developer.nvidia.com/blog/build-accelerated-differentiable-computational-physics-code-for-ai-with-nvidia-warp/)). OceanScale's kernels are marine-specific — cannot be replaced by general-purpose physics. | Newton kernel baseline: 26.9 kHz step rate, 220M env-steps/s (upstream raw kernel, STATUS.md) |
 | **Batched multi-world** | 8192+ parallel environments with zero-copy Warp↔PyTorch/JAX data exchange. This requires deep understanding of Newton's world replication API (`replicate(world_count=N)`) which was non-trivial to discover (original attempts OOM'd at 256 worlds, fixed via proper world distribution). | STATUS.md Section 4, newton_worlds_throughput.py benchmark |
 | **Underwater sensor physics** | Ray-traced sonar, Jaffe-McGlamery underwater optics, DVL with range-dependent dropout — all as GPU-parallelized Warp kernels. No other open-source project provides these for GPU-parallel RL. | SURVEY.md Section 4, OceanSim (arXiv:2503.01074) only covers perception, not dynamics |
-| **Sim-to-real verification** | Differentiable hydrodynamics + domain randomization + digital twin import. Enables systematic verification, not just "train and hope." | DESIGN.md Section 5.3 — gradients through Tier 0/1 via MJX/MJWarp autograd |
+| **Sim-to-real verification** | Differentiable hydrodynamics + domain randomization + digital twin import. Aims at systematic verification (research goal, v1.0). | DESIGN.md Section 5.3 — gradients through Tier 0/1 via MJX/MJWarp autograd |
 | **First-mover in GPU underwater** | No GPU-native underwater simulator covers the full lifecycle. MarineGym is RL-only. OceanSim is perception-only. Both are research papers, not platforms. | arXiv review (2504.06245) confirms gap |
 
 ### Defensibility assessment
@@ -221,11 +221,11 @@ OceanScale replaces the current fragmented toolchain:
 | Tier | What's Included | Price | Target |
 |------|----------------|-------|--------|
 | **Community** | GPU fluid solver, basic sensors, RL envs, benchmark suite | Free (Apache-2.0) | Researchers, startups, students |
-| **Pro** | + Multi-physics coupling, advanced rendering, HPC scaling | $5K-15K/GPU/yr | Mid-size companies, defense |
-| **Enterprise** | + Scene editor UI, cloud rendering, custom solver integration, SLA | $20K-50K/GPU/yr | Offshore energy, large defense |
+| **Pro** | + Multi-physics coupling, advanced rendering, HPC scaling | $5K-15K/GPU/yr | Mid-size companies, offshore energy, marine ops |
+| **Enterprise** | + Scene editor UI, cloud rendering, custom solver integration, SLA | $20K-50K/GPU/yr | Offshore energy, large ocean engineering firms |
 | **Cloud** | + GPU-as-a-service simulation, API access | Usage-based ($/sim-hour) | Companies without GPU hardware |
 
-**Why this works for China:** Chinese academic market has budget but resists expensive subscriptions; open-source removes friction. Enterprise buyers (CNOOC, shipbuilders, defense) pay for GPU-native speed and support. China market prefers perpetual + annual maintenance over SaaS ([startup_funding_landscape.md, Section 4.2](./startup_funding_landscape.md)).
+**Why this works for China:** Chinese academic market has budget but resists expensive subscriptions; open-source removes friction. Enterprise buyers (CNOOC, shipbuilders, offshore energy) pay for GPU-native speed and support. China market prefers perpetual + annual maintenance over SaaS ([startup_funding_landscape.md, Section 4.2](./startup_funding_landscape.md)).
 
 **Why this works globally:** NVIDIA ecosystem rewards open-source contributors (Inception program, GTC talks, co-marketing). No incumbent in GPU underwater simulation means first-mover advantage.
 
@@ -288,11 +288,11 @@ OceanScale replaces the current fragmented toolchain:
 
 ### One-Sentence Positioning Against Each
 
-- **vs Gazebo/uuv_sim:** "1,000x faster GPU simulation with native fluid dynamics vs CPU-based Gazebo — 26.9 kHz physics vs ~240 Hz."
+- **vs Gazebo/uuv_sim:** "Newton kernel baseline ~100-1000x faster than CPU references — full OceanScale pipeline throughput pending v0.1 measurement."
 - **vs Isaac Sim:** "Purpose-built for underwater robotics with native hydrodynamics and marine sensors — not a general robotics platform you have to hack for ocean use."
-- **vs DAVE/DNV:** "Open source, GPU-native, 10x cheaper to deploy — run 8192 parallel underwater environments on a single RTX 5090."
+- **vs DAVE/DNV:** "Open source, GPU-native, 10x cheaper to deploy — scaling target: 8192 parallel environments (currently demonstrated at Newton kernel level; full hydrodynamics pipeline pending v0.1)."
 - **vs MarineGym:** "Full lifecycle platform from design to deployment — not just RL training. Sensors, verification, and feedback loops included."
-- **vs HoloOcean:** "100x faster physics throughput with GPU-native fluid kernels — HoloOcean's rendering is beautiful but its physics is CPU-bound."
+- **vs HoloOcean:** "Newton kernel baseline ~100x faster physics throughput with GPU-native fluid kernels (upstream measurement) — HoloOcean's rendering is beautiful but its physics is CPU-bound."
 - **vs OceanSim:** "Dynamics + perception + RL in one platform — OceanSim covers only the perception layer."
 
 ### Overall Positioning Statement
@@ -363,7 +363,7 @@ Additional signals:
 
 ## Appendix B: Benchmark Data (Measured on RTX 5090)
 
-From `/home/robot/workspace/46-marine/STATUS.md`:
+From `STATUS.md`:
 
 | Test | Metric | Value |
 |------|--------|-------|
@@ -381,7 +381,7 @@ From SURVEY.md competitor comparison:
 | OceanSim | GPU-accelerated | Yes | Yes (perception) | No (weak dynamics) |
 | HoloOcean 2.x | ~800 | Rendering only | Yes | No |
 | DAVE | ~100-800 | No | Partial | No |
-| OceanScale (target) | 250,000+ | Yes | Yes | Yes |
+| OceanScale (v1.0 target — not measured) | 250,000+ | Yes | Yes | Yes |
 
 ## Appendix C: Source Traceability
 

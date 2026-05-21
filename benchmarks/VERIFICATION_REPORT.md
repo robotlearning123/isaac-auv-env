@@ -13,7 +13,7 @@
 | 1 | `warp_fluid_bench.py` | Jacobi 128^3 = 1.04ms, 200.9B cells/s | 1.04ms, 201.8B cells/s | <1% | **PASS** |
 | 2 | `newton_solver_bench.py` | 5,700 steps/s, 1.45M env/s at 256 worlds | 5,443 steps/s, 1.39M env/s | ~4% | **PASS** |
 | 3 | `mujoco_warp_bench.py` | 2.45M env-steps/s at N=4096 | 1.32M env-steps/s | -46% | **MISMATCH** |
-| 4 | `gpu_baseline.py` | 67 TFLOPS FP32, 213 TFLOPS FP16 | 31.3 TFLOPS FP32, 93.7 TFLOPS FP16 | -53/-56% | **MISMATCH** |
+| 4 | `gpu_baseline.py` | ~~67~~ 104.8 TFLOPS FP32, ~~213~~ 838 TFLOPS FP16 | 31.3 TFLOPS FP32, 93.7 TFLOPS FP16 | -53/-56% | **MISMATCH** |
 | 5 | `navier_stokes_3d.py` | 334M cells/s at 256^3 | 429M (random IC), 207M (Taylor-Green) | varies | **PASS** |
 | 6 | `newton_mpm_bench.py` | 120-140 steps/s at 100K particles | 106 steps/s (Dam Break) | -16% | **MISMATCH** |
 | 7 | `cross_framework_fluid_bench.py` | Warp 4.5x faster than PyTorch | 3.4x at 128^3 (largest grid) | -24% | **MISMATCH** |
@@ -46,8 +46,8 @@ Batched parallel envs, 4-leg ant model, 1000 steps (warmup 100), N=4096:
 ### 4. gpu_baseline.py — MISMATCH
 
 4096x4096 matmul throughput:
-- FP32: measured 31.33 TFLOPS (claimed 67 TFLOPS) — **53% below**
-- FP16: measured 93.71 TFLOPS (claimed 213 TFLOPS) — **56% below**
+- FP32: measured 31.33 TFLOPS (claimed ~~67~~ → corrected 104.8 TFLOPS per spec) — **measured below spec; benchmark may not exercise full tensor-core path**
+- FP16: measured 93.71 TFLOPS (claimed ~~213~~ → corrected 838 TFLOPS per spec) — **measured below spec; benchmark may not exercise full tensor-core path**
 
 The script uses standard Warp/CuPy matmul without explicit tensor core or TF32 mode. The claimed numbers likely require:
 - TF32 mode for FP32 (effective 2x throughput on tensor cores)

@@ -250,7 +250,7 @@ Source: [OCEANS 2025 Great Lakes](https://greatlakes25.oceansconference.org/), [
 **Why this works for OceanScale**:
 - China academic market has budget but not for expensive subscriptions; open source removes friction
 - NVIDIA ecosystem rewards open source contributors (Inception, GTC talks, co-marketing)
-- Enterprise buyers (offshore energy, defense, shipbuilders) pay for GPU-native speed
+- Enterprise buyers (offshore energy, shipbuilders) pay for GPU-native speed
 - No incumbent in GPU underwater simulation; first-mover advantage
 
 ### Option B: Academic First → Commercial
@@ -260,7 +260,7 @@ Source: [OCEANS 2025 Great Lakes](https://greatlakes25.oceansconference.org/), [
 1. Target 50-100 marine robotics labs with free academic licenses
 2. Publish benchmark papers proving GPU advantage over CPU CFD
 3. Build commercial version once labs are hooked
-4. Sell to defense contractors and offshore energy who hire lab alumni
+4. Sell to offshore energy and ocean engineering firms who hire lab alumni
 
 **Risk**: Slower revenue; academic free-riders never convert; 5+ year timeline to meaningful revenue
 
@@ -270,7 +270,7 @@ Source: [OCEANS 2025 Great Lakes](https://greatlakes25.oceansconference.org/), [
 
 1. Offer underwater physics API: send vehicle CAD + water parameters → get forces, trajectories, sensor data
 2. Charge per simulation-second or per-scene
-3. Target: ship design firms, offshore engineering companies, defense primes
+3. Target: ship design firms, offshore engineering companies, port authorities
 
 **Risk**: Requires cloud GPU infrastructure (expensive); early-stage company lacks credibility; competition from general-purpose platforms (Ansys Cloud, SimScale)
 

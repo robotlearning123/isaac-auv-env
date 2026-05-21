@@ -39,8 +39,8 @@
 | **MarineGym** | Isaac Sim | Yes (250K FPS) | No | GPU-accelerated | Yes | Yes | RL training speed, DR toolkit |
 | **OceanSim** | Isaac Sim/Omniverse | Yes | Yes (imaging sonar) | Moderate | Yes | Yes | Perception rendering, sonar sim |
 | **Stonefish** | Custom C++ | No | Limited | Advanced | Yes | Yes | Physics fidelity, lightweight |
-| **DAVE** | Gazebo | No | Limited | Moderate | Yes | Yes | Isaac Sim integration, ROS-native |
-| **HoloOcean** | Unreal Engine 4 | Partial | Yes (octree-based) | Validated (v2.0) | Yes (v2.0) | Yes | Sonar realism, multi-agent |
+| **DAVE** | Gazebo | No | Limited | Moderate | Yes | Yes | ROS-native Gazebo simulation |
+| **HoloOcean** | Unreal Engine 4 | Partial | Yes (octree-based) | Validated in v1.x (v2.0 unreleased as of 2026-05) | Yes (v2.0) | Yes | Sonar realism, multi-agent |
 | **UNav-Sim** | Unreal Engine 5 | Partial | No | Moderate | Yes (ROS1+2) | Yes | Visual realism, UE5 rendering |
 | **UUV Simulator** | Gazebo | No | No | Basic | Yes | Yes | Simplest to start, widely adopted |
 | **MARUS** | Gazebo/ROS | No | No | Basic | Yes | Yes | Modularity |

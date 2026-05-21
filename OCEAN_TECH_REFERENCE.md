@@ -1,7 +1,7 @@
 # Ocean Engineering Tech Stack Reference — Zero-Shot Sim2Real
 
 **Date:** 2026-05-20
-**Scope:** Comprehensive reference for building OceanScale, a GPU-native underwater simulator targeting zero-shot sim2real transfer. Primary stack: NVIDIA Isaac ecosystem. Not limited to.
+**Scope:** Comprehensive reference for building OceanScale, a GPU-native underwater simulator; sim-to-real transfer is a long-term research goal informed by Sim2Swim and FastAUV external results. Primary stack: NVIDIA Isaac ecosystem. Not limited to.
 **Companion docs:** `STACK.md`, `DESIGN.md`, `SURVEY.md`, `REFERENCES.md`, `research/` directory
 
 ---
@@ -10,9 +10,9 @@
 
 The ocean engineering simulation field has reached an inflection point in 2025-2026. Three developments converge:
 
-1. **NVIDIA Isaac ecosystem consolidation**: Newton 1.0 GA (Apache-2.0), Isaac Sim 6.0 (multi-backend physics), Isaac Lab 3.0 Beta (modular, Warp-native). The GPU-native robotics simulation stack is production-ready.
+1. **NVIDIA Isaac ecosystem consolidation**: Newton 1.2.0 (Apache-2.0; 1.0 GA was the GTC 2026 reference release), Isaac Sim 6.0 (multi-backend physics), Isaac Lab 3.0 Beta (modular, Warp-native). The GPU-native robotics simulation stack is production-ready.
 
-2. **Zero-shot underwater sim2real proven**: Sim2Swim (arXiv 2512.08656) demonstrated zero-shot AUV velocity control in 3 minutes of training on a laptop GPU. FastAUV MJX (arXiv 2512.13359) achieved 6-DOF control with 4096 parallel envs on a consumer RTX 4060.
+2. **Sim-to-real possibility evidenced by external work**: Sim2Swim (arXiv 2512.08656) demonstrated zero-shot AUV velocity control in 3 minutes of training on a laptop GPU. FastAUV MJX (arXiv 2512.13359) achieved 6-DOF control with 4096 parallel envs on a consumer RTX 4060.
 
 3. **Gap remains**: No single simulator combines GPU-parallel hydrodynamics, real-time sensor simulation, acoustic communications, and first-class RL training. OceanScale fills this gap.
 
@@ -47,7 +47,7 @@ The ocean engineering simulation field has reached an inflection point in 2025-2
 | **OpenUSD** | Industry standard | Pixar/LF governed | Scene description format, single source of truth |
 | **Omniverse RTX** | Isaac Sim built-in | Production | Path tracing, caustics, volumetric lighting, digital twins |
 
-### 1.2 Newton 1.0 GA — Key Capabilities
+### 1.2 Newton 1.2.0 — Key Capabilities
 
 - **Co-developed by NVIDIA, Google DeepMind, Disney Research** (NOT Anthropic/Apple as incorrectly stated on the current website)
 - GPU-accelerated via Warp, CUDA-level speed without low-level coding
@@ -396,7 +396,7 @@ Source: `research/underwater_digital_twins.md`
 | Hardware | RTX A2000 8GB (laptop GPU) |
 | Training time | 80 seconds convergence, < 3 min total |
 | Robot | BlueROV2 Heavy (6-DOF, 6 thrusters) |
-| Result | Zero-shot transfer to pool, robust with 5% mass increase |
+| Result | [Sim2Swim external result] Zero-shot transfer to pool, robust with 5% mass increase |
 
 **Key techniques that enabled zero-shot:**
 1. Integral error observations — eliminates steady-state offset
@@ -411,7 +411,7 @@ Source: `research/underwater_digital_twins.md`
 |---|---|
 | Platform | JAX + MJX, 4096 envs on RTX 4060 |
 | Training time | < 2 minutes total |
-| Best algorithm | SHAC (differentiable sim) — 0.099m RMSE, beating PPO and MPC |
+| Best algorithm | [FastAUV external result] SHAC (differentiable sim) — 0.099m RMSE, beating PPO and MPC |
 
 **Key insight:** Differentiable simulation (SHAC) outperforms model-free methods for underwater tasks.
 

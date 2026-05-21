@@ -46,7 +46,7 @@ The OceanScale flywheel is a closed-loop pipeline that turns the traditional oce
 
 **What:** Run thousands of parallel underwater environments on a single GPU, each with different vehicle configs, ocean conditions, and task parameters.
 
-**Stack:** Newton 1.x + Warp custom hydro kernels + Isaac Lab 3.0 env wrappers
+**Stack:** Newton 1.x + Warp custom hydro kernels + Isaac Lab 3.0 (experimental beta) env wrappers
 
 **Process:**
 1. AI agent generates scenario configs (vehicle type, task, environment parameters)

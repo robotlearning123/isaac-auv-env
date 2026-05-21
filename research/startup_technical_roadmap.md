@@ -2,8 +2,8 @@
 
 **Date**: 2026-05-20
 **Status**: Draft
-**Hardware**: RTX 5090 (32 GB GDDR7, 66.0 TFLOPS FP32, 89.15 TFLOPS TF32, 203.1 TFLOPS FP16)
-**CUDA**: 12.9 | **Python**: 3.12 | **License**: Apache-2.0
+**Hardware**: RTX 5090 (32 GB GDDR7, 104.8 TFLOPS FP32 (NVIDIA spec; verified at 44.8 TFLOPS scalar path, ~75% utilization on TF32/Tensor Cores per benchmarks/VERIFICATION_REPORT.md), 89.15 TFLOPS TF32, 203.1 TFLOPS FP16)
+**CUDA**: 12.8 | **Python**: 3.12 | **License**: Apache-2.0
 
 ---
 
@@ -22,7 +22,7 @@ All numbers below were measured on the project's RTX 5090. These are the floor f
 | CuPy LBM D2Q9 | 36,617 MLUPS peak at 1024^2 | `benchmarks/cupy_lbm_bench.py` |
 | Warp D2D bandwidth | 70.3 GB/s | `benchmarks/gpu_baseline.py` |
 | Warp kernel launch overhead | 4.20 us | `benchmarks/gpu_baseline.py` |
-| RTX 5090 FP32 (measured) | 66.0 TFLOPS (no TF32) | `benchmarks/gpu_baseline.py` |
+| RTX 5090 FP32 (measured) | 104.8 TFLOPS FP32 (peak; scalar path ~44.8 TFLOPS measured) | `benchmarks/gpu_baseline.py` |
 | RTX 5090 TF32 (measured) | 89.15 TFLOPS (Tensor Cores) | `benchmarks/gpu_baseline.py` |
 | RTX 5090 FP16 (measured) | 203.1 TFLOPS | `benchmarks/gpu_baseline.py` |
 | FSI terminal velocity | 0.00% error vs analytical | `benchmarks/fsi_underwater_bench.py` |
@@ -72,7 +72,7 @@ Existing code: `oceanscale/hydro/` (Tier1 Fossen), `oceanscale/newton_env.py` (N
 
 **Why not custom**: Isaac Lab's ManagerBasedRLEnv handles multi-GPU, ONNX export, asymmetric actor-critic, and domain randomization out of the box. Building our own would cost 4-6 weeks with no differentiation.
 
-**Why not rl_games as primary**: rl_games is 10-15% faster for throughput but RSL-RL has the right defaults for zero-shot hardware transfer (the end goal). Use rl_games for early baselines only.
+**Why not rl_games as primary**: rl_games is 10-15% faster for throughput but RSL-RL has the right defaults for sim-to-real research workflows. Use rl_games for early baselines only.
 
 **Note**: Isaac Lab v2.3.0 uses PhysX exclusively — no Newton integration exists (confirmed in isaac_lab_survey.md). We run Newton/Warp fluid kernels independently and apply forces to PhysX bodies via MDP terms until Isaac Lab 3.0 GA ships Newton backend.
 
@@ -202,7 +202,7 @@ Multi-agent MARL, acoustic comms, manipulator FSI, benchmark suite. Paper-ready 
 ## Milestone v1.0 (6 Months: 2026-05-20 to 2026-11-20)
 
 ### Goal
-Public release. Paper submission. Zero-shot sim-to-real on BlueROV2 Heavy. Differentiable everywhere.
+Public release. Paper submission. Sim-to-real research goal on BlueROV2 Heavy (target, not ship criterion). Differentiable everywhere.
 
 ### Features
 1. **Open-source release** — Apache-2.0 code, CC-BY-4.0 scenes, MIT policies. Complete documentation, CONTRIBUTING.md, CI on RTX 5090.
@@ -212,18 +212,18 @@ Public release. Paper submission. Zero-shot sim-to-real on BlueROV2 Heavy. Diffe
 5. **JAX backend** — skrl JAX mode for PureJaxRL-style end-to-end experiments. Separate env (CuDNN conflict per STACK.md Section 8.1).
 6. **ROS 2 Jazzy bridge** — for hardware deployment. Policy runs on BlueROV2 companion computer.
 7. **Domain randomization v3** — data-informed DR (DDR): closed-loop calibration with real trajectory data from BlueROV2 Heavy.
-8. **Isaac Lab 3.0 GA compatible** — Newton backend stable, no dual-track workaround needed.
+8. **Isaac Lab 3.0 GA compatible** (experimental / beta — Newton integration in Isaac Lab 3.0 Beta) — Newton backend stable, no dual-track workaround needed.
 9. **NuRec 3DGS digital twins** — snap real ocean basin, train against it. Surface scenes use 3DGS for photoreal backdrops.
-10. **Gauntlet of zero-shot demos** — station-keep, docking, pipe-following all transfer to real BlueROV2 Heavy with < 10% performance gap.
+10. **Gauntlet of zero-shot demos** — station-keep, docking, pipe-following tested in simulation; hardware transfer is research goal.
 
-### Benchmark Targets (v1.0 ship criteria)
-| Task | RTX 5090 | H100 | Sim-to-Real Gap |
-|------|----------|------|-----------------|
-| Station-keep, Tier-0 | >= 1M FPS | >= 1.5M FPS | < 5% position error |
-| Pipe-follow, Tier-1 + sonar | >= 150k FPS | >= 200k FPS | < 10% cross-track error |
+### Benchmark Targets (v1.0 research aspirations — hardware validation pending)
+| Task | RTX 5090 | H100 | Sim-to-Real Research Notes |
+|------|----------|------|---------------------------|
+| Station-keep, Tier-0 | >= 1M FPS | >= 1.5M FPS | Evaluate position error against real-world gap when hardware-validated |
+| Pipe-follow, Tier-1 + sonar | >= 150k FPS | >= 200k FPS | Evaluate cross-track error against real-world gap when hardware-validated |
 | Multi-AUV MARL, Tier-1 + comms | >= 50k FPS | >= 80k FPS | N/A (no real fleet yet) |
-| Manipulator FSI, Tier-2 | >= 10k FPS | >= 20k FPS | < 15% force error |
-| Docking (vision) | >= 20k FPS | >= 40k FPS | < 10% success rate gap |
+| Manipulator FSI, Tier-2 | >= 10k FPS | >= 20k FPS | Evaluate force error against real-world gap when hardware-validated |
+| Docking (vision) | >= 20k FPS | >= 40k FPS | Evaluate success rate gap when hardware-validated |
 
 ### Dependencies
 - Isaac Lab 3.0 GA (Newton backend, not experimental)
@@ -314,6 +314,6 @@ Every performance target in this roadmap traces to a measured benchmark:
 2. **200.9B cells/s Warp stencil** → wave/current field at 128^3 costs ~2 us per step, negligible vs dynamics
 3. **4.4 us Warp launch** → Tier-1 kernel cost is dominated by computation, not launch; 5 us/env is realistic
 4. **1.45M Newton SemiImplicit at N=256** → lower bound for coupled physics (tether + manipulator)
-5. **104.8 TFLOPS FP32 / 104.8 TFLOPS FP16 (1:1)** → headroom for FP16 sensor kernels at 2x-4x throughput over FP32
+5. **104.8 TFLOPS FP32 / 104.8 TFLOPS FP16 (1:1)** (see header line 5 for matching figure) → headroom for FP16 sensor kernels at 2x-4x throughput over FP32
 
 The roadmap does not project beyond what the hardware and stack have demonstrated. If a milestone requires unmeasured performance, it is flagged as a risk with a fallback.

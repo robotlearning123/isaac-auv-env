@@ -263,7 +263,7 @@ Sources: [Blue Robotics](https://bluerobotics.com), [Blue Robotics Forums](https
 | **Major Milestone** | Final Armada vessel delivered December 2025 |
 | **Key Partnership** | Shell (global framework agreement for offshore energy) |
 | **Notable Ops** | MH370 search (2025), deep-sea survey |
-| **Website** | [oceaninfinity.com](https://oceaninity.com/) |
+| **Website** | [oceaninfinity.com](https://oceaninfinity.com/) |
 
 Sources:
 - [Ocean Infinity](https://oceaninfinity.com/)
@@ -503,7 +503,7 @@ Sources:
 | Capability | Gazebo/UUV | Stonefish | HoloOcean | MarineGym | OceanSim | **OceanScale** |
 |-----------|-----------|-----------|-----------|-----------|----------|--------------|
 | GPU-native hydrodynamics | No | No | Partial | Partial | No | **Yes (Newton+Warp)** |
-| Photorealistic rendering | No | Basic | UE4 | No | Isaac Sim RTX | **Isaac Sim** |
+| Photorealistic rendering | No | Basic | UE4 | No | Isaac Sim RTX (no native ocean/caustics/volumetric; see benchmarks/isaac_lab_survey.md) | **Isaac Sim** |
 | RL training at scale | No | Limited | No | **250K FPS** | No | **Target** |
 | Sonar/DVL simulation | Basic | Yes | Yes (GPU) | (unverified) | Yes | **Target** |
 | Sim-to-real pipeline | Weak | Moderate | Moderate | (unverified) | Strong (visual) | **Target** |
