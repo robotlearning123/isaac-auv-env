@@ -23,7 +23,14 @@ git push origin main                # preview only (no production change)
 git tag v0.5.1 && git push --tags   # → GH Action → CF API → live in ~30s
 ```
 
-## v0.5.1 polish queued (from prior session §4)
+## Next Priorities — 2026-05-21
+
+1. **v0.6.0 ship** — concept-mainly website edits landing (content collections rewrite in progress, uncommitted — see git status); tag when shipped
+2. **W2 autograd gate** — `tests/hydro/test_tier1_autograd.py` must pass before W3 start (kernels in `oceanscale/hydro/tier1*.py` written, autograd test pending)
+3. **von Benzon reference dataset** — `validation/vonbenzon_reference.py` scaffold; generates ground-truth BlueROV2 trajectories from von Benzon 2022 Simulink model (R13 unblocker, blocks physics validation)
+4. **GitHub full repo update** — push current working tree state to origin; many modified files across website + hydro
+
+### Carried from prior session (v0.5.1 polish)
 
 1. EN eyebrow wrap (mobile)
 2. BuiltOn region logos
