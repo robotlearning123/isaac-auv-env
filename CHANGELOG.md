@@ -2,6 +2,26 @@
 
 OceanScale website releases. Tag a version (`git tag v0.5.3`) to trigger production deploy.
 
+## Unreleased
+
+Wave 2 of v0.6 prep (engineering buildup; website unchanged from v0.5.3).
+
+### Added
+- **Hydro Tier-1 Fossen 6-DOF kernels** (`oceanscale/hydro/`) with W2-gate tests: autograd vs torch numerical-diff (<1e-3), throughput (≥100k env-steps/s @ 8192 envs target), determinism.
+- **Von Benzon 2022 reference scaffold** (`oceanscale/validation/`) — Python interface + parity-test skeleton; unblocks R13 (no AUV ground-truth data) once Simulink port lands.
+- **NVIDIA ecosystem benchmark matrix** (`benchmarks/`) — 28 scripts + ECOSYSTEM_MATRIX.md + VERIFICATION_REPORT.md across Warp / Newton / MuJoCo-Warp / CuPy / JAX / Taichi / Triton / XLB on RTX 5090.
+- **RL training pipeline scaffold** (`oceanscale/{newton_env,rov_env,vec_env}.py`, `train.py`, `oceanscale/vehicles/` + tests).
+- **Fluid module scaffold** (`oceanscale/fluid/{grid,mpm}.py` + tests).
+- **Strategy / market / competitive / tech research docs** (`research/`, 19 files).
+- **AGENTS.md** — cross-tool agent instructions (Claude Code, Codex, Gemini).
+- **OCEAN_TECH_REFERENCE.md** — consolidated underwater sim tech reference.
+
+### Changed
+- **STATUS.md** + **HANDOFF.md** — 2026-05-21 review section: decisions (brand english-only, staff no-hurry, website concept-mainly) + next gates (W2 autograd, von Benzon scaffold).
+- **CLAUDE.md** — orchestration / model strategy refresh.
+- **pyproject.toml / uv.lock** — deps for hydro + RL stack.
+- **.gitignore** — exclude tool state, build artifacts, large USD outputs.
+
 ## v0.5.3 — 2026-05-20
 
 High-tech visual pass: rebuild the landing page around a stronger first screen, simulation cockpit treatment, architecture strips, benchmark proof band, and tighter AI infrastructure copy.
