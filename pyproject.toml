@@ -17,6 +17,9 @@ dependencies = [
     "tensorboard>=2.16",
     "tqdm>=4.66",
     "rich>=13",
+    "cupy-cuda12x>=14.0.1",
+    "jax[cuda12]>=0.10.1",
+    "gymnasium>=1.2.3",
 ]
 
 [project.optional-dependencies]
@@ -28,12 +31,10 @@ dev = [
     "mypy>=1.10,<2.0",
     "pre-commit>=3.7",
 ]
-# rl extra deferred — rl-games 1.6.x pins psutil<6 which conflicts with warp-lang 1.13 (psutil>=7.1)
-# Move to v0.2 when rl-games releases psutil>=7 compatible version, or install in separate venv
-# rl = [
-#     "rl-games>=1.6.0,<2.0",
-#     "gymnasium>=0.29",
-# ]
+rl = [
+    "gymnasium>=0.29",
+    "stable-baselines3>=2.5",
+]
 
 [tool.uv]
 index-strategy = "unsafe-best-match"
