@@ -1,4 +1,4 @@
-# OceanScale (沧渊) Website — Design System
+# OceanScale Website — Design System
 
 **Status:** Living document, updated as the visual identity evolves.
 **Last updated:** 2026-05-15
@@ -10,7 +10,7 @@
 | Field | Value |
 |---|---|
 | English name | **OceanScale** |
-| Chinese name | **沧渊** (Cāngyuān) — "vast abyss", literary/poetic |
+| Chinese name | Not used |
 | Tagline (zh) | 加速水下机器人的下一个十年 |
 | Tagline (en) | Accelerating the next decade of underwater robotics |
 | Positioning | AI-native simulation infrastructure for marine robotics |
@@ -34,7 +34,7 @@
 - Color: bioluminescent cyan `#4DEEEA` only — never recolor
 
 **Wordmark:**
-- zh: `沧渊` set in **LXGW WenKai** (calligraphic, contemplative)
+- zh: `OceanScale` set in **Geist 800**
 - en: `OceanScale` set in **Geist 800** (heavy sans, SpaceX-style)
 - Letter-spacing: -0.035em (en), -0.005em (zh)
 

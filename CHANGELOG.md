@@ -2,6 +2,10 @@
 
 OceanScale website releases. Tag a version (`git tag v0.5.1`) to trigger production deploy.
 
+## v0.5.1 — 2026-05-20
+
+Remove the retired Chinese brand name from public website copy.
+
 ## v0.5.0 — 2026-05-16
 
 Lightwheel-voice rewrite + UI/UX bento overhaul.

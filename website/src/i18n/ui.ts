@@ -11,7 +11,7 @@ export const ui = {
     'cta.contact': '联系我们',
     'lang.other': 'EN',
     'footer.tagline': 'AI-native 海洋机器人仿真基础设施。',
-    'footer.copyright': '© 2026 OceanScale (沧渊)',
+    'footer.copyright': '© 2026 OceanScale',
     'hero.sonarLabel': '声纳 · 在线',
   },
   en: {
