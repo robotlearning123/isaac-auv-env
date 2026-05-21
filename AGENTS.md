@@ -1,4 +1,4 @@
-# OceanScale (沧渊) — Agent Instructions
+# OceanScale — Agent Instructions
 
 Cross-tool configuration for AI coding agents. Read by: Claude Code (via @AGENTS.md in CLAUDE.md), OpenAI Codex (native), Gemini CLI (via .gemini/settings.json).
 

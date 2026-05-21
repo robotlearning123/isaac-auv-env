@@ -1,6 +1,6 @@
 # Underwater Digital Twins: Neural Rendering, Reconstruction & Sim2Real
 
-> Research survey for OceanScale (沧渊) — underwater digital twin pipeline for sim2real.
+> Research survey for OceanScale — underwater digital twin pipeline for sim2real.
 > Date: 2026-05-20. All URLs verified via web search.
 
 ---

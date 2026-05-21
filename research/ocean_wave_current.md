@@ -1,6 +1,6 @@
 # GPU-Accelerated Ocean Wave, Current, and Turbulence Simulation for Robotics
 
-> Deep research for OceanScale (CangYuan / 沧渊) GPU-native underwater simulator.
+> Deep research for OceanScale GPU-native underwater simulator.
 > Date: 2026-05-20. All URLs verified via web search; no fabricated links.
 
 ---
