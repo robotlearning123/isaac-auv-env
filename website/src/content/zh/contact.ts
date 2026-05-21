@@ -1,7 +1,7 @@
 export default {
   eyebrow: "Contact",
-  title: "合作入口",
-  intro: "面向海洋机器人、智能装备、仿真平台与 AI 基础设施合作。",
+  title: "一起构建海洋 AI 基础设施。",
+  intro: "面向机器人团队、仿真平台、智能装备与 AI 基础设施合作。",
   emails: [
     { label: "Business", email: "business@oceanscale.cn" },
     { label: "Technical", email: "tech@oceanscale.cn" },

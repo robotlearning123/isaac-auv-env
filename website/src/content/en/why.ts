@@ -1,18 +1,18 @@
 export default {
   eyebrow: "Challenge",
-  title: "The compute bottleneck in marine robotics AI",
+  title: "The bottleneck is iteration speed.",
   problems: [
     {
-      title: "Ocean trials are slow",
-      body: "Weather, water conditions, equipment risk, and field logistics limit policy iteration speed.",
+      title: "Sea windows",
+      body: "Real ocean conditions cannot be queued like compute jobs.",
     },
     {
-      title: "CFD is too heavy",
-      body: "High-fidelity fluid simulation does not fit million-episode AI training loops.",
+      title: "Physics cost",
+      body: "High-fidelity fluid solvers are too expensive for policy search loops.",
     },
     {
-      title: "GPUs sit idle",
-      body: "Legacy underwater simulators lack vectorized environments and AI-native interfaces.",
+      title: "Training scale",
+      body: "Legacy simulators were not built for 8192 environments or RL workloads.",
     },
   ],
 };

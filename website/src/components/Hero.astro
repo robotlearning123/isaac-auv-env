@@ -7,22 +7,19 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const fm: any = lang === 'zh' ? zhData : enData;
 const { h1, sub, eyebrow } = fm;
-const metrics = lang === 'zh'
-  ? [
-      { label: 'Single-env', value: '11,435 FPS', detail: 'BlueROV2 · RTX 5090' },
-      { label: 'Vectorized', value: '90M', detail: 'env-steps/s · 8192 envs' },
-      { label: 'Physics', value: '6-DoF', detail: 'Fossen kernel' },
-    ]
-  : [
-      { label: 'Single-env', value: '11,435 FPS', detail: 'BlueROV2 · RTX 5090' },
-      { label: 'Vectorized', value: '90M', detail: 'env-steps/s · 8192 envs' },
-      { label: 'Physics', value: '6-DoF', detail: 'Fossen kernel' },
-    ];
+const metrics = [
+  { label: 'Single env', value: '11,435', unit: 'FPS' },
+  { label: 'Vectorized', value: '90M', unit: 'env-steps/s' },
+  { label: 'Scale', value: '8192', unit: 'parallel envs' },
+];
+const readouts = lang === 'zh'
+  ? ['RTX 5090 / BlueROV2', 'Newton + Warp physics path', 'Fossen 6-DoF kernel']
+  : ['RTX 5090 / BlueROV2', 'Newton + Warp physics path', 'Fossen 6-DoF kernel'];
 ---
-<section class="relative overflow-hidden pt-36 pb-32 md:pt-52 md:pb-44 min-h-[88vh] flex items-center">
+<section class="relative overflow-hidden min-h-[calc(100vh-77px)] flex items-center">
   <div class="absolute inset-0 -z-10">
     <video
-      class="w-full h-full object-cover opacity-42"
+      class="w-full h-full object-cover opacity-55 saturate-[1.18] contrast-[1.08]"
       autoplay
       muted
       loop
@@ -32,19 +29,21 @@ const metrics = lang === 'zh'
     >
       <source src="/videos/hero-ambient.mp4" type="video/mp4" />
     </video>
-    <div class="absolute inset-0 bg-gradient-to-b from-[var(--color-abyss-0)]/35 via-[var(--color-abyss-0)]/60 to-[var(--color-abyss-1)]"></div>
-    <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[var(--color-abyss-1)] to-transparent"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_70%_38%,rgba(110,255,209,0.18),transparent_30%),linear-gradient(100deg,rgba(2,5,12,0.94)_0%,rgba(2,5,12,0.78)_42%,rgba(2,5,12,0.36)_100%)]"></div>
+    <div class="absolute inset-0 tech-grid opacity-55"></div>
+    <div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[var(--color-abyss-0)] to-transparent"></div>
   </div>
 
-  <div class="relative max-w-[1280px] mx-auto px-6 grid lg:grid-cols-12 gap-10 items-center">
+  <div class="relative max-w-[1320px] mx-auto px-5 md:px-8 py-20 md:py-24 grid lg:grid-cols-12 gap-8 lg:gap-12 items-center w-full">
     <div class="lg:col-span-7 relative z-10">
-      <div class="font-mono text-[var(--color-lumen)] text-xs uppercase eyebrow-tracking mb-7 anim-rise">
+      <div class="inline-flex items-center gap-3 font-mono text-[var(--color-acid)] text-xs uppercase eyebrow-tracking mb-7 anim-rise">
+        <span class="h-px w-10 bg-[var(--color-acid)]"></span>
         {eyebrow}
       </div>
-      <h1 class="font-display text-balance text-5xl md:text-7xl lg:text-[5.5rem] font-bold leading-[1.04] text-[var(--color-paper)] mb-8 tracking-tight anim-rise delay-150">
+      <h1 class="font-display text-balance text-5xl md:text-7xl lg:text-[6.8rem] font-black leading-[0.94] text-[var(--color-paper)] mb-8 tracking-tight anim-rise delay-150 max-w-5xl">
         {h1}
       </h1>
-      <p class="text-lg md:text-xl text-[var(--color-paper)]/85 max-w-2xl mb-10 leading-relaxed anim-rise delay-300">
+      <p class="text-lg md:text-2xl text-[var(--color-paper)]/86 max-w-2xl mb-10 leading-relaxed anim-rise delay-300">
         {sub}
       </p>
       <div class="flex flex-wrap items-center gap-4 anim-rise delay-500">
@@ -54,23 +53,44 @@ const metrics = lang === 'zh'
         </a>
         <a href="#contact" class="btn-ghost">{t('cta.contact')}</a>
       </div>
-
-    </div>
-
-    <div class="lg:col-span-5 relative anim-rise delay-700">
-      <div class="border border-[var(--color-border-deep)] bg-[var(--color-abyss-0)]/72 backdrop-blur-md">
-        <div class="font-mono text-[10px] uppercase eyebrow-tracking text-[var(--color-lumen)] border-b border-[var(--color-border-deep)] px-5 py-4">
-          {t('hero.sonarLabel')}
-        </div>
+      <div class="mt-12 grid grid-cols-1 sm:grid-cols-3 max-w-2xl border-y border-[var(--color-border-deep)] anim-rise delay-700">
         {metrics.map((m) => (
-          <div class="grid grid-cols-[7rem_1fr] gap-5 border-b last:border-b-0 border-[var(--color-border-deep)] px-5 py-6">
+          <div class="py-5 pr-4 border-b sm:border-b-0 sm:border-r last:border-r-0 last:border-b-0 border-[var(--color-border-deep)]">
             <div class="font-mono text-[10px] uppercase eyebrow-tracking text-[var(--color-paper-dim)]">{m.label}</div>
-            <div>
-              <div class="font-mono text-3xl md:text-4xl font-bold text-[var(--color-lumen)] leading-none">{m.value}</div>
-              <div class="mt-2 font-mono text-[11px] uppercase eyebrow-tracking text-[var(--color-paper-dim)]">{m.detail}</div>
+            <div class="mt-2 flex items-end gap-2">
+              <span class="font-mono text-2xl md:text-4xl font-bold text-[var(--color-acid)] leading-none">{m.value}</span>
+              <span class="font-mono text-[10px] uppercase text-[var(--color-paper-dim)] pb-1">{m.unit}</span>
             </div>
           </div>
         ))}
+      </div>
+    </div>
+
+    <div class="lg:col-span-5 relative anim-rise delay-700">
+      <div class="sim-cockpit">
+        <div class="sim-cockpit__bar">
+          <span>{t('hero.sonarLabel')}</span>
+          <span class="text-[var(--color-acid)]">ONLINE</span>
+        </div>
+        <div class="relative p-5 md:p-6">
+          <div class="depth-map" aria-hidden="true">
+            <div class="depth-map__scan"></div>
+            <div class="route route-a"></div>
+            <div class="route route-b"></div>
+            <div class="vehicle"></div>
+            <span class="ping ping-1"></span>
+            <span class="ping ping-2"></span>
+            <span class="ping ping-3"></span>
+          </div>
+          <div class="mt-5 grid gap-2">
+            {readouts.map((item) => (
+              <div class="flex items-center justify-between gap-4 border border-[var(--color-border-deep)] bg-[var(--color-abyss-0)]/62 px-4 py-3">
+                <span class="font-mono text-[10px] uppercase eyebrow-tracking text-[var(--color-paper-dim)]">{item}</span>
+                <span class="h-1.5 w-1.5 rounded-full bg-[var(--color-acid)] shadow-[0_0_16px_var(--color-acid)]"></span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   </div>

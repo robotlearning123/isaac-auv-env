@@ -1,5 +1,5 @@
 export default {
-  eyebrow: "AI-native simulation infrastructure",
-  h1: "AI infrastructure for marine robotics.",
-  sub: "GPU-native simulation, parallel training, reproducible benchmarks.",
+  eyebrow: "Ocean AI Infrastructure",
+  h1: "Marine robotics, trained at GPU scale.",
+  sub: "Physics simulation, vectorized environments, reproducible benchmarks.",
 };

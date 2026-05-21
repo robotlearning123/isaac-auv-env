@@ -1,30 +1,30 @@
 export default {
   eyebrow: "Platform",
-  title: "Core platform",
+  title: "Physics to policy.",
   capabilities: [
     {
       metric: null,
-      metricLabel: "Simulation",
-      title: "High-speed simulation",
-      body: "Measured single-GPU throughput for policy learning and regression testing.",
+      metricLabel: "01 / Sim Core",
+      title: "GPU-native simulation kernel",
+      body: "Newton + Warp physics path for high-throughput training loops.",
     },
     {
       metric: null,
-      metricLabel: "Training",
-      title: "Parallel training",
-      body: "8192 parallel environments for multi-task and multi-agent workloads.",
+      metricLabel: "02 / Vector Fabric",
+      title: "Parallel environment matrix",
+      body: "8192 vectorized environments for policy search at scale.",
     },
     {
       metric: null,
-      metricLabel: "Physics",
-      title: "Marine physics",
-      body: "6-DoF hydrodynamics, fluid approximations, and underwater sensor models.",
+      metricLabel: "03 / Marine Physics",
+      title: "Hydrodynamics and sensors",
+      body: "6-DoF dynamics, current approximations, acoustic and underwater sensing hooks.",
     },
     {
       metric: null,
-      metricLabel: "Ecosystem",
-      title: "Robotics ecosystem",
-      body: "Newton, Warp, OpenUSD, Isaac Sim, and Gymnasium interfaces.",
+      metricLabel: "04 / Robotics Bridge",
+      title: "Robot training interfaces",
+      body: "Gymnasium, OpenUSD, Isaac Sim, and ROS 2 integration path.",
     },
   ],
 };

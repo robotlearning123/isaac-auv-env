@@ -1,18 +1,18 @@
 export default {
   eyebrow: "Challenge",
-  title: "海洋机器人 AI 的算力瓶颈",
+  title: "瓶颈不是算法，是迭代速度。",
   problems: [
     {
-      title: "海试慢",
-      body: "天气、海况、设备与场地成本,限制机器人策略迭代速度。",
+      title: "海试窗口",
+      body: "真实海况不可排队，机器人策略不能只靠现场试错。",
     },
     {
-      title: "CFD 太重",
-      body: "高保真流体计算不适合百万级 episodes 的 AI 训练循环。",
+      title: "物理成本",
+      body: "高保真流体很贵，AI 训练需要可并行的近似模型。",
     },
     {
-      title: "GPU 未吃满",
-      body: "传统水下仿真器缺少大规模并行环境与 AI-native 接口。",
+      title: "训练规模",
+      body: "传统仿真器不为 8192 环境与策略学习而生。",
     },
   ],
 };

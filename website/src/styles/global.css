@@ -1,21 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  /* Abyss palette */
   --color-abyss-0: #02050C;
-  --color-abyss-1: #0A1628;
-  --color-abyss-2: #122438;
-  --color-border-deep: #1F3047;
+  --color-abyss-1: #071019;
+  --color-abyss-2: #101C27;
+  --color-steel: #21313B;
+  --color-border-deep: #253541;
 
-  /* Bioluminescent accents */
-  --color-lumen: #4DEEEA;
-  --color-coral: #FF6B6B;
+  --color-acid: #6EFFD1;
+  --color-lumen: #6EFFD1;
+  --color-ember: #FF7A38;
+  --color-coral: #FF5C5C;
 
-  /* Paper text (cream, not pure white) */
   --color-paper: #F7F4EE;
-  --color-paper-dim: #A8B5C2;
+  --color-paper-dim: #9FB0BA;
 
-  /* Fonts (Fraunces dropped — SpaceX-style en display is Geist 800) */
   --font-display: "Geist", system-ui, sans-serif;
   --font-display-zh: "Geist", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
   --font-body: "Geist", system-ui, sans-serif;
@@ -33,33 +32,32 @@
   body {
     min-height: 100vh;
     background:
-      radial-gradient(ellipse at 50% 100%, rgba(77, 238, 234, 0.06) 0%, transparent 50%),
-      linear-gradient(180deg, #02050C 0%, #0A1628 100%);
+      radial-gradient(ellipse at 75% 0%, rgba(110, 255, 209, 0.09) 0%, transparent 38%),
+      radial-gradient(ellipse at 10% 100%, rgba(255, 122, 56, 0.08) 0%, transparent 34%),
+      linear-gradient(180deg, #02050C 0%, #071019 100%);
     background-attachment: fixed;
     position: relative;
   }
 
-  /* Subtle architect's-paper horizontal lines */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background-image: linear-gradient(0deg, transparent 0, transparent 95%, rgba(31, 48, 71, 0.35) 95.5%, transparent 96%);
-    background-size: 100% 6rem;
+    background-image:
+      linear-gradient(rgba(110, 255, 209, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(110, 255, 209, 0.035) 1px, transparent 1px);
+    background-size: 88px 88px;
+    mask-image: linear-gradient(to bottom, transparent, black 16%, black 82%, transparent);
     pointer-events: none;
     z-index: 0;
   }
 
-  /* (lang-routed font rules moved to @layer utilities — Tailwind v4 cascade
-     layers put .font-display utility above @layer base, so base-layer overrides
-     lose regardless of selector specificity) */
   html[lang="zh"] body { font-family: var(--font-body-zh); }
   html[lang="en"] body { font-family: var(--font-body); }
 
   code, pre, .font-mono { font-family: var(--font-mono); }
 
-  /* Selection */
-  ::selection { background: var(--color-lumen); color: var(--color-abyss-0); }
+  ::selection { background: var(--color-acid); color: var(--color-abyss-0); }
 }
 
 @layer components {
@@ -68,18 +66,18 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.875rem 1.75rem;
-    background: var(--color-lumen);
+    background: var(--color-acid);
     color: var(--color-abyss-0);
     border-radius: 2px;
     font-weight: 600;
     font-family: var(--font-body);
     letter-spacing: 0.02em;
-    border: 1px solid var(--color-lumen);
+    border: 1px solid var(--color-acid);
     transition: transform 200ms ease-out, box-shadow 200ms ease-out;
   }
   .btn-lumen:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 32px -8px var(--color-lumen);
+    box-shadow: 0 8px 32px -8px var(--color-acid);
   }
 
   .btn-ghost {
@@ -88,8 +86,8 @@
     gap: 0.5rem;
     padding: 0.875rem 1.75rem;
     background: transparent;
-    color: var(--color-lumen);
-    border: 1px solid rgba(77, 238, 234, 0.4);
+    color: var(--color-paper);
+    border: 1px solid rgba(110, 255, 209, 0.42);
     border-radius: 2px;
     font-weight: 600;
     font-family: var(--font-body);
@@ -97,28 +95,11 @@
     transition: border-color 200ms ease-out, background 200ms ease-out;
   }
   .btn-ghost:hover {
-    border-color: var(--color-lumen);
-    background: rgba(77, 238, 234, 0.06);
+    border-color: var(--color-acid);
+    background: rgba(110, 255, 209, 0.07);
+    color: var(--color-acid);
   }
 
-  /* Sonar ping rings */
-  @keyframes sonar-ping {
-    0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0.55; }
-    100% { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
-  }
-  .sonar-ping {
-    position: absolute;
-    top: 50%; left: 50%;
-    width: 320px;
-    height: 320px;
-    border: 1px solid var(--color-lumen);
-    border-radius: 50%;
-    animation: sonar-ping 8s ease-out infinite;
-  }
-  .sonar-ping:nth-child(2) { animation-delay: 2.7s; }
-  .sonar-ping:nth-child(3) { animation-delay: 5.3s; }
-
-  /* Page-load staggered reveals */
   @keyframes fade-rise {
     from { opacity: 0; transform: translateY(1.5rem); }
     to { opacity: 1; transform: translateY(0); }
@@ -128,17 +109,240 @@
   .delay-300 { animation-delay: 300ms; }
   .delay-500 { animation-delay: 500ms; }
   .delay-700 { animation-delay: 700ms; }
+
+  .tech-grid {
+    background-image:
+      linear-gradient(rgba(110, 255, 209, 0.11) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(110, 255, 209, 0.08) 1px, transparent 1px),
+      linear-gradient(115deg, transparent 0 48%, rgba(255, 122, 56, 0.11) 49%, transparent 50%);
+    background-size: 72px 72px, 72px 72px, 360px 360px;
+    mask-image: linear-gradient(90deg, black, transparent 72%);
+  }
+
+  .sim-cockpit {
+    position: relative;
+    border: 1px solid rgba(110, 255, 209, 0.26);
+    background:
+      linear-gradient(145deg, rgba(7, 16, 25, 0.88), rgba(2, 5, 12, 0.72)),
+      radial-gradient(circle at 80% 0%, rgba(110, 255, 209, 0.16), transparent 34%);
+    box-shadow:
+      0 32px 100px rgba(0, 0, 0, 0.42),
+      0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+    backdrop-filter: blur(18px);
+    clip-path: polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 28px 100%, 0 calc(100% - 28px));
+  }
+
+  .sim-cockpit__bar {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px solid var(--color-border-deep);
+    padding: 1rem 1.25rem;
+    color: var(--color-paper-dim);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .depth-map {
+    position: relative;
+    min-height: 24rem;
+    overflow: hidden;
+    border: 1px solid var(--color-border-deep);
+    background:
+      radial-gradient(circle at 50% 50%, rgba(110, 255, 209, 0.18), transparent 8%),
+      radial-gradient(circle at 74% 28%, rgba(255, 122, 56, 0.2), transparent 9%),
+      linear-gradient(90deg, rgba(110, 255, 209, 0.07) 1px, transparent 1px),
+      linear-gradient(rgba(110, 255, 209, 0.07) 1px, transparent 1px),
+      linear-gradient(145deg, rgba(2, 5, 12, 0.9), rgba(16, 28, 39, 0.72));
+    background-size: auto, auto, 42px 42px, 42px 42px, auto;
+  }
+
+  .depth-map::before,
+  .depth-map::after {
+    content: '';
+    position: absolute;
+    inset: 12%;
+    border: 1px solid rgba(110, 255, 209, 0.2);
+    transform: rotate(-10deg);
+  }
+
+  .depth-map::after {
+    inset: 26%;
+    border-color: rgba(255, 122, 56, 0.22);
+    transform: rotate(18deg);
+  }
+
+  .depth-map__scan {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent, rgba(110, 255, 209, 0.16), transparent);
+    height: 32%;
+    animation: scan-map 5.5s linear infinite;
+  }
+
+  @keyframes scan-map {
+    from { transform: translateY(-110%); }
+    to { transform: translateY(330%); }
+  }
+
+  .route {
+    position: absolute;
+    height: 2px;
+    transform-origin: left center;
+    background: linear-gradient(90deg, transparent, var(--color-acid), transparent);
+  }
+  .route-a { width: 58%; left: 17%; top: 37%; transform: rotate(-17deg); }
+  .route-b { width: 44%; left: 34%; top: 64%; transform: rotate(23deg); background: linear-gradient(90deg, transparent, var(--color-ember), transparent); }
+
+  .vehicle {
+    position: absolute;
+    width: 3.5rem;
+    height: 3.5rem;
+    left: 47%;
+    top: 44%;
+    transform: rotate(45deg);
+    border: 2px solid var(--color-acid);
+    background: rgba(110, 255, 209, 0.08);
+    box-shadow: 0 0 34px rgba(110, 255, 209, 0.34);
+  }
+
+  .vehicle::after {
+    content: '';
+    position: absolute;
+    inset: 1rem;
+    background: var(--color-acid);
+    box-shadow: 0 0 20px var(--color-acid);
+  }
+
+  .ping {
+    position: absolute;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 999px;
+    background: var(--color-ember);
+    box-shadow: 0 0 20px rgba(255, 122, 56, 0.9);
+  }
+  .ping-1 { left: 18%; top: 24%; }
+  .ping-2 { right: 18%; top: 29%; background: var(--color-acid); }
+  .ping-3 { left: 31%; bottom: 20%; }
+
+  .section-cool::after {
+    content: 'AI';
+    position: absolute;
+    right: -0.04em;
+    bottom: -0.22em;
+    color: rgba(110, 255, 209, 0.045);
+    font-family: var(--font-mono);
+    font-size: clamp(12rem, 34vw, 34rem);
+    font-weight: 800;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .challenge-stack {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .challenge-row {
+    display: grid;
+    grid-template-columns: 3.25rem 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    border: 1px solid var(--color-border-deep);
+    background: rgba(7, 16, 25, 0.72);
+    backdrop-filter: blur(14px);
+    transition: transform 220ms ease, border-color 220ms ease, background 220ms ease;
+  }
+
+  .challenge-row:hover {
+    transform: translateX(-6px);
+    border-color: rgba(110, 255, 209, 0.44);
+    background: rgba(16, 28, 39, 0.78);
+  }
+
+  .architecture-panel {
+    border: 1px solid var(--color-border-deep);
+    background:
+      linear-gradient(145deg, rgba(7, 16, 25, 0.84), rgba(2, 5, 12, 0.66)),
+      radial-gradient(circle at 0% 0%, rgba(255, 122, 56, 0.11), transparent 32%);
+    backdrop-filter: blur(16px);
+  }
+
+  .architecture-row {
+    display: grid;
+    grid-template-columns: 4rem 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--color-border-deep);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .architecture-row:last-child { border-bottom: 0; }
+
+  .architecture-row::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: var(--color-acid);
+    opacity: 0;
+    transition: opacity 220ms ease;
+  }
+
+  .architecture-row:hover::before { opacity: 1; }
+
+  .architecture-index {
+    color: rgba(247, 244, 238, 0.18);
+    font-family: var(--font-mono);
+    font-size: 2.25rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    border: 1px solid var(--color-border-deep);
+    background: rgba(7, 16, 25, 0.72);
+    padding: 1.15rem 1.25rem;
+    transition: transform 200ms ease, border-color 200ms ease, background 200ms ease;
+  }
+
+  .contact-link:hover {
+    transform: translateX(6px);
+    border-color: rgba(110, 255, 209, 0.5);
+    background: rgba(16, 28, 39, 0.82);
+  }
+
+  .contact-link span {
+    color: var(--color-paper-dim);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .contact-link strong {
+    color: var(--color-paper);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 500;
+    word-break: break-word;
+    text-align: right;
+  }
 }
 
 @layer utilities {
-  /* Lang-routed display fonts — defined HERE so they win over the auto-generated
-     .font-display utility from @theme. zh = calligraphic, en = SpaceX-style heavy sans. */
   html[lang="zh"] .font-display {
     font-family: var(--font-display-zh);
     font-weight: 800;
     letter-spacing: 0;
-    /* CJK-safe wrapping: keep compounds (e.g. 机器人) intact; only break at marked
-       boundaries (ZWSP U+200B inserted in source) or punctuation. */
     word-break: keep-all;
     overflow-wrap: break-word;
     text-wrap: pretty;
@@ -146,22 +350,17 @@
   html[lang="en"] .font-display {
     font-family: var(--font-body);
     font-weight: 800;
-    letter-spacing: -0.035em;
+    letter-spacing: 0;
     line-height: 0.98;
   }
 
-  /* Lang-routed eyebrow letter-spacing — CJK can't use the same wide tracking as latin uppercase.
-     Replace tracking-[0.3em] with eyebrow-tracking class on all section eyebrows. */
   html[lang="zh"] .eyebrow-tracking { letter-spacing: 0.08em; }
   html[lang="en"] .eyebrow-tracking { letter-spacing: 0.3em; }
 
-  /* Defensive: native HTML elements that browsers sometimes default to Times New Roman.
-     Force them to inherit from html/body which is Geist/LXGW. */
   table, th, td, strong, em, b, i, code, pre, kbd, samp, q, blockquote {
     font-family: inherit;
   }
 
-  /* Scroll-reveal: SpaceX-style fade-rise as section enters viewport */
   .scroll-reveal {
     opacity: 0;
     transform: translateY(2.5rem);
@@ -175,7 +374,6 @@
     .scroll-reveal { opacity: 1; transform: none; transition: none; }
   }
 
-  /* Card hover lift + lumen glow */
   .card-glow {
     transition:
       transform 350ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -186,7 +384,23 @@
   .card-glow:hover {
     transform: translateY(-4px);
     box-shadow:
-      0 16px 48px -16px rgba(77, 238, 234, 0.28),
-      0 0 0 1px rgba(77, 238, 234, 0.35) inset;
+      0 16px 48px -16px rgba(110, 255, 209, 0.28),
+      0 0 0 1px rgba(110, 255, 209, 0.35) inset;
+  }
+
+  @media (max-width: 640px) {
+    .depth-map { min-height: 18rem; }
+    .challenge-row,
+    .architecture-row {
+      grid-template-columns: 2.5rem 1fr;
+      gap: 1rem;
+      padding: 1.25rem;
+    }
+    .architecture-index { font-size: 1.75rem; }
+    .contact-link {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+    .contact-link strong { text-align: left; }
   }
 }

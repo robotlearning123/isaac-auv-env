@@ -1,6 +1,10 @@
 # Changelog
 
-OceanScale website releases. Tag a version (`git tag v0.5.2`) to trigger production deploy.
+OceanScale website releases. Tag a version (`git tag v0.5.3`) to trigger production deploy.
+
+## v0.5.3 — 2026-05-20
+
+High-tech visual pass: rebuild the landing page around a stronger first screen, simulation cockpit treatment, architecture strips, benchmark proof band, and tighter AI infrastructure copy.
 
 ## v0.5.2 — 2026-05-20
 

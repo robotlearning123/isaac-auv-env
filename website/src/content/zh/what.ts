@@ -1,30 +1,30 @@
 export default {
   eyebrow: "Platform",
-  title: "核心能力",
+  title: "物理到策略。",
   capabilities: [
     {
       metric: null,
-      metricLabel: "Simulation",
-      title: "高速仿真",
-      body: "单卡实测吞吐,服务策略训练与回归测试。",
+      metricLabel: "01 / Sim Core",
+      title: "仿真内核",
+      body: "Newton + Warp 物理路径，面向高吞吐训练循环。",
     },
     {
       metric: null,
-      metricLabel: "Training",
-      title: "并行训练",
-      body: "8192 环境并行,面向多任务与多智能体。",
+      metricLabel: "02 / Vector Fabric",
+      title: "环境矩阵",
+      body: "8192 环境向量化，为策略搜索提供规模。",
     },
     {
       metric: null,
-      metricLabel: "Physics",
-      title: "海洋物理",
-      body: "6-DoF 水动力、流体近似与水下传感器模型。",
+      metricLabel: "03 / Marine Physics",
+      title: "水动力与传感器",
+      body: "6-DoF、水流近似、声学与水下感知接口。",
     },
     {
       metric: null,
-      metricLabel: "Ecosystem",
-      title: "机器人生态",
-      body: "Newton、Warp、OpenUSD、Isaac Sim 与 Gymnasium 接口。",
+      metricLabel: "04 / Robotics Bridge",
+      title: "机器人训练接口",
+      body: "Gymnasium、OpenUSD、Isaac Sim 与 ROS 2 集成路径。",
     },
   ],
 };
