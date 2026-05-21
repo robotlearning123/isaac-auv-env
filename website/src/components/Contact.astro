@@ -5,7 +5,7 @@ import { getLangFromUrl } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
-const { title, eyebrow, intro, emails, codeAccessNote } = fm;
+const { title, eyebrow, intro, emails } = fm;
 ---
 <section id="contact" class="relative overflow-hidden min-h-screen flex items-center text-center">
   <div class="absolute inset-0 -z-10">
@@ -15,23 +15,17 @@ const { title, eyebrow, intro, emails, codeAccessNote } = fm;
   <div class="relative max-w-[1280px] mx-auto px-6 py-24 md:py-32 w-full">
   <div class="font-mono text-[var(--color-lumen)] text-xs uppercase eyebrow-tracking mb-3 inline-flex items-center gap-3">
     <span class="w-8 h-px bg-[var(--color-lumen)]"></span>
-    /07 · {eyebrow}
+    /04 · {eyebrow}
     <span class="w-8 h-px bg-[var(--color-lumen)]"></span>
   </div>
   <h2 class="font-display text-4xl md:text-6xl font-bold text-[var(--color-paper)] mb-6 tracking-tight">{title}</h2>
   <p class="text-[var(--color-paper-dim)] max-w-2xl mx-auto mb-12 leading-relaxed">{intro}</p>
 
-  <a href={`mailto:${emails[0].email}`} class="btn-lumen text-base md:text-lg px-8 md:px-10 py-4 md:py-5 inline-flex items-center gap-4 mb-10">
-    <span class="font-mono text-[11px] uppercase eyebrow-tracking opacity-80">{emails[0].label}</span>
-    <span class="font-mono break-all">{emails[0].email}</span>
-    <span aria-hidden="true">→</span>
-  </a>
-  <div class="font-mono text-xs uppercase eyebrow-tracking text-[var(--color-paper-dim)] mb-6">{lang === 'zh' ? '或者' : 'or'}</div>
-  <div class="flex flex-wrap justify-center gap-x-10 gap-y-4 max-w-3xl mx-auto">
-    {emails.slice(1).map((e: { label: string; email: string }) => (
-      <a href={`mailto:${e.email}`} class="font-mono text-sm text-[var(--color-paper)] hover:text-[var(--color-lumen)] transition-colors inline-flex items-center gap-3 break-all">
-        <span class="font-mono text-[10px] uppercase eyebrow-tracking text-[var(--color-lumen)]/70">{e.label}</span>
-        {e.email}
+  <div class="grid md:grid-cols-3 gap-px bg-[var(--color-border-deep)] border border-[var(--color-border-deep)] max-w-4xl mx-auto text-left">
+    {emails.map((e: { label: string; email: string }) => (
+      <a href={`mailto:${e.email}`} class="bg-[var(--color-abyss-1)] hover:bg-[var(--color-abyss-2)] transition-colors p-6">
+        <span class="block font-mono text-[10px] uppercase eyebrow-tracking text-[var(--color-lumen)]/80 mb-4">{e.label}</span>
+        <span class="font-mono text-sm text-[var(--color-paper)] break-all">{e.email}</span>
       </a>
     ))}
   </div>

@@ -13,10 +13,9 @@ const { title, eyebrow, headers, rows, caveat } = fm;
     <div class="absolute inset-0 bg-gradient-to-b from-[var(--color-abyss-1)] via-[var(--color-abyss-1)]/88 to-[var(--color-abyss-1)]"></div>
   </div>
   <div class="relative max-w-[1280px] mx-auto px-6 w-full">
-    <div class="font-mono text-[var(--color-lumen)] text-xs uppercase eyebrow-tracking mb-3">/06 · {eyebrow}</div>
+    <div class="font-mono text-[var(--color-lumen)] text-xs uppercase eyebrow-tracking mb-3">/03 · {eyebrow}</div>
     <h2 class="font-display text-4xl md:text-6xl font-bold text-[var(--color-paper)] mb-12 tracking-tight max-w-4xl leading-[1.05]">{title}</h2>
 
-    {/* Sonar-display table: OceanScale column gets a luminous pillar treatment */}
     <div class="relative overflow-x-auto border border-[var(--color-border-deep)]">
       <table class="w-full text-left text-sm min-w-[760px] border-collapse">
         <thead>
@@ -30,7 +29,7 @@ const { title, eyebrow, headers, rows, caveat } = fm;
               ]}>
                 {i === 1 ? (
                   <span class="flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-abyss-0)] animate-pulse"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-abyss-0)]"></span>
                     {h}
                   </span>
                 ) : h}

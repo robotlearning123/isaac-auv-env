@@ -1,6 +1,10 @@
 # Changelog
 
-OceanScale website releases. Tag a version (`git tag v0.5.1`) to trigger production deploy.
+OceanScale website releases. Tag a version (`git tag v0.5.2`) to trigger production deploy.
+
+## v0.5.2 — 2026-05-20
+
+Top-down website rewrite: reduce page flow to hero, challenge, platform, benchmarks, and contact; remove defense wording, stale stack claims, manifesto copy, demo detours, and repeated metrics.
 
 ## v0.5.1 — 2026-05-20
 

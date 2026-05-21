@@ -1,5 +1,5 @@
 ---
-eyebrow: "AI-native marine robotics infrastructure · Beijing"
-h1: "Accelerating the next decade of underwater robotics"
-sub: "GPU-native simulation + agent training infrastructure for marine robotics research, industry, and defense. Stop letting the cost of going to sea cap your iteration speed."
+eyebrow: "AI-native simulation infrastructure"
+h1: "AI infrastructure for marine robotics."
+sub: "GPU-native simulation, parallel training, reproducible benchmarks."
 ---

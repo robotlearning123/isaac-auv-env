@@ -17,9 +17,9 @@
 
   /* Fonts (Fraunces dropped — SpaceX-style en display is Geist 800) */
   --font-display: "Geist", system-ui, sans-serif;
-  --font-display-zh: "LXGW WenKai", "LXGW WenKai Screen", serif;
+  --font-display-zh: "Geist", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
   --font-body: "Geist", system-ui, sans-serif;
-  --font-body-zh: "LXGW WenKai", "LXGW WenKai Screen", system-ui, sans-serif;
+  --font-body-zh: "Geist", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
@@ -135,8 +135,8 @@
      .font-display utility from @theme. zh = calligraphic, en = SpaceX-style heavy sans. */
   html[lang="zh"] .font-display {
     font-family: var(--font-display-zh);
-    font-weight: 400;
-    letter-spacing: -0.005em;
+    font-weight: 800;
+    letter-spacing: 0;
     /* CJK-safe wrapping: keep compounds (e.g. 机器人) intact; only break at marked
        boundaries (ZWSP U+200B inserted in source) or punctuation. */
     word-break: keep-all;
@@ -173,28 +173,6 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .scroll-reveal { opacity: 1; transform: none; transition: none; }
-  }
-
-  /* Cursor glow — soft bioluminescent blob follows mouse with ease */
-  #cursor-glow {
-    position: fixed;
-    pointer-events: none;
-    width: 480px;
-    height: 480px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(77, 238, 234, 0.18) 0%, rgba(77, 238, 234, 0.06) 35%, transparent 65%);
-    transform: translate(-50%, -50%);
-    z-index: 1;
-    opacity: 0;
-    mix-blend-mode: screen;
-    transition: opacity 300ms ease-out;
-    will-change: left, top;
-  }
-  @media (hover: hover) and (pointer: fine) {
-    #cursor-glow.active { opacity: 1; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    #cursor-glow { display: none; }
   }
 
   /* Card hover lift + lumen glow */

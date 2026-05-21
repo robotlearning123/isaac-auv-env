@@ -1,6 +1,6 @@
 export default {
   eyebrow: "Benchmarks",
-  title: "Measured against current underwater simulators",
+  title: "Benchmark data",
   headers: ["Metric", "OceanScale", "UWSim", "HoloOcean", "Gazebo"],
   rows: [
     ["Single-env FPS (RTX 5090)", "**11,435**", "~200", "~500", "~100"],
@@ -12,5 +12,5 @@ export default {
     ["Fossen 6-DoF", "✓", "✓", "partial", "—"],
     ["ROS 2 integration", "v0.3", "✓", "✓", "✓"],
   ],
-  caveat: "OceanScale figures measured by W2 benchmark (2026-05-15, RTX 5090). Other tools' figures sourced from public documentation and community reports; actual values depend on scene and hardware.",
+  caveat: "OceanScale figures measured by W2 benchmark (2026-05-15, RTX 5090). Other tools' figures come from public documentation and community reports; use them as order-of-magnitude references.",
 };

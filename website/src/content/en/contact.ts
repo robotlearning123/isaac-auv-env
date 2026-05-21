@@ -1,7 +1,7 @@
 export default {
   eyebrow: "Contact",
-  title: "Talk to OceanScale",
-  intro: "Research labs, industry teams, and defense programs deploying marine robotics — talk to us about integrating OceanScale into your training pipeline. We respond within 48 hours.",
+  title: "Partnerships",
+  intro: "For marine robotics, intelligent systems, simulation platforms, and AI infrastructure partnerships.",
   emails: [
     { label: "Business", email: "business@oceanscale.cn" },
     { label: "Technical", email: "tech@oceanscale.cn" },

@@ -5,7 +5,7 @@ import { getLangFromUrl } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
-const { title, problems } = fm;
+const { title, eyebrow, problems } = fm;
 ---
 <section id="why" class="relative overflow-hidden py-24 md:py-32 min-h-screen flex items-center">
   <div class="absolute inset-0 -z-10">
@@ -13,21 +13,19 @@ const { title, problems } = fm;
     <div class="absolute inset-0 bg-gradient-to-b from-[var(--color-abyss-1)] via-[var(--color-abyss-1)]/88 to-[var(--color-abyss-1)]"></div>
   </div>
   <div class="relative max-w-[1280px] mx-auto px-6 w-full">
-  <div class="font-mono text-[var(--color-lumen)] text-xs uppercase eyebrow-tracking mb-3">/02 · Why</div>
-  <h2 class="font-display text-4xl md:text-6xl font-bold text-[var(--color-paper)] mb-16 tracking-tight max-w-4xl">{title}</h2>
+  <div class="font-mono text-[var(--color-lumen)] text-xs uppercase eyebrow-tracking mb-3">/01 · {eyebrow}</div>
+  <h2 class="font-display text-4xl md:text-6xl font-bold text-[var(--color-paper)] mb-12 tracking-tight max-w-4xl leading-[1.05]">{title}</h2>
 
-  <ol class="space-y-10 list-none">
+  <ol class="grid md:grid-cols-3 gap-px bg-[var(--color-border-deep)] border border-[var(--color-border-deep)] list-none">
     {problems.map((p: { title: string; body: string }, i: number) => (
-      <li class="grid md:grid-cols-[auto_1fr] gap-6 md:gap-12 items-start py-8 border-t border-[var(--color-border-deep)]">
-        <div class="font-mono text-6xl md:text-8xl text-[var(--color-border-deep)] font-bold leading-none select-none">
+      <li class="bg-[var(--color-abyss-1)] p-8 md:p-10 min-h-[17rem] flex flex-col">
+        <div class="font-mono text-5xl text-[var(--color-lumen)]/25 font-bold leading-none select-none mb-10">
           {String(i + 1).padStart(2, '0')}
         </div>
-        <div class="max-w-3xl">
-          <h3 class="font-display text-lg md:text-xl font-semibold text-[var(--color-paper)] mb-3 leading-snug">
-            {p.title}
-          </h3>
-          <p class="text-[var(--color-paper-dim)] leading-relaxed text-base">{p.body}</p>
-        </div>
+        <h3 class="font-display text-2xl font-semibold text-[var(--color-paper)] mb-4 leading-tight">
+          {p.title}
+        </h3>
+        <p class="text-[var(--color-paper-dim)] leading-relaxed text-sm max-w-sm">{p.body}</p>
       </li>
     ))}
   </ol>

@@ -30,13 +30,8 @@ const lang = getLangFromUrl(Astro.url);
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css"
       rel="stylesheet"
     />
   </head>
@@ -46,9 +41,7 @@ const lang = getLangFromUrl(Astro.url);
       <slot />
     </main>
     <Footer />
-    <div id="cursor-glow" aria-hidden="true"></div>
     <script is:inline>
-      // Scroll-reveal: fade + rise each section after Hero as it enters viewport
       (function () {
         const sections = document.querySelectorAll('main > section, main section');
         if ('IntersectionObserver' in window && sections.length >= 2) {
@@ -65,30 +58,6 @@ const lang = getLangFromUrl(Astro.url);
             observer.observe(s);
           });
         }
-      })();
-
-      // Cursor glow: cyan blob follows cursor with ease (desktop only, respects reduced motion)
-      (function () {
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-        const el = document.getElementById('cursor-glow');
-        if (!el) return;
-        let mx = window.innerWidth / 2, my = window.innerHeight / 2;
-        let gx = mx, gy = my;
-        let active = false;
-        window.addEventListener('mousemove', (e) => {
-          mx = e.clientX; my = e.clientY;
-          if (!active) { active = true; el.classList.add('active'); }
-        }, { passive: true });
-        window.addEventListener('mouseleave', () => { active = false; el.classList.remove('active'); });
-        function tick() {
-          gx += (mx - gx) * 0.08;
-          gy += (my - gy) * 0.08;
-          el.style.left = gx + 'px';
-          el.style.top = gy + 'px';
-          requestAnimationFrame(tick);
-        }
-        requestAnimationFrame(tick);
       })();
     </script>
   </body>

@@ -1,5 +1,5 @@
 ---
-eyebrow: "AI-native 海洋机器人仿真基础设施 · 北京"
-h1: "加速水下机器人的下一个十年"
-sub: "GPU-native 仿真 + 智能体训练平台,服务海洋机器人的研究、产业与防务。让真实出海的代价不再是创新节奏的天花板。"
+eyebrow: "AI-native simulation infrastructure"
+h1: "海洋机器人 AI 基础设施。"
+sub: "GPU-native 仿真、并行训练、可复现实测基准。"
 ---

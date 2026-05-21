@@ -1,13 +1,13 @@
 export default {
-  eyebrow: "Built with",
-  title: "技术栈",
-  intro: "OceanScale 构建在开源 GPU 原生物理与渲染之上。我们跟随这个领域里最强团队的上游工作。",
+  eyebrow: "Stack",
+  title: "GPU-first 机器人仿真栈",
+  intro: "OceanScale 基于现代机器人仿真生态构建,并补上海洋机器人缺失的水动力、传感器与并行训练层。",
   partners: [
-    { name: "Newton", note: "GPU-native physics engine" },
-    { name: "Isaac Sim 6", note: "high-fidelity rendering" },
-    { name: "NVIDIA", note: "GPU 算力平台" },
-    { name: "Anthropic", note: "Newton co-maintainer (open source)" },
-    { name: "Lightwheel", note: "Newton co-maintainer (open source)" },
-    { name: "Apple", note: "Newton co-maintainer (open source)" },
+    { name: "Newton", note: "GPU physics" },
+    { name: "Warp", note: "CUDA kernels" },
+    { name: "OpenUSD", note: "scene graph" },
+    { name: "Isaac Sim", note: "rendering" },
+    { name: "Fossen", note: "6-DoF hydro" },
+    { name: "Gymnasium", note: "RL API" },
   ],
 };

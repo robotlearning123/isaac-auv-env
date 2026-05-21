@@ -1,9 +1,9 @@
 export default {
-  eyebrow: "Manifesto",
-  title: "What we stand for",
+  eyebrow: "System",
+  title: "System goals",
   stanzas: [
-    "The next decade of marine robotics shouldn't be paced by currents and weather.",
-    "It should be paced by simulation fidelity, GPU compute, and how fast AI agents can learn.",
-    "OceanScale builds the infrastructure that makes that pace possible.",
+    "GPU-native simulation.",
+    "AI-native training.",
+    "Reproducible benchmark data.",
   ],
 };

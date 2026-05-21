@@ -7,12 +7,22 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const fm: any = lang === 'zh' ? zhData : enData;
 const { h1, sub, eyebrow } = fm;
+const metrics = lang === 'zh'
+  ? [
+      { label: 'Single-env', value: '11,435 FPS', detail: 'BlueROV2 · RTX 5090' },
+      { label: 'Vectorized', value: '90M', detail: 'env-steps/s · 8192 envs' },
+      { label: 'Physics', value: '6-DoF', detail: 'Fossen kernel' },
+    ]
+  : [
+      { label: 'Single-env', value: '11,435 FPS', detail: 'BlueROV2 · RTX 5090' },
+      { label: 'Vectorized', value: '90M', detail: 'env-steps/s · 8192 envs' },
+      { label: 'Physics', value: '6-DoF', detail: 'Fossen kernel' },
+    ];
 ---
 <section class="relative overflow-hidden pt-36 pb-32 md:pt-52 md:pb-44 min-h-[88vh] flex items-center">
-  {/* Cinematic video background (SpaceX-style ambient loop, with image poster fallback) */}
   <div class="absolute inset-0 -z-10">
     <video
-      class="w-full h-full object-cover opacity-50"
+      class="w-full h-full object-cover opacity-42"
       autoplay
       muted
       loop
@@ -26,15 +36,8 @@ const { h1, sub, eyebrow } = fm;
     <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[var(--color-abyss-1)] to-transparent"></div>
   </div>
 
-  {/* Sonar ping rings, decorative */}
-  <div class="absolute top-1/2 right-[-8rem] md:right-[-4rem] opacity-30 pointer-events-none -z-0">
-    <div class="sonar-ping"></div>
-    <div class="sonar-ping"></div>
-    <div class="sonar-ping"></div>
-  </div>
-
   <div class="relative max-w-[1280px] mx-auto px-6 grid lg:grid-cols-12 gap-10 items-center">
-    <div class="lg:col-span-8 relative z-10">
+    <div class="lg:col-span-7 relative z-10">
       <div class="font-mono text-[var(--color-lumen)] text-xs uppercase eyebrow-tracking mb-7 anim-rise">
         {eyebrow}
       </div>
@@ -45,75 +48,30 @@ const { h1, sub, eyebrow } = fm;
         {sub}
       </p>
       <div class="flex flex-wrap items-center gap-4 anim-rise delay-500">
-        <a href="#demos" class="btn-lumen">
+        <a href="#benchmarks" class="btn-lumen">
           {t('cta.demos')}
           <span aria-hidden="true">→</span>
         </a>
         <a href="#contact" class="btn-ghost">{t('cta.contact')}</a>
       </div>
 
-      {/* Live telemetry ticker — the sim is running right now */}
-      <div class="mt-12 font-mono text-[11px] uppercase eyebrow-tracking text-[var(--color-paper-dim)] flex flex-wrap gap-x-8 gap-y-2 anim-rise delay-700">
-        <span class="flex items-baseline gap-2">
-          <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-lumen)] animate-pulse"></span>
-          <span>FPS</span>
-          <span id="tel-fps" class="text-[var(--color-lumen)] tabular-nums">11,435</span>
-        </span>
-        <span class="flex items-baseline gap-2">
-          <span>ENVS</span>
-          <span id="tel-envs" class="text-[var(--color-lumen)] tabular-nums">8,192</span>
-        </span>
-        <span class="flex items-baseline gap-2">
-          <span>STEPS</span>
-          <span id="tel-steps" class="text-[var(--color-lumen)] tabular-nums">0</span>
-        </span>
-      </div>
-      <script is:inline>
-        (function () {
-          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-          const fpsEl = document.getElementById('tel-fps');
-          const stepsEl = document.getElementById('tel-steps');
-          if (!fpsEl || !stepsEl) return;
-          let steps = 1429837229; // start mid-run so it looks live
-          let last = performance.now();
-          function tick(now) {
-            const dt = (now - last) / 1000;
-            last = now;
-            steps += 90_000_000 * dt; // 90M env-steps/s
-            stepsEl.textContent = Math.floor(steps).toLocaleString();
-            const jitter = 11380 + Math.floor(Math.random() * 110);
-            fpsEl.textContent = jitter.toLocaleString();
-            requestAnimationFrame(tick);
-          }
-          requestAnimationFrame(tick);
-        })();
-      </script>
     </div>
 
-    {/* Sonar dial SVG */}
-    <div class="lg:col-span-4 hidden lg:block relative aspect-square anim-rise delay-700">
-      <svg viewBox="0 0 200 200" class="w-full h-full">
-        <defs>
-          <radialGradient id="sweepGradient">
-            <stop offset="0%" stop-color="#4DEEEA" stop-opacity="0.5"/>
-            <stop offset="100%" stop-color="#4DEEEA" stop-opacity="0"/>
-          </radialGradient>
-        </defs>
-        <circle cx="100" cy="100" r="98" fill="none" stroke="#4DEEEA" stroke-width="0.5" stroke-opacity="0.45"/>
-        <circle cx="100" cy="100" r="75" fill="none" stroke="#4DEEEA" stroke-width="0.5" stroke-opacity="0.45"/>
-        <circle cx="100" cy="100" r="50" fill="none" stroke="#4DEEEA" stroke-width="0.5" stroke-opacity="0.45"/>
-        <circle cx="100" cy="100" r="25" fill="none" stroke="#4DEEEA" stroke-width="0.5" stroke-opacity="0.45"/>
-        <line x1="100" y1="2" x2="100" y2="198" stroke="#4DEEEA" stroke-width="0.3" stroke-opacity="0.3"/>
-        <line x1="2" y1="100" x2="198" y2="100" stroke="#4DEEEA" stroke-width="0.3" stroke-opacity="0.3"/>
-        <g>
-          <path d="M 100 100 L 100 2 A 98 98 0 0 1 198 100 Z" fill="url(#sweepGradient)" opacity="0.4">
-            <animateTransform attributeName="transform" type="rotate" from="0 100 100" to="360 100 100" dur="10s" repeatCount="indefinite"/>
-          </path>
-        </g>
-        <circle cx="100" cy="100" r="3" fill="#4DEEEA"/>
-        <circle cx="100" cy="100" r="2" fill="#02050C"/>
-        <text x="100" y="195" text-anchor="middle" fill="#4DEEEA" font-family="JetBrains Mono, monospace" font-size="6" opacity="0.7" letter-spacing="2">{t('hero.sonarLabel')}</text>
-      </svg>
+    <div class="lg:col-span-5 relative anim-rise delay-700">
+      <div class="border border-[var(--color-border-deep)] bg-[var(--color-abyss-0)]/72 backdrop-blur-md">
+        <div class="font-mono text-[10px] uppercase eyebrow-tracking text-[var(--color-lumen)] border-b border-[var(--color-border-deep)] px-5 py-4">
+          {t('hero.sonarLabel')}
+        </div>
+        {metrics.map((m) => (
+          <div class="grid grid-cols-[7rem_1fr] gap-5 border-b last:border-b-0 border-[var(--color-border-deep)] px-5 py-6">
+            <div class="font-mono text-[10px] uppercase eyebrow-tracking text-[var(--color-paper-dim)]">{m.label}</div>
+            <div>
+              <div class="font-mono text-3xl md:text-4xl font-bold text-[var(--color-lumen)] leading-none">{m.value}</div>
+              <div class="mt-2 font-mono text-[11px] uppercase eyebrow-tracking text-[var(--color-paper-dim)]">{m.detail}</div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   </div>
 </section>

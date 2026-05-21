@@ -17,10 +17,9 @@ const isZh = lang === 'zh';
       </span>
     </a>
     <div class="flex items-center gap-2 sm:gap-4 text-sm">
-      <a href="#what" class="inline-flex items-center min-h-[44px] px-2 text-[var(--color-paper-dim)] hover:text-[var(--color-lumen)] transition-colors">{t('nav.what')}</a>
-      <a href="#demos" class="inline-flex items-center min-h-[44px] px-2 text-[var(--color-paper-dim)] hover:text-[var(--color-lumen)] transition-colors hidden sm:inline-flex">{t('nav.demos')}</a>
-      <a href="#benchmarks" class="inline-flex items-center min-h-[44px] px-2 text-[var(--color-paper-dim)] hover:text-[var(--color-lumen)] transition-colors hidden sm:inline-flex">{t('nav.benchmarks')}</a>
-      <a href="#contact" class="inline-flex items-center min-h-[44px] px-2 text-[var(--color-paper-dim)] hover:text-[var(--color-lumen)] transition-colors">{t('nav.contact')}</a>
+      <a href="#what" class="hidden md:inline-flex items-center min-h-[44px] px-2 text-[var(--color-paper-dim)] hover:text-[var(--color-lumen)] transition-colors">{t('nav.what')}</a>
+      <a href="#benchmarks" class="hidden md:inline-flex items-center min-h-[44px] px-2 text-[var(--color-paper-dim)] hover:text-[var(--color-lumen)] transition-colors">{t('nav.benchmarks')}</a>
+      <a href="#contact" class="hidden md:inline-flex items-center min-h-[44px] px-2 text-[var(--color-paper-dim)] hover:text-[var(--color-lumen)] transition-colors">{t('nav.contact')}</a>
       <a
         href={otherUrl}
         class="inline-flex items-center justify-center min-h-[44px] min-w-[44px] font-mono text-xs border border-[var(--color-border-deep)] px-3 rounded-sm text-[var(--color-paper)] hover:border-[var(--color-lumen)] hover:text-[var(--color-lumen)] transition-colors"

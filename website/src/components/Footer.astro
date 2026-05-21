@@ -1,90 +1,13 @@
----
-import { getLangFromUrl, useTranslations } from '../i18n/utils';
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
-const isZh = lang === 'zh';
-
-const platformLinks = isZh
-  ? [
-      { label: '为什么', href: '#why' },
-      { label: '能力', href: '#what' },
-      { label: '演示', href: '#demos' },
-      { label: '基准', href: '#benchmarks' },
-    ]
-  : [
-      { label: 'Why', href: '#why' },
-      { label: 'Platform', href: '#what' },
-      { label: 'Demos', href: '#demos' },
-      { label: 'Benchmarks', href: '#benchmarks' },
-    ];
-
-const connectLinks = isZh
-  ? [
-      { label: '业务合作', href: 'mailto:business@oceanscale.cn' },
-      { label: '技术咨询', href: 'mailto:tech@oceanscale.cn' },
-      { label: '战略合作', href: 'mailto:partnerships@oceanscale.cn' },
-    ]
-  : [
-      { label: 'Business', href: 'mailto:business@oceanscale.cn' },
-      { label: 'Technical', href: 'mailto:tech@oceanscale.cn' },
-      { label: 'Partnerships', href: 'mailto:partnerships@oceanscale.cn' },
-    ];
----
-<footer class="relative z-10 border-t border-[var(--color-border-deep)] mt-24">
-  <div class="max-w-[1280px] mx-auto px-6 py-16 md:py-20">
-    <div class="grid grid-cols-2 md:grid-cols-12 gap-10 md:gap-8 mb-12">
-      <!-- Brand column -->
-      <div class="col-span-2 md:col-span-5">
-        <div class="flex items-start gap-3 mb-4">
-          <img src="/images/logo.png" alt="" class="w-10 h-10 mt-1" />
-          <div>
-            <div class="font-display text-2xl font-bold text-[var(--color-paper)] tracking-tight">
-              OceanScale
-            </div>
-            <div class="font-mono text-[10px] uppercase eyebrow-tracking text-[var(--color-lumen)] mt-1">
-              {isZh ? '海洋机器人仿真基础设施' : 'Marine Robotics Infrastructure'}
-            </div>
-          </div>
-        </div>
-        <p class="text-[var(--color-paper-dim)] text-sm leading-relaxed max-w-md">
-          {t('footer.tagline')}
-        </p>
-      </div>
-
-      <!-- Platform column -->
-      <div class="col-span-1 md:col-span-3 md:col-start-7">
-        <div class="font-mono text-[10px] uppercase eyebrow-tracking text-[var(--color-paper-dim)] mb-4">{isZh ? '平台' : 'Platform'}</div>
-        <ul class="space-y-2.5">
-          {platformLinks.map((l) => (
-            <li>
-              <a href={l.href} class="text-[var(--color-paper)] hover:text-[var(--color-lumen)] transition-colors text-sm">
-                {l.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <!-- Connect column -->
-      <div class="col-span-1 md:col-span-3">
-        <div class="font-mono text-[10px] uppercase eyebrow-tracking text-[var(--color-paper-dim)] mb-4">{isZh ? '联系' : 'Connect'}</div>
-        <ul class="space-y-2.5">
-          {connectLinks.map((l) => (
-            <li>
-              <a href={l.href} class="text-[var(--color-paper)] hover:text-[var(--color-lumen)] transition-colors text-sm break-all">
-                {l.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
+<footer class="relative z-10 border-t border-[var(--color-border-deep)]">
+  <div class="max-w-[1280px] mx-auto px-6 py-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <img src="/images/logo.png" alt="" class="w-8 h-8" />
+      <span class="font-display text-xl font-bold text-[var(--color-paper)] tracking-tight">OceanScale</span>
     </div>
-
-    <div class="border-t border-[var(--color-border-deep)] pt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-      <div class="font-mono text-[11px] text-[var(--color-paper-dim)]">{t('footer.copyright')}</div>
-      <div class="font-mono text-[11px] text-[var(--color-paper-dim)]/60">
-        {isZh ? '服务全球海洋' : 'Serving the world\'s oceans'}
-      </div>
+    <div class="font-mono text-[11px] uppercase eyebrow-tracking text-[var(--color-paper-dim)] flex flex-wrap gap-x-6 gap-y-2">
+      <span>© 2026 OceanScale</span>
+      <a href="mailto:business@oceanscale.cn" class="hover:text-[var(--color-lumen)] transition-colors">business@oceanscale.cn</a>
+      <a href="mailto:tech@oceanscale.cn" class="hover:text-[var(--color-lumen)] transition-colors">tech@oceanscale.cn</a>
     </div>
   </div>
 </footer>
