@@ -1,3 +1,5 @@
+@AGENTS.md
+
 # OceanScale — Claude Instructions
 
 ## Repo layout (monorepo)
