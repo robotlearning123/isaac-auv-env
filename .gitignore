@@ -56,3 +56,20 @@ Thumbs.db
 # Note: install_log/ contained in initial commit as historical record;
 # subsequent install_log/* are tracked or not at developer discretion.
 .gstack/
+
+# Tool state / per-machine runtime (not project source)
+.antigravitycli/
+.gemini/
+.astro/
+
+# Node / Astro build artifacts
+node_modules/
+website/dist/
+website/.wrangler/
+
+# Newton/Warp example USD outputs (large binaries, root-level only)
+/example_*.usd
+
+# Playwright snapshots
+benchmarks/.playwright-cli/
+website/.playwright-cli/
