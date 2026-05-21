@@ -22,7 +22,7 @@ All numbers below were measured on the project's RTX 5090. These are the floor f
 | CuPy LBM D2Q9 | 36,617 MLUPS peak at 1024^2 | `benchmarks/cupy_lbm_bench.py` |
 | Warp D2D bandwidth | 70.3 GB/s | `benchmarks/gpu_baseline.py` |
 | Warp kernel launch overhead | 4.20 us | `benchmarks/gpu_baseline.py` |
-| RTX 5090 FP32 (measured) | 104.8 TFLOPS FP32 (peak; scalar path ~44.8 TFLOPS measured) | `benchmarks/gpu_baseline.py` |
+| RTX 5090 FP32 (measured) | 31.3 TFLOPS (gpu_baseline scalar path); 44.8 TFLOPS observed at scalar peak. Spec ceiling 104.8 TFLOPS not yet exercised on this benchmark. | `benchmarks/gpu_baseline.py` |
 | RTX 5090 TF32 (measured) | 89.15 TFLOPS (Tensor Cores) | `benchmarks/gpu_baseline.py` |
 | RTX 5090 FP16 (measured) | 203.1 TFLOPS | `benchmarks/gpu_baseline.py` |
 | FSI terminal velocity | 0.00% error vs analytical | `benchmarks/fsi_underwater_bench.py` |

@@ -13,7 +13,7 @@
 | 1 | `warp_fluid_bench.py` | Jacobi 128^3 = 1.04ms, 200.9B cells/s | 1.04ms, 201.8B cells/s | <1% | **PASS** |
 | 2 | `newton_solver_bench.py` | 5,700 steps/s, 1.45M env/s at 256 worlds | 5,443 steps/s, 1.39M env/s | ~4% | **PASS** |
 | 3 | `mujoco_warp_bench.py` | 2.45M env-steps/s at N=4096 | 1.32M env-steps/s | -46% | **MISMATCH** |
-| 4 | `gpu_baseline.py` | ~~67~~ 104.8 TFLOPS FP32, ~~213~~ 838 TFLOPS FP16 | 31.3 TFLOPS FP32, 93.7 TFLOPS FP16 | -53/-56% | **MISMATCH** |
+| 4 | `gpu_baseline.py` | ~~67~~ 104.8 TFLOPS FP32, ~~213~~ 838 TFLOPS FP16 (NVIDIA spec) | 31.3 TFLOPS FP32, 93.7 TFLOPS FP16 | -70/-89% vs spec | **MISMATCH (scalar path only — Tensor Cores not exercised)** |
 | 5 | `navier_stokes_3d.py` | 334M cells/s at 256^3 | 429M (random IC), 207M (Taylor-Green) | varies | **PASS** |
 | 6 | `newton_mpm_bench.py` | 120-140 steps/s at 100K particles | 106 steps/s (Dam Break) | -16% | **MISMATCH** |
 | 7 | `cross_framework_fluid_bench.py` | Warp 4.5x faster than PyTorch | 3.4x at 128^3 (largest grid) | -24% | **MISMATCH** |
