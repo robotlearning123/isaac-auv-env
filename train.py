@@ -4,6 +4,7 @@ Usage:
     uv run python train.py                          # default: 4 envs, 100k steps
     uv run python train.py --n_envs 16 --total 1M   # larger batch
     uv run python train.py --device cpu              # CPU fallback
+    uv run python train.py --render-mp4 eval.mp4     # render eval episode after training
 
 Requires: uv sync --extra rl
 """
@@ -72,6 +73,45 @@ def train(args: argparse.Namespace) -> None:
     print(f"Model saved to {final_path}.zip")
     vec_env.close()
 
+    if args.render_mp4:
+        _render_eval(args)
+
+
+def _render_eval(args: argparse.Namespace) -> None:
+    """Run 1 eval episode and write MP4 using the trained model."""
+    from stable_baselines3 import PPO
+
+    from oceanscale.rendering import VideoExporter
+    from oceanscale.rov_env import ROVEnv
+
+    env = ROVEnv(n_envs=1, device=args.device, sensor_noise_std=0.0)
+    model_path = str(Path(args.checkpoint_dir) / "bluerov2_station_keep_final")
+    model = PPO.load(model_path)
+
+    exporter = VideoExporter(args.render_mp4, fps=30, view="side")
+
+    obs, info = env.reset()
+    target_pos = info.get("target_position", env.target_pos)
+
+    for _ in range(env.max_episode_steps):
+        body_q = env.state_curr.body_q.numpy()
+        pos = body_q[0, 0:3]
+        quat = body_q[0, 3:7]
+
+        exporter.record_frame(
+            {"pos": pos, "quat": quat},
+            target_pos=target_pos,
+        )
+
+        action, _ = model.predict(obs, deterministic=True)
+        obs, reward, terminated, truncated, info = env.step(action)
+
+        if terminated[0] or truncated[0]:
+            break
+
+    exporter.close()
+    env.close()
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train BlueROV2 PPO agent")
@@ -82,6 +122,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--checkpoint_dir", type=str, default="checkpoints")
     parser.add_argument("--tensorboard_log", type=str, default=None,
                         help="TensorBoard log directory (e.g. runs/). Disabled by default.")
+    parser.add_argument("--render-mp4", type=str, default=None, dest="render_mp4",
+                        help="After training, render 1 eval episode to this MP4 path.")
     return parser.parse_args()
 
 

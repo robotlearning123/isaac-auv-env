@@ -34,6 +34,9 @@ dev = [
 rl = [
     "gymnasium>=0.29",
     "stable-baselines3>=2.5",
+    "imageio>=2.34",
+    "imageio-ffmpeg>=0.5",
+    "matplotlib>=3.9",
 ]
 
 [tool.uv]
