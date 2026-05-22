@@ -49,6 +49,10 @@ checkpoints/
 *.pth
 *.onnx
 
+# Exception: test fixtures committed for regression snapshots
+!tests/**/data/
+!tests/**/data/*
+
 # OS
 .DS_Store
 Thumbs.db

@@ -1,72 +1,76 @@
-"""Tier-1 Fossen parity tests against von Benzon 2022 reference trajectories.
+"""Von Benzon reference trajectory regression test.
 
-How to enable these tests:
-    1. Generate reference trajectories from the von Benzon 2022 Simulink
-       model (or the Python port once complete).
-    2. Save as ``tests/data/vonbenzon_ref/<scenario>.npz`` with keys:
-       ``'pose'`` (N,6), ``'velocity'`` (N,6), ``'time'`` (N,).
-    3. Remove the ``@pytest.mark.skip`` decorators.
-
-See: REF-VONBENZON22 in REFERENCES.md §6, R13 + R23 in RISKS.md.
+Runs the CPU 6-DOF model with a 5N forward surge step (t=2-7 s) and
+compares the final position against a frozen self-generated snapshot.
+NOT a parity test against Simulink or any external ground truth.
 """
 
 from __future__ import annotations
 
-import importlib
 from pathlib import Path
 
 import numpy as np
 import pytest
 
-# Defer GPU imports — these tests may run on CPU-only CI where Warp is absent.
-pytestmark = pytest.mark.skipif(
-    not importlib.util.find_spec("warp"),
-    reason="Warp not installed — Tier-1 tests require CUDA + Warp",
-)
-
-REF_DATA_DIR = Path(__file__).parent / "data" / "vonbenzon_ref"
+DATA_DIR = Path(__file__).parent / "data"
+EXPECTED_PATH = DATA_DIR / "vonbenzon_expected.npz"
 
 
-@pytest.mark.skip(reason="requires von Benzon reference dataset — see R13 in RISKS.md")
-def test_terminal_velocity_matches_von_benzon() -> None:
-    """Compare steady-state surge velocity under constant forward thrust
-    against the von Benzon 2022 reference.
+def _surge_step(t: float) -> np.ndarray:
+    if 2.0 <= t < 7.0:
+        return np.array([5.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    return np.zeros(6)
 
-    Expected tolerance: <5% relative error in terminal velocity.
-    Reference: RISKS.md R13 trigger condition.
-    """
-    from oceanscale.hydro.tier1 import Tier1
+
+@pytest.fixture(scope="module")
+def traj():
     from oceanscale.validation.vonbenzon_reference import VonBenzonReferenceModel
 
-    ref_model = VonBenzonReferenceModel()
-    ref_path = REF_DATA_DIR / "const_thrust_surge.npz"
-    ref_data = ref_model.load_reference_dataset(ref_path)
-
-    # TODO: instantiate Tier1 with von Benzon coefficients, run same
-    # thrust profile, compare terminal velocity against ref_data.
-
-    tier1 = Tier1(n_envs=1, n_thrusters=8, device="cuda")
-    # tier1.set_coeffs(added_mass=..., d_lin=..., d_quad=..., ...)
-    # ... run simulation ...
-    # assert np.allclose(terminal_vel, ref_terminal_vel, rtol=0.05)
+    model = VonBenzonReferenceModel()
+    return model.generate_trajectory(thrust_func=_surge_step)
 
 
-@pytest.mark.skip(reason="requires von Benzon reference dataset — see R13 in RISKS.md")
-def test_step_response_under_constant_thrust() -> None:
-    """Compare full 6-DOF trajectory under constant thrust against von
-    Benzon 2022 reference.
+@pytest.mark.slow
+def test_shapes(traj):
+    assert traj["t"].shape == (1000,)
+    assert traj["pos"].shape == (1000, 3)
+    assert traj["quat"].shape == (1000, 4)
+    assert traj["vel"].shape == (1000, 6)
+    assert traj["omega"].shape == (1000, 3)
 
-    Expected tolerance: <5% relative error per-DOF at each timestep,
-    measured over the transient response (0–5 s).
-    """
-    from oceanscale.hydro.tier1 import Tier1
-    from oceanscale.validation.vonbenzon_reference import VonBenzonReferenceModel
 
-    ref_model = VonBenzonReferenceModel()
-    ref_path = REF_DATA_DIR / "const_thrust_6dof.npz"
-    ref_data = ref_model.load_reference_dataset(ref_path)
+@pytest.mark.slow
+def test_no_nan(traj):
+    for key, arr in traj.items():
+        assert np.all(np.isfinite(arr)), f"{key} contains NaN/Inf"
 
-    tier1 = Tier1(n_envs=1, n_thrusters=8, device="cuda")
-    # tier1.set_coeffs(added_mass=..., d_lin=..., d_quad=..., ...)
-    # ... run simulation ...
-    # assert per-DOF error within tolerance
+
+@pytest.mark.slow
+def test_quaternion_unit_norm(traj):
+    norms = np.linalg.norm(traj["quat"], axis=1)
+    assert np.allclose(norms, 1.0, atol=1e-6)
+
+
+@pytest.mark.slow
+def test_time_monotonic(traj):
+    assert np.all(np.diff(traj["t"]) > 0)
+
+
+@pytest.mark.slow
+def test_final_position_regression(traj):
+    expected = np.load(EXPECTED_PATH)
+    actual_pos = traj["pos"][-1]
+    expected_pos = expected["final_pos"]
+    err = np.linalg.norm(actual_pos - expected_pos)
+    assert err < 0.05, (
+        f"position L2 error {err:.6f} m > 0.05 m\n"
+        f"  actual:   {actual_pos}\n"
+        f"  expected: {expected_pos}"
+    )
+
+
+@pytest.mark.slow
+def test_surge_dominant_motion(traj):
+    final = traj["pos"][-1]
+    assert abs(final[0]) > abs(final[1]), "surge should dominate sway"
+    assert abs(final[0]) > abs(final[2]), "surge should dominate heave"
