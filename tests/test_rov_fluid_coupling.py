@@ -123,6 +123,8 @@ class TestFluidEffect:
             device="cuda",
             use_fluid=True,
             sensor_noise_std=0.0,
+            init_pos_noise_std=0.0,
+            init_yaw_noise_std=0.0,
             current_velocity=np.array([0.5, 0.0, 0.0], dtype=np.float32),
         )
         env_strong = ROVEnv(
@@ -130,6 +132,8 @@ class TestFluidEffect:
             device="cuda",
             use_fluid=True,
             sensor_noise_std=0.0,
+            init_pos_noise_std=0.0,
+            init_yaw_noise_std=0.0,
             current_velocity=np.array([1.5, 0.0, 0.0], dtype=np.float32),
         )
 

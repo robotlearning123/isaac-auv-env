@@ -51,7 +51,10 @@ class ROVEnv(gym.Env):
         [22:26] previous hydro wrench (force_z, torque_x, torque_y, torque_z)
 
     Action (6-dim): [-1, +1] per DOF (surge, sway, heave, roll, pitch, yaw).
-    Mapped to n_thrusters via diagonal T_matrix allocation.
+    Mapped to n_thrusters via T_matrix pseudoinverse (Moore-Penrose) allocation.
+
+    `init_pos_noise_std` and `init_yaw_noise_std` are uniform half-ranges, not
+    Gaussian stddev: reset samples uniformly in [-std, +std].
 
     n_envs=1: returns squeezed single-env shapes (obs=(26,), reward=float).
     n_envs>1: returns batched shapes (obs=(n,26), reward=(n,)).
@@ -75,6 +78,8 @@ class ROVEnv(gym.Env):
         current_velocity: np.ndarray | None = None,
         use_domain_randomization: bool = False,
         randomization_ranges: RandomizationRanges | None = None,
+        init_pos_noise_std: float = 0.5,
+        init_yaw_noise_std: float = 0.5,
     ) -> None:
         super().__init__()
 
@@ -94,6 +99,8 @@ class ROVEnv(gym.Env):
         )
         self.use_domain_randomization = use_domain_randomization
         self.randomization_ranges = randomization_ranges or RandomizationRanges()
+        self.init_pos_noise_std = init_pos_noise_std
+        self.init_yaw_noise_std = init_yaw_noise_std
 
         if target_pos is None:
             target_pos = np.array([0.0, 0.0, -1.5], dtype=np.float32)
@@ -105,6 +112,12 @@ class ROVEnv(gym.Env):
 
         # Extract T_matrix from coeffs if provided (BlueROV2 Heavy path)
         self._t_matrix = coeffs.get("T_matrix")
+
+        # Precompute pseudoinverse for wrench→thruster allocation
+        if self._t_matrix is not None:
+            self._t_pinv = np.linalg.pinv(np.array(self._t_matrix, dtype=np.float64)).astype(np.float32)
+        else:
+            self._t_pinv = None
 
         w = reward_weights or {}
         self._w_pos = w.get("pos", 1.0)
@@ -236,10 +249,13 @@ class ROVEnv(gym.Env):
         action = np.clip(action, -1.0, 1.0)
         self._prev_action = action.copy()
 
-        # Map 6-DOF action to n_thrusters via diagonal allocation
-        u_cmd = np.zeros((self.n_envs, self.n_thrusters), dtype=np.float32)
-        for i in range(min(6, self.n_thrusters)):
-            u_cmd[:, i] = action[:, i]
+        # Map 6-DOF wrench action to n_thrusters via T_matrix pseudoinverse
+        if self._t_pinv is not None:
+            u_cmd = np.clip(action @ self._t_pinv.T, -1.0, 1.0).astype(np.float32)
+        else:
+            u_cmd = np.zeros((self.n_envs, self.n_thrusters), dtype=np.float32)
+            for i in range(min(6, self.n_thrusters)):
+                u_cmd[:, i] = action[:, i]
         self._u_cmd = wp.array(u_cmd, dtype=wp.float32, device=self.device)
 
         # Tier1 hydro wrench
@@ -510,15 +526,28 @@ class ROVEnv(gym.Env):
         return reward, info
 
     def _reset_indices(self, env_ids: np.ndarray) -> None:
-        """Reset specified env indices to initial state."""
+        """Reset specified env indices to initial state with optional perturbation."""
         import newton
 
         target = self.target_pos
+        n_reset = len(env_ids)
+
+        # Sample perturbation offsets
+        if self.init_pos_noise_std > 0 or self.init_yaw_noise_std > 0:
+            pos_noise = self.np_random.uniform(-self.init_pos_noise_std, self.init_pos_noise_std, (n_reset, 3)).astype(np.float32)
+            yaw_offsets = self.np_random.uniform(-self.init_yaw_noise_std, self.init_yaw_noise_std, n_reset).astype(np.float32)
+        else:
+            pos_noise = np.zeros((n_reset, 3), dtype=np.float32)
+            yaw_offsets = np.zeros(n_reset, dtype=np.float32)
 
         joint_q = self.model.joint_q.numpy()
-        for idx in env_ids:
+        for k, idx in enumerate(env_ids):
             base = idx * 7
-            joint_q[base:base + 7] = [target[0], target[1], target[2], 0.0, 0.0, 0.0, 1.0]
+            px = target[0] + pos_noise[k, 0]
+            py = target[1] + pos_noise[k, 1]
+            pz = target[2] + pos_noise[k, 2]
+            half_yaw = yaw_offsets[k] * 0.5
+            joint_q[base:base + 7] = [px, py, pz, 0.0, 0.0, float(np.sin(half_yaw)), float(np.cos(half_yaw))]
         self.model.joint_q = wp.array(joint_q, dtype=wp.float32, device=self.device)
 
         joint_qd = self.model.joint_qd.numpy()

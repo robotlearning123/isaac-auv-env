@@ -50,7 +50,8 @@ def env():
 
 @pytest.fixture
 def env_no_noise():
-    e = ROVEnv(n_envs=1, device="cuda", sensor_noise_std=0.0)
+    e = ROVEnv(n_envs=1, device="cuda", sensor_noise_std=0.0,
+               init_pos_noise_std=0.0, init_yaw_noise_std=0.0)
     yield e
     e.close()
 

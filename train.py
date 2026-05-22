@@ -18,6 +18,7 @@ from pathlib import Path
 def train(args: argparse.Namespace) -> None:
     from stable_baselines3 import PPO
     from stable_baselines3.common.callbacks import CheckpointCallback, CallbackList
+    from stable_baselines3.common.vec_env import VecNormalize
 
     from oceanscale.rov_env import ROVEnv
     from oceanscale.vec_env import BatchedVecEnv
@@ -27,6 +28,7 @@ def train(args: argparse.Namespace) -> None:
 
     env = ROVEnv(n_envs=args.n_envs, device=args.device, sensor_noise_std=0.02)
     vec_env = BatchedVecEnv(env)
+    vec_env = VecNormalize(vec_env, norm_obs=True, norm_reward=True, gamma=0.99)
 
     policy_kwargs = dict(net_arch=dict(pi=[128, 128], vf=[128, 128]))
 
@@ -71,6 +73,11 @@ def train(args: argparse.Namespace) -> None:
     final_path = checkpoint_dir / "bluerov2_station_keep_final"
     model.save(str(final_path))
     print(f"Model saved to {final_path}.zip")
+
+    vec_norm_path = checkpoint_dir / "vec_normalize.pkl"
+    vec_env.save(str(vec_norm_path))
+    print(f"VecNormalize stats saved to {vec_norm_path}")
+
     vec_env.close()
 
     if args.render_mp4:
@@ -80,18 +87,30 @@ def train(args: argparse.Namespace) -> None:
 def _render_eval(args: argparse.Namespace) -> None:
     """Run 1 eval episode and write MP4 using the trained model."""
     from stable_baselines3 import PPO
+    from stable_baselines3.common.vec_env import VecNormalize
 
     from oceanscale.rendering import VideoExporter
     from oceanscale.rov_env import ROVEnv
+    from oceanscale.vec_env import BatchedVecEnv
 
     env = ROVEnv(n_envs=1, device=args.device, sensor_noise_std=0.0)
+    vec_env = BatchedVecEnv(env)
+
+    vec_norm_path = Path(args.checkpoint_dir) / "vec_normalize.pkl"
+    if vec_norm_path.exists():
+        vec_env = VecNormalize.load(str(vec_norm_path), vec_env)
+        vec_env.training = False
+        vec_env.norm_reward = False
+    else:
+        vec_env = VecNormalize(vec_env, norm_obs=False, norm_reward=False)
+
     model_path = str(Path(args.checkpoint_dir) / "bluerov2_station_keep_final")
     model = PPO.load(model_path)
 
     exporter = VideoExporter(args.render_mp4, fps=30, view="side")
 
-    obs, info = env.reset()
-    target_pos = info.get("target_position", env.target_pos)
+    obs = vec_env.reset()
+    target_pos = env.target_pos.copy()
 
     for _ in range(env.max_episode_steps):
         body_q = env.state_curr.body_q.numpy()
@@ -104,13 +123,13 @@ def _render_eval(args: argparse.Namespace) -> None:
         )
 
         action, _ = model.predict(obs, deterministic=True)
-        obs, reward, terminated, truncated, info = env.step(action)
+        obs, reward, done, info = vec_env.step(action)
 
-        if terminated[0] or truncated[0]:
+        if done[0]:
             break
 
     exporter.close()
-    env.close()
+    vec_env.close()
 
 
 def parse_args() -> argparse.Namespace:
