@@ -4,23 +4,33 @@ OceanScale website releases. Tag a version (`git tag v0.5.3`) to trigger product
 
 ## Unreleased
 
-Wave 2 of v0.6 prep (engineering buildup; website unchanged from v0.5.3).
+Wave A → A2 → B → C → D of v0.6 (the v0.1 launch wave). Package becomes pip-installable; hover policy actually learns; honest benchmark vs PyBullet.
 
 ### Added
-- **Hydro Tier-1 Fossen 6-DOF kernels** (`oceanscale/hydro/`) with W2-gate tests: autograd vs torch numerical-diff (<1e-3), throughput (≥100k env-steps/s @ 8192 envs target), determinism.
-- **Von Benzon 2022 reference scaffold** (`oceanscale/validation/`) — Python interface + parity-test skeleton; unblocks R13 (no AUV ground-truth data) once Simulink port lands.
-- **NVIDIA ecosystem benchmark matrix** (`benchmarks/`) — 28 scripts + ECOSYSTEM_MATRIX.md + VERIFICATION_REPORT.md across Warp / Newton / MuJoCo-Warp / CuPy / JAX / Taichi / Triton / XLB on RTX 5090.
-- **RL training pipeline scaffold** (`oceanscale/{newton_env,rov_env,vec_env}.py`, `train.py`, `oceanscale/vehicles/` + tests).
-- **Fluid module scaffold** (`oceanscale/fluid/{grid,mpm}.py` + tests).
-- **Strategy / market / competitive / tech research docs** (`research/`, 19 files).
-- **AGENTS.md** — cross-tool agent instructions (Claude Code, Codex, Gemini).
-- **OCEAN_TECH_REFERENCE.md** — consolidated underwater sim tech reference.
+- **Hydro Tier-1 Fossen 6-DOF kernels** (`oceanscale/hydro/`) with W2-gate tests: autograd vs torch numerical-diff (<1e-3), throughput, determinism.
+- **Von Benzon 2022 reference port** (`oceanscale/validation/vonbenzon_reference.py`) — 6-DOF Fossen dynamics + RK4 integration + 6 regression tests against frozen snapshot. R13 (no AUV ground-truth reference) now partially unblocked.
+- **NVIDIA ecosystem benchmark matrix** (`benchmarks/`) — 28 scripts + ECOSYSTEM_MATRIX.md + VERIFICATION_REPORT.md.
+- **RL training pipeline** (`oceanscale/{newton_env,rov_env,vec_env}.py`, `train.py`, `oceanscale/vehicles/`). PPO hover converges with T_matrix.pinv() allocation + init perturbation + VecNormalize: explained_variance 0→0.901 at 1M steps, depth target hit to 0.7mm minimum (drifts ~0.41m laterally over a 33s eval — known v0.2 work).
+- **OceanScale vs PyBullet benchmark** (`benchmarks/{bullet_bluerov_env,oceanscale_vs_bullet}.py` + RESULTS.md) — sweep n_envs ∈ {1,4,16,64} × 2 runs. 10.49× throughput at n=64 on RTX 5090, crossover at n≈8, 5 documented physics differences (no "identical conditions" overclaim).
+- **CLI entry point** (`oceanscale/cli.py`) — `oceanscale demo bluerov2-hover`, `oceanscale train ...`, `oceanscale --version`. Pretrained checkpoint bundled at `oceanscale/data/bluerov2_station_keep_final.zip` (1M-step PPO) + `vec_normalize.pkl`.
+- **Headless MP4 renderer** (`oceanscale/rendering.py`) — matplotlib Agg + imageio-ffmpeg, no GUI dep. Simple single-panel mode (default) + cinematic 4-panel mode (`--cinematic`: side view, top view, depth-error chart, thruster bars, HUD overlay).
+- **Colab T4 notebook** (`notebooks/bluerov2_hover_colab.{py,ipynb}`) — install, smoke, train, eval. Real-T4 install path documented but not yet verified end-to-end (Newton/Warp on Colab).
+- **PyPI publish workflow** (`.github/workflows/publish-pypi.yml`) — tag → TestPyPI → manual gate → PyPI. Tag/version match check.
+- **Demo landing section** (`website/src/components/Demos.astro` + `content/{en,zh}/demo.ts`) — install command terminal, Colab badge, benchmark table, drift caveat. Bilingual. Placeholder video panel until R2 upload at release tag.
+- **README.md** rewritten — quickstart, benchmark table, honest "works / known limitations" status.
+- **2-page operator/VC brief** (`docs/v0.1_brief.md`) — pain → wedge → before/after → roadmap → ask. All claims cite measured data; cost numbers marked as public industry estimates.
+- **Deep research report** (`deep-research-report.md`) — OceanSim Lab → Simulation Factory → Ocean AI Infrastructure (Chinese, 513 lines).
+- **AGENTS.md** + **OCEAN_TECH_REFERENCE.md** — cross-tool agent instructions, consolidated tech reference.
 
 ### Changed
-- **STATUS.md** + **HANDOFF.md** — 2026-05-21 review section: decisions (brand english-only, staff no-hurry, website concept-mainly) + next gates (W2 autograd, von Benzon scaffold).
+- **pyproject.toml / uv.lock** — base deps now include SB3 + imageio + matplotlib so the demo command runs after default `pip install` (no `[rl]` extra required). `[bench]` extra adds pybullet + psutil. PyPI metadata: name, classifiers, scripts entry point, package_data for bundled checkpoint.
+- **.gitignore** — exceptions for `tests/**/data/` (regression snapshots) and `oceanscale/data/` (bundled checkpoint).
+- **STATUS.md** + **HANDOFF.md** — 2026-05-21 review (brand english-only, staff no-hurry, website concept-mainly).
 - **CLAUDE.md** — orchestration / model strategy refresh.
-- **pyproject.toml / uv.lock** — deps for hydro + RL stack.
-- **.gitignore** — exclude tool state, build artifacts, large USD outputs.
+
+### Fixed
+- **R20** (Warp quaternion autograd) — `_quat_rotate` torch reference rewritten as element-wise so autograd sees qw² dependency; `test_restoring_autograd_vs_torch` no longer skipped.
+- **PPO hover** — three independent bugs (action mapping ignored T_matrix, passive buoyancy local optimum, reward scale crushed value head). Hover now actually learns. 150/150 tests pass.
 
 ## v0.5.3 — 2026-05-20
 

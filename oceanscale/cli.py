@@ -55,22 +55,36 @@ def _demo_bluerov2_hover(args: argparse.Namespace) -> None:
     model = PPO.load(str(model_path))
 
     render_mp4 = args.render_mp4
+    cinematic = getattr(args, "cinematic", False)
     exporter = None
     if render_mp4:
-        exporter = VideoExporter(render_mp4, fps=30, view="side")
+        exporter = VideoExporter(
+            render_mp4, fps=30, view="side", cinematic=cinematic,
+            title_card="OceanScale v0.1 — BlueROV2 hover with PPO" if cinematic else None,
+            end_card="10.5x faster than PyBullet at n=64\npip install oceanscale" if cinematic else None,
+        )
 
     obs = vec_env.reset()
     target_pos = env.target_pos.copy()
+    dt = 1.0 / 30.0  # approx display timestep
 
     total_reward = 0.0
     for step in range(env.max_episode_steps):
+        action, _ = model.predict(obs, deterministic=True)
+
         if exporter is not None:
             body_q = env.state_curr.body_q.numpy()
             pos = body_q[0, 0:3]
             quat = body_q[0, 3:7]
-            exporter.record_frame({"pos": pos, "quat": quat}, target_pos=target_pos)
+            state_dict = {"pos": pos, "quat": quat}
+            step_time = step * dt
+            action_arr = np.asarray(action).flatten()
+            exporter.record_frame(
+                state_dict, target_pos=target_pos,
+                action=action_arr if cinematic else None,
+                step_time=step_time if cinematic else None,
+            )
 
-        action, _ = model.predict(obs, deterministic=True)
         obs, reward, done, info = vec_env.step(action)
         total_reward += float(reward[0])
 
@@ -177,6 +191,7 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Demo task to run",
     )
     demo_parser.add_argument("--render-mp4", type=str, default=None, help="Output MP4 path")
+    demo_parser.add_argument("--cinematic", action="store_true", help="Use cinematic 4-panel rendering")
     demo_parser.add_argument("--device", type=str, default="cuda", help="Device (cuda/cpu)")
     demo_parser.add_argument("--seed", type=int, default=42, help="Random seed")
 
