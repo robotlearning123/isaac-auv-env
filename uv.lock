@@ -1628,6 +1628,10 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+bench = [
+    { name = "psutil" },
+    { name = "pybullet" },
+]
 dev = [
     { name = "hypothesis" },
     { name = "mypy" },
@@ -1662,6 +1666,8 @@ requires-dist = [
     { name = "newton", extras = ["examples", "torch-cu12"], specifier = ">=1.2.0,<1.3" },
     { name = "numpy", specifier = ">=1.26,<3" },
     { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=3.7" },
+    { name = "psutil", marker = "extra == 'bench'", specifier = ">=5.9" },
+    { name = "pybullet", marker = "extra == 'bench'", specifier = ">=3.2.7" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0,<9" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=5.0" },
     { name = "rich", specifier = ">=13" },
@@ -1675,7 +1681,7 @@ requires-dist = [
     { name = "usd-core", specifier = ">=25.11" },
     { name = "warp-lang", extras = ["torch-cu12"], specifier = ">=1.13.0,<2.0" },
 ]
-provides-extras = ["dev", "rl"]
+provides-extras = ["dev", "rl", "bench"]
 
 [[package]]
 name = "omegaconf"
@@ -1906,6 +1912,12 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/b4/90/e2159492b5426be0c1fef7acba807a03511f97c5f86b3caeda6ad92351a7/psutil-7.2.2-cp37-abi3-win_amd64.whl", hash = "sha256:eb7e81434c8d223ec4a219b5fc1c47d0417b12be7ea866e24fb5ad6e84b3d988", size = 137737, upload-time = "2026-01-28T18:15:33.849Z" },
     { url = "https://files.pythonhosted.org/packages/8c/c7/7bb2e321574b10df20cbde462a94e2b71d05f9bbda251ef27d104668306a/psutil-7.2.2-cp37-abi3-win_arm64.whl", hash = "sha256:8c233660f575a5a89e6d4cb65d9f938126312bca76d8fe087b947b3a1aaac9ee", size = 134617, upload-time = "2026-01-28T18:15:36.514Z" },
 ]
+
+[[package]]
+name = "pybullet"
+version = "3.2.7"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/de/95/b9a98cd4ed948d4f25a7d0b13cb0c1f87e58dc6d113be9e18940641eb25f/pybullet-3.2.7.tar.gz", hash = "sha256:042879db8d101ac7590dee475fc6aded508b85fe1273fdbbfde1d88bd200e14f", size = 80508379, upload-time = "2025-01-30T00:34:00.527Z" }
 
 [[package]]
 name = "pycollada"
