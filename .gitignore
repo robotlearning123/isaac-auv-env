@@ -49,9 +49,11 @@ checkpoints/
 *.pth
 *.onnx
 
-# Exception: test fixtures committed for regression snapshots
+# Exceptions: test fixtures + bundled pretrained checkpoints
 !tests/**/data/
 !tests/**/data/*
+!oceanscale/data/
+!oceanscale/data/*
 
 # OS
 .DS_Store
