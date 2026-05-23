@@ -79,3 +79,5 @@ website/.wrangler/
 # Playwright snapshots
 benchmarks/.playwright-cli/
 website/.playwright-cli/
+
+.context/
