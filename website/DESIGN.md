@@ -171,7 +171,7 @@ CSS-only, no animation library:
 |---|---|---|
 | Hero H1 | 加速水下机器人的下一个十年 | Accelerating the next decade of underwater robotics |
 | Hero sub | GPU-native 仿真,替代昂贵的出海试验 | GPU-native simulation that replaces months of ocean trials |
-| Why title | 海洋机器人发展的五个枷锁 | Five constraints holding underwater robotics back |
+| Why title | 水下机器人发展的五个枷锁 | Five constraints holding underwater robotics back |
 | What title | 我们造的东西 | What we're building |
 
 ---
