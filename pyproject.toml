@@ -1,6 +1,6 @@
 [project]
 name = "oceanscale"
-version = "0.0.1"
+version = "0.0.2"
 description = "AI-native simulation infrastructure for underwater robotics"
 license = "Apache-2.0"
 readme = "README.md"
