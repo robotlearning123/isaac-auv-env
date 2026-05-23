@@ -1,6 +1,6 @@
 ---
 eyebrow: "Challenge"
-title: "海洋机器人 AI 的算力瓶颈"
+title: "水下机器人 AI 的算力瓶颈"
 problems:
   - title: "海试慢"
     body: "天气、海况、设备与场地成本,限制机器人策略迭代速度。"

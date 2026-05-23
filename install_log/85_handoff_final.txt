@@ -1,0 +1,23 @@
+* feat/oceanscale-website-v0.1.0 0b24260 docs(handoff): session 2026-05-15 — W1.5 + W2 PASS, ready for W3
+  feat/v0.1.0-run-references     bab6ba5 docs(patches): apply R1.4 findings to fossen.md + W2 plan + flag T3.3 source
+  feat/v0.1.0-scaffold           fa48d02 docs(refs): rewrite REFERENCES as verified knowledge base + add NOTICES + IMPLEMENTATION_PLAN
+  feat/v0.1.0-tier1-fossen       d57935e feat(hydro): T2.7 autograd + ruff config — W2 COMPLETE
+  feat/v0.1.0-worlds-poc         1d88c70 docs(goal): goals/W1.5_run_references.md — run reference projects before kernel impl
+---
+0b24260 (HEAD -> feat/oceanscale-website-v0.1.0) docs(handoff): session 2026-05-15 — W1.5 + W2 PASS, ready for W3
+85bf2b1 docs(website): implementation plan for v0.1 landing page
+8256eba docs(website): add T2.8 multi-env 90M throughput to Benchmarks
+2f05731 docs(website): OceanScale 沧渊 landing page v0.1 design spec
+d57935e (feat/v0.1.0-tier1-fossen) feat(hydro): T2.7 autograd + ruff config — W2 COMPLETE
+5cc3935 bench(hydro): T2.8 Tier-1 throughput — 90 M env-steps/s @ 8192 envs (900× target)
+711ad8b feat(hydro): T2.1-T2.6 Tier-1 Fossen Warp kernels — 5/5 smoke + 27/27 total tests pass
+bab6ba5 (feat/v0.1.0-run-references) docs(patches): apply R1.4 findings to fossen.md + W2 plan + flag T3.3 source
+e4e8311 docs(refs): R1.5 stonefish read-only — GPL-3 anti-vendor confirmed, cite-only
+da5cc4c docs(refs): R1.4 MarineGym source extraction — 7 reusable patterns + 1 critical correction
+f7d96b5 chore(refs): R1.1 bluerov2_gym install + run + docs entry (11,435 FPS single-env)
+1d88c70 (feat/v0.1.0-worlds-poc) docs(goal): goals/W1.5_run_references.md — run reference projects before kernel impl
+19b9a7a docs(goal): patch W2 plan with DR-review findings (1 BLOCKER resolved + 2 HIGH + 2 MED)
+b9fc9a5 docs(goal): goals/W2_tier1_fossen.md — detailed /goal plan for Tier-1 Fossen kernels
+35a7b4b docs(review): synthesize DR-review of 3 fork agents — 7 high-value patches
+---
+0b2426080ba42727f8309b8ebaa1f90e362853c5

@@ -13,7 +13,7 @@
 | Chinese name | Not used |
 | Tagline (zh) | 加速水下机器人的下一个十年 |
 | Tagline (en) | Accelerating the next decade of underwater robotics |
-| Positioning | AI-native simulation infrastructure for marine robotics |
+| Positioning | AI-native simulation infrastructure for underwater robotics |
 | Reference brand | Lightwheel AI (Beijing, NVIDIA partner) for verticalized AI infra |
 | Visual direction | **Deep-Sea Sonar** + **SpaceX-style mission energy** |
 
@@ -162,7 +162,7 @@ CSS-only, no animation library:
 - Short sentences. Punch.
 - Concrete numbers always (11,435 FPS, 90M env-steps/s, ¥10–100k/day).
 - Active voice. "We're building" not "is being built."
-- Customer-frame: speak to the labs/companies/defense, not about us.
+- Customer-frame: speak to the labs/companies/research-groups, not about us.
 - No jargon until after the hook.
 
 **Examples (current copy):**
@@ -171,7 +171,7 @@ CSS-only, no animation library:
 |---|---|---|
 | Hero H1 | 加速水下机器人的下一个十年 | Accelerating the next decade of underwater robotics |
 | Hero sub | GPU-native 仿真,替代昂贵的出海试验 | GPU-native simulation that replaces months of ocean trials |
-| Why title | 海洋机器人发展的五个枷锁 | Five constraints holding marine robotics back |
+| Why title | 水下机器人发展的五个枷锁 | Five constraints holding underwater robotics back |
 | What title | 我们造的东西 | What we're building |
 
 ---

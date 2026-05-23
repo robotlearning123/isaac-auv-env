@@ -24,7 +24,7 @@ export default {
       metric: null,
       metricLabel: "04 / Robotics Bridge",
       title: "Robot training interfaces",
-      body: "Gymnasium, OpenUSD, Isaac Sim, and ROS 2 integration path.",
+      body: "Gymnasium, OpenUSD, and ROS 2 interfaces (Isaac Sim: future integration path).",
     },
   ],
 };

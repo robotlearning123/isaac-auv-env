@@ -1,0 +1,24 @@
+# OceanScale — Windsurf Rules
+
+Read before any work:
+- AGENTS.md (cross-tool agent instructions)
+- POSITIONING.md (brand / scope / voice / lexicon / banned words)
+- DESIGN.md (visual brand law)
+- ARCHITECTURE.md (technical architecture)
+- GLOSSARY.md (terminology)
+
+POSITIONING.md is messaging law. Banned words list (§8) is enforced.
+DESIGN.md is visual law. Banned patterns (§2) are enforced.
+
+Monorepo. Sub-packages have their own AGENTS.md:
+- oceanscale/AGENTS.md — Python package
+- website/AGENTS.md — Astro app
+- benchmarks/AGENTS.md — perf tests
+- notebooks/AGENTS.md — Colab notebooks
+
+Code style:
+- Python: type hints on public APIs, ruff format, no needless comments
+- TypeScript: strict mode
+- Conventional Commits
+- One logical change per commit
+- Tests after every change

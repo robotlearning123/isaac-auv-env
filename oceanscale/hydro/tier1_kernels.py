@@ -163,12 +163,12 @@ def tier1_thruster_alloc(
     n_thrusters = u_cmd.shape[1]
     # First-order lag + deadband + saturation per thruster
     alpha = dt / (tau_lag + dt)  # discrete-time approx of dt/τ
-    fx = 0.0
-    fy = 0.0
-    fz = 0.0
-    mx = 0.0
-    my = 0.0
-    mz = 0.0
+    fx = float(0.0)
+    fy = float(0.0)
+    fz = float(0.0)
+    mx = float(0.0)
+    my = float(0.0)
+    mz = float(0.0)
     for k in range(n_thrusters):
         u_raw = u_cmd[i, k]
         # saturation in [-1, +1]

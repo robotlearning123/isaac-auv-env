@@ -1,5 +1,5 @@
 ---
 eyebrow: "AI-native simulation infrastructure"
-h1: "AI infrastructure for marine robotics."
+h1: "The ocean simulator for underwater robotics."
 sub: "GPU-native simulation, parallel training, reproducible benchmarks."
 ---

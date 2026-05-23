@@ -1,0 +1,174 @@
+{
+  "config": {
+    "mode": "sweep",
+    "n_steps": 30000,
+    "oceanscale_n_envs_list": [
+      1,
+      4,
+      16,
+      64
+    ],
+    "n_runs": 2,
+    "policy": "zero (no thruster input)",
+    "task": "hover at [0, 0, -1.5]",
+    "dt": "1/240 s",
+    "init_noise": "disabled (0.0 pos, 0.0 yaw) for fair comparison"
+  },
+  "runs": [
+    {
+      "run": 1,
+      "pybullet": {
+        "engine": "PyBullet (CPU)",
+        "n_envs": 1,
+        "n_steps": 30000,
+        "total_env_steps": 30000,
+        "wall_clock_s": 18.8051,
+        "throughput_env_steps_per_sec": 1595.3,
+        "per_env_fps": 1595.3,
+        "time_for_1M_env_steps_s": 626.84,
+        "rss_delta_mb": 0.0,
+        "tracemalloc_peak_mb": 6.7
+      },
+      "oceanscale_n1": {
+        "engine": "OceanScale (Newton+Warp GPU)",
+        "n_envs": 1,
+        "n_steps": 30000,
+        "total_env_steps": 30000,
+        "wall_clock_s": 90.7495,
+        "throughput_env_steps_per_sec": 330.6,
+        "per_env_fps": 330.6,
+        "time_for_1M_env_steps_s": 3024.98,
+        "rss_delta_mb": 0.2,
+        "tracemalloc_peak_mb": 123.1
+      },
+      "oceanscale_n4": {
+        "engine": "OceanScale (Newton+Warp GPU)",
+        "n_envs": 4,
+        "n_steps": 30000,
+        "total_env_steps": 120000,
+        "wall_clock_s": 89.1339,
+        "throughput_env_steps_per_sec": 1346.3,
+        "per_env_fps": 336.6,
+        "time_for_1M_env_steps_s": 742.78,
+        "rss_delta_mb": 0.0,
+        "tracemalloc_peak_mb": 0.2
+      },
+      "oceanscale_n16": {
+        "engine": "OceanScale (Newton+Warp GPU)",
+        "n_envs": 16,
+        "n_steps": 30000,
+        "total_env_steps": 480000,
+        "wall_clock_s": 94.7179,
+        "throughput_env_steps_per_sec": 5067.7,
+        "per_env_fps": 316.7,
+        "time_for_1M_env_steps_s": 197.33,
+        "rss_delta_mb": 0.0,
+        "tracemalloc_peak_mb": 0.2
+      },
+      "oceanscale_n64": {
+        "engine": "OceanScale (Newton+Warp GPU)",
+        "n_envs": 64,
+        "n_steps": 30000,
+        "total_env_steps": 1920000,
+        "wall_clock_s": 110.2043,
+        "throughput_env_steps_per_sec": 17422.2,
+        "per_env_fps": 272.2,
+        "time_for_1M_env_steps_s": 57.4,
+        "rss_delta_mb": 0.0,
+        "tracemalloc_peak_mb": 0.5
+      }
+    },
+    {
+      "run": 2,
+      "pybullet": {
+        "engine": "PyBullet (CPU)",
+        "n_envs": 1,
+        "n_steps": 30000,
+        "total_env_steps": 30000,
+        "wall_clock_s": 17.3691,
+        "throughput_env_steps_per_sec": 1727.2,
+        "per_env_fps": 1727.2,
+        "time_for_1M_env_steps_s": 578.97,
+        "rss_delta_mb": 0.0,
+        "tracemalloc_peak_mb": 0.0
+      },
+      "oceanscale_n1": {
+        "engine": "OceanScale (Newton+Warp GPU)",
+        "n_envs": 1,
+        "n_steps": 30000,
+        "total_env_steps": 30000,
+        "wall_clock_s": 87.5818,
+        "throughput_env_steps_per_sec": 342.5,
+        "per_env_fps": 342.5,
+        "time_for_1M_env_steps_s": 2919.39,
+        "rss_delta_mb": 0.0,
+        "tracemalloc_peak_mb": 0.2
+      },
+      "oceanscale_n4": {
+        "engine": "OceanScale (Newton+Warp GPU)",
+        "n_envs": 4,
+        "n_steps": 30000,
+        "total_env_steps": 120000,
+        "wall_clock_s": 88.7538,
+        "throughput_env_steps_per_sec": 1352.1,
+        "per_env_fps": 338.0,
+        "time_for_1M_env_steps_s": 739.61,
+        "rss_delta_mb": 0.0,
+        "tracemalloc_peak_mb": 0.2
+      },
+      "oceanscale_n16": {
+        "engine": "OceanScale (Newton+Warp GPU)",
+        "n_envs": 16,
+        "n_steps": 30000,
+        "total_env_steps": 480000,
+        "wall_clock_s": 94.4008,
+        "throughput_env_steps_per_sec": 5084.7,
+        "per_env_fps": 317.8,
+        "time_for_1M_env_steps_s": 196.67,
+        "rss_delta_mb": 0.0,
+        "tracemalloc_peak_mb": 0.2
+      },
+      "oceanscale_n64": {
+        "engine": "OceanScale (Newton+Warp GPU)",
+        "n_envs": 64,
+        "n_steps": 30000,
+        "total_env_steps": 1920000,
+        "wall_clock_s": 110.1411,
+        "throughput_env_steps_per_sec": 17432.2,
+        "per_env_fps": 272.4,
+        "time_for_1M_env_steps_s": 57.37,
+        "rss_delta_mb": 0.0,
+        "tracemalloc_peak_mb": 0.5
+      }
+    }
+  ],
+  "summary": {
+    "pybullet_throughput_mean": 1661.2,
+    "pybullet_throughput_std": 66.0,
+    "pybullet_1M_mean_s": 602.9,
+    "oceanscale_n1_throughput_mean": 336.6,
+    "oceanscale_n1_throughput_std": 5.9,
+    "oceanscale_n1_per_env_mean": 336.6,
+    "oceanscale_n1_per_env_std": 5.9,
+    "oceanscale_n1_1M_mean_s": 2972.18,
+    "speedup_n1_vs_bullet": 0.2,
+    "oceanscale_n4_throughput_mean": 1349.2,
+    "oceanscale_n4_throughput_std": 2.9,
+    "oceanscale_n4_per_env_mean": 337.3,
+    "oceanscale_n4_per_env_std": 0.7,
+    "oceanscale_n4_1M_mean_s": 741.19,
+    "speedup_n4_vs_bullet": 0.81,
+    "oceanscale_n16_throughput_mean": 5076.2,
+    "oceanscale_n16_throughput_std": 8.5,
+    "oceanscale_n16_per_env_mean": 317.2,
+    "oceanscale_n16_per_env_std": 0.6,
+    "oceanscale_n16_1M_mean_s": 197.0,
+    "speedup_n16_vs_bullet": 3.06,
+    "oceanscale_n64_throughput_mean": 17427.2,
+    "oceanscale_n64_throughput_std": 5.0,
+    "oceanscale_n64_per_env_mean": 272.3,
+    "oceanscale_n64_per_env_std": 0.1,
+    "oceanscale_n64_1M_mean_s": 57.38,
+    "speedup_n64_vs_bullet": 10.49
+  }
+}

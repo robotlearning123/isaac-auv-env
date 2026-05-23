@@ -15,7 +15,7 @@ capabilities:
     title: "Marine physics"
     body: "6-DoF hydrodynamics, fluid approximations, and underwater sensor models."
   - metric: null
-    metricLabel: "Newton + Isaac Sim 6"
+    metricLabel: "Newton + Warp"
     title: "Robotics ecosystem"
-    body: "Newton, Warp, OpenUSD, Isaac Sim, and Gymnasium interfaces."
+    body: "Newton, Warp, OpenUSD, and Gymnasium interfaces (Isaac Sim: future integration path)."
 ---

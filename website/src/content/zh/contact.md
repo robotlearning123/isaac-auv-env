@@ -1,7 +1,7 @@
 ---
 eyebrow: "Contact"
 title: "合作入口"
-intro: "面向海洋机器人、智能装备、仿真平台与 AI 基础设施合作。"
+intro: "面向水下机器人、智能装备、仿真平台与 AI 基础设施合作。"
 emails:
   - label: "Business"
     email: "business@oceanscale.cn"

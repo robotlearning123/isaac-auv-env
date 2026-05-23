@@ -490,7 +490,7 @@ These must be resolved before the related T-task can start:
 ## §12 What this file is NOT
 
 - Not a survey of the field — see `SURVEY.md`
-- Not an architecture proposal — see `DESIGN.md` and `STACK.md`
+- Not an architecture proposal — see `ARCHITECTURE.md` and `STACK.md`
 - Not an implementation plan — see `IMPLEMENTATION_PLAN.md`
 - Not a place to add aspirational references — every entry must be admitted via §0
 - Not a tutorial — links to upstream docs, doesn't reproduce them

@@ -6,6 +6,52 @@ Stack installed: warp-lang 1.13.0, newton 1.2.0, torch 2.11.0+cu128, mujoco-warp
 
 ---
 
+## 4-Dimensional Review — 2026-05-21
+
+Review completed across 4 dimensions: tech stack, website, roadmap, staff.
+
+**Reports**: `/tmp/oceanscale_review_tech_stack.md`, `/tmp/oceanscale_review_roadmap.md`, `/tmp/oceanscale_review_staff.md`
+
+### Founder decisions (2026-05-21)
+
+1. **Brand english-only** — 沧渊 retired; wordmark = OceanScale on both zh/en. New Chinese name TBD.
+2. **Staff no-hurry** — solo dev continues; 6-9 week v0.1 timeline accepted; no hiring push.
+3. **Website concept-mainly** — drop specific unverified throughput numbers; keep vision-level framing.
+
+### Next gates
+
+1. **v0.0.2 tag** — unreleased features on main; next tag is v0.0.2 (post-positioning reset)
+2. **W2 autograd gate** — `tests/hydro/test_tier1_autograd.py` must pass (kernels written, autograd test pending)
+3. **von Benzon reference scaffold** — `validation/vonbenzon_reference.py` (R13 unblocker, unmitigated per tech review Top Risk #1)
+
+### Active workers
+
+- Website content rewrite (en + zh content collections) — uncommitted in working tree
+- Hydro Tier-1 kernels (`oceanscale/hydro/tier1*.py`) — modified in working tree
+
+### Review summary — tech stack
+
+- **Confirmed**: 25 items (Warp, Newton, CUDA 12.8 benchmarks all verified on RTX 5090)
+- **Risky**: 15 items (MuJoCo-Warp throughput -46%, Newton API instability R19, Isaac Lab Newton gap)
+- **Unverified**: 18 items (Tier-1 hydro throughput, sensor kernels, sim-to-real claims)
+- **Top risk**: No validated AUV reference data — cannot confirm physics correctness (R13, unmitigated)
+
+### Review summary — roadmap
+
+- Website v0.0.1 live; v0.0.2 concept-mainly rewrite in progress
+- Python v0.1.0 scaffold: 18/18 tests pass, RL pipeline at 108 tests
+- No customer discovery, funding plan, or GTM strategy in any reviewed document
+- Roadmap reads as excellent research project plan, not yet a startup roadmap
+
+### Review summary — staff
+
+- Solo developer validated GPU stack + Newton scaffolding
+- Zero domain-specific code (hydro, sensors, RL training) shipped yet
+- P0 gaps: Fossen 6-DOF implementation, Warp autograd debugging, RL reward shaping
+- Verdict: significantly understaffed for ambition, but solo continues per founder decision
+
+---
+
 ## Test status (`pytest tests/ -v`)
 
 **18/18 PASS in 13.39s** (after Warp + Newton JIT compilation primed).
@@ -126,7 +172,7 @@ The 256+ OOM was because all bodies lived in `world=-1` → MuJoCo treated them 
 1. **STACK.md §11** — bump CUDA toolkit baseline from 12.4 → 12.8 (already done in VERSIONS.md)
 2. **STACK.md §3.4** — note that "475× MJX manipulation" is a single-robot benchmark; for parallel-env RL, **SolverSemiImplicit is the right primary** until we map the worlds API
 3. **STACK.md §9.1** — when writing Tier-1 Fossen kernel, use **(linear_xyz, angular_xyz)** layout (was ambiguous)
-4. **DESIGN.md §3** — Tier-0/1 should explicitly call SolverSemiImplicit, not "Newton default"
+4. **ARCHITECTURE.md §3** — Tier-0/1 should explicitly call SolverSemiImplicit, not "Newton default"
 5. **RISKS.md** — add R19: "SolverMuJoCo CPU host-side OOM for many-body workloads; mitigation = SolverSemiImplicit until worlds API understood"
 
 ---

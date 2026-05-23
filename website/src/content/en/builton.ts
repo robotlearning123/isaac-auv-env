@@ -6,7 +6,7 @@ export default {
     { name: "Newton", note: "GPU physics" },
     { name: "Warp", note: "CUDA kernels" },
     { name: "OpenUSD", note: "scene graph" },
-    { name: "Isaac Sim", note: "rendering" },
+    { name: "Isaac Sim", note: "future integration" },
     { name: "Fossen", note: "6-DoF hydro" },
     { name: "Gymnasium", note: "RL API" },
   ],

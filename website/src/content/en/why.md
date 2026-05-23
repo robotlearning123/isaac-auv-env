@@ -1,6 +1,6 @@
 ---
 eyebrow: "Challenge"
-title: "The compute bottleneck in marine robotics AI"
+title: "The compute bottleneck in underwater robotics AI"
 problems:
   - title: "Ocean trials are slow"
     body: "Weather, water conditions, equipment risk, and field logistics limit policy iteration speed."
