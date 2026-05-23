@@ -64,7 +64,7 @@ const terminalMeta = lang === 'zh'
     </div>
 
     <div class="lg:col-span-5 relative anim-rise delay-700">
-      <div class="border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden">
+      <div class="border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden card-glow">
         <div class="flex items-center justify-between px-4 py-2.5 border-b border-[var(--color-border)] bg-[var(--color-surface-raised)]">
           <span class="font-mono text-[10px] uppercase eyebrow-tracking text-[var(--color-text-muted)]">{t('hero.benchLabel')}</span>
           <span class="font-mono text-[10px] uppercase text-[var(--color-accent)]">ONLINE</span>
@@ -72,7 +72,7 @@ const terminalMeta = lang === 'zh'
 
         <div class="p-5 md:p-6 font-mono text-sm">
           <div class="text-[var(--color-text-muted)] mb-3">
-            <span class="text-[var(--color-accent)]">$</span> oceanscale bench --device rtx5090
+            <span class="text-[var(--color-accent)]">$</span> oceanscale bench --device rtx5090<span class="animate-pulse text-[var(--color-accent)]">_</span>
           </div>
           <div class="border-t border-[var(--color-border)] my-3"></div>
           {terminalLines.map((line) => (

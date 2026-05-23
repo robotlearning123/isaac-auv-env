@@ -7,7 +7,7 @@ const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
 const { title, eyebrow, subhead, installCommand, installLabel, colabLabel, colabUrl, videoSrc, benchHeaders, benchRows, benchNote, caveat } = fm;
 ---
-<section id="demo" class="relative overflow-hidden py-24 md:py-32 min-h-screen flex items-center" style="background:var(--color-surface)">
+<section id="demo" class="relative overflow-hidden py-24 md:py-32" style="background:var(--color-bg)">
   <div class="relative max-w-[1280px] mx-auto px-6 w-full">
     <div class="font-mono text-[var(--color-accent)] text-xs uppercase eyebrow-tracking mb-3">/05 · {eyebrow}</div>
     <h2 class="font-display text-4xl md:text-6xl font-bold text-[var(--color-text)] mb-4 tracking-tight max-w-4xl">{title}</h2>
