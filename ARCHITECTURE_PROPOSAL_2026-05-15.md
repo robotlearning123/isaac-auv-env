@@ -1,3 +1,13 @@
+> **ARCHIVAL — Pre-ADR-007 architecture proposal (drafted 2026-05-15).**
+>
+> This document predates the v0.0.1 identity reset and the ADR-007 decision to remove Isaac Sim from the v0.1 stack. It describes an aspirational Newton + Isaac Sim 6 + Omniverse RTX + NuRec architecture that was never implemented. Banned terms ("digital twin", "next-gen") appear throughout.
+>
+> For the CURRENT shipping stack, see `ARCHITECTURE.md` (the new one) and `pyproject.toml`. For decision history, see `DECISIONS.md` ADR-007.
+>
+> Preserved for historical reference only.
+
+---
+
 # Next-Gen Underwater Robot Simulator — Architecture Proposal (v0.1.0)
 
 **Date:** 2026-05-15  
