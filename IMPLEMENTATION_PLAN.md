@@ -69,7 +69,7 @@ Goal: resolve the parallel-env architecture gap discovered in `STATUS.md`. Decid
 - **Output**: `docs/math/fossen.md`
 
 ### T1.4  Docs patch
-- **What**: update STACK.md / DESIGN.md / RISKS.md with empirical findings from scaffold sprint:
+- **What**: update STACK.md / ARCHITECTURE.md / RISKS.md with empirical findings from scaffold sprint:
   - spatial-vector layout (linear_xyz, angular_xyz)
   - `add_body()` implicit free joint
   - shape density overrides body mass

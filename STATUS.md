@@ -172,7 +172,7 @@ The 256+ OOM was because all bodies lived in `world=-1` → MuJoCo treated them 
 1. **STACK.md §11** — bump CUDA toolkit baseline from 12.4 → 12.8 (already done in VERSIONS.md)
 2. **STACK.md §3.4** — note that "475× MJX manipulation" is a single-robot benchmark; for parallel-env RL, **SolverSemiImplicit is the right primary** until we map the worlds API
 3. **STACK.md §9.1** — when writing Tier-1 Fossen kernel, use **(linear_xyz, angular_xyz)** layout (was ambiguous)
-4. **DESIGN.md §3** — Tier-0/1 should explicitly call SolverSemiImplicit, not "Newton default"
+4. **ARCHITECTURE.md §3** — Tier-0/1 should explicitly call SolverSemiImplicit, not "Newton default"
 5. **RISKS.md** — add R19: "SolverMuJoCo CPU host-side OOM for many-body workloads; mitigation = SolverSemiImplicit until worlds API understood"
 
 ---

@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-20
 **Scope:** Comprehensive reference for building OceanScale, a GPU-native underwater simulator; sim-to-real transfer is a long-term research goal informed by Sim2Swim and FastAUV external results. Primary stack: NVIDIA Isaac ecosystem. Not limited to.
-**Companion docs:** `STACK.md`, `DESIGN.md`, `SURVEY.md`, `REFERENCES.md`, `research/` directory
+**Companion docs:** `STACK.md`, `ARCHITECTURE.md`, `SURVEY.md`, `REFERENCES.md`, `research/` directory
 
 ---
 

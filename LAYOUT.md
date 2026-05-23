@@ -8,7 +8,7 @@
 ## 1. Top-level repo layout
 
 ```
-46-marine/                          # repo root (renamed to oceanscale/ at OSS publication)
+oceanscale/                         # repo root (monorepo, GitHub: robotlearning123/oceanscale)
 ├── pyproject.toml                  # uv-managed deps + tool config
 ├── uv.lock                         # pinned versions, committed
 ├── README.md                       # project description
@@ -25,7 +25,7 @@
 ├── docs/                           # added at v0.3 (sphinx or mkdocs)
 │
 ├── SURVEY.md                       # SOTA landscape (May 2026)
-├── DESIGN.md                       # architecture overview
+├── ARCHITECTURE.md                       # architecture overview
 ├── STACK.md                        # tech stack analysis + decision framework
 ├── VERSIONS.md                     # version pinning rationale
 ├── LAYOUT.md                       # this file

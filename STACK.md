@@ -3,7 +3,7 @@
 **Date:** 2026-05-15  
 **Scope:** Layer-by-layer technical analysis of the proposed next-gen underwater simulator stack — what each component is, why it was chosen, how it works, where it fits, when it runs, alternatives considered, and known gotchas.
 
-Companion docs: `SURVEY.md` (state-of-the-art), `DESIGN.md` (architecture).
+Companion docs: `SURVEY.md` (state-of-the-art), `ARCHITECTURE.md` (architecture).
 
 ---
 
