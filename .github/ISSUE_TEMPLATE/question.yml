@@ -1,0 +1,26 @@
+name: Question
+description: Ask a question about usage, setup, or design
+title: "[question] "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For broad design discussions, prefer GitHub Discussions over an issue.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+    validations:
+      required: true
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: What did you try?
+
+  - type: input
+    id: version
+    attributes:
+      label: OceanScale version (if relevant)
