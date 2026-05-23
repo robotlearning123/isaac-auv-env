@@ -24,7 +24,7 @@ export default {
       metric: null,
       metricLabel: "04 / Robotics Bridge",
       title: "机器人训练接口",
-      body: "Gymnasium、OpenUSD、Isaac Sim 与 ROS 2 集成路径。",
+      body: "Gymnasium、OpenUSD 与 ROS 2 接口（Isaac Sim：未来集成路径）。",
     },
   ],
 };

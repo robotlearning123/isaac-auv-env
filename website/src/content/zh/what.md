@@ -15,7 +15,7 @@ capabilities:
     title: "海洋物理"
     body: "6-DoF 水动力、流体近似与水下传感器模型。"
   - metric: null
-    metricLabel: "Newton + Isaac Sim 6"
+    metricLabel: "Newton + Warp"
     title: "机器人生态"
-    body: "Newton、Warp、OpenUSD、Isaac Sim 与 Gymnasium 接口。"
+    body: "Newton、Warp、OpenUSD 与 Gymnasium 接口（Isaac Sim：未来集成路径）。"
 ---
