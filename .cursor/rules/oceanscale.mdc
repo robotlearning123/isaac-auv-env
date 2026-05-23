@@ -1,0 +1,48 @@
+---
+description: OceanScale project-wide rules
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# OceanScale Cursor Rules
+
+Read before any work:
+
+- `AGENTS.md` — cross-tool agent instructions
+- `POSITIONING.md` — brand / scope / voice / lexicon / banned words
+- `DESIGN.md` — visual brand law
+- `ARCHITECTURE.md` — technical architecture
+- `GLOSSARY.md` — terminology
+
+## Copy contributions
+
+POSITIONING.md governs all user-facing copy.
+- §3 anchor sentence is quoted verbatim, not paraphrased.
+- §5 enemy line is quoted verbatim.
+- §7 lexicon — use canonical spellings.
+- §8 banned words — enforced. Do not commit copy that violates.
+
+Bilingual zh/en is mandatory. EN and ZH are both canonical, neither is a translation.
+
+## Visual contributions
+
+DESIGN.md governs all visuals.
+- §2 banned patterns — enforced.
+- §3 required patterns — preferred.
+- §8 wordmark — OceanScale is one word, two caps.
+
+## Code style
+
+- Python: 3.12+, type hints on public APIs, `ruff format`, no needless comments.
+- TypeScript / Astro: strict mode.
+- Conventional Commits.
+- One logical change per commit.
+- Tests after every change.
+
+## Monorepo
+
+Sub-packages may have their own `AGENTS.md`. Read it before working in that directory:
+- `oceanscale/AGENTS.md` — Python package
+- `website/AGENTS.md` — Astro app
+- `benchmarks/AGENTS.md` — perf tests
+- `notebooks/AGENTS.md` — Colab notebooks
