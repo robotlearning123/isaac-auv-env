@@ -16,7 +16,7 @@ export default {
     },
     {
       metric: null,
-      metricLabel: "03 / Marine Physics",
+      metricLabel: "03 / Fossen Dynamics",
       title: "Hydrodynamics and sensors",
       body: "6-DoF dynamics, current approximations, acoustic and underwater sensing hooks.",
     },

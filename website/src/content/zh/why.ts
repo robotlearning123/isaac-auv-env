@@ -1,6 +1,7 @@
 export default {
   eyebrow: "Challenge",
   title: "瓶颈不是算法，是迭代速度。",
+  label: "迭代成本 / 水下机器人",
   problems: [
     {
       title: "海试窗口",
