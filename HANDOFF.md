@@ -1,3 +1,5 @@
+> **Historical note**: This handoff is dated 2026-05-19, before the v0.0.1 identity reset (2026-05-22). For current state see `PROGRESS.md`. For brand law see `POSITIONING.md`. For the reset rationale see `DECISIONS.md` ADR-008.
+
 # Session Handoff — 2026-05-19
 
 **Workspace**: `/home/robot/workspace/46-marine/`

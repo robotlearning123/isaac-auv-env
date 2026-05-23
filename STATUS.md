@@ -20,7 +20,7 @@ Review completed across 4 dimensions: tech stack, website, roadmap, staff.
 
 ### Next gates
 
-1. **v0.6.0 ship** — concept-mainly website edits land + tag (in progress, uncommitted — see git status)
+1. **v0.0.2 tag** — unreleased features on main; next tag is v0.0.2 (post-positioning reset)
 2. **W2 autograd gate** — `tests/hydro/test_tier1_autograd.py` must pass (kernels written, autograd test pending)
 3. **von Benzon reference scaffold** — `validation/vonbenzon_reference.py` (R13 unblocker, unmitigated per tech review Top Risk #1)
 
@@ -38,7 +38,7 @@ Review completed across 4 dimensions: tech stack, website, roadmap, staff.
 
 ### Review summary — roadmap
 
-- Website v0.5.0 live; v0.6.0 concept-mainly rewrite in progress
+- Website v0.0.1 live; v0.0.2 concept-mainly rewrite in progress
 - Python v0.1.0 scaffold: 18/18 tests pass, RL pipeline at 108 tests
 - No customer discovery, funding plan, or GTM strategy in any reviewed document
 - Roadmap reads as excellent research project plan, not yet a startup roadmap

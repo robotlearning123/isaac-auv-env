@@ -1,10 +1,10 @@
 # Changelog
 
-OceanScale website releases. Tag a version (`git tag v0.5.3`) to trigger production deploy.
+OceanScale website releases. Tag a version (`git tag v0.0.2`) to trigger production deploy.
 
 ## Unreleased
 
-Wave A → A2 → B → C → D of v0.6 (the v0.1 launch wave). Package becomes pip-installable; hover policy actually learns; honest benchmark vs PyBullet.
+Wave A–D features are merged to main but unreleased. Next tag is v0.0.2.
 
 ### Added
 - **Hydro Tier-1 Fossen 6-DOF kernels** (`oceanscale/hydro/`) with W2-gate tests: autograd vs torch numerical-diff (<1e-3), throughput, determinism.
