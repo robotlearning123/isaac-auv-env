@@ -16,7 +16,7 @@ export default {
     },
     {
       metric: null,
-      metricLabel: "03 / Marine Physics",
+      metricLabel: "03 / Fossen Dynamics",
       title: "水动力与传感器",
       body: "6-DoF、水流近似、声学与水下感知接口。",
     },

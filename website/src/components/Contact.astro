@@ -7,16 +7,12 @@ const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
 const { title, eyebrow, intro, emails } = fm;
 ---
-<section id="contact" class="relative overflow-hidden min-h-screen flex items-center">
-  <div class="absolute inset-0 -z-10">
-    <img src="/images/contact-bg.jpg" alt="" class="w-full h-full object-cover opacity-28" loading="lazy" decoding="async" />
-    <div class="absolute inset-0 bg-[linear-gradient(100deg,rgba(2,5,12,0.94),rgba(2,5,12,0.76)),radial-gradient(circle_at_85%_20%,rgba(110,255,209,0.14),transparent_32%)]"></div>
-  </div>
+<section id="contact" class="relative overflow-hidden min-h-screen flex items-center" style="background:var(--color-bg)">
   <div class="relative max-w-[1320px] mx-auto px-5 md:px-8 py-24 md:py-32 w-full grid lg:grid-cols-[1fr_0.9fr] gap-10 lg:gap-16 items-center">
     <div>
-      <div class="font-mono text-[var(--color-acid)] text-xs uppercase eyebrow-tracking mb-4">/04 · {eyebrow}</div>
-      <h2 class="font-display text-4xl md:text-6xl lg:text-7xl font-black text-[var(--color-paper)] tracking-tight max-w-4xl leading-[0.98]">{title}</h2>
-      <p class="mt-7 text-[var(--color-paper-dim)] max-w-2xl leading-relaxed text-base md:text-lg">{intro}</p>
+      <div class="font-mono text-[var(--color-accent)] text-xs uppercase eyebrow-tracking mb-4">/04 · {eyebrow}</div>
+      <h2 class="font-display text-4xl md:text-6xl lg:text-7xl font-black text-[var(--color-text)] tracking-tight max-w-4xl leading-[0.98]">{title}</h2>
+      <p class="mt-7 text-[var(--color-text-muted)] max-w-2xl leading-relaxed text-base md:text-lg">{intro}</p>
     </div>
 
     <div class="grid gap-3">

@@ -1,7 +1,6 @@
-// ZWSP (U+200B) between word boundaries lets browser pick clean breaks
-// under `word-break: keep-all` — compounds (水下机器人, 仿真引擎) stay intact.
 export default {
   eyebrow: "Ocean AI Infrastructure",
-  h1: "面向水下机器人的海洋仿真基础设施。",
+  enemyLine: "水下机器人仍然在地球上最昂贵的测试环境中学习：真实的海洋。",
+  h1: "面向水下机器人的​海洋仿真​基础设施。",
   sub: "物理仿真、并行环境、可复现实测基准。",
 };

@@ -11,7 +11,7 @@ export const ui = {
     'lang.other': 'EN',
     'footer.tagline': '面向水下机器人的海洋仿真基础设施。',
     'footer.copyright': '© 2026 OceanScale',
-    'hero.sonarLabel': '基准 · RTX 5090',
+    'hero.benchLabel': '基准 · RTX 5090',
   },
   en: {
     'nav.what': 'Platform',
@@ -22,7 +22,7 @@ export const ui = {
     'lang.other': '中',
     'footer.tagline': 'The ocean simulator for underwater robotics.',
     'footer.copyright': '© 2026 OceanScale',
-    'hero.sonarLabel': 'BENCHMARK · RTX 5090',
+    'hero.benchLabel': 'BENCHMARK · RTX 5090',
   },
 } as const;
 

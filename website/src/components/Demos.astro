@@ -7,74 +7,66 @@ const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
 const { title, eyebrow, subhead, installCommand, installLabel, colabLabel, colabUrl, videoSrc, benchHeaders, benchRows, benchNote, caveat } = fm;
 ---
-<section id="demo" class="relative overflow-hidden py-24 md:py-32 min-h-screen flex items-center">
-  <div class="absolute inset-0 -z-10">
-    <div class="absolute inset-0 bg-gradient-to-b from-[var(--color-abyss-1)] via-[var(--color-abyss-0)] to-[var(--color-abyss-1)]"></div>
-  </div>
+<section id="demo" class="relative overflow-hidden py-24 md:py-32 min-h-screen flex items-center" style="background:var(--color-surface)">
   <div class="relative max-w-[1280px] mx-auto px-6 w-full">
-    <div class="font-mono text-[var(--color-lumen)] text-xs uppercase eyebrow-tracking mb-3">/05 · {eyebrow}</div>
-    <h2 class="font-display text-4xl md:text-6xl font-bold text-[var(--color-paper)] mb-4 tracking-tight max-w-4xl">{title}</h2>
-    <p class="text-[var(--color-paper-dim)] text-lg md:text-xl max-w-3xl mb-12">{subhead}</p>
+    <div class="font-mono text-[var(--color-accent)] text-xs uppercase eyebrow-tracking mb-3">/05 · {eyebrow}</div>
+    <h2 class="font-display text-4xl md:text-6xl font-bold text-[var(--color-text)] mb-4 tracking-tight max-w-4xl">{title}</h2>
+    <p class="text-[var(--color-text-muted)] text-lg md:text-xl max-w-3xl mb-12">{subhead}</p>
 
     <div class="grid lg:grid-cols-2 gap-8 items-start">
-      <!-- Video / preview placeholder. Real MP4 lands at v0.1 tag (R2 upload). -->
-      <div class="rounded-lg overflow-hidden border border-[var(--color-border-deep)] bg-[var(--color-abyss-0)]">
-        <div class="aspect-video relative bg-gradient-to-br from-[var(--color-abyss-0)] via-[var(--color-abyss-1)] to-[var(--color-abyss-0)] flex items-center justify-center">
+      <div class="rounded-lg overflow-hidden border border-[var(--color-border)] bg-[var(--color-bg)]">
+        <div class="aspect-video relative bg-[var(--color-bg)] flex items-center justify-center">
           <div class="text-center px-6">
-            <div class="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-lumen)] mb-2">Demo video</div>
-            <div class="font-mono text-xs text-[var(--color-paper-dim)]">Cinematic 4-panel hover demo lands at the v0.1 tag.<br />Run it locally now: <span class="text-[var(--color-lumen)]">oceanscale demo bluerov2-hover --cinematic</span></div>
+            <div class="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-accent)] mb-2">Demo video</div>
+            <div class="font-mono text-xs text-[var(--color-text-muted)]">4-panel hover demo lands at the v0.1 tag.<br />Run it locally now: <span class="text-[var(--color-accent)]">oceanscale demo bluerov2-hover --cinematic</span></div>
           </div>
-          <div class="absolute bottom-3 right-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-lumen)] bg-[var(--color-abyss-0)]/80 backdrop-blur px-2 py-1">
+          <div class="absolute bottom-3 right-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-accent)] bg-[var(--color-bg)]/80 px-2 py-1">
             v0.1 alpha
           </div>
         </div>
       </div>
 
-      <!-- Install + Benchmark -->
       <div class="space-y-6">
-        <!-- Install command -->
-        <div class="rounded-lg border border-[var(--color-border-deep)] bg-[var(--color-abyss-0)]/80 overflow-hidden">
-          <div class="flex items-center gap-2 px-4 py-2 border-b border-[var(--color-border-deep)]">
+        <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] overflow-hidden">
+          <div class="flex items-center gap-2 px-4 py-2 border-b border-[var(--color-border)]">
             <div class="w-3 h-3 rounded-full bg-red-500/60"></div>
             <div class="w-3 h-3 rounded-full bg-yellow-500/60"></div>
             <div class="w-3 h-3 rounded-full bg-green-500/60"></div>
-            <span class="ml-2 font-mono text-[10px] text-[var(--color-paper-dim)]">terminal</span>
+            <span class="ml-2 font-mono text-[10px] text-[var(--color-text-muted)]">terminal</span>
           </div>
-          <pre class="px-4 py-3 text-sm font-mono text-[var(--color-lumen)] overflow-x-auto"><code>{installCommand}</code></pre>
+          <pre class="px-4 py-3 text-sm font-mono text-[var(--color-accent)] overflow-x-auto"><code>{installCommand}</code></pre>
         </div>
 
-        <!-- Buttons -->
         <div class="flex gap-3">
-          <a href={colabUrl} target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--color-lumen)] text-[var(--color-abyss-0)] font-mono text-sm font-semibold hover:opacity-90 transition-opacity">
+          <a href={colabUrl} target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--color-accent)] text-[var(--color-bg)] font-mono text-sm font-semibold hover:opacity-90 transition-opacity">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.5 14.5h-9a1.5 1.5 0 0 1 0-3h9a1.5 1.5 0 0 1 0 3zm-9-6a1.5 1.5 0 0 1 0-3h9a1.5 1.5 0 0 1 0 3h-9z"/></svg>
             {colabLabel}
           </a>
         </div>
 
-        <!-- Benchmark table -->
-        <div class="rounded-lg border border-[var(--color-border-deep)] overflow-hidden">
+        <div class="rounded-lg border border-[var(--color-border)] overflow-hidden">
           <table class="w-full text-sm">
             <thead>
-              <tr class="bg-[var(--color-abyss-0)]/80">
+              <tr class="bg-[var(--color-bg)]">
                 {benchHeaders.map((h: string) => (
-                  <th class="px-4 py-2 text-left font-mono text-[10px] uppercase tracking-[0.15em] text-[var(--color-lumen)]">{h}</th>
+                  <th class="px-4 py-2 text-left font-mono text-[10px] uppercase tracking-[0.15em] text-[var(--color-accent)]">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {benchRows.map((row: string[], i: number) => (
-                <tr class={`border-t border-[var(--color-border-deep)] ${i === benchRows.length - 1 ? 'bg-[var(--color-lumen)]/5' : ''}`}>
+                <tr class={`border-t border-[var(--color-border)] ${i === benchRows.length - 1 ? 'bg-[var(--color-accent)]/5' : ''}`}>
                   {row.map((cell: string, j: number) => (
-                    <td class={`px-4 py-2 font-mono ${j === 3 && i === 2 ? 'text-[var(--color-lumen)] font-bold' : 'text-[var(--color-paper-dim)]'}`}>{cell}</td>
+                    <td class={`px-4 py-2 font-mono ${j === 3 && i === 2 ? 'text-[var(--color-accent)] font-bold' : 'text-[var(--color-text-muted)]'}`}>{cell}</td>
                   ))}
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <p class="text-[var(--color-paper-dim)] text-xs font-mono">{benchNote}</p>
+        <p class="text-[var(--color-text-muted)] text-xs font-mono">{benchNote}</p>
         {caveat && (
-          <p class="text-[var(--color-amber)] text-xs font-mono leading-relaxed border-l-2 border-[var(--color-amber)] pl-3 mt-2">{caveat}</p>
+          <p class="text-[var(--color-danger)] text-xs font-mono leading-relaxed border-l-2 border-[var(--color-danger)] pl-3 mt-2">{caveat}</p>
         )}
       </div>
     </div>

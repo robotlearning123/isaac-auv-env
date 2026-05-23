@@ -1,6 +1,7 @@
 export default {
   eyebrow: "Challenge",
   title: "The bottleneck is iteration speed.",
+  label: "Iteration cost / underwater robotics",
   problems: [
     {
       title: "Sea windows",

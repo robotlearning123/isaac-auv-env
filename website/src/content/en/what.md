@@ -12,7 +12,7 @@ capabilities:
     body: "8192 parallel environments for multi-task and multi-agent workloads."
   - metric: "6-DoF"
     metricLabel: "Fossen + custom SPH"
-    title: "Marine physics"
+    title: "Fossen dynamics"
     body: "6-DoF hydrodynamics, fluid approximations, and underwater sensor models."
   - metric: null
     metricLabel: "Newton + Warp"

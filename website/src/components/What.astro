@@ -9,16 +9,12 @@ const { title, eyebrow, capabilities } = fm;
 type Cap = { metric?: string | null; metricLabel: string; title: string; body: string };
 const caps = capabilities as Cap[];
 ---
-<section id="what" class="relative overflow-hidden py-24 md:py-32 min-h-screen flex items-center">
-  <div class="absolute inset-0 -z-10">
-    <img src="/images/what-bg.jpg" alt="" class="w-full h-full object-cover opacity-18" loading="lazy" decoding="async" />
-    <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,5,12,0.92),rgba(7,16,25,0.9)),radial-gradient(circle_at_10%_20%,rgba(255,122,56,0.16),transparent_28%)]"></div>
-  </div>
+<section id="what" class="relative overflow-hidden py-24 md:py-32 min-h-screen flex items-center" style="background:var(--color-surface)">
   <div class="relative max-w-[1320px] mx-auto px-5 md:px-8 w-full">
     <div class="grid lg:grid-cols-[0.82fr_1.18fr] gap-10 lg:gap-16 items-start min-w-0">
       <div class="lg:sticky lg:top-28 min-w-0">
-        <div class="font-mono text-[var(--color-acid)] text-xs uppercase eyebrow-tracking mb-4">/02 · {eyebrow}</div>
-        <h2 class="font-display text-4xl md:text-6xl lg:text-7xl font-black text-[var(--color-paper)] tracking-tight max-w-4xl leading-[0.98]">{title}</h2>
+        <div class="font-mono text-[var(--color-accent)] text-xs uppercase eyebrow-tracking mb-4">/02 · {eyebrow}</div>
+        <h2 class="font-display text-4xl md:text-6xl lg:text-7xl font-black text-[var(--color-text)] tracking-tight max-w-4xl leading-[0.98]">{title}</h2>
       </div>
 
       <div class="architecture-panel min-w-0">
@@ -26,9 +22,9 @@ const caps = capabilities as Cap[];
           <div class="architecture-row group">
             <div class="architecture-index">{String(i + 1).padStart(2, '0')}</div>
             <div>
-              <div class="font-mono uppercase eyebrow-tracking text-[10px] text-[var(--color-acid)] mb-3">{c.metricLabel}</div>
-              <h3 class="font-display text-2xl md:text-3xl font-black text-[var(--color-paper)] leading-tight min-w-0">{c.title}</h3>
-              <p class="mt-3 text-[var(--color-paper-dim)] leading-relaxed text-sm md:text-base max-w-xl">{c.body}</p>
+              <div class="font-mono uppercase eyebrow-tracking text-[10px] text-[var(--color-accent)] mb-3">{c.metricLabel}</div>
+              <h3 class="font-display text-2xl md:text-3xl font-black text-[var(--color-text)] leading-tight min-w-0">{c.title}</h3>
+              <p class="mt-3 text-[var(--color-text-muted)] leading-relaxed text-sm md:text-base max-w-xl">{c.body}</p>
             </div>
           </div>
         ))}
