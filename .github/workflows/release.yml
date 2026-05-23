@@ -78,7 +78,7 @@ jobs:
         run: |
           set -euo pipefail
           PROD_HTML=$(curl -sf https://oceanscale-web.pages.dev/)
-          if echo "$PROD_HTML" | grep -q "OceanScale\|沧渊"; then
+          if echo "$PROD_HTML" | grep -q "OceanScale"; then
             echo "Production URL serving expected content."
           else
             echo "Warning: production URL did not contain expected markers." >&2
