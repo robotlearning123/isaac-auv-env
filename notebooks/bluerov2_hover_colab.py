@@ -22,7 +22,7 @@
 # end-to-end verified — Newton 1.2 + Warp 1.13 install path on the free Colab
 # T4 runtime may need additional steps. Report issues via GitHub.
 #
-# **GitHub**: [robotlearning123/46-marine](https://github.com/robotlearning123/46-marine)
+# **GitHub**: [robotlearning123/oceanscale](https://github.com/robotlearning123/oceanscale)
 
 # %% tags=["colab"]
 # Verify GPU
@@ -90,7 +90,7 @@ else:
 # ## 6. Next Steps
 #
 # - **Full training**: increase `--total` to 200k+ for better convergence
-# - **Documentation**: see [README](https://github.com/robotlearning123/46-marine)
+# - **Documentation**: see [README](https://github.com/robotlearning123/oceanscale)
 # - **Custom environments**: subclass `ROVEnv` with your own reward function
 # - **Star the repo**: if you find this useful!
 #

@@ -5,7 +5,7 @@ export default {
   installCommand: "pip install oceanscale && oceanscale demo bluerov2-hover --render-mp4 hover.mp4",
   installLabel: "Install & run",
   colabLabel: "Run in Colab",
-  colabUrl: "https://github.com/robotlearning123/46-marine/blob/main/notebooks/bluerov2_hover_colab.ipynb",
+  colabUrl: "https://github.com/robotlearning123/oceanscale/blob/main/notebooks/bluerov2_hover_colab.ipynb",
   videoSrc: "/videos/bluerov2-demo.mp4",
   benchHeaders: ["Envs", "Throughput (steps/s)", "Time for 1M steps", "Speedup"],
   benchRows: [

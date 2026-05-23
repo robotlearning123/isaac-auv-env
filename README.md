@@ -13,7 +13,8 @@ GPU-native underwater robotics simulation. Run the Fossen 6-DOF model on Newton+
 ## Quickstart
 
 ```bash
-pip install oceanscale
+# Requires CUDA 12.8+ runtime and an NVIDIA GPU (tested on RTX 5090).
+pip install oceanscale --extra-index-url https://download.pytorch.org/whl/cu128
 oceanscale demo bluerov2-hover --render-mp4 demo.mp4
 ```
 
@@ -29,7 +30,7 @@ Train your own policy:
 oceanscale train bluerov2-hover --total 1000000 --n_envs 4
 ```
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/robotlearning123/46-marine/blob/main/notebooks/bluerov2_hover_colab.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/robotlearning123/oceanscale/blob/main/notebooks/bluerov2_hover_colab.ipynb)
 
 ## Benchmark: OceanScale vs PyBullet
 
@@ -63,8 +64,8 @@ OceanScale's advantage is parallelism, not per-step latency. Below n=8, PyBullet
 ## Setup (developer)
 
 ```bash
-git clone https://github.com/robotlearning123/46-marine.git
-cd 46-marine
+git clone https://github.com/robotlearning123/oceanscale.git
+cd oceanscale
 uv sync --extra dev          # install deps (CUDA 12.8+)
 uv run pytest tests/ -v      # 150 tests
 uv run python -m oceanscale.cli demo bluerov2-hover
@@ -80,7 +81,7 @@ uv run python -m oceanscale.cli demo bluerov2-hover
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+Apache-2.0. See [LICENSE](LICENSE).
 
 ## Citation
 
@@ -91,6 +92,6 @@ If you use OceanScale in research:
   title = {OceanScale: GPU-Native Underwater Robotics Simulation},
   author = {OceanScale Team},
   year = {2026},
-  url = {https://github.com/robotlearning123/46-marine}
+  url = {https://github.com/robotlearning123/oceanscale}
 }
 ```

@@ -8,7 +8,7 @@
 
 1. **Git** — branch consolidation. 5 legacy branches deleted; `main` is now the single source of truth, both locally and on origin. GitHub default branch flipped to `main`.
 
-2. **Cloudflare Pages** — `oceanscale-web` migrated from direct-upload to Git-integration with `robotlearning123/46-marine @ main`. Monorepo watch path set to `website/*` so non-website commits don't trigger builds. Production auto-deploy is **disabled**; tags trigger production via GitHub Actions.
+2. **Cloudflare Pages** — `oceanscale-web` migrated from direct-upload to Git-integration with `robotlearning123/oceanscale @ main`. Monorepo watch path set to `website/*` so non-website commits don't trigger builds. Production auto-deploy is **disabled**; tags trigger production via GitHub Actions.
 
 3. **GitHub Actions** — `.github/workflows/release.yml` triggers on `v*.*.*` tag push. Reads `CLOUDFLARE_API_TOKEN` from repo secret, calls CF Pages API, polls deployment, verifies live URL. ~30s end-to-end.
 
