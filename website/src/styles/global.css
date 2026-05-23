@@ -1,55 +1,51 @@
 @import "tailwindcss";
 
+/* ── New monochrome token system (DESIGN.md v1 compliant) ──────────── */
 @theme {
-  --color-abyss-0: #02050C;
-  --color-abyss-1: #071019;
-  --color-abyss-2: #101C27;
-  --color-steel: #21313B;
-  --color-border-deep: #253541;
+  /* Primary palette: monochrome + one accent */
+  --color-bg: #0a0a0a;
+  --color-surface: #141414;
+  --color-surface-raised: #1a1a1a;
+  --color-border: #262626;
+  --color-border-hover: #404040;
+  --color-text: #e5e5e5;
+  --color-text-muted: #737373;
+  --color-accent: #2dd4bf;
+  --color-accent-dim: rgba(45, 212, 191, 0.12);
+  --color-danger: #ef4444;
 
-  --color-acid: #6EFFD1;
-  --color-lumen: #6EFFD1;
-  --color-ember: #FF7A38;
-  --color-coral: #FF5C5C;
+  /* ── Compatibility aliases (keep until components migrate) ──────── */
+  --color-abyss-0: var(--color-bg);
+  --color-abyss-1: var(--color-surface);
+  --color-abyss-2: var(--color-surface-raised);
+  --color-steel: var(--color-border);
+  --color-border-deep: var(--color-border);
+  --color-acid: var(--color-accent);
+  --color-lumen: var(--color-accent);
+  --color-ember: var(--color-danger);
+  --color-coral: var(--color-danger);
+  --color-paper: var(--color-text);
+  --color-paper-dim: var(--color-text-muted);
 
-  --color-paper: #F7F4EE;
-  --color-paper-dim: #9FB0BA;
-
-  --font-display: "Geist", system-ui, sans-serif;
-  --font-display-zh: "Geist", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
-  --font-body: "Geist", system-ui, sans-serif;
-  --font-body-zh: "Geist", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  /* ── Typography: Inter body, monospace for technical ────────────── */
+  --font-display: "Inter", system-ui, sans-serif;
+  --font-display-zh: "Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-body-zh: "Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 @layer base {
   html {
-    color: var(--color-paper);
+    color: var(--color-text);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
+
   body {
     min-height: 100vh;
-    background:
-      radial-gradient(ellipse at 75% 0%, rgba(110, 255, 209, 0.09) 0%, transparent 38%),
-      radial-gradient(ellipse at 10% 100%, rgba(255, 122, 56, 0.08) 0%, transparent 34%),
-      linear-gradient(180deg, #02050C 0%, #071019 100%);
-    background-attachment: fixed;
-    position: relative;
-  }
-
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(110, 255, 209, 0.045) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(110, 255, 209, 0.035) 1px, transparent 1px);
-    background-size: 88px 88px;
-    mask-image: linear-gradient(to bottom, transparent, black 16%, black 82%, transparent);
-    pointer-events: none;
-    z-index: 0;
+    background: var(--color-bg);
   }
 
   html[lang="zh"] body { font-family: var(--font-body-zh); }
@@ -57,27 +53,28 @@
 
   code, pre, .font-mono { font-family: var(--font-mono); }
 
-  ::selection { background: var(--color-acid); color: var(--color-abyss-0); }
+  ::selection { background: var(--color-accent); color: var(--color-bg); }
 }
 
 @layer components {
+  /* ── Buttons ────────────────────────────────────────────────────── */
   .btn-lumen {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     padding: 0.875rem 1.75rem;
-    background: var(--color-acid);
-    color: var(--color-abyss-0);
+    background: var(--color-accent);
+    color: var(--color-bg);
     border-radius: 2px;
     font-weight: 600;
     font-family: var(--font-body);
     letter-spacing: 0.02em;
-    border: 1px solid var(--color-acid);
+    border: 1px solid var(--color-accent);
     transition: transform 200ms ease-out, box-shadow 200ms ease-out;
   }
   .btn-lumen:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 32px -8px var(--color-acid);
+    box-shadow: 0 8px 32px -8px var(--color-accent);
   }
 
   .btn-ghost {
@@ -86,8 +83,8 @@
     gap: 0.5rem;
     padding: 0.875rem 1.75rem;
     background: transparent;
-    color: var(--color-paper);
-    border: 1px solid rgba(110, 255, 209, 0.42);
+    color: var(--color-text);
+    border: 1px solid var(--color-border-hover);
     border-radius: 2px;
     font-weight: 600;
     font-family: var(--font-body);
@@ -95,11 +92,12 @@
     transition: border-color 200ms ease-out, background 200ms ease-out;
   }
   .btn-ghost:hover {
-    border-color: var(--color-acid);
-    background: rgba(110, 255, 209, 0.07);
-    color: var(--color-acid);
+    border-color: var(--color-accent);
+    background: var(--color-accent-dim);
+    color: var(--color-accent);
   }
 
+  /* ── Animations ─────────────────────────────────────────────────── */
   @keyframes fade-rise {
     from { opacity: 0; transform: translateY(1.5rem); }
     to { opacity: 1; transform: translateY(0); }
@@ -110,130 +108,54 @@
   .delay-500 { animation-delay: 500ms; }
   .delay-700 { animation-delay: 700ms; }
 
-  .tech-grid {
-    background-image:
-      linear-gradient(rgba(110, 255, 209, 0.11) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(110, 255, 209, 0.08) 1px, transparent 1px),
-      linear-gradient(115deg, transparent 0 48%, rgba(255, 122, 56, 0.11) 49%, transparent 50%);
-    background-size: 72px 72px, 72px 72px, 360px 360px;
-    mask-image: linear-gradient(90deg, black, transparent 72%);
-  }
-
+  /* ── Proof panel (replaces sim-cockpit) ─────────────────────────── */
   .sim-cockpit {
     position: relative;
-    border: 1px solid rgba(110, 255, 209, 0.26);
-    background:
-      linear-gradient(145deg, rgba(7, 16, 25, 0.88), rgba(2, 5, 12, 0.72)),
-      radial-gradient(circle at 80% 0%, rgba(110, 255, 209, 0.16), transparent 34%);
-    box-shadow:
-      0 32px 100px rgba(0, 0, 0, 0.42),
-      0 0 0 1px rgba(255, 255, 255, 0.03) inset;
-    backdrop-filter: blur(18px);
-    clip-path: polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 28px 100%, 0 calc(100% - 28px));
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    box-shadow: 0 32px 100px rgba(0, 0, 0, 0.42);
   }
 
   .sim-cockpit__bar {
     display: flex;
     justify-content: space-between;
     gap: 1rem;
-    border-bottom: 1px solid var(--color-border-deep);
+    border-bottom: 1px solid var(--color-border);
     padding: 1rem 1.25rem;
-    color: var(--color-paper-dim);
+    color: var(--color-text-muted);
     font-family: var(--font-mono);
     font-size: 0.625rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
   }
 
+  /* ── Benchmark / proof grid (replaces depth-map) ────────────────── */
   .depth-map {
     position: relative;
     min-height: 24rem;
     overflow: hidden;
-    border: 1px solid var(--color-border-deep);
-    background:
-      radial-gradient(circle at 50% 50%, rgba(110, 255, 209, 0.18), transparent 8%),
-      radial-gradient(circle at 74% 28%, rgba(255, 122, 56, 0.2), transparent 9%),
-      linear-gradient(90deg, rgba(110, 255, 209, 0.07) 1px, transparent 1px),
-      linear-gradient(rgba(110, 255, 209, 0.07) 1px, transparent 1px),
-      linear-gradient(145deg, rgba(2, 5, 12, 0.9), rgba(16, 28, 39, 0.72));
-    background-size: auto, auto, 42px 42px, 42px 42px, auto;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
   }
 
+  /* Remove scan, route, vehicle, ping decorations — no-ops for compat */
   .depth-map::before,
-  .depth-map::after {
-    content: '';
-    position: absolute;
-    inset: 12%;
-    border: 1px solid rgba(110, 255, 209, 0.2);
-    transform: rotate(-10deg);
-  }
+  .depth-map::after { display: none; }
+  .depth-map__scan { display: none; }
+  .route { display: none; }
+  .route-a, .route-b { display: none; }
+  .vehicle { display: none; }
+  .vehicle::after { display: none; }
+  .ping { display: none; }
+  .ping-1, .ping-2, .ping-3 { display: none; }
 
-  .depth-map::after {
-    inset: 26%;
-    border-color: rgba(255, 122, 56, 0.22);
-    transform: rotate(18deg);
-  }
-
-  .depth-map__scan {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, transparent, rgba(110, 255, 209, 0.16), transparent);
-    height: 32%;
-    animation: scan-map 5.5s linear infinite;
-  }
-
-  @keyframes scan-map {
-    from { transform: translateY(-110%); }
-    to { transform: translateY(330%); }
-  }
-
-  .route {
-    position: absolute;
-    height: 2px;
-    transform-origin: left center;
-    background: linear-gradient(90deg, transparent, var(--color-acid), transparent);
-  }
-  .route-a { width: 58%; left: 17%; top: 37%; transform: rotate(-17deg); }
-  .route-b { width: 44%; left: 34%; top: 64%; transform: rotate(23deg); background: linear-gradient(90deg, transparent, var(--color-ember), transparent); }
-
-  .vehicle {
-    position: absolute;
-    width: 3.5rem;
-    height: 3.5rem;
-    left: 47%;
-    top: 44%;
-    transform: rotate(45deg);
-    border: 2px solid var(--color-acid);
-    background: rgba(110, 255, 209, 0.08);
-    box-shadow: 0 0 34px rgba(110, 255, 209, 0.34);
-  }
-
-  .vehicle::after {
-    content: '';
-    position: absolute;
-    inset: 1rem;
-    background: var(--color-acid);
-    box-shadow: 0 0 20px var(--color-acid);
-  }
-
-  .ping {
-    position: absolute;
-    width: 0.55rem;
-    height: 0.55rem;
-    border-radius: 999px;
-    background: var(--color-ember);
-    box-shadow: 0 0 20px rgba(255, 122, 56, 0.9);
-  }
-  .ping-1 { left: 18%; top: 24%; }
-  .ping-2 { right: 18%; top: 29%; background: var(--color-acid); }
-  .ping-3 { left: 31%; bottom: 20%; }
-
+  /* ── Section background watermark ───────────────────────────────── */
   .section-cool::after {
     content: 'AI';
     position: absolute;
     right: -0.04em;
     bottom: -0.22em;
-    color: rgba(110, 255, 209, 0.045);
+    color: rgba(255, 255, 255, 0.02);
     font-family: var(--font-mono);
     font-size: clamp(12rem, 34vw, 34rem);
     font-weight: 800;
@@ -241,6 +163,7 @@
     pointer-events: none;
   }
 
+  /* ── Challenge cards ────────────────────────────────────────────── */
   .challenge-stack {
     display: grid;
     gap: 0.75rem;
@@ -251,24 +174,21 @@
     grid-template-columns: 3.25rem 1fr;
     gap: 1.5rem;
     padding: 1.5rem;
-    border: 1px solid var(--color-border-deep);
-    background: rgba(7, 16, 25, 0.72);
-    backdrop-filter: blur(14px);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
     transition: transform 220ms ease, border-color 220ms ease, background 220ms ease;
   }
 
   .challenge-row:hover {
     transform: translateX(-6px);
-    border-color: rgba(110, 255, 209, 0.44);
-    background: rgba(16, 28, 39, 0.78);
+    border-color: var(--color-border-hover);
+    background: var(--color-surface-raised);
   }
 
+  /* ── Architecture / platform cards ──────────────────────────────── */
   .architecture-panel {
-    border: 1px solid var(--color-border-deep);
-    background:
-      linear-gradient(145deg, rgba(7, 16, 25, 0.84), rgba(2, 5, 12, 0.66)),
-      radial-gradient(circle at 0% 0%, rgba(255, 122, 56, 0.11), transparent 32%);
-    backdrop-filter: blur(16px);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
   }
 
   .architecture-row {
@@ -276,7 +196,7 @@
     grid-template-columns: 4rem 1fr;
     gap: 1.5rem;
     padding: 1.5rem;
-    border-bottom: 1px solid var(--color-border-deep);
+    border-bottom: 1px solid var(--color-border);
     position: relative;
     overflow: hidden;
   }
@@ -288,7 +208,7 @@
     position: absolute;
     inset: 0 auto 0 0;
     width: 3px;
-    background: var(--color-acid);
+    background: var(--color-accent);
     opacity: 0;
     transition: opacity 220ms ease;
   }
@@ -296,32 +216,33 @@
   .architecture-row:hover::before { opacity: 1; }
 
   .architecture-index {
-    color: rgba(247, 244, 238, 0.18);
+    color: rgba(229, 229, 229, 0.12);
     font-family: var(--font-mono);
     font-size: 2.25rem;
     font-weight: 800;
     line-height: 1;
   }
 
+  /* ── Contact links ──────────────────────────────────────────────── */
   .contact-link {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1.25rem;
-    border: 1px solid var(--color-border-deep);
-    background: rgba(7, 16, 25, 0.72);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
     padding: 1.15rem 1.25rem;
     transition: transform 200ms ease, border-color 200ms ease, background 200ms ease;
   }
 
   .contact-link:hover {
     transform: translateX(6px);
-    border-color: rgba(110, 255, 209, 0.5);
-    background: rgba(16, 28, 39, 0.82);
+    border-color: var(--color-border-hover);
+    background: var(--color-surface-raised);
   }
 
   .contact-link span {
-    color: var(--color-paper-dim);
+    color: var(--color-text-muted);
     font-family: var(--font-mono);
     font-size: 0.625rem;
     letter-spacing: 0.2em;
@@ -329,7 +250,7 @@
   }
 
   .contact-link strong {
-    color: var(--color-paper);
+    color: var(--color-text);
     font-family: var(--font-mono);
     font-size: 0.875rem;
     font-weight: 500;
@@ -384,8 +305,8 @@
   .card-glow:hover {
     transform: translateY(-4px);
     box-shadow:
-      0 16px 48px -16px rgba(110, 255, 209, 0.28),
-      0 0 0 1px rgba(110, 255, 209, 0.35) inset;
+      0 16px 48px -16px rgba(45, 212, 191, 0.18),
+      0 0 0 1px rgba(45, 212, 191, 0.25) inset;
   }
 
   @media (max-width: 640px) {
