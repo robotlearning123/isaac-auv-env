@@ -7,7 +7,7 @@ const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
 const { title, eyebrow, intro, emails } = fm;
 ---
-<section id="contact" class="relative overflow-hidden min-h-screen flex items-center" style="background:var(--color-bg)">
+<section id="contact" class="relative overflow-hidden py-24 md:py-32" style="background:var(--color-surface)">
   <div class="relative max-w-[1320px] mx-auto px-5 md:px-8 py-24 md:py-32 w-full grid lg:grid-cols-[1fr_0.9fr] gap-10 lg:gap-16 items-center">
     <div>
       <div class="font-mono text-[var(--color-accent)] text-xs uppercase eyebrow-tracking mb-4">/04 · {eyebrow}</div>
