@@ -1,3 +1,11 @@
+> **ARCHIVED** — Pre-POSITIONING.md draft.
+> This document predates the v0.0.1 identity reset and the POSITIONING.md v1.1 brand law lock.
+> It contains language and framings (e.g. defense, marine robotics, retired Chinese wordmark, "OceanSim Lab") that are now banned in active surfaces per POSITIONING.md §8.
+> Preserved for historical reference only.
+> For current brand/scope/voice: see POSITIONING.md. For decisions: see DECISIONS.md.
+
+---
+
 # OceanSim Lab 到 Ocean AI Infrastructure 的统一系统设计与公司路线图
 
 ## 执行摘要

@@ -1,3 +1,11 @@
+> **ARCHIVED** — Pre-POSITIONING.md draft (2026-05-15).
+> This document predates the v0.0.1 identity reset and the POSITIONING.md v1.1 brand law lock.
+> It contains language and framings (e.g. defense, marine robotics, retired Chinese wordmark 沧渊) that are now banned in active surfaces per POSITIONING.md §8.
+> Preserved for historical reference only.
+> For current brand/scope/voice: see POSITIONING.md. For decisions: see DECISIONS.md.
+
+---
+
 ---
 title: OceanScale (沧渊) Landing Page v0.1 — Design Spec
 status: approved
