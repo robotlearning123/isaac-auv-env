@@ -1,0 +1,15 @@
+{
+  "model": "gemini-2.5-pro",
+  "approvalMode": "default",
+  "systemPromptExtension": "You are working on OceanScale, AI-native simulation infrastructure for underwater robotics. Before any work, read AGENTS.md, POSITIONING.md (brand law), DESIGN.md (visual brand), ARCHITECTURE.md, and GLOSSARY.md. POSITIONING.md §8 banned words list is enforced. DESIGN.md §2 banned visual patterns is enforced. The repo is a monorepo; sub-packages may have their own AGENTS.md — read before working in their directory.",
+  "fileFilters": {
+    "excludePatterns": [
+      "node_modules/**",
+      "dist/**",
+      ".venv/**",
+      "**/__pycache__/**",
+      "**/*.pyc",
+      ".git/**"
+    ]
+  }
+}
