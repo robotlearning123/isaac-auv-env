@@ -2,9 +2,9 @@
 
 OceanScale website releases. Tag a version (`git tag v0.0.2`) to trigger production deploy.
 
-## Unreleased
+## [0.0.2] — 2026-05-23
 
-Wave A–D features are merged to main but unreleased. Next tag is v0.0.2.
+First release after brand-positioning reset. Includes full engineering wave (A–D).
 
 ### Added
 - **Hydro Tier-1 Fossen 6-DOF kernels** (`oceanscale/hydro/`) with W2-gate tests: autograd vs torch numerical-diff (<1e-3), throughput, determinism.
