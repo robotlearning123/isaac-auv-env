@@ -38,7 +38,7 @@ Applied to our stack:
 | Layer | Our value? | Decision |
 |---|---|---|
 | Hydrodynamics on GPU | **YES** — this is the whole point | **Build** (custom Warp kernels) |
-| Underwater sensor physics (sonar, JMG, DVL) | **YES** | **Build** |
+| Underwater sensor physics (sonar, AK-T, DVL) | **YES** | **Build** |
 | Benchmark tasks & DR for marine | **YES** | **Build** |
 | Multi-medium integration (water/air, vehicle/manipulator) | **YES** | **Build** |
 | General rigid-body physics | no | **Buy** (Newton + MJWarp) |
@@ -175,7 +175,7 @@ Anything else: maintain the lock. Read the new paper, write a Watchlist entry, m
 │ L5  ENV / TASK LAYER     Isaac Lab 3.0 ManagerBasedEnv + our terms    │
 │ L4  SIM CORE             OceanScale package (this project)            │
 │                          ├ Hydro kernels (Warp, Fossen + SPH + waves) │
-│                          ├ Sensor kernels (sonar RT, JMG vision, DVL) │
+│                          ├ Sensor kernels (sonar RT, AK-T vision, DVL) │
 │                          ├ Acoustic comms (BELLHOP + Q-D)             │
 │                          └ Scenario/DR toolkit                        │
 │ L3  PHYSICS              Newton 1.x (MuJoCo-Warp + Kamino + MPM)      │
@@ -421,7 +421,7 @@ Four tiers, configurable per-vehicle / per-task:
 | DVL (4-beam Doppler) | Per-beam range + relative velocity + dropout logic | <0.05 ms / vehicle |
 | IMU | Analytic linear/angular accel + Allan-variance noise model | <0.005 ms / vehicle |
 | Pressure | depth + Gaussian noise | trivial |
-| Camera RGB | Omniverse RTX path-trace + Jaffe-McGlamery post Warp pass | ~5 ms / view (bottleneck) |
+| Camera RGB | Omniverse RTX path-trace + Akkaynak-Treibitz (AK-T) post Warp pass | ~5 ms / view (bottleneck) |
 | Modem (acoustic) | BELLHOP precomputed channel impulse + Q-D Doppler/MP, runtime lookup | <0.1 ms / pair |
 
 ### 5.3 Wave / Current Field
@@ -473,7 +473,7 @@ oceanscale/
 ### What
 NVIDIA's USD-native robotics development environment. Provides:
 - **RTX renderer** — real-time path tracing for RGB/depth/normals/segmentation/thermal.
-- **NuRec** — 3D Gaussian Splatting library, photoreal digital twins from real footage.
+- **NuRec** — 3D Gaussian Splatting library, photoreal neural reconstructions from real footage.
 - **Replicator** — synthetic-data generator with domain randomization.
 - **URDF/MJCF/USD importers**.
 - **Kit framework** — extension system for custom GUIs and pipelines.
@@ -670,13 +670,13 @@ for each (env, beam, sub-ray):
 
 **Throughput**: ≥256 vehicles × 256 beams × 1024 bins on RTX 5090 at sensor Hz (~10 Hz).
 
-### 9.3 Jaffe-McGlamery Vision Post-pass
-**What**: Three-component image formation: direct + forward-scatter + backscatter.
+### 9.3 Akkaynak-Treibitz Camera Model
+**What**: Three-component image formation (direct + forward-scatter + backscatter), refined from the original Jaffe-McGlamery framework.
 
 **Pipeline**:
 1. Omniverse RTX renders Lambertian RGB + depth.
 2. Warp post-pass applies:
-   - **Direct**: I_d = I_rgb · exp(-c · z)  (Beer-Lambert, c = Jerlov-coef per channel)
+   - **Direct**: I_d = I_rgb · exp(-c · z)  (Beer-Lambert, c = Jerlov-coef per channel; AK-T refines attenuation coefficients)
    - **Forward scatter**: convolve I_d with depth-dependent Gaussian PSF.
    - **Backscatter**: add B_∞ · (1 - exp(-c · z))  (ambient water glow).
    - Caustics: pre-baked or animated noise pattern modulated by depth.
@@ -724,7 +724,7 @@ for each (env, beam, sub-ray):
 ### Runtime
 - Ubuntu 24.04 LTS
 - Python 3.12 (Isaac Lab 3.0 baseline; Isaac Sim 6.0 ROS 2 Jazzy support)
-- CUDA 12.4
+- CUDA 12.8
 - PyTorch 2.7 (CuDNN 9.7)
 - JAX 0.6 in separate env (CuDNN 9.8 conflict)
 - Warp 1.13
@@ -750,7 +750,7 @@ for each (env, beam, sub-ray):
 |---|---|---|---|
 | Newton-in-Isaac-Lab breaking-change burns a sprint | Medium | High | Pin to a Newton tag; PhysX fallback always-green. |
 | MJWarp ellipsoid fluid model breaks at high-speed (>3 m/s) AUV | Low | Medium | Tier-1 Warp kernel handles the regime above 2 m/s. Validate. |
-| RTX 5090 driver issues in CUDA 12.4 | Low | Medium | Pin driver 545+; test against H100 in CI. |
+| RTX 5090 driver issues in CUDA 12.8 | Low | Medium | Pin driver 570+; test against H100 in CI. |
 | BELLHOP precompute time at scene load is multi-second | High | Low | Cache to disk; reuse across resets. |
 | ROS 2 Jazzy bridge regression in Isaac Sim 6.0 GA | Medium | Low | We don't depend on ROS for training, only eval. |
 | Genesis releases its own marine extension and steals attention | Low | Medium | Cross-port our hydro to Genesis as a fallback. |
@@ -790,7 +790,7 @@ Periodically (every N steps):
 
 Eval-time (offline):
   ▸ Same env, single-vehicle
-  ▸ Full RTX path tracing + JMG post-pass for video
+  ▸ Full RTX path tracing + AK-T post-pass for video
   ▸ ONNX export, ROS 2 bridge for hardware validation
 ```
 
@@ -798,7 +798,7 @@ Eval-time (offline):
 
 ## 14. Where to Start (Concrete First-Sprint Tasks)
 
-1. **Stand up environment**: Ubuntu 24.04, CUDA 12.4, Python 3.12, install Isaac Sim 6.0 Early Dev + Isaac Lab 3.0 Beta + Newton 1.2 + Warp 1.13.
+1. **Stand up environment**: Ubuntu 24.04, CUDA 12.8, Python 3.12, install Isaac Sim 6.0 Early Dev + Isaac Lab 3.0 Beta + Newton 1.2 + Warp 1.13.
 2. **Smoke test**: run Isaac Lab's `Cartpole-v0` on Newton backend, then on PhysX backend. Verify ≥100k FPS / env on the lab's RTX 5090.
 3. **Port MarineGym BlueROV2 Heavy**: convert its URDF + Fossen plugin to MJCF + USD; load into Newton; verify station-keeping baseline matches MarineGym's published numbers (250k FPS).
 4. **First custom kernel**: write the Fossen drag Warp kernel from §5.1. Unit-test against MarineGym's PyTorch implementation on identical states (numerical match to 1e-5).
@@ -834,7 +834,7 @@ Added per request 2026-05-15.
 ### 16.1 What it actually is (verified facts)
 - **Repo**: [`discoverse-dev/gs_playground`](https://github.com/discoverse-dev/gs_playground), MIT, 343 stars, **98.7% Jupyter Notebook / 1.3% Python**. The split is itself a signal — this is a paper companion, not a library.
 - **Paper**: arXiv 2604.25459, **accepted to RSS 2026** (2026-04-28).
-- **What it claims to be**: a "high-throughput photorealistic simulator" that pairs a parallel rigid-body physics engine (**MotrixSim**, an in-house ground-up engine) with **batched 3D Gaussian Splatting (3DGS)** rendering. Real2Sim from a single RGB image → digital twin in <5 min.
+- **What it claims to be**: a "high-throughput photorealistic simulator" that pairs a parallel rigid-body physics engine (**MotrixSim**, an in-house ground-up engine) with **batched 3D Gaussian Splatting (3DGS)** rendering. Real2Sim from a single RGB image → neural reconstruction in <5 min.
 - **Headline number**: ~10⁴ FPS at 640×480 over **2048 parallel scenes on a single RTX 4090**.
 - **Validated tasks**: Unitree Go2 quadruped locomotion (10 min training, 1024 envs), Unitree G1 humanoid (6 hr, 2048 envs), Airbot Play block grasping, Go2 visual navigation. All deployed zero-shot or near-zero-shot on real hardware.
 - **Predecessor**: [DISCOVERSE](https://github.com/discoverse-dev/DISCOVERSE) (arXiv 2507.21981), which paired MuJoCo + 3DGS.
@@ -844,7 +844,7 @@ Added per request 2026-05-15.
 1. **Rendering throughput**: outperforms Isaac Sim's ray-tracing renderer at 1280×720 batch sizes that OOM PhysX-RTX. For vision-based RL this is a real edge.
 2. **Rigid-Link Gaussian Kinematics (RLGK)**: binds 3DGS clusters to rigid-body frames so visual state updates cost zero extra GPU time once bodies move. Physics-render sync is perfect at any speed. Genuinely clever.
 3. **Point pruning** (PUP-3DGS / SpeedySplat heritage): ≥90% Gaussians removed with <0.05 PSNR drop. Makes 8k-scene batches memory-feasible.
-4. **Real2Sim pipeline** (single RGB → digital twin in 5 min, with object meshes + sub-mm poses): if it works as advertised, this is the fastest known path from real footage to RL-ready scene.
+4. **Real2Sim pipeline** (single RGB → neural reconstruction in 5 min, with object meshes + sub-mm poses): if it works as advertised, this is the fastest known path from real footage to RL-ready scene.
 5. **End-to-end validated**: not a paper kernel — they trained policies in sim and ran them on real Go2 / G1.
 
 ### 16.3 Critical problems for **underwater** use
@@ -852,7 +852,7 @@ The endorsements above are real, but the architecture clashes with marine simula
 
 **A. 3DGS bakes lighting into the assets — and lighting *is* the underwater physics.**  
 - The team explicitly acknowledges: *"3D Gaussian Splatting struggles with handling randomized lighting and shadows. Asset generation is currently dependent on the lighting conditions of the source images."*
-- Underwater rendering is dominated by **depth-dependent Beer-Lambert absorption (per RGB channel)**, **Jaffe-McGlamery direct + forward-scatter + backscatter**, **caustics**, and **turbidity (Jerlov water types I → 9C)**. None of these are static appearance — they are functions of camera-to-object distance, water column properties, and lighting geometry that *change every step*.
+- Underwater rendering is dominated by **depth-dependent Beer-Lambert absorption (per RGB channel)**, **Akkaynak-Treibitz (AK-T) direct + forward-scatter + backscatter**, **caustics**, and **turbidity (Jerlov water types I → 9C)**. None of these are static appearance — they are functions of camera-to-object distance, water column properties, and lighting geometry that *change every step*.
 - Baking these into Gaussians means **a single 3DGS asset is only valid at one (depth, turbidity, lighting) point**. Domain randomization across Jerlov types collapses.
 - Mitigation in the gs_playground paper is "future work: algorithmic relighting." Not shipped.
 
@@ -929,17 +929,17 @@ Added 2026-05-15 per explicit user feedback: "we should have a main tech stack, 
 | Physics | **Newton 1.x** (primary) + **PhysX 5** (fallback via Isaac Lab multi-backend) | Newton ≥1.2, pin tag | LF governance; Apache-2.0; Warp-native; multi-solver. |
 | Rigid solver | **MuJoCo-Warp** | Newton-bundled | Best-validated rigid + built-in fluid drag. |
 | GPU kernels | **NVIDIA Warp** | 1.13.x | Differentiable; bottom of the new stack. |
-| Env framework | **Isaac Lab 3.0** | 3.0 Beta → GA when shipped | ManagerBasedEnv composability; multi-GPU; ONNX. |
+| Env framework | **Isaac Lab 3.0** | 3.0 Beta → GA when shipped | ManagerBasedEnv composability; multi-GPU; ONNX. v0.2 integration; v0.1 uses Newton standalone + SB3 (per ADR-007). |
 | RL default | **skrl 2.0** | 2.0.x | Spans PyTorch / JAX / Warp. |
 | RL throughput | **rl_games 1.6.5** | 1.6.x | Battle-tested PPO + NCCL multi-node. |
 | RL sim-to-real | **RSL-RL v5** | v5.x | ETH conventions for zero-shot. |
 | World model (optional) | **DreamerV3** | as published | Sample-efficient for sparse rewards. |
 | Hydrodynamics | **Custom OceanScale Warp kernels** (Tier 0-3) | this project | Nobody else solves it on Newton+USD. |
-| Sensors | **Custom OceanScale Warp kernels** (sonar/JMG/DVL/IMU/BELLHOP) | this project | Same — fill the gap. |
+| Sensors | **Custom OceanScale Warp kernels** (sonar/AK-T/DVL/IMU/BELLHOP) | this project | Same — fill the gap. |
 | Vehicle baseline | **BlueROV2 Heavy** | URDF/USD | Cheap, ubiquitous, MarineGym-compatible. |
 | Reference hydro impl | **MarineGym** (wrap, then re-implement in Warp) | arXiv 2503.09203 | Credit; don't reinvent. |
 | Reference sensor impl | **OceanSim** (study + selectively reuse) | arXiv 2503.01074 | Same. |
-| Runtime | Ubuntu 24.04, CUDA 12.4, Python 3.12, PyTorch 2.7 | pinned in pyproject.toml | One canonical env. |
+| Runtime | Ubuntu 24.04, CUDA 12.8, Python 3.12, PyTorch 2.7 | pinned in pyproject.toml | One canonical env. |
 | License (outbound) | **Apache-2.0** (code), **CC-BY-4.0** (scenes), **MIT** (policies) | this project | Matches Newton/Isaac; industry-friendly. |
 
 **Anything not on this list is "external to the main stack" and lives in §17.2 — Watchlist.**

@@ -23,7 +23,7 @@ The ocean engineering simulation field has reached an inflection point in 2025-2
 - Newton MPM deep analysis (source-code verified capabilities)
 - Ocean wave, current, and turbulence simulation
 - Traditional CFD on GPU (OpenFOAM, ANSYS, XLB)
-- Underwater digital twins (3DGS, NeRF, NuRec)
+- Underwater neural reconstruction (3DGS, NeRF, NuRec)
 - Zero-shot sim2real methods and results
 - Sensor simulation state of the art
 - RL framework recommendations
@@ -45,7 +45,7 @@ The ocean engineering simulation field has reached an inflection point in 2025-2
 | **MuJoCo Warp** | shipped (Newton 1.0+) | Primary Newton solver | GPU-parallel rigid body, differentiable via MJX/JAX |
 | **PhysX 5** | 5.x in Isaac 5.1+ | Available | Alternative physics backend, +70% throughput |
 | **OpenUSD** | Industry standard | Pixar/LF governed | Scene description format, single source of truth |
-| **Omniverse RTX** | Isaac Sim built-in | Production | Path tracing, caustics, volumetric lighting, digital twins |
+| **Omniverse RTX** | Isaac Sim built-in | Production | Path tracing, caustics, volumetric lighting, neural reconstruction |
 
 ### 1.2 Newton 1.2.0 — Key Capabilities
 
@@ -318,7 +318,7 @@ Source: `research/traditional_cfd_gpu.md`
 
 ---
 
-## 6. Underwater Digital Twins
+## 6. Underwater Neural Reconstruction
 
 ### 6.1 3DGS for Underwater (2024-2025 Explosion)
 
