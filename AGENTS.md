@@ -4,12 +4,17 @@ Cross-tool configuration for AI coding agents. Read by: Claude Code (via @AGENTS
 
 ## Project Overview
 
-OceanScale is an AI-native marine robotics infrastructure platform. Greenfield GPU-native underwater simulator built on Newton + Warp + Isaac Sim.
+OceanScale builds AI-native simulation infrastructure for underwater robotics. GPU-native ocean simulator built on Newton + Warp.
 
-- Monorepo: `website/` (Astro 6 landing page), `oceanscale/` (Python GPU sim), `benchmarks/` (perf tests)
-- Docs: `STACK.md`, `DESIGN.md`, `SURVEY.md`, `REFERENCES.md`, `RISKS.md`
-- `VERSION` file tracks the **website** version (semver `v0.x.x`)
-- Python package version is in `pyproject.toml`
+- Monorepo: `oceanscale/` (Python GPU sim), `website/` (Astro 6 landing page), `benchmarks/` (perf tests), `notebooks/` (Colab notebooks), `tests/`, `docs/`
+- Each sub-package has its own `AGENTS.md` — read it before working in that directory
+- Docs: `POSITIONING.md` (brand law — read first for any messaging work), `DESIGN.md` (visual brand law), `ARCHITECTURE.md` (technical architecture), `STACK.md`, `SURVEY.md`, `REFERENCES.md`, `RISKS.md`, `GLOSSARY.md`, `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`
+- `VERSION` tracks project identity (currently `0.0.x`, post-positioning reset). Sub-packages have their own versions (`oceanscale/pyproject.toml`, `website/package.json`)
+- Agent configs: `.codex/AGENTS.md`, `.gemini/{settings.json,GEMINI.md}`, `.cursor/rules/oceanscale.mdc`, `.windsurfrules`, `.github/copilot-instructions.md` — all inherit from this root `AGENTS.md`
+
+## Messaging Authority
+
+`POSITIONING.md` is the canonical source for category, scope, anchor sentence, concept hierarchy, enemy framing, lexicon, and banned words. Any agent generating user-facing copy reads `POSITIONING.md` §§1–8 before drafting. Banned words list is enforced. Anchor sentence (§3) and enemy line (§5) are quoted verbatim.
 
 ## Build & Run Commands
 
@@ -68,7 +73,7 @@ uv run python benchmarks/kernel_throughput.py    # GPU benchmarks
 <claude-mem-context>
 # Memory Context
 
-# [46-marine] recent context, 2026-05-20 11:37pm EDT
+# [46-marine] recent context, 2026-05-22 11:38pm EDT
 
 No previous sessions found.
 </claude-mem-context>
