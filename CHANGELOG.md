@@ -32,6 +32,22 @@ Wave A → A2 → B → C → D of v0.6 (the v0.1 launch wave). Package becomes 
 - **R20** (Warp quaternion autograd) — `_quat_rotate` torch reference rewritten as element-wise so autograd sees qw² dependency; `test_restoring_autograd_vs_torch` no longer skipped.
 - **PPO hover** — three independent bugs (action mapping ignored T_matrix, passive buoyancy local optimum, reward scale crushed value head). Hover now actually learns. 150/150 tests pass.
 
+## v0.0.1 — 2026-05-22
+
+**Identity reset.** Positioning locked: OceanScale is AI-native simulation infrastructure for underwater robotics. Anchor: "The ocean simulator for underwater robotics." Six canonical voice versions in `POSITIONING.md` Appendix A. Cross-model approved (Opus 4.7 + cx GPT-5.x).
+
+Version line restarted at `0.0.x` to signal pre-product concept stage. Earlier `v0.5.x` tags reflect prior website iterations and remain in git history for reference.
+
+### Added
+- `POSITIONING.md` — canonical brand/scope/voice/lexicon law (single source of truth for messaging).
+- Repo renamed on GitHub: `46-marine` → `oceanscale`. Local checkout path unchanged.
+
+### Changed
+- `AGENTS.md` Project Overview aligned with positioning (underwater robotics, Newton + Warp, no Isaac Sim dep). Added Messaging Authority section pointing to POSITIONING.md.
+- `pyproject.toml`: `version` reset to `0.0.1`, GitHub URLs updated.
+- `VERSION` reset to `0.0.1`.
+- `README.md`, `notebooks/bluerov2_hover_colab.py`, `website/src/content/{en,zh}/demo.ts`, `HANDOFF.md`, `LAYOUT.md`: GitHub URLs updated to `robotlearning123/oceanscale`.
+
 ## v0.5.3 — 2026-05-20
 
 High-tech visual pass: rebuild the landing page around a stronger first screen, simulation cockpit treatment, architecture strips, benchmark proof band, and tighter AI infrastructure copy.

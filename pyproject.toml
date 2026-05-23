@@ -1,6 +1,6 @@
 [project]
 name = "oceanscale"
-version = "0.1.0"
+version = "0.0.1"
 description = "GPU-native fluid-structure simulation for underwater robotics"
 license = "Apache-2.0"
 readme = "README.md"
@@ -39,9 +39,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/robotlearning123/46-marine"
-Repository = "https://github.com/robotlearning123/46-marine"
-Issues = "https://github.com/robotlearning123/46-marine/issues"
+Homepage = "https://github.com/robotlearning123/oceanscale"
+Repository = "https://github.com/robotlearning123/oceanscale"
+Issues = "https://github.com/robotlearning123/oceanscale/issues"
 
 [project.scripts]
 oceanscale = "oceanscale.cli:main"
@@ -77,7 +77,7 @@ build-backend = "setuptools.build_meta"
 include = ["oceanscale*"]
 
 [tool.setuptools.package-data]
-oceanscale = ["data/*.zip", "data/*.pkl"]
+oceanscale = ["data/*.zip", "data/*.npz"]
 
 [tool.uv]
 index-strategy = "unsafe-best-match"
