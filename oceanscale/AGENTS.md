@@ -32,7 +32,7 @@ See `../LAYOUT.md` §1 for the full directory tree.
 ## Testing
 
 ```bash
-uv run pytest tests/ -v                          # full suite (150+ tests)
+uv run pytest tests/ -v                          # full test suite
 uv run pytest tests/ -v -m "not gpu"             # CPU-only subset
 uv run pytest tests/hydro/test_tier1_autograd.py # specific test
 ```

@@ -20,8 +20,8 @@ OceanScale builds AI-native simulation infrastructure for underwater robotics. G
 
 ```bash
 # Website
-cd website && npm install && npm run dev        # dev server at localhost:4321
-cd website && npm run build                      # production build
+cd website && pnpm install && pnpm dev        # dev server at localhost:4321
+cd website && pnpm build                       # production build
 
 # Python package
 uv sync --extra dev                              # install all deps (CUDA 12.8)
@@ -68,3 +68,11 @@ uv run python benchmarks/kernel_throughput.py    # GPU benchmarks
 - Do not add comments explaining WHAT the code does — well-named identifiers suffice
 - Do not create documentation files unless explicitly requested
 - Do not expand scope beyond the assigned task
+
+<claude-mem-context>
+# Memory Context
+
+# [46-marine] recent context, 2026-05-23 12:43am EDT
+
+No previous sessions found.
+</claude-mem-context>

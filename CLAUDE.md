@@ -7,20 +7,20 @@
 - `website/` — Astro 6 + Tailwind v4 landing page (the deployed product)
 - `oceanscale/` — Python GPU simulation package (Newton + Warp)
 - `benchmarks/` — perf tests
-- Docs: `STACK.md`, `DESIGN.md`, `SURVEY.md`, `REFERENCES.md`, `RISKS.md`
+- Docs: `POSITIONING.md` (brand law), `DESIGN.md` (visual brand), `ARCHITECTURE.md` (technical), `STACK.md`, `SURVEY.md`, `REFERENCES.md`, `RISKS.md`, `GLOSSARY.md`
 
-`VERSION` tracks the **website** version. The Python package has its own version in `pyproject.toml`.
+`VERSION` tracks project identity (currently `0.0.x`, post-positioning reset). The Python package has its own version in `pyproject.toml`.
 
 ## Deployment (tag-driven)
 
-Cloudflare Pages production deploys are **disabled on auto-push**. Production only deploys on `v*.*.*` tag push via `.github/workflows/release.yml`.
+Cloudflare Pages production deploys are **disabled on auto-push**. Tags `vX.Y.Z` trigger **both** `.github/workflows/release.yml` (Cloudflare Pages deploy) **and** `.github/workflows/publish-pypi.yml` (PyPI publish). `pyproject.toml` version must match the tag for PyPI to succeed.
 
 ```
 # preview (push to any branch, including main)
 git push origin main           # → preview URL only, production unchanged
 
 # release
-git tag v0.5.1 && git push --tags   # → GH Action → CF API → live in ~30s
+git tag v0.0.2 && git push --tags   # → GH Action → CF API → live in ~30s
 ```
 
 Cloudflare project: `oceanscale-web` · production branch: `main` · monorepo watch path: `website/*`. Changes outside `website/` do not trigger builds.

@@ -1,7 +1,7 @@
 [project]
 name = "oceanscale"
 version = "0.0.1"
-description = "GPU-native fluid-structure simulation for underwater robotics"
+description = "AI-native simulation infrastructure for underwater robotics"
 license = "Apache-2.0"
 readme = "README.md"
 requires-python = ">=3.12,<3.14"

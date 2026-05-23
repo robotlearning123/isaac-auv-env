@@ -7,7 +7,7 @@ GPU-native underwater robotics simulation. Run the Fossen 6-DOF model on Newton+
 ## Why OceanScale?
 
 - **GPU-native physics** — Newton + Warp CUDA kernels, not CPU loops. 17K env-steps/s at n=64 on a single RTX 5090.
-- **RL-ready** — Gym-compatible `ROVEnv` with `BatchedVecEnv`, PPO converges out of the box. 150 tests passing.
+- **RL-ready** — Gym-compatible `ROVEnv` with `BatchedVecEnv`, PPO converges out of the box.
 - **Validated** — Tier-1 hydrodynamics matched against von Benzon 2022 BlueROV2 reference model (6-DOF, cross-coupling damping, full Coriolis).
 
 ## Quickstart
@@ -67,7 +67,7 @@ OceanScale's advantage is parallelism, not per-step latency. Below n=8, PyBullet
 git clone https://github.com/robotlearning123/oceanscale.git
 cd oceanscale
 uv sync --extra dev          # install deps (CUDA 12.8+)
-uv run pytest tests/ -v      # 150 tests
+uv run pytest tests/ -v
 uv run python -m oceanscale.cli demo bluerov2-hover
 ```
 
