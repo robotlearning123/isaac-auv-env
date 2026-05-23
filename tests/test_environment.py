@@ -15,7 +15,7 @@ def test_python_version() -> None:
 def test_oceanscale_importable() -> None:
     import oceanscale
 
-    assert oceanscale.__version__ == "0.1.0"
+    assert oceanscale.__version__ == "0.0.1"
 
 
 def test_numpy() -> None:
