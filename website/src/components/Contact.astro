@@ -6,18 +6,34 @@ const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
 const strip = (s: string) => s.replace(/[.。]+$/u, '');
 ---
-<section id="contact" class="os-section os-section--dark os-section--bg-contact">
-  <div class="os-container os-centered">
-    <div class="os-kicker">/05 · {fm.eyebrow}</div>
-    <h2 class="os-h2">{strip(fm.title)}</h2>
-    <p class="os-body os-body--centered">{fm.intro}</p>
-    <div class="os-contact-list os-contact-list--centered">
-      {fm.emails.map((e: { label: string; email: string }) => (
-        <a href={`mailto:${e.email}`} class="os-contact-link">
-          <span>{e.label}</span>
-          <strong>{e.email}</strong>
-        </a>
-      ))}
+<section id="contact" class="relative min-h-[70vh] flex items-center" style="background: var(--color-surface);">
+  <div class="os-container relative z-10 grid gap-10 lg:grid-cols-2 lg:items-center py-16">
+    <div>
+      <div class="os-kicker">/05 · {fm.eyebrow}</div>
+      <h2 class="os-h2 mt-4" style="font-size: clamp(2rem, 5vw, 3.5rem);">
+        {strip(fm.title)}
+      </h2>
+      <p class="mt-4" style="color: var(--color-text-muted); font-size: 1rem;">{fm.intro}</p>
+      <div class="grid gap-3 mt-8">
+        {fm.emails.map((e: { label: string; email: string }) => (
+          <a href={`mailto:${e.email}`} class="os-contact-link">
+            <span>{e.label}</span>
+            <strong>{e.email}</strong>
+          </a>
+        ))}
+      </div>
+    </div>
+    <div class="os-terminal">
+      <div class="os-terminal__bar">
+        <span class="os-terminal__dot os-terminal__dot--red"></span>
+        <span class="os-terminal__dot os-terminal__dot--yellow"></span>
+        <span class="os-terminal__dot os-terminal__dot--green"></span>
+        <span class="os-terminal__title">get started</span>
+      </div>
+      <pre><code><span class="prompt">$</span> pip install oceanscale
+<span class="muted">Successfully installed</span> oceanscale-0.0.2
+<span class="prompt">$</span> python -c "import oceanscale"
+<span class="muted">ready</span> <span class="bold">simulation loop online</span></code></pre>
     </div>
   </div>
 </section>
