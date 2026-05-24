@@ -5,6 +5,7 @@ Fluid Fidelity Ladder:
     Level 1: Grid Eulerian (Chorin projection, spatially varying currents)
     Level 2: SPH (Lagrangian particles, fluid-body interaction)
     Level 3: MPM (Material Point Method via Newton, deformable terrain)
+    Level 4: Volume (wp.Volume NanoVDB sparse grid, ocean-scale domains)
 
 All levels are GPU-native on NVIDIA Warp / Newton.
 """
@@ -17,6 +18,7 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from oceanscale.fluid.grid import GridFluidSolver, SPHSolver
     from oceanscale.fluid.mpm import NewtonMPMFluid
+    from oceanscale.fluid.volume_solver import VolumeFluidSolver
 
 
 class FluidLevel(IntEnum):
@@ -24,6 +26,7 @@ class FluidLevel(IntEnum):
     GRID = 1
     SPH = 2
     MPM = 3
+    VOLUME = 4
 
 
 def create_fluid_solver(level: int | FluidLevel, **kwargs: Any) -> Any:
@@ -56,6 +59,10 @@ def create_fluid_solver(level: int | FluidLevel, **kwargs: Any) -> Any:
         from oceanscale.fluid.mpm import NewtonMPMFluid
         return NewtonMPMFluid(**kwargs)
 
+    if level == FluidLevel.VOLUME:
+        from oceanscale.fluid.volume_solver import VolumeFluidSolver
+        return VolumeFluidSolver(**kwargs)
+
     raise ValueError(f"Unknown fluid level: {level}")
 
 
@@ -73,6 +80,9 @@ def __getattr__(name: str) -> Any:
     if name == "OceanWaveField":
         from oceanscale.fluid.wave import OceanWaveField
         return OceanWaveField
+    if name == "VolumeFluidSolver":
+        from oceanscale.fluid.volume_solver import VolumeFluidSolver
+        return VolumeFluidSolver
     raise AttributeError(f"module 'oceanscale.fluid' has no attribute {name!r}")
 
 
@@ -83,4 +93,5 @@ __all__ = [
     "GridFluidSolver",
     "SPHSolver",
     "NewtonMPMFluid",
+    "VolumeFluidSolver",
 ]

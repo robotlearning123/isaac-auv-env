@@ -52,4 +52,4 @@ def test_level_from_int():
 
 
 def test_all_levels_defined():
-    assert len(FluidLevel) == 4
+    assert len(FluidLevel) == 5

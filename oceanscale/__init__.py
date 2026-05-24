@@ -18,6 +18,7 @@ def __getattr__(name: str):
         "SPHSolver": "oceanscale.fluid.grid",
         "NewtonMPMFluid": "oceanscale.fluid.mpm",
         "Tier1": "oceanscale.hydro.tier1",
+        "GraphCapture": "oceanscale.graph_capture",
         "DVLSensor": "oceanscale.sensors.dvl",
         "IMUSensor": "oceanscale.sensors.imu",
         "PressureSensor": "oceanscale.sensors.pressure",
