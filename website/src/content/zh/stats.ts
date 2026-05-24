@@ -1,7 +1,7 @@
 export default {
   items: [
-    { value: "11,435", suffix: "", label: "FPS · 单环境 BlueROV2 (RTX 5090)" },
-    { value: "90", suffix: "M", label: "env-steps/s · 8192 并行环境" },
-    { value: "8,192", suffix: "", label: "并行环境 · Fossen 6-DoF kernel" },
+    { value: "17,427", suffix: "", label: "env-steps/s · BlueROV2 悬停 (n=64, RTX 5090)" },
+    { value: "10.5", suffix: "×", label: "对比 CPU 基线加速 (n=64)" },
+    { value: "64", suffix: "", label: "GPU 并行世界 · Newton + Warp" },
   ],
 };

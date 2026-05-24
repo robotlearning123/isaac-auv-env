@@ -1,7 +1,7 @@
 export default {
   items: [
-    { value: "11,435", suffix: "", label: "FPS · single-env BlueROV2 (RTX 5090)" },
-    { value: "90", suffix: "M", label: "env-steps/s · 8192 parallel envs" },
-    { value: "8,192", suffix: "", label: "parallel envs · Fossen 6-DoF kernel" },
+    { value: "17,427", suffix: "", label: "env-steps/s · BlueROV2 hover (n=64, RTX 5090)" },
+    { value: "10.5", suffix: "×", label: "faster than CPU baseline at n=64" },
+    { value: "64", suffix: "", label: "GPU-parallel worlds · Newton + Warp" },
   ],
 };

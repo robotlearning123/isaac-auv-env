@@ -1,7 +1,7 @@
 export default {
   eyebrow: "Contact",
   title: "Build ocean AI infrastructure with us.",
-  intro: "For robotics teams, simulation platforms, intelligent systems, and AI infrastructure partners.",
+  intro: "For underwater robotics teams building AUVs and ROVs.",
   emails: [
     { label: "Business", email: "business@oceanscale.cn" },
     { label: "Technical", email: "tech@oceanscale.cn" },
