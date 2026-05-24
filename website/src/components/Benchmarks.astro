@@ -58,13 +58,16 @@ const topMetrics = [
               'hover:bg-[var(--color-surface-raised)]/40'
             ]}>
               {row.map((cell: string, i: number) => (
-                <td class:list={[
-                  'px-5 py-4 align-middle',
-                  i === 0 ? 'text-[var(--color-text)] font-medium' :
-                  i === 3 ? 'text-[var(--color-accent)] font-mono font-semibold bg-[var(--color-accent)]/[0.06] border-l border-r border-[var(--color-accent)]/30 text-base' :
-                  'text-[var(--color-text-muted)] font-mono'
-                ]} set:html={cell.replace(/\*\*(.+?)\*\*/g, '<strong class="text-[var(--color-text)] text-base">$1</strong>')}>
-                </td>
+                i === 0 ? (
+                  <th scope="row" class="px-5 py-4 align-middle text-[var(--color-text)] font-medium text-left" set:html={cell}></th>
+                ) : (
+                  <td class:list={[
+                    'px-5 py-4 align-middle',
+                    i === 3 ? 'text-[var(--color-accent)] font-mono font-semibold bg-[var(--color-accent)]/[0.06] border-l border-r border-[var(--color-accent)]/30 text-base' :
+                    'text-[var(--color-text-muted)] font-mono'
+                  ]} set:html={cell.replace(/\*\*(.+?)\*\*/g, '<strong class="text-[var(--color-text)] text-base">$1</strong>')}>
+                  </td>
+                )
               ))}
             </tr>
           ))}

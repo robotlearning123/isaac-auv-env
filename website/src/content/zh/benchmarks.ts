@@ -5,7 +5,7 @@ export default {
   rows: [
     ["GPU 并行环境", "—", "✓", "**✓ (Newton+Warp)**"],
     ["Fossen 水动力", "✓", "弱", "**✓ (GPU kernel)**"],
-    ["DVL / 声纳传感器", "✓", "部分", "**✓ (Warp)**"],
+    ["DVL / IMU / 压力", "✓", "部分", "**✓ (stub + GPU)**"],
     ["RL 就绪 (Gymnasium)", "困难", "部分", "**原生**"],
     ["吞吐量 (n=64)", "~800 FPS", "250K+", "**17,427 env-steps/s**"],
   ],

@@ -5,7 +5,7 @@ export default {
   rows: [
     ["GPU-parallel envs", "—", "✓", "**✓ (Newton+Warp)**"],
     ["Fossen hydrodynamics", "✓", "Weak", "**✓ (GPU kernel)**"],
-    ["DVL / sonar sensors", "✓", "Partial", "**✓ (Warp)**"],
+    ["DVL / IMU / pressure", "✓", "Partial", "**✓ (stub + GPU)**"],
     ["RL-ready (Gymnasium)", "Difficult", "Partial", "**Native**"],
     ["Throughput (n=64)", "~800 FPS", "250K+", "**17,427 env-steps/s**"],
   ],
