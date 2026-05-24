@@ -1,0 +1,128 @@
+{
+  "benchmark": "oceanscale_standard",
+  "version": "0.0.2",
+  "timestamp": "2026-05-23T16:14:26-0400",
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 5090",
+    "arch": 120,
+    "total_memory_mb": 32101.0,
+    "warp_version": "1.13.0"
+  },
+  "setup_time": {
+    "create_s": 0.0005,
+    "first_reset_s": 1.0291,
+    "first_step_s": 0.0061,
+    "total_setup_s": 1.0357
+  },
+  "single_env": {
+    "n_envs": 1,
+    "steps_per_second": 2234.3,
+    "env_steps_per_second": 2234.0,
+    "wall_time_s": 0.0895,
+    "bench_steps": 200,
+    "gpu_mem_total_mb": 0.0,
+    "gpu_mem_per_env_mb": 0.001
+  },
+  "batched_throughput": [
+    {
+      "n_envs": 64,
+      "steps_per_second": 1744.2,
+      "env_steps_per_second": 111627.0,
+      "wall_time_s": 0.1147,
+      "bench_steps": 200,
+      "gpu_mem_total_mb": 0.0,
+      "gpu_mem_per_env_mb": 0.001
+    },
+    {
+      "n_envs": 256,
+      "steps_per_second": 1465.4,
+      "env_steps_per_second": 375139.0,
+      "wall_time_s": 0.1365,
+      "bench_steps": 200,
+      "gpu_mem_total_mb": 0.2,
+      "gpu_mem_per_env_mb": 0.001
+    },
+    {
+      "n_envs": 1024,
+      "steps_per_second": 959.9,
+      "env_steps_per_second": 982978.0,
+      "wall_time_s": 0.2083,
+      "bench_steps": 200,
+      "gpu_mem_total_mb": 0.7,
+      "gpu_mem_per_env_mb": 0.001
+    },
+    {
+      "n_envs": 4096,
+      "steps_per_second": 408.8,
+      "env_steps_per_second": 1674317.0,
+      "wall_time_s": 0.4893,
+      "bench_steps": 200,
+      "gpu_mem_total_mb": 2.6,
+      "gpu_mem_per_env_mb": 0.001
+    }
+  ],
+  "physics": {
+    "model": "Fossen 6-DOF (Fossen 2011 Handbook)",
+    "kernels": [
+      "added_mass",
+      "coriolis_added_mass",
+      "damping_linear_quadratic",
+      "restoring_buoyancy_gravity",
+      "thruster_allocation_lowpass",
+      "nu_dot_ema_filter"
+    ],
+    "terms": {
+      "added_mass": true,
+      "coriolis_centripetal": true,
+      "linear_damping": true,
+      "quadratic_damping": true,
+      "restoring_forces": true,
+      "cross_coupling_damping": true,
+      "thruster_model": "T200_lowpass_deadband",
+      "ocean_current_fsi": true
+    },
+    "integration": "semi_implicit_euler",
+    "ema_alpha": 0.3,
+    "validated_vs": "von Benzon et al. 2022, JMSE 10(5):636"
+  },
+  "sensors": {
+    "imu": false,
+    "dvl": false,
+    "sonar_imaging": false,
+    "camera_model": false,
+    "depth_pressure": true,
+    "acoustic_comms": false,
+    "note": "v0.0.2: headless only. 26-dim proprioceptive obs (pose, vel, wrench). Sensor noise via Gaussian injection."
+  },
+  "rl_integration": {
+    "gymnasium_version": "1.2.3",
+    "stable_baselines3_version": "2.8.0",
+    "observation_space": {
+      "shape": [
+        26
+      ],
+      "dtype": "float32"
+    },
+    "action_space": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "low": -1.0,
+      "high": 1.0
+    },
+    "sb3_vecenv_wrapper": "BatchedVecEnv",
+    "partial_reset": true,
+    "domain_randomization": true,
+    "vec_normalize": "supported (oceanscale/data/vec_normalize.npz)"
+  },
+  "fidelity": {
+    "reference": "von Benzon et al. 2022, JMSE 10(12):1898",
+    "scenario": "BlueROV2 Heavy, 5.0N surge, 1000 steps @ dt=0.01s",
+    "position_error_pct": 0.257,
+    "attitude_rms_deg": 0.048,
+    "position_rms_m": 0.002971,
+    "position_max_m": 0.003642,
+    "pass": true
+  }
+}
