@@ -1,10 +1,8 @@
 """Tests for NewtonMPMFluid."""
 
-import numpy as np
-import pytest
-import warp as wp
-
 import newton
+import numpy as np
+import warp as wp
 from newton.solvers import SolverImplicitMPM
 
 from oceanscale.fluid.mpm import NewtonMPMFluid

@@ -4,17 +4,16 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
-
 import warp as wp
-
-wp.init()
 
 from oceanscale.envs.station_keeping_env import CurrentStationKeepingEnv
 
+wp.init()
 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def env():
@@ -26,7 +25,8 @@ def env():
 @pytest.fixture
 def env_no_noise():
     e = CurrentStationKeepingEnv(
-        n_envs=1, device="cuda",
+        n_envs=1,
+        device="cuda",
         sensor_noise_std=0.0,
         init_pos_noise_std=0.0,
         init_yaw_noise_std=0.0,
@@ -46,6 +46,7 @@ def batched_env():
 # 1. Creation & spaces
 # ---------------------------------------------------------------------------
 
+
 class TestCreation:
     def test_obs_space_29dim(self, env):
         assert env.observation_space.shape == (29,)
@@ -63,6 +64,7 @@ class TestCreation:
 # ---------------------------------------------------------------------------
 # 2. Reset
 # ---------------------------------------------------------------------------
+
 
 class TestReset:
     def test_returns_tuple(self, env):
@@ -93,6 +95,7 @@ class TestReset:
 # ---------------------------------------------------------------------------
 # 3. Step
 # ---------------------------------------------------------------------------
+
 
 class TestStep:
     def test_returns_five_tuple(self, env):
@@ -137,6 +140,7 @@ class TestStep:
 # 4. Current effect — ROV drifts without control
 # ---------------------------------------------------------------------------
 
+
 class TestCurrentEffect:
     def test_zero_action_drifts(self, env_no_noise):
         """Strong current with zero thrust causes ROV displacement."""
@@ -144,9 +148,9 @@ class TestCurrentEffect:
         env_no_noise._current_params[:, :] = [2.0, 0.0, 30.0, 0.0, 0.0]
         env_no_noise._compute_current()
 
-        # Few steps to stay in stable regime (coupling + semi-implicit solver
-        # limits long-horizon zero-control stability)
-        for _ in range(5):
+        # 100 steps is enough to measure deterministic current drift without
+        # relying on sensor noise.
+        for _ in range(100):
             obs, _, _, _, _ = env_no_noise.step(np.zeros(6, dtype=np.float32))
 
         displacement = np.linalg.norm(obs[:3])
@@ -163,6 +167,7 @@ class TestCurrentEffect:
 # ---------------------------------------------------------------------------
 # 5. Reward shaping
 # ---------------------------------------------------------------------------
+
 
 class TestRewardShaping:
     def _reward(self, env, r):
@@ -193,20 +198,14 @@ class TestRewardShaping:
 
         # Surge amplifies +x current → drifts faster → worse reward
         surge = np.array([1.0, 0, 0, 0, 0, 0], dtype=np.float32)
-        rewards_drift = [
-            self._reward(env_no_noise, env_no_noise.step(surge)[1])
-            for _ in range(30)
-        ]
+        rewards_drift = [self._reward(env_no_noise, env_no_noise.step(surge)[1]) for _ in range(30)]
 
         assert np.mean(rewards_stay) > np.mean(rewards_drift)
 
     def test_reward_degrades_with_distance(self, env_no_noise):
         env_no_noise.reset(seed=42)
         drift = np.array([0.8, 0, 0, 0, 0, 0], dtype=np.float32)
-        rewards = [
-            self._reward(env_no_noise, env_no_noise.step(drift)[1])
-            for _ in range(50)
-        ]
+        rewards = [self._reward(env_no_noise, env_no_noise.step(drift)[1]) for _ in range(50)]
         assert np.mean(rewards[:10]) > np.mean(rewards[-10:])
 
     def test_info_has_holding_component(self, env):
@@ -224,6 +223,7 @@ class TestRewardShaping:
 # ---------------------------------------------------------------------------
 # 6. Success criteria
 # ---------------------------------------------------------------------------
+
 
 class TestSuccessCriteria:
     def test_success_false_initially(self, env):
@@ -245,6 +245,7 @@ class TestSuccessCriteria:
 # ---------------------------------------------------------------------------
 # 7. Domain randomization
 # ---------------------------------------------------------------------------
+
 
 class TestDomainRandomization:
     def test_current_params_vary_across_resets(self):

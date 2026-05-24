@@ -59,7 +59,9 @@ def test_randomize_subset_envs(tier1_64) -> None:
 def test_randomize_respects_ranges(tier1_64) -> None:
     """Coefficients stay within expected bounds."""
     base_mass = 11.4
-    ranges = RandomizationRanges(mass=0.20, added_mass=0.25, d_lin=0.30, d_quad=0.30, volume=0.15, coBM=0.50)
+    ranges = RandomizationRanges(
+        mass=0.20, added_mass=0.25, d_lin=0.30, d_quad=0.30, volume=0.15, coBM=0.50
+    )
     # Run many times to check bounds
     for seed in range(50):
         rng = np.random.default_rng(seed)
@@ -104,9 +106,9 @@ def test_randomize_damping_and_added_mass(tier1_64) -> None:
     rng = np.random.default_rng(7)
     tier1_64.randomize_coeffs(rng=rng)
     ma_lin = tier1_64.M_A_lin.numpy()
-    ma_ang = tier1_64.M_A_ang.numpy()
+    tier1_64.M_A_ang.numpy()
     dll = tier1_64.d_lin_lin.numpy()
-    dla = tier1_64.d_lin_ang.numpy()
+    tier1_64.d_lin_ang.numpy()
     # Each env should have non-uniform values across axes
     for i in range(tier1_64.n_envs):
         assert not np.allclose(ma_lin[i, 0], ma_lin[i, 1])
@@ -137,7 +139,9 @@ def test_wrench_after_randomization(tier1_64) -> None:
 @pytest.mark.gpu
 def test_zero_range_no_change(tier1_64) -> None:
     """Ranges all zero => coefficients unchanged."""
-    ranges = RandomizationRanges(mass=0.0, added_mass=0.0, d_lin=0.0, d_quad=0.0, volume=0.0, coBM=0.0, current_speed_max=0.0)
+    ranges = RandomizationRanges(
+        mass=0.0, added_mass=0.0, d_lin=0.0, d_quad=0.0, volume=0.0, coBM=0.0, current_speed_max=0.0
+    )
     ma_before = tier1_64.M_A_lin.numpy().copy()
     m_before = tier1_64.mass_arr.numpy().copy()
 

@@ -102,7 +102,7 @@ def test_determinism_individual_kernels() -> None:
         outs = []
         for _ in range(3):
             wrench = wp.zeros(n, dtype=wp.spatial_vectorf, device="cuda")
-            wp.launch(kernel, dim=n, inputs=inputs + [wrench], device="cuda")
+            wp.launch(kernel, dim=n, inputs=[*inputs, wrench], device="cuda")
             wp.synchronize()
             outs.append(wrench.numpy().copy())
         return outs
@@ -112,9 +112,18 @@ def test_determinism_individual_kernels() -> None:
         ("added_mass", tier1_added_mass, [nu_w, ma_lin_w, ma_ang_w]),
         ("damping", tier1_damping, [nu_w, dll_w, dla_w, dql_w, dqa_w]),
         ("coriolis_a", tier1_coriolis_a, [nu_w, ma_lin_w, ma_ang_w]),
-        ("restoring", tier1_restoring, [
-            quat_w, mass_w, vol_w, cobm_w, 1025.0, 9.81,
-        ]),
+        (
+            "restoring",
+            tier1_restoring,
+            [
+                quat_w,
+                mass_w,
+                vol_w,
+                cobm_w,
+                1025.0,
+                9.81,
+            ],
+        ),
     ]:
         outs = _run_three(kernel, inputs)
         np.testing.assert_array_equal(outs[0], outs[1], err_msg=f"{name}: run 0 != run 1")
@@ -125,10 +134,22 @@ def test_determinism_individual_kernels() -> None:
     for _ in range(3):
         wrench = wp.zeros(n, dtype=wp.spatial_vectorf, device="cuda")
         u_out = wp.zeros((n, 8), dtype=wp.float32, device="cuda")
-        wp.launch(tier1_thruster_alloc, dim=n, inputs=[
-            u_cmd_w, u_prev_w, u_out, T_w,
-            51.5, 0.05, 0.1, 1.0 / 240.0, wrench,
-        ], device="cuda")
+        wp.launch(
+            tier1_thruster_alloc,
+            dim=n,
+            inputs=[
+                u_cmd_w,
+                u_prev_w,
+                u_out,
+                T_w,
+                51.5,
+                0.05,
+                0.1,
+                1.0 / 240.0,
+                wrench,
+            ],
+            device="cuda",
+        )
         wp.synchronize()
         outs_ta.append(wrench.numpy().copy())
     np.testing.assert_array_equal(outs_ta[0], outs_ta[1], err_msg="thruster_alloc: run 0 != run 1")

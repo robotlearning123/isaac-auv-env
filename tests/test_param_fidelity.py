@@ -15,14 +15,11 @@ Sources:
 
 from __future__ import annotations
 
-import math
-
 import pytest
 
-from oceanscale.hydro.tier1 import DEFAULT_RHO, Tier1
+from oceanscale.hydro.tier1 import DEFAULT_RHO
 from oceanscale.validation.vonbenzon_reference import VonBenzonParams
 from oceanscale.vehicles.bluerov2 import BlueROV2Heavy
-
 
 # ---------------------------------------------------------------------------
 # Reference instances
@@ -51,8 +48,8 @@ class TestInertiaMatchesBlueROV2:
 
     @pytest.mark.xfail(
         reason="Sphere gives isotropic I=[0.37,0.37,0.37]; von Benzon needs "
-               "[0.26, 0.23, 0.37]. ROVEnv._build() sizes sphere from I_max "
-               "so I_z matches but I_x,I_y are wrong.",
+        "[0.26, 0.23, 0.37]. ROVEnv._build() sizes sphere from I_max "
+        "so I_z matches but I_x,I_y are wrong.",
         strict=True,
     )
     def test_ix_matches(self) -> None:
@@ -113,7 +110,7 @@ class TestWaterDensityConsistent:
 
     @pytest.mark.xfail(
         reason="Tier1 defaults to salt water rho=1025; von Benzon uses fresh "
-               "rho=1000. Causes buoyancy sign flip (sinks vs floats).",
+        "rho=1000. Causes buoyancy sign flip (sinks vs floats).",
         strict=True,
     )
     def test_rho_matches(self) -> None:
@@ -181,19 +178,21 @@ class TestHydroCoefficientsMatch:
         assert BLUEROV2.added_mass[5] == pytest.approx(VON_BENZON.added_mass[5], rel=RTOL)
 
     def test_added_mass_full_tuple(self) -> None:
-        for i, (gpu, cpu) in enumerate(zip(BLUEROV2.added_mass, VON_BENZON.added_mass)):
+        for i, (gpu, cpu) in enumerate(
+            zip(BLUEROV2.added_mass, VON_BENZON.added_mass, strict=True)
+        ):
             assert gpu == pytest.approx(cpu, rel=RTOL), f"Mismatch at DOF index {i}"
 
     # --- Linear damping ---
 
     def test_d_lin_full_tuple(self) -> None:
-        for i, (gpu, cpu) in enumerate(zip(BLUEROV2.d_lin, VON_BENZON.d_lin)):
+        for i, (gpu, cpu) in enumerate(zip(BLUEROV2.d_lin, VON_BENZON.d_lin, strict=True)):
             assert gpu == pytest.approx(cpu, rel=RTOL), f"d_lin mismatch at DOF index {i}"
 
     # --- Quadratic damping ---
 
     def test_d_quad_full_tuple(self) -> None:
-        for i, (gpu, cpu) in enumerate(zip(BLUEROV2.d_quad, VON_BENZON.d_quad)):
+        for i, (gpu, cpu) in enumerate(zip(BLUEROV2.d_quad, VON_BENZON.d_quad, strict=True)):
             assert gpu == pytest.approx(cpu, rel=RTOL), f"d_quad mismatch at DOF index {i}"
 
     # --- Scalar body params ---
@@ -240,4 +239,6 @@ class TestHydroCoefficientsMatch:
         for i in range(3, 6):
             ratio = m_eff_gpu[i] / m_eff_correct[i]
             # Angular effective mass is ~1.5-2x too high
-            assert ratio >= 1.0, f"DOF {i}: GPU eff mass {m_eff_gpu[i]:.3f} should exceed correct {m_eff_correct[i]:.3f}"
+            assert ratio >= 1.0, (
+                f"DOF {i}: GPU eff mass {m_eff_gpu[i]:.3f} should exceed correct {m_eff_correct[i]:.3f}"
+            )

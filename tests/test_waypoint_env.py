@@ -6,14 +6,15 @@ import numpy as np
 import pytest
 import warp as wp
 
-wp.init()
-
 from oceanscale.envs.waypoint_env import WaypointFollowingEnv
+
+wp.init()
 
 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def env():
@@ -32,6 +33,7 @@ def batched_env():
 # ---------------------------------------------------------------------------
 # 1. Creation & Spaces
 # ---------------------------------------------------------------------------
+
 
 class TestCreation:
     def test_obs_space_29dim(self, env):
@@ -57,6 +59,7 @@ class TestCreation:
 # ---------------------------------------------------------------------------
 # 2. Reset
 # ---------------------------------------------------------------------------
+
 
 class TestReset:
     def test_returns_tuple(self, env):
@@ -99,6 +102,7 @@ class TestReset:
 # ---------------------------------------------------------------------------
 # 3. Step
 # ---------------------------------------------------------------------------
+
 
 class TestStep:
     def test_returns_five_tuple(self, env):
@@ -143,6 +147,7 @@ class TestStep:
 # 4. Waypoint advancement
 # ---------------------------------------------------------------------------
 
+
 class TestWaypointAdvancement:
     def test_advance_when_at_waypoint(self, env):
         """ROV at waypoint 0 position -> current_wp_idx advances to 1."""
@@ -169,7 +174,7 @@ class TestWaypointAdvancement:
             env._waypoints[0, j] = pos[0].copy()
 
         for _ in range(10):
-            _, _, terminated, truncated, info = env.step(np.zeros(6, dtype=np.float32))
+            _, _, _terminated, _truncated, info = env.step(np.zeros(6, dtype=np.float32))
             if info["success"][0]:
                 break
 
@@ -180,6 +185,7 @@ class TestWaypointAdvancement:
 # ---------------------------------------------------------------------------
 # 5. Termination
 # ---------------------------------------------------------------------------
+
 
 class TestTermination:
     def test_success_terminates_episode(self, env):
@@ -213,6 +219,7 @@ class TestTermination:
 # ---------------------------------------------------------------------------
 # 6. Reward structure
 # ---------------------------------------------------------------------------
+
 
 class TestReward:
     def test_reward_positive_without_reach(self, env):

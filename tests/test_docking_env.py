@@ -8,39 +8,37 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
-
 import warp as wp
-
-wp.init()
 
 from oceanscale.envs.docking_env import DockingApproachEnv
 from oceanscale.rov_env import ROVEnv
 
+wp.init()
 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def env():
-    e = DockingApproachEnv(n_envs=1, device="cuda", sensor_noise_std=0.0,
-                           dock_offset_range=0.0)
+    e = DockingApproachEnv(n_envs=1, device="cuda", sensor_noise_std=0.0, dock_offset_range=0.0)
     yield e
     e.close()
 
 
 @pytest.fixture
 def env_no_random():
-    e = DockingApproachEnv(n_envs=1, device="cuda", sensor_noise_std=0.0,
-                           dock_offset_range=0.0, init_pos_noise_std=0.0)
+    e = DockingApproachEnv(
+        n_envs=1, device="cuda", sensor_noise_std=0.0, dock_offset_range=0.0, init_pos_noise_std=0.0
+    )
     yield e
     e.close()
 
 
 @pytest.fixture
 def batched_env():
-    e = DockingApproachEnv(n_envs=8, device="cuda", sensor_noise_std=0.0,
-                           dock_offset_range=0.0)
+    e = DockingApproachEnv(n_envs=8, device="cuda", sensor_noise_std=0.0, dock_offset_range=0.0)
     yield e
     e.close()
 
@@ -48,6 +46,7 @@ def batched_env():
 # ---------------------------------------------------------------------------
 # 1. Creation and inheritance
 # ---------------------------------------------------------------------------
+
 
 class TestCreation:
     def test_is_rov_env_subclass(self, env):
@@ -77,6 +76,7 @@ class TestCreation:
 # ---------------------------------------------------------------------------
 # 2. Reset
 # ---------------------------------------------------------------------------
+
 
 class TestReset:
     def test_returns_tuple(self, env):
@@ -114,6 +114,7 @@ class TestReset:
 # ---------------------------------------------------------------------------
 # 3. Step
 # ---------------------------------------------------------------------------
+
 
 class TestStep:
     def test_returns_five_tuple(self, env):
@@ -167,6 +168,7 @@ class TestStep:
 # 4. Reward phases (far vs close)
 # ---------------------------------------------------------------------------
 
+
 class TestRewardPhases:
     def test_range_reward_positive(self, env):
         env.reset()
@@ -180,8 +182,7 @@ class TestRewardPhases:
         np.testing.assert_allclose(limit, [1.0, 0.5, 0.1, 0.05], atol=1e-6)
 
     def test_exponential_reward_bounded(self):
-        e = DockingApproachEnv(n_envs=1, device="cuda", sensor_noise_std=0.0,
-                               dock_offset_range=0.0)
+        e = DockingApproachEnv(n_envs=1, device="cuda", sensor_noise_std=0.0, dock_offset_range=0.0)
         e.reset()
         _, _, _, _, info = e.step(np.zeros(6, dtype=np.float32))
 
@@ -213,11 +214,11 @@ class TestRewardPhases:
 # 5. Success criteria
 # ---------------------------------------------------------------------------
 
+
 class TestSuccessCriteria:
     def test_success_requires_position_and_velocity(self):
         """Simulate ROV at dock with zero velocity — should detect success."""
-        e = DockingApproachEnv(n_envs=1, device="cuda", sensor_noise_std=0.0,
-                               dock_offset_range=0.0)
+        e = DockingApproachEnv(n_envs=1, device="cuda", sensor_noise_std=0.0, dock_offset_range=0.0)
         e.reset()
         import newton
 
@@ -230,8 +231,13 @@ class TestSuccessCriteria:
         joint_q = e.model.joint_q.numpy()
         # Set heading toward dock (negative x direction → yaw = pi)
         joint_q[0:7] = [
-            float(rov_pos[0]), float(rov_pos[1]), float(rov_pos[2]),
-            0.0, 0.0, float(np.sin(np.pi / 2)), float(np.cos(np.pi / 2))
+            float(rov_pos[0]),
+            float(rov_pos[1]),
+            float(rov_pos[2]),
+            0.0,
+            0.0,
+            float(np.sin(np.pi / 2)),
+            float(np.cos(np.pi / 2)),
         ]
         e.model.joint_q = wp.array(joint_q, dtype=wp.float32, device="cuda")
 
@@ -241,7 +247,7 @@ class TestSuccessCriteria:
 
         newton.eval_fk(e.model, e.model.joint_q, e.model.joint_qd, e.state_curr)
 
-        _, reward, _, _, info = e.step(np.zeros(6, dtype=np.float32))
+        _, _reward, _, _, info = e.step(np.zeros(6, dtype=np.float32))
 
         # Range should be very small
         assert info["range_to_dock"][0] < 0.1, f"Range {info['range_to_dock'][0]}"
@@ -260,6 +266,7 @@ class TestSuccessCriteria:
 # 6. Hard contact detection
 # ---------------------------------------------------------------------------
 
+
 class TestHardContact:
     def test_hard_contact_info_exists(self, env):
         env.reset()
@@ -272,10 +279,10 @@ class TestHardContact:
 # 7. Domain randomization
 # ---------------------------------------------------------------------------
 
+
 class TestDomainRandomization:
     def test_different_resets_different_positions(self):
-        e = DockingApproachEnv(n_envs=1, device="cuda", sensor_noise_std=0.0,
-                               dock_offset_range=0.0)
+        e = DockingApproachEnv(n_envs=1, device="cuda", sensor_noise_std=0.0, dock_offset_range=0.0)
         obs1, _ = e.reset(seed=42)
         pos1 = obs1[0:3].copy()
         obs2, _ = e.reset(seed=123)
@@ -285,19 +292,18 @@ class TestDomainRandomization:
         e.close()
 
     def test_dock_offset_randomization(self):
-        e = DockingApproachEnv(n_envs=4, device="cuda", sensor_noise_std=0.0,
-                               dock_offset_range=1.0)
+        e = DockingApproachEnv(n_envs=4, device="cuda", sensor_noise_std=0.0, dock_offset_range=1.0)
         e.reset()
         # Dock positions should differ across envs (with offset)
         docks = e._dock_positions.copy()
         # Not all dock positions should be identical
-        assert not np.allclose(docks[0], docks[1], atol=0.01) or \
-               not np.allclose(docks[0], docks[2], atol=0.01)
+        assert not np.allclose(docks[0], docks[1], atol=0.01) or not np.allclose(
+            docks[0], docks[2], atol=0.01
+        )
         e.close()
 
     def test_no_dock_offset_fixed(self):
-        e = DockingApproachEnv(n_envs=4, device="cuda", sensor_noise_std=0.0,
-                               dock_offset_range=0.0)
+        e = DockingApproachEnv(n_envs=4, device="cuda", sensor_noise_std=0.0, dock_offset_range=0.0)
         e.reset()
         docks = e._dock_positions.copy()
         # All docks at same position (target_pos)
@@ -306,8 +312,7 @@ class TestDomainRandomization:
         e.close()
 
     def test_initial_range_bounds_across_resets(self):
-        e = DockingApproachEnv(n_envs=1, device="cuda", sensor_noise_std=0.0,
-                               dock_offset_range=0.0)
+        e = DockingApproachEnv(n_envs=1, device="cuda", sensor_noise_std=0.0, dock_offset_range=0.0)
         ranges = []
         for seed in range(20):
             obs, _ = e.reset(seed=seed)
@@ -327,6 +332,7 @@ class TestDomainRandomization:
 # ---------------------------------------------------------------------------
 # 8. Observation structure
 # ---------------------------------------------------------------------------
+
 
 class TestObservationStructure:
     def test_range_obs_positive(self, env):
@@ -351,6 +357,7 @@ class TestObservationStructure:
 # 9. Termination
 # ---------------------------------------------------------------------------
 
+
 class TestTermination:
     def test_max_steps_7200(self, env):
         assert env.max_episode_steps == 7200
@@ -358,14 +365,12 @@ class TestTermination:
     def test_no_early_termination(self, env):
         env.reset()
         for _ in range(100):
-            _, _, terminated, truncated, _ = env.step(
-                np.zeros(6, dtype=np.float32)
-            )
+            _, _, terminated, truncated, _ = env.step(np.zeros(6, dtype=np.float32))
             assert not terminated
             assert not truncated
 
     def test_min_range_tracking(self, env):
         env.reset()
-        obs, _, _, _, info = env.step(np.zeros(6, dtype=np.float32))
+        _obs, _, _, _, info = env.step(np.zeros(6, dtype=np.float32))
         assert np.all(np.isfinite(info["min_range"]))
         assert info["min_range"][0] > 0
