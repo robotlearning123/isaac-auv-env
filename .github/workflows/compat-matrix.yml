@@ -13,7 +13,7 @@ on:
 jobs:
   # T1: Reference platform — every PR
   t1-reference:
-    runs-on: [self-hosted, gpu, rtx5090]
+    runs-on: oceanscale-arc
     container:
       image: nvidia/cuda:12.8.1-devel-ubuntu24.04
     steps:
@@ -32,7 +32,7 @@ jobs:
 
   # T2: Forward compat — CUDA 13 + PyTorch 2.12
   t2-cuda13:
-    runs-on: [self-hosted, gpu, rtx5090]
+    runs-on: oceanscale-arc
     container:
       image: nvidia/cuda:13.0.0-devel-ubuntu24.04
     if: ${{ github.event.inputs.tier != 't1' }}
@@ -56,7 +56,7 @@ jobs:
 
   # T2: Python 3.13
   t2-py313:
-    runs-on: [self-hosted, gpu, rtx5090]
+    runs-on: oceanscale-arc
     container:
       image: nvidia/cuda:12.8.1-devel-ubuntu24.04
     if: ${{ github.event.inputs.tier != 't1' }}
@@ -80,7 +80,7 @@ jobs:
   compat-summary:
     needs: [t1-reference, t2-cuda13, t2-py313]
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: oceanscale-arc
     steps:
       - name: Report matrix results
         run: |
