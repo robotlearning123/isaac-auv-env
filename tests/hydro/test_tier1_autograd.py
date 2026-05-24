@@ -13,10 +13,10 @@ import numpy as np
 import pytest
 import torch
 
-
 # ---------------------------------------------------------------------------
 # Torch reference implementations (Fossen 2021 math, diagonal M_A)
 # ---------------------------------------------------------------------------
+
 
 def _added_mass_ref(
     nu_dot: torch.Tensor, ma_lin: torch.Tensor, ma_ang: torch.Tensor
@@ -26,8 +26,10 @@ def _added_mass_ref(
 
 def _damping_ref(
     nu: torch.Tensor,
-    dll: torch.Tensor, dla: torch.Tensor,
-    dql: torch.Tensor, dqa: torch.Tensor,
+    dll: torch.Tensor,
+    dla: torch.Tensor,
+    dql: torch.Tensor,
+    dqa: torch.Tensor,
 ) -> torch.Tensor:
     vl, va = nu[:, :3], nu[:, 3:]
     f0 = -(dll[:, 0] + dql[:, 0] * vl[:, 0].abs()) * vl[:, 0]
@@ -45,9 +47,7 @@ def _damping_ref(
     return torch.stack([f0, f1, f2, f3, f4, f5], dim=-1)
 
 
-def _coriolis_a_ref(
-    nu: torch.Tensor, ma_lin: torch.Tensor, ma_ang: torch.Tensor
-) -> torch.Tensor:
+def _coriolis_a_ref(nu: torch.Tensor, ma_lin: torch.Tensor, ma_ang: torch.Tensor) -> torch.Tensor:
     vl, va = nu[:, :3], nu[:, 3:]
     ab_lin = ma_lin * vl
     ab_ang = ma_ang * va
@@ -72,8 +72,12 @@ def _quat_rotate_inv(q: torch.Tensor, v: torch.Tensor) -> torch.Tensor:
 
 
 def _restoring_ref(
-    quat: torch.Tensor, mass: float, volume: float,
-    coBM: float, rho: float, g: float,
+    quat: torch.Tensor,
+    mass: float,
+    volume: float,
+    coBM: float,
+    rho: float,
+    g: float,
 ) -> torch.Tensor:
     W, B = mass * g, rho * volume * g
     z_down = quat.new_tensor([[0.0, 0.0, -1.0]])
@@ -85,9 +89,13 @@ def _restoring_ref(
 
 
 def _thruster_alloc_ref(
-    u_cmd: torch.Tensor, u_eff_prev: torch.Tensor,
-    T: torch.Tensor, max_thrust: float, deadband: float,
-    tau_lag: float, dt: float,
+    u_cmd: torch.Tensor,
+    u_eff_prev: torch.Tensor,
+    T: torch.Tensor,
+    max_thrust: float,
+    deadband: float,
+    tau_lag: float,
+    dt: float,
 ) -> torch.Tensor:
     alpha = dt / (tau_lag + dt)
     u_raw = torch.clamp(u_cmd, -1.0, 1.0)
@@ -296,14 +304,21 @@ def test_coriolis_a_autograd_vs_torch() -> None:
     tape = wp.Tape()
     with tape:
         wp.launch(
-            tier1_coriolis_a, dim=n,
-            inputs=[nu_w, wp.array(ma_lin_np, dtype=wp.vec3f, device="cuda"),
-                    wp.array(ma_ang_np, dtype=wp.vec3f, device="cuda"), wrench],
+            tier1_coriolis_a,
+            dim=n,
+            inputs=[
+                nu_w,
+                wp.array(ma_lin_np, dtype=wp.vec3f, device="cuda"),
+                wp.array(ma_ang_np, dtype=wp.vec3f, device="cuda"),
+                wrench,
+            ],
             device="cuda",
         )
     fwd_wp = wrench.numpy()
 
-    wrench.grad = wp.array(np.ones((n, 6), dtype=np.float32), dtype=wp.spatial_vectorf, device="cuda")
+    wrench.grad = wp.array(
+        np.ones((n, 6), dtype=np.float32), dtype=wp.spatial_vectorf, device="cuda"
+    )
     tape.backward()
     grad_wp = nu_w.grad.numpy()
 
@@ -330,8 +345,9 @@ def test_damping_full_jacobian_vs_torch() -> None:
 
     # Torch
     nu_t = torch.tensor(nu_np, requires_grad=True)
-    w_t = _damping_ref(nu_t, torch.tensor(dll_np), torch.tensor(dla_np),
-                       torch.tensor(dql_np), torch.tensor(dqa_np))
+    w_t = _damping_ref(
+        nu_t, torch.tensor(dll_np), torch.tensor(dla_np), torch.tensor(dql_np), torch.tensor(dqa_np)
+    )
     w_t.sum().backward()
     grad_torch = nu_t.grad.numpy()
     fwd_torch = w_t.detach().numpy()
@@ -341,17 +357,24 @@ def test_damping_full_jacobian_vs_torch() -> None:
     wrench = wp.zeros(n, dtype=wp.spatial_vectorf, device="cuda", requires_grad=True)
     tape = wp.Tape()
     with tape:
-        wp.launch(tier1_damping, dim=n, inputs=[
-            nu_w,
-            wp.array(dll_np, dtype=wp.vec3f, device="cuda"),
-            wp.array(dla_np, dtype=wp.vec3f, device="cuda"),
-            wp.array(dql_np, dtype=wp.vec3f, device="cuda"),
-            wp.array(dqa_np, dtype=wp.vec3f, device="cuda"),
-            wrench,
-        ], device="cuda")
+        wp.launch(
+            tier1_damping,
+            dim=n,
+            inputs=[
+                nu_w,
+                wp.array(dll_np, dtype=wp.vec3f, device="cuda"),
+                wp.array(dla_np, dtype=wp.vec3f, device="cuda"),
+                wp.array(dql_np, dtype=wp.vec3f, device="cuda"),
+                wp.array(dqa_np, dtype=wp.vec3f, device="cuda"),
+                wrench,
+            ],
+            device="cuda",
+        )
     fwd_wp = wrench.numpy()
 
-    wrench.grad = wp.array(np.ones((n, 6), dtype=np.float32), dtype=wp.spatial_vectorf, device="cuda")
+    wrench.grad = wp.array(
+        np.ones((n, 6), dtype=np.float32), dtype=wp.spatial_vectorf, device="cuda"
+    )
     tape.backward()
     grad_wp = nu_w.grad.numpy()
 
@@ -393,16 +416,25 @@ def test_restoring_autograd_vs_torch() -> None:
     wrench = wp.zeros(n, dtype=wp.spatial_vectorf, device="cuda", requires_grad=True)
     tape = wp.Tape()
     with tape:
-        wp.launch(tier1_restoring, dim=n, inputs=[
-            quat_w,
-            wp.array(np.full(n, mass, dtype=np.float32), dtype=wp.float32, device="cuda"),
-            wp.array(np.full(n, volume, dtype=np.float32), dtype=wp.float32, device="cuda"),
-            wp.array(np.full(n, coBM, dtype=np.float32), dtype=wp.float32, device="cuda"),
-            rho, g, wrench,
-        ], device="cuda")
+        wp.launch(
+            tier1_restoring,
+            dim=n,
+            inputs=[
+                quat_w,
+                wp.array(np.full(n, mass, dtype=np.float32), dtype=wp.float32, device="cuda"),
+                wp.array(np.full(n, volume, dtype=np.float32), dtype=wp.float32, device="cuda"),
+                wp.array(np.full(n, coBM, dtype=np.float32), dtype=wp.float32, device="cuda"),
+                rho,
+                g,
+                wrench,
+            ],
+            device="cuda",
+        )
     fwd_wp = wrench.numpy()
 
-    wrench.grad = wp.array(np.ones((n, 6), dtype=np.float32), dtype=wp.spatial_vectorf, device="cuda")
+    wrench.grad = wp.array(
+        np.ones((n, 6), dtype=np.float32), dtype=wp.spatial_vectorf, device="cuda"
+    )
     tape.backward()
     grad_wp = quat_w.grad.numpy()
 
@@ -434,8 +466,13 @@ def test_thruster_alloc_autograd_vs_torch() -> None:
     # Torch
     u_t = torch.tensor(u_cmd_np, requires_grad=True)
     w_t = _thruster_alloc_ref(
-        u_t, torch.tensor(u_prev_np), torch.tensor(T_np),
-        max_thrust, deadband, tau_lag, dt,
+        u_t,
+        torch.tensor(u_prev_np),
+        torch.tensor(T_np),
+        max_thrust,
+        deadband,
+        tau_lag,
+        dt,
     )
     w_t.sum().backward()
     grad_torch = u_t.grad.numpy()
@@ -446,17 +483,27 @@ def test_thruster_alloc_autograd_vs_torch() -> None:
     wrench = wp.zeros(n, dtype=wp.spatial_vectorf, device="cuda", requires_grad=True)
     tape = wp.Tape()
     with tape:
-        wp.launch(tier1_thruster_alloc, dim=n, inputs=[
-            u_cmd_w,
-            wp.array(u_prev_np, dtype=wp.float32, device="cuda"),
-            wp.zeros((n, n_thr), dtype=wp.float32, device="cuda"),
-            wp.array(T_np, dtype=wp.float32, device="cuda"),
-            max_thrust, deadband, tau_lag, dt,
-            wrench,
-        ], device="cuda")
+        wp.launch(
+            tier1_thruster_alloc,
+            dim=n,
+            inputs=[
+                u_cmd_w,
+                wp.array(u_prev_np, dtype=wp.float32, device="cuda"),
+                wp.zeros((n, n_thr), dtype=wp.float32, device="cuda"),
+                wp.array(T_np, dtype=wp.float32, device="cuda"),
+                max_thrust,
+                deadband,
+                tau_lag,
+                dt,
+                wrench,
+            ],
+            device="cuda",
+        )
     fwd_wp = wrench.numpy()
 
-    wrench.grad = wp.array(np.ones((n, 6), dtype=np.float32), dtype=wp.spatial_vectorf, device="cuda")
+    wrench.grad = wp.array(
+        np.ones((n, 6), dtype=np.float32), dtype=wp.spatial_vectorf, device="cuda"
+    )
     tape.backward()
     grad_wp = u_cmd_w.grad.numpy()
 
@@ -490,5 +537,8 @@ def test_accumulate_to_body_f_gradient() -> None:
     tape.backward()
 
     np.testing.assert_allclose(
-        w.grad.numpy(), np.ones((n, 6), dtype=np.float32), rtol=1e-5, atol=1e-6,
+        w.grad.numpy(),
+        np.ones((n, 6), dtype=np.float32),
+        rtol=1e-5,
+        atol=1e-6,
     )

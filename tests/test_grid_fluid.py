@@ -4,9 +4,9 @@ import numpy as np
 import pytest
 import warp as wp
 
-wp.init()
-
 from oceanscale.fluid.grid import GridFluidSolver, _compute_divergence
+
+wp.init()
 
 
 def test_grid_creation():
@@ -27,7 +27,6 @@ def test_advect():
 
     nx = solver.nx
     ny = solver.ny
-    nz = solver.nz
 
     # add density blob at center
     density_np = np.zeros(solver.n, dtype=np.float32)
@@ -86,7 +85,16 @@ def test_pressure_solve():
     wp.launch(
         _compute_divergence,
         dim=n,
-        inputs=[solver.u, solver.v, solver.w, div_before, solver.nx, solver.ny, solver.nz, solver.dx],
+        inputs=[
+            solver.u,
+            solver.v,
+            solver.w,
+            div_before,
+            solver.nx,
+            solver.ny,
+            solver.nz,
+            solver.dx,
+        ],
         device="cuda",
     )
     wp.synchronize_device("cuda")
@@ -101,7 +109,16 @@ def test_pressure_solve():
     wp.launch(
         _compute_divergence,
         dim=n,
-        inputs=[solver.u, solver.v, solver.w, div_after, solver.nx, solver.ny, solver.nz, solver.dx],
+        inputs=[
+            solver.u,
+            solver.v,
+            solver.w,
+            div_after,
+            solver.nx,
+            solver.ny,
+            solver.nz,
+            solver.dx,
+        ],
         device="cuda",
     )
     wp.synchronize_device("cuda")

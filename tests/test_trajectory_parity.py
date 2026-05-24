@@ -25,15 +25,14 @@ import numpy as np
 import pytest
 import warp as wp
 
-wp.init()
-
 from oceanscale.hydro.tier1 import Tier1
-from oceanscale.vehicles.bluerov2 import BlueROV2Heavy
 from oceanscale.validation.vonbenzon_reference import (
     VonBenzonParams,
     VonBenzonReferenceModel,
 )
+from oceanscale.vehicles.bluerov2 import BlueROV2Heavy
 
+wp.init()
 
 # ---------------------------------------------------------------------------
 # Shared constants
@@ -50,12 +49,12 @@ MATCHED_PARAMS = VonBenzonParams(g=9.81, rho=1025.0)
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def tier1():
     """Tier1 instance with BlueROV2 Heavy coefficients."""
     vehicle = BlueROV2Heavy()
-    t = Tier1(n_envs=1, n_thrusters=8, device="cuda",
-              rho_water=1025.0, g_accel=9.81)
+    t = Tier1(n_envs=1, n_thrusters=8, device="cuda", rho_water=1025.0, g_accel=9.81)
     t.set_coeffs(**vehicle.set_coeffs_kwargs())
     return t
 
@@ -69,6 +68,7 @@ def cpu_model():
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_spatial(v6: np.ndarray) -> wp.array:
     """Create a (1,) spatial_vectorf Warp array from a 6-element array."""
@@ -102,6 +102,7 @@ def _cpu_restoring(model, q):
 # Test: Force parity (Tier1 kernels vs VonBenzon analytical)
 # ---------------------------------------------------------------------------
 
+
 class TestForceParity:
     """Compare individual Tier1 kernel outputs against VonBenzon analytical forces.
 
@@ -116,10 +117,20 @@ class TestForceParity:
         tier1.zero_wrench()
         nu_wp = _make_spatial(nu)
         from oceanscale.hydro.tier1_kernels import tier1_damping
-        wp.launch(tier1_damping, dim=1, inputs=[
-            nu_wp, tier1.d_lin_lin, tier1.d_lin_ang,
-            tier1.d_quad_lin, tier1.d_quad_ang, tier1.wrench_buf,
-        ], device="cuda")
+
+        wp.launch(
+            tier1_damping,
+            dim=1,
+            inputs=[
+                nu_wp,
+                tier1.d_lin_lin,
+                tier1.d_lin_ang,
+                tier1.d_quad_lin,
+                tier1.d_quad_ang,
+                tier1.wrench_buf,
+            ],
+            device="cuda",
+        )
         wp.synchronize()
 
         gpu_wrench = tier1.wrench_buf.numpy()[0]
@@ -139,10 +150,20 @@ class TestForceParity:
         tier1.zero_wrench()
         nu_wp = _make_spatial(nu)
         from oceanscale.hydro.tier1_kernels import tier1_damping
-        wp.launch(tier1_damping, dim=1, inputs=[
-            nu_wp, tier1.d_lin_lin, tier1.d_lin_ang,
-            tier1.d_quad_lin, tier1.d_quad_ang, tier1.wrench_buf,
-        ], device="cuda")
+
+        wp.launch(
+            tier1_damping,
+            dim=1,
+            inputs=[
+                nu_wp,
+                tier1.d_lin_lin,
+                tier1.d_lin_ang,
+                tier1.d_quad_lin,
+                tier1.d_quad_ang,
+                tier1.wrench_buf,
+            ],
+            device="cuda",
+        )
         wp.synchronize()
 
         gpu = np.array(tier1.wrench_buf.numpy()[0])
@@ -174,10 +195,21 @@ class TestForceParity:
         tier1.zero_wrench()
         quat_wp = _make_quat(q)
         from oceanscale.hydro.tier1_kernels import tier1_restoring
-        wp.launch(tier1_restoring, dim=1, inputs=[
-            quat_wp, tier1.mass_arr, tier1.volume_arr, tier1.coBM_arr,
-            tier1.rho_water, tier1.g_accel, tier1.wrench_buf,
-        ], device="cuda")
+
+        wp.launch(
+            tier1_restoring,
+            dim=1,
+            inputs=[
+                quat_wp,
+                tier1.mass_arr,
+                tier1.volume_arr,
+                tier1.coBM_arr,
+                tier1.rho_water,
+                tier1.g_accel,
+                tier1.wrench_buf,
+            ],
+            device="cuda",
+        )
         wp.synchronize()
 
         gpu = np.array(tier1.wrench_buf.numpy()[0])
@@ -196,10 +228,21 @@ class TestForceParity:
         tier1.zero_wrench()
         quat_wp = _make_quat(q)
         from oceanscale.hydro.tier1_kernels import tier1_restoring
-        wp.launch(tier1_restoring, dim=1, inputs=[
-            quat_wp, tier1.mass_arr, tier1.volume_arr, tier1.coBM_arr,
-            tier1.rho_water, tier1.g_accel, tier1.wrench_buf,
-        ], device="cuda")
+
+        wp.launch(
+            tier1_restoring,
+            dim=1,
+            inputs=[
+                quat_wp,
+                tier1.mass_arr,
+                tier1.volume_arr,
+                tier1.coBM_arr,
+                tier1.rho_water,
+                tier1.g_accel,
+                tier1.wrench_buf,
+            ],
+            device="cuda",
+        )
         wp.synchronize()
 
         gpu = np.array(tier1.wrench_buf.numpy()[0])
@@ -220,9 +263,18 @@ class TestForceParity:
         tier1.zero_wrench()
         nu_wp = _make_spatial(nu)
         from oceanscale.hydro.tier1_kernels import tier1_coriolis_a
-        wp.launch(tier1_coriolis_a, dim=1, inputs=[
-            nu_wp, tier1.M_A_lin, tier1.M_A_ang, tier1.wrench_buf,
-        ], device="cuda")
+
+        wp.launch(
+            tier1_coriolis_a,
+            dim=1,
+            inputs=[
+                nu_wp,
+                tier1.M_A_lin,
+                tier1.M_A_ang,
+                tier1.wrench_buf,
+            ],
+            device="cuda",
+        )
         wp.synchronize()
 
         gpu = np.array(tier1.wrench_buf.numpy()[0])
@@ -248,6 +300,7 @@ class TestForceParity:
 # Test: Trajectory sanity (short-horizon ROVEnv comparison)
 # ---------------------------------------------------------------------------
 
+
 class TestTrajectorySanity:
     """Short-horizon trajectory comparison between ROVEnv and VonBenzon.
 
@@ -261,22 +314,28 @@ class TestTrajectorySanity:
         from oceanscale.rov_env import ROVEnv
 
         env = ROVEnv(
-            n_envs=1, device="cuda", dt=DT,
+            n_envs=1,
+            device="cuda",
+            dt=DT,
             target_pos=np.array([0.0, 0.0, 0.0], dtype=np.float32),
-            sensor_noise_std=0.0, init_pos_noise_std=0.0,
-            init_yaw_noise_std=0.0, use_domain_randomization=False,
+            sensor_noise_std=0.0,
+            init_pos_noise_std=0.0,
+            init_yaw_noise_std=0.0,
+            use_domain_randomization=False,
         )
         env.reset(seed=0)
 
         action = np.zeros(6, dtype=np.float32)
         for _ in range(100):
             env.step(action)
-        pos, _, vel = env._get_body_state()
+        pos, _, _vel = env._get_body_state()
         env.close()
 
         cpu = VonBenzonReferenceModel(params=MATCHED_PARAMS)
         traj = cpu.generate_trajectory(
-            thrust_func=lambda t: np.zeros(6), dt=DT, n_steps=100,
+            thrust_func=lambda t: np.zeros(6),
+            dt=DT,
+            n_steps=100,
         )
 
         assert abs(pos[0, 0]) < 0.01, f"GPU x-drift: {pos[0, 0]}"
@@ -287,10 +346,14 @@ class TestTrajectorySanity:
         from oceanscale.rov_env import ROVEnv
 
         env = ROVEnv(
-            n_envs=1, device="cuda", dt=DT,
+            n_envs=1,
+            device="cuda",
+            dt=DT,
             target_pos=np.array([0.0, 0.0, 0.0], dtype=np.float32),
-            sensor_noise_std=0.0, init_pos_noise_std=0.0,
-            init_yaw_noise_std=0.0, use_domain_randomization=False,
+            sensor_noise_std=0.0,
+            init_pos_noise_std=0.0,
+            init_yaw_noise_std=0.0,
+            use_domain_randomization=False,
         )
         env.reset(seed=0)
 

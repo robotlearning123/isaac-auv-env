@@ -4,9 +4,9 @@ import numpy as np
 import pytest
 import warp as wp
 
-wp.init()
-
 from oceanscale.fluid.grid import SPHSolver
+
+wp.init()
 
 
 def test_sph_creation():
@@ -41,10 +41,19 @@ def test_sph_step():
     )
 
     # place particles well-separated (spacing > 2*h) so no SPH forces act
-    pos_np = np.array([
-        [0.2, 0.8, 0.2], [0.8, 0.8, 0.2], [0.2, 0.8, 0.8], [0.8, 0.8, 0.8],
-        [0.2, 0.6, 0.2], [0.8, 0.6, 0.2], [0.2, 0.6, 0.8], [0.8, 0.6, 0.8],
-    ], dtype=np.float32)
+    pos_np = np.array(
+        [
+            [0.2, 0.8, 0.2],
+            [0.8, 0.8, 0.2],
+            [0.2, 0.8, 0.8],
+            [0.8, 0.8, 0.8],
+            [0.2, 0.6, 0.2],
+            [0.8, 0.6, 0.2],
+            [0.2, 0.6, 0.8],
+            [0.8, 0.6, 0.8],
+        ],
+        dtype=np.float32,
+    )
     vel_np = np.zeros((n, 3), dtype=np.float32)
     wp.copy(solver.pos, wp.array(pos_np, dtype=wp.vec3, device="cuda"))
     wp.copy(solver.vel, wp.array(vel_np, dtype=wp.vec3, device="cuda"))
@@ -98,6 +107,7 @@ def test_density_computation():
     wp.copy(solver.pos, wp.array(pos_np, dtype=wp.vec3, device="cuda"))
     wp.copy(solver.vel, wp.zeros(n, dtype=wp.vec3, device="cuda"))
 
+    solver.build_spatial_hash()
     solver.compute_density()
     wp.synchronize_device("cuda")
 
@@ -114,7 +124,7 @@ def test_density_computation():
     )
     # quantitative: center should be at least 50% denser than average corner
     assert density[13] > 1.5 * corner_density_mean, (
-        f"Center/corner density ratio too low: {density[13]/corner_density_mean:.2f}x"
+        f"Center/corner density ratio too low: {density[13] / corner_density_mean:.2f}x"
     )
 
 
@@ -164,7 +174,9 @@ def test_sph_conservation():
     assert np.all(pos[:, 2] <= solver.domain[2]), "Particle escaped domain in z"
 
 
-@pytest.mark.xfail(reason="known bug: grid.py:675 pressure term non-symmetric (divides by rho_j only)")
+@pytest.mark.xfail(
+    reason="known bug: grid.py:675 pressure term non-symmetric (divides by rho_j only)"
+)
 def test_sph_force_symmetry():
     """Two particles with different densities must exert equal and opposite forces."""
     n = 2
@@ -193,7 +205,9 @@ def test_sph_force_symmetry():
     f = solver.force.numpy()
     net_force = f[0] + f[1]
     np.testing.assert_allclose(
-        net_force, [0.0, 0.0, 0.0], atol=100.0,
+        net_force,
+        [0.0, 0.0, 0.0],
+        atol=100.0,
         err_msg=f"Newton's third law violated: F_0={f[0]}, F_1={f[1]}, net={net_force}",
     )
 
@@ -214,14 +228,17 @@ def test_sph_momentum_conservation():
     )
 
     # Asymmetric cluster → non-uniform density → asymmetric pressure forces
-    pos_np = np.array([
-        [0.45, 0.50, 0.50],
-        [0.55, 0.50, 0.50],
-        [0.50, 0.45, 0.50],
-        [0.50, 0.55, 0.50],
-        [0.47, 0.47, 0.50],
-        [0.53, 0.53, 0.50],
-    ], dtype=np.float32)
+    pos_np = np.array(
+        [
+            [0.45, 0.50, 0.50],
+            [0.55, 0.50, 0.50],
+            [0.50, 0.45, 0.50],
+            [0.50, 0.55, 0.50],
+            [0.47, 0.47, 0.50],
+            [0.53, 0.53, 0.50],
+        ],
+        dtype=np.float32,
+    )
 
     vel_np = np.zeros((n, 3), dtype=np.float32)
     vel_np[0] = [0.5, 0.1, 0.0]
@@ -241,6 +258,8 @@ def test_sph_momentum_conservation():
     momentum_after = solver.vel.numpy().sum(axis=0) * solver.mass
 
     np.testing.assert_allclose(
-        momentum_after, momentum_before, rtol=0.01,
+        momentum_after,
+        momentum_before,
+        rtol=0.01,
         err_msg=f"Momentum drift: before={momentum_before}, after={momentum_after}",
     )

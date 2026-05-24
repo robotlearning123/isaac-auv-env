@@ -3,8 +3,6 @@ report compatibility tier, and test version-specific features."""
 
 from __future__ import annotations
 
-import importlib.metadata
-import platform
 import re
 import subprocess
 import sys
@@ -15,6 +13,7 @@ import pytest
 # ---------------------------------------------------------------------------
 # Version detection helpers
 # ---------------------------------------------------------------------------
+
 
 class StackVersions(NamedTuple):
     python: str
@@ -42,6 +41,7 @@ def _detect_versions() -> StackVersions:
     # CUDA runtime
     try:
         import torch
+
         torch_ver = torch.__version__
         torch_cuda = torch.version.cuda or "none"
         cuda_runtime = torch_cuda
@@ -54,7 +54,8 @@ def _detect_versions() -> StackVersions:
     try:
         out = subprocess.check_output(
             ["nvidia-smi", "--query-gpu=driver_version,name", "--format=csv,noheader"],
-            text=True, timeout=5,
+            text=True,
+            timeout=5,
         ).strip()
         parts = out.split(", ")
         cuda_driver = parts[0] if parts else "unknown"
@@ -66,6 +67,7 @@ def _detect_versions() -> StackVersions:
     # Warp
     try:
         import warp as wp
+
         warp_ver = wp.__version__
     except ImportError:
         warp_ver = "not installed"
@@ -73,6 +75,7 @@ def _detect_versions() -> StackVersions:
     # Newton
     try:
         import newton
+
         newton_ver = newton.__version__
     except ImportError:
         newton_ver = "not installed"
@@ -80,6 +83,7 @@ def _detect_versions() -> StackVersions:
     # CuPy
     try:
         import cupy
+
         cupy_ver = cupy.__version__
     except ImportError:
         cupy_ver = "not installed"
@@ -87,6 +91,7 @@ def _detect_versions() -> StackVersions:
     # JAX
     try:
         import jax
+
         jax_ver = jax.__version__
     except ImportError:
         jax_ver = "not installed"
@@ -94,6 +99,7 @@ def _detect_versions() -> StackVersions:
     # USD
     try:
         from pxr import Usd
+
         usd_ver = ".".join(str(x) for x in Usd.GetVersion())
     except ImportError:
         usd_ver = "not installed"
@@ -210,6 +216,7 @@ def _classify_tier(v: StackVersions) -> str:
 # Tests
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture(scope="module")
 def stack_versions() -> StackVersions:
     return _detect_versions()
@@ -246,7 +253,9 @@ class TestVersionDetection:
         v = stack_versions
         missing = []
         for name, ver in [
-            ("torch", v.torch), ("warp", v.warp), ("newton", v.newton),
+            ("torch", v.torch),
+            ("warp", v.warp),
+            ("newton", v.newton),
         ]:
             if ver == "not installed":
                 missing.append(name)
@@ -269,6 +278,7 @@ class TestCUDACompat:
     @pytest.mark.gpu
     def test_cuda_runtime_matches_torch(self, stack_versions: StackVersions) -> None:
         import torch
+
         if not torch.cuda.is_available():
             pytest.skip("no CUDA")
         runtime_major = int(stack_versions.cuda_runtime.split(".")[0])
@@ -282,6 +292,7 @@ class TestCUDACompat:
     def test_warp_cuda_device_matches(self) -> None:
         import torch
         import warp as wp
+
         wp.init()
         warp_devices = [d for d in wp.get_devices() if d.is_cuda]
         torch_count = torch.cuda.device_count()
@@ -293,10 +304,12 @@ class TestCUDACompat:
     def test_cupy_cuda_matches(self) -> None:
         pytest.importorskip("cupy", reason="cupy is optional (install with [bench])")
         import cupy
+
         cupy_cuda = cupy.cuda.runtime.runtimeGetVersion()
         cuda_major = cupy_cuda // 1000
         cuda_minor = (cupy_cuda % 1000) // 10
         import torch
+
         torch_major = int(torch.version.cuda.split(".")[0])
         assert abs(cuda_major - torch_major) <= 1, (
             f"CuPy CUDA {cuda_major}.{cuda_minor} vs PyTorch CUDA {torch.version.cuda}"
@@ -310,6 +323,7 @@ class TestCrossFrameworkInterop:
     def test_torch_to_warp_tensor(self) -> None:
         import torch
         import warp as wp
+
         wp.init()
         t = torch.randn(64, 3, device="cuda:0")
         w = wp.from_torch(t)
@@ -322,6 +336,7 @@ class TestCrossFrameworkInterop:
         pytest.importorskip("cupy", reason="cupy is optional (install with [bench])")
         import cupy
         import torch
+
         t = torch.randn(64, 3, device="cuda:0")
         c = cupy.from_dlpack(t)
         assert c.shape == (64, 3)
@@ -331,9 +346,9 @@ class TestCrossFrameworkInterop:
     @pytest.mark.gpu
     def test_jax_to_torch(self) -> None:
         pytest.importorskip("jax", reason="jax is optional (install with [bench])")
-        import jax
         import jax.numpy as jnp
         import torch
+
         j = jnp.ones((64, 3))
         t = torch.from_dlpack(j)
         assert t.shape == (64, 3)
@@ -344,6 +359,7 @@ class TestCrossFrameworkInterop:
         """Newton models should run on the same CUDA device Warp uses."""
         import newton
         import warp as wp
+
         wp.init()
         builder = newton.ModelBuilder()
         builder.add_body()
@@ -358,6 +374,7 @@ class TestVersionSpecificFeatures:
     def test_warp_autograd(self) -> None:
         """wp.Tape autograd — available since Warp 0.10+."""
         import warp as wp
+
         wp.init()
 
         @wp.kernel
@@ -379,6 +396,7 @@ class TestVersionSpecificFeatures:
     def test_newton_replicate(self) -> None:
         """ModelBuilder.replicate() — available since Newton 1.0+."""
         import newton
+
         scene = newton.ModelBuilder()
         template = newton.ModelBuilder()
         template.add_body()
@@ -391,6 +409,7 @@ class TestVersionSpecificFeatures:
         """SolverMuJoCo backend — available since Newton 1.0+ (MuJoCo-Warp)."""
         import newton
         import newton.solvers
+
         template = newton.ModelBuilder()
         body = template.add_body()
         template.add_shape_sphere(body, radius=0.1)

@@ -6,15 +6,30 @@ Observation (29-dim): base 26 + 3D relative waypoint position (body frame).
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 import gymnasium as gym
 import numpy as np
 import warp as wp
 from gymnasium import spaces
+from numpy.typing import NDArray
 
 from oceanscale.hydro.tier1_kernels import tier1_zero_wrench
 from oceanscale.rov_env import ROVEnv
+
+FloatArray = NDArray[np.float32]
+BoolArray = NDArray[np.bool_]
+StepReturn = tuple[
+    FloatArray,
+    FloatArray | float,
+    BoolArray | bool,
+    BoolArray | bool,
+    dict[str, Any],
+]
+
+
+def _wp_numpy(array: Any) -> NDArray[Any]:
+    return cast(NDArray[Any], array.numpy())
 
 
 class WaypointFollowingEnv(ROVEnv):
@@ -41,7 +56,7 @@ class WaypointFollowingEnv(ROVEnv):
         max_wp_dist: float = 8.0,
         cube_half_size: float = 5.0,
         depth_range: tuple[float, float] = (-5.0, -0.5),
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         dt = kwargs.get("dt", 1.0 / 240.0)
         max_steps = int(time_limit / dt)
@@ -60,16 +75,14 @@ class WaypointFollowingEnv(ROVEnv):
         self.cube_half_size = cube_half_size
         self.depth_range = depth_range
 
-        self.observation_space = spaces.Box(
-            low=-np.inf, high=np.inf, shape=(29,), dtype=np.float32
-        )
+        self.observation_space = spaces.Box(low=-np.inf, high=np.inf, shape=(29,), dtype=np.float32)
 
         self._waypoints = np.zeros((n_envs, n_waypoints, 3), dtype=np.float32)
         self._current_wp_idx = np.zeros(n_envs, dtype=np.int32)
         self._waypoints_reached = np.zeros((n_envs, n_waypoints), dtype=bool)
         self._wp_just_reached = np.zeros(n_envs, dtype=bool)
 
-    def _generate_waypoints(self, n: int) -> np.ndarray:
+    def _generate_waypoints(self, n: int) -> FloatArray:
         """Generate n sets of random waypoints. Shape: (n, n_waypoints, 3)."""
         wps = np.zeros((n, self.n_waypoints, 3), dtype=np.float32)
         for i in range(n):
@@ -93,10 +106,10 @@ class WaypointFollowingEnv(ROVEnv):
                     wps[i, j] = candidate
         return wps
 
-    def _current_targets(self, env_ids: np.ndarray) -> np.ndarray:
+    def _current_targets(self, env_ids: np.ndarray) -> FloatArray:
         """Get current waypoint target per env. Shape: (len(env_ids), 3)."""
         idx = np.clip(self._current_wp_idx[env_ids], 0, self.n_waypoints - 1)
-        return self._waypoints[env_ids, idx]
+        return cast(FloatArray, self._waypoints[env_ids, idx])
 
     # ------------------------------------------------------------------
     # Lifecycle
@@ -144,40 +157,65 @@ class WaypointFollowingEnv(ROVEnv):
         noise = self.np_random.uniform(-0.3, 0.3, (n, 3)).astype(np.float32)
         start_pos = targets + noise
 
-        joint_q = self.model.joint_q.numpy()
+        assert self.model.joint_q is not None
+        assert self.model.joint_qd is not None
+        assert self.state_curr.body_f is not None
+        assert self.tier1.nu_prev is not None
+        assert self.tier1.nu_dot_prev is not None
+        assert self.tier1.u_eff_prev is not None
+
+        joint_q = _wp_numpy(self.model.joint_q)
         for k, idx in enumerate(env_ids):
             base = idx * 7
-            joint_q[base:base + 7] = [
-                start_pos[k, 0], start_pos[k, 1], start_pos[k, 2],
-                0.0, 0.0, 0.0, 1.0,
+            joint_q[base : base + 7] = [
+                start_pos[k, 0],
+                start_pos[k, 1],
+                start_pos[k, 2],
+                0.0,
+                0.0,
+                0.0,
+                1.0,
             ]
         self.model.joint_q = wp.array(joint_q, dtype=wp.float32, device=self.device)
 
-        joint_qd = self.model.joint_qd.numpy()
+        joint_qd = _wp_numpy(self.model.joint_qd)
         for idx in env_ids:
             base = idx * 6
-            joint_qd[base:base + 6] = 0.0
+            joint_qd[base : base + 6] = 0.0
         self.model.joint_qd = wp.array(joint_qd, dtype=wp.float32, device=self.device)
 
-        newton.eval_fk(self.model, self.model.joint_q, self.model.joint_qd, self.state_curr)
-
-        wp.launch(
-            tier1_zero_wrench, dim=self.n_envs,
-            inputs=[self.state_curr.body_f], device=self.device,
+        newton.eval_fk(
+            self.model,
+            cast(Any, self.model.joint_q),
+            cast(Any, self.model.joint_qd),
+            self.state_curr,
         )
 
-        nu_prev = self.tier1.nu_prev.numpy()
-        nu_dot_prev = self.tier1.nu_dot_prev.numpy()
-        u_eff_prev = self.tier1.u_eff_prev.numpy()
+        wp.launch(
+            tier1_zero_wrench,
+            dim=self.n_envs,
+            inputs=[self.state_curr.body_f],
+            device=self.device,
+        )
+
+        nu_prev = _wp_numpy(self.tier1.nu_prev)
+        nu_dot_prev = _wp_numpy(self.tier1.nu_dot_prev)
+        u_eff_prev = _wp_numpy(self.tier1.u_eff_prev)
         nu_prev[env_ids] = 0.0
         nu_dot_prev[env_ids] = 0.0
         u_eff_prev[env_ids] = 0.0
-        wp.copy(self.tier1.nu_prev, wp.array(nu_prev, dtype=wp.spatial_vectorf, device=self.device))
-        wp.copy(self.tier1.nu_dot_prev, wp.array(nu_dot_prev, dtype=wp.spatial_vectorf, device=self.device))
+        wp.copy(
+            self.tier1.nu_prev,
+            wp.array(nu_prev, dtype=wp.spatial_vectorf, device=self.device),
+        )
+        wp.copy(
+            self.tier1.nu_dot_prev,
+            wp.array(nu_dot_prev, dtype=wp.spatial_vectorf, device=self.device),
+        )
         wp.copy(self.tier1.u_eff_prev, wp.array(u_eff_prev, dtype=wp.float32, device=self.device))
 
         self.tier1.zero_wrench()
-        wp.synchronize()
+        wp.synchronize()  # type: ignore[no-untyped-call]
 
         if self.use_domain_randomization:
             self.tier1.randomize_coeffs(env_ids=env_ids, ranges=self.randomization_ranges)
@@ -187,9 +225,7 @@ class WaypointFollowingEnv(ROVEnv):
         self._step_count[env_ids] = 0
         self._done[env_ids] = False
 
-    def step(
-        self, action: np.ndarray
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, dict[str, Any]]:
+    def step(self, action: np.ndarray) -> StepReturn:  # type: ignore[override]
         if not self._built:
             raise RuntimeError("Call reset() first")
 
@@ -207,26 +243,29 @@ class WaypointFollowingEnv(ROVEnv):
                 u_cmd[:, i] = action[:, i]
         self._u_cmd = wp.array(u_cmd, dtype=wp.float32, device=self.device)
 
+        assert self.state_curr.body_f is not None
+        assert self.state_curr.body_qd is not None
+
         wp.launch(
-            tier1_zero_wrench, dim=self.n_envs,
-            inputs=[self.state_curr.body_f], device=self.device,
+            tier1_zero_wrench,
+            dim=self.n_envs,
+            inputs=[self.state_curr.body_f],
+            device=self.device,
         )
 
         self.tier1.compute_wrench(
-            nu=self.state_curr.body_qd,
+            nu=cast(Any, self.state_curr.body_qd),
             quat=self._extract_quat(),
             u_cmd=self._u_cmd,
             dt=self.dt,
         )
-        self.tier1.write_to_body_f(self.state_curr.body_f)
+        self.tier1.write_to_body_f(cast(Any, self.state_curr.body_f))
 
-        self.solver.step(
-            self.state_curr, self.state_next, self.control, None, self.dt
-        )
-        wp.synchronize()
+        self.solver.step(self.state_curr, self.state_next, self.control, None, self.dt)
+        wp.synchronize()  # type: ignore[no-untyped-call]
         self.state_curr, self.state_next = self.state_next, self.state_curr
 
-        self._prev_wrench = self.tier1.wrench_buf.numpy().copy()
+        self._prev_wrench = _wp_numpy(self.tier1.wrench_buf).copy()
         self._step_count += 1
 
         # -- Waypoint advancement --
@@ -269,10 +308,13 @@ class WaypointFollowingEnv(ROVEnv):
         info["success"] = all_visited.copy()
 
         if self.n_envs == 1:
-            obs = obs.squeeze(0)
-            reward = float(reward.item())
-            terminated = bool(terminated.item())
-            truncated = bool(truncated.item())
+            return (
+                cast(FloatArray, obs.squeeze(0)),
+                float(reward.item()),
+                bool(terminated.item()),
+                bool(truncated.item()),
+                info,
+            )
         return obs, reward, terminated, truncated, info
 
     # ------------------------------------------------------------------
@@ -310,9 +352,9 @@ class WaypointFollowingEnv(ROVEnv):
         np.nan_to_num(obs, copy=False, nan=0.0, posinf=1e6, neginf=-1e6)
         return obs
 
-    def _compute_reward_with_components(
+    def _compute_reward_with_components(  # type: ignore[override]
         self,
-    ) -> tuple[np.ndarray, dict[str, Any]]:
+    ) -> tuple[FloatArray, dict[str, Any]]:
         """Exponential reward: dense positive signal + milestone bonus on waypoint reach."""
         pos, _, vel = self._get_body_state()
         targets = self._current_targets(np.arange(self.n_envs))
@@ -336,4 +378,4 @@ class WaypointFollowingEnv(ROVEnv):
             "reward_waypoint_bonus": float(np.mean(wp_bonus)),
             "distance_to_wp": dist_to_wp.copy(),
         }
-        return reward, info
+        return cast(FloatArray, reward), info

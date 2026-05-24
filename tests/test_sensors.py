@@ -1,10 +1,9 @@
 """Tests for oceanscale.sensors — IMU, Pressure, DVL stubs."""
 
-import torch
 import pytest
+import torch
 
 from oceanscale.sensors import DVLSensor, IMUSensor, PressureSensor
-
 
 # Use CPU for tests (no GPU required in CI)
 DEVICE = "cpu"

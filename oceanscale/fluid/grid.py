@@ -1,3 +1,4 @@
+# mypy: ignore-errors
 """Eulerian grid-based and SPH Lagrangian fluid solvers using Warp kernels.
 
 GridFluidSolver: Chorin projection method on a uniform 3D grid.
@@ -5,6 +6,8 @@ SPHSolver: Smoothed Particle Hydrodynamics with spatial hash grid.
 """
 
 from __future__ import annotations
+
+import math
 
 import numpy as np
 import warp as wp
@@ -463,8 +466,16 @@ class GridFluidSolver:
         self._launch(
             _advect_field,
             [
-                self.density, self.density_tmp, self.u, self.v, self.w,
-                self.nx, self.ny, self.nz, self.dx, dt,
+                self.density,
+                self.density_tmp,
+                self.u,
+                self.v,
+                self.w,
+                self.nx,
+                self.ny,
+                self.nz,
+                self.dx,
+                dt,
             ],
         )
         self.u, self.u_tmp = self.u_tmp, self.u
@@ -526,9 +537,18 @@ class GridFluidSolver:
         self._launch(
             _correct_velocity,
             [
-                self.u, self.v, self.w, self.p,
-                self.u_tmp, self.v_tmp, self.w_tmp,
-                self.nx, self.ny, self.nz, self.dx, 1.0,
+                self.u,
+                self.v,
+                self.w,
+                self.p,
+                self.u_tmp,
+                self.v_tmp,
+                self.w_tmp,
+                self.nx,
+                self.ny,
+                self.nz,
+                self.dx,
+                1.0,
             ],
         )
         self.u, self.u_tmp = self.u_tmp, self.u
@@ -549,11 +569,19 @@ class GridFluidSolver:
         self._launch(
             _add_velocity_source_kernel,
             [
-                self.u, self.v, self.w,
-                float(gx), float(gy), float(gz),
-                float(vx), float(vy), float(vz),
+                self.u,
+                self.v,
+                self.w,
+                float(gx),
+                float(gy),
+                float(gz),
+                float(vx),
+                float(vy),
+                float(vz),
                 float(radius),
-                self.nx, self.ny, self.nz,
+                self.nx,
+                self.ny,
+                self.nz,
             ],
         )
 
@@ -563,10 +591,16 @@ class GridFluidSolver:
         self._launch(
             _apply_boundary_sphere,
             [
-                self.u, self.v, self.w,
-                float(cx), float(cy), float(cz),
+                self.u,
+                self.v,
+                self.w,
+                float(cx),
+                float(cy),
+                float(cz),
                 float(radius),
-                self.nx, self.ny, self.nz,
+                self.nx,
+                self.ny,
+                self.nz,
             ],
         )
 
@@ -578,9 +612,15 @@ class GridFluidSolver:
             _sample_velocity_kernel,
             dim=n_pts,
             inputs=[
-                positions, out,
-                self.u, self.v, self.w,
-                self.nx, self.ny, self.nz, self.dx,
+                positions,
+                out,
+                self.u,
+                self.v,
+                self.w,
+                self.nx,
+                self.ny,
+                self.nz,
+                self.dx,
             ],
             device=self.device,
         )
@@ -599,28 +639,32 @@ class GridFluidSolver:
 
 
 # ---------------------------------------------------------------------------
-# SPH kernels — brute-force O(N^2) neighbor search
+# SPH kernels — wp.HashGrid accelerated neighbor search
 # ---------------------------------------------------------------------------
 
 
 @wp.kernel
 def _sph_compute_density(
+    grid: wp.uint64,
     pos: wp.array(dtype=wp.vec3),
     density: wp.array(dtype=wp.float32),
     n: wp.int32,
     h: wp.float32,
     mass: wp.float32,
 ):
-    i = wp.tid()
-    if i >= n:
+    tid = wp.tid()
+    if tid >= n:
         return
+    i = wp.hash_grid_point_id(grid, tid)
     pi = pos[i]
     h2 = h * h
-    rho = float(0.0)
+    rho = float(0.0)  # noqa: UP018
     h9 = h * h * h * h * h * h * h * h * h
     coeff = 315.0 / (64.0 * 3.14159265 * h9)
 
-    for j in range(n):
+    query = wp.hash_grid_query(grid, pi, h)
+    j = int(0)
+    while wp.hash_grid_query_next(query, j):
         d = pos[j] - pi
         dist2 = d[0] * d[0] + d[1] * d[1] + d[2] * d[2]
         if dist2 < h2:
@@ -632,6 +676,7 @@ def _sph_compute_density(
 
 @wp.kernel
 def _sph_compute_forces(
+    grid: wp.uint64,
     pos: wp.array(dtype=wp.vec3),
     vel: wp.array(dtype=wp.vec3),
     density: wp.array(dtype=wp.float32),
@@ -644,9 +689,10 @@ def _sph_compute_forces(
     rest_density: wp.float32,
     gravity: wp.float32,
 ):
-    i = wp.tid()
-    if i >= n:
+    tid = wp.tid()
+    if tid >= n:
         return
+    i = wp.hash_grid_point_id(grid, tid)
     pi = pos[i]
     vi = vel[i]
     rho_i = density[i]
@@ -654,15 +700,17 @@ def _sph_compute_forces(
     p_i = stiffness * (rho_i - rest_density)
 
     h2 = h * h
-    fx = float(0.0)
-    fy = float(0.0)
-    fz = float(0.0)
+    fx = float(0.0)  # noqa: UP018
+    fy = float(0.0)  # noqa: UP018
+    fz = float(0.0)  # noqa: UP018
 
     h6 = h * h * h * h * h * h
     spiky_coeff = -45.0 / (3.14159265 * h6)
     visc_coeff = 45.0 / (3.14159265 * h6)
 
-    for j in range(n):
+    query = wp.hash_grid_query(grid, pi, h)
+    j = int(0)
+    while wp.hash_grid_query_next(query, j):
         if i == j:
             continue
         d = pos[j] - pi
@@ -755,9 +803,10 @@ def _sph_integrate(
 
 
 class SPHSolver:
-    """SPH fluid solver with spatial hash grid.
+    """SPH fluid solver with wp.HashGrid accelerated neighbor search.
 
     For Lagrangian fluid simulation, better for free-surface flows.
+    Uses NVIDIA Warp's native HashGrid for O(N) neighbor queries.
     """
 
     def __init__(
@@ -788,9 +837,12 @@ class SPHSolver:
         self.density = wp.zeros(n_particles, dtype=wp.float32, device=device)
         self.force = wp.zeros(n_particles, dtype=wp.vec3, device=device)
 
+        grid_dim = max(int(math.ceil(max(domain) / smoothing_length)), 4)
+        self.grid = wp.HashGrid(grid_dim, grid_dim, grid_dim, device=device)
+
     def build_spatial_hash(self):
-        """Build spatial hash grid for neighbor search (brute-force for now)."""
-        pass
+        """Rebuild HashGrid from current particle positions."""
+        self.grid.build(self.pos, self.h)
 
     def compute_density(self):
         """Compute density at each particle using SPH kernels."""
@@ -798,7 +850,11 @@ class SPHSolver:
             _sph_compute_density,
             dim=self.n,
             inputs=[
-                self.pos, self.density, self.n, self.h,
+                self.grid.id,
+                self.pos,
+                self.density,
+                self.n,
+                self.h,
                 float(self.mass),
             ],
             device=self.device,
@@ -810,10 +866,18 @@ class SPHSolver:
             _sph_compute_forces,
             dim=self.n,
             inputs=[
-                self.pos, self.vel, self.density, self.force,
-                self.n, self.h, float(self.mass),
-                float(self.viscosity), float(self.stiffness),
-                float(self.rest_density), float(self.gravity),
+                self.grid.id,
+                self.pos,
+                self.vel,
+                self.density,
+                self.force,
+                self.n,
+                self.h,
+                float(self.mass),
+                float(self.viscosity),
+                float(self.stiffness),
+                float(self.rest_density),
+                float(self.gravity),
             ],
             device=self.device,
         )
@@ -824,7 +888,11 @@ class SPHSolver:
             _sph_integrate,
             dim=self.n,
             inputs=[
-                self.pos, self.vel, self.force, self.density, self.n,
+                self.pos,
+                self.vel,
+                self.force,
+                self.density,
+                self.n,
                 float(dt),
                 float(self.domain[0]),
                 float(self.domain[1]),

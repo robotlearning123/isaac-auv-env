@@ -10,10 +10,9 @@ import numpy as np
 import pytest
 import warp as wp
 
-wp.init()
-
 from oceanscale.vec_env import BatchedVecEnv, OceanScaleVecEnv
 
+wp.init()
 
 # ── Mock env for BatchedVecEnv tests (no GPU needed) ──────────────────
 
@@ -29,9 +28,7 @@ class _MockBatchedEnv:
         self.observation_space = gym.spaces.Box(
             low=-np.inf, high=np.inf, shape=(26,), dtype=np.float32
         )
-        self.action_space = gym.spaces.Box(
-            low=-1.0, high=1.0, shape=(6,), dtype=np.float32
-        )
+        self.action_space = gym.spaces.Box(low=-1.0, high=1.0, shape=(6,), dtype=np.float32)
         self._step_count = 0
         self._closed = False
 
@@ -89,6 +86,12 @@ class TestBatchedVecEnvCreation:
         venv = _make_batched()
         assert isinstance(venv, VecEnv)
 
+    def test_render_mode_defaults_none_without_warning(self, recwarn):
+        venv = _make_batched()
+
+        assert venv.render_mode is None
+        assert not [w for w in recwarn if "render_mode" in str(w.message)]
+
 
 class TestBatchedVecEnvReset:
     def test_reset_returns_obs(self):
@@ -138,7 +141,7 @@ class TestBatchedVecEnvPartialDone:
         venv = _make_batched(env_cls=_PartialDoneEnv)
         venv.reset()
         venv.step_async(np.zeros((4, 6), dtype=np.float32))
-        obs, reward, done, infos = venv.step_wait()
+        _obs, _reward, done, _infos = venv.step_wait()
 
         assert done[0]
         assert not done[1]
@@ -248,7 +251,7 @@ class TestOceanScaleVecEnvReset:
         np.testing.assert_array_equal(env._prev_action, 0.0)
 
     def test_reset_with_seed(self, env):
-        obs, info = env.reset(seed=42)
+        obs, _info = env.reset(seed=42)
         assert obs.shape == (4, 19)
 
 
@@ -261,9 +264,7 @@ class TestOceanScaleVecEnvStep:
         e.close()
 
     def test_step_shapes(self, env):
-        obs, reward, terminated, truncated, info = env.step(
-            np.zeros((4, 6), dtype=np.float32)
-        )
+        obs, reward, terminated, truncated, _info = env.step(np.zeros((4, 6), dtype=np.float32))
         assert obs.shape == (4, 19)
         assert reward.shape == (4,)
         assert terminated.shape == (4,)
@@ -287,7 +288,7 @@ class TestOceanScaleVecEnvStep:
         np.testing.assert_array_equal(env._step_count, 2)
 
     def test_reward_nonpositive(self, env):
-        obs, reward, _, _, _ = env.step(np.zeros((4, 6), dtype=np.float32))
+        _obs, reward, _, _, _ = env.step(np.zeros((4, 6), dtype=np.float32))
         assert np.all(reward <= 0.0)
 
 
@@ -299,7 +300,7 @@ class TestOceanScaleVecEnvAutoReset:
 
         actions = np.zeros((2, 6), dtype=np.float32)
         for _ in range(max_steps):
-            obs, reward, terminated, truncated, info = env.step(actions)
+            _obs, _reward, _terminated, truncated, _info = env.step(actions)
 
         assert np.all(truncated)
         env.close()
@@ -359,7 +360,7 @@ class TestOceanScaleVecEnvCallbacks:
 
         env = OceanScaleVecEnv(n_envs=2, max_episode_steps=100, termination_fn=always_done)
         env.reset()
-        _, _, terminated, truncated, _ = env.step(np.zeros((2, 6), dtype=np.float32))
+        _, _, terminated, _truncated, _ = env.step(np.zeros((2, 6), dtype=np.float32))
         assert np.all(terminated)
         env.close()
 

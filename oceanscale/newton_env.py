@@ -7,13 +7,27 @@ begin_world / end_world multi-world API.
 
 from __future__ import annotations
 
-import numpy as np
-import warp as wp
+from typing import Any, cast
 
 import newton
 import newton.solvers
+import numpy as np
+import warp as wp
+from numpy.typing import NDArray
 
 from oceanscale.hydro.tier1 import DEFAULT_DT, Tier1
+
+FloatArray = NDArray[np.float32]
+
+
+def _wp_numpy(array: Any) -> NDArray[Any]:
+    return cast(NDArray[Any], array.numpy())
+
+
+def _require_array(array: Any, name: str) -> Any:
+    if array is None:
+        raise RuntimeError(f"Newton state missing {name}")
+    return array
 
 
 # Default underwater vehicle: box 0.5 x 0.3 x 0.3 m, mass 10 kg
@@ -47,13 +61,13 @@ def _build_model(n_envs: int, device: str) -> newton.Model:
             hy=_VEHICLE_HY,
             hz=_VEHICLE_HZ,
         )
-        builder.end_world()
+        cast(Any, builder).end_world()
     builder.add_ground_plane()
     return builder.finalize(device=device)
 
 
-def _extract_quat(body_q: wp.array) -> wp.array:
-    q_np = body_q.numpy()[:, 3:7].copy()
+def _extract_quat(body_q: Any) -> Any:
+    q_np = _wp_numpy(body_q)[:, 3:7].copy()
     return wp.array(q_np, dtype=wp.quatf, device=body_q.device)
 
 
@@ -107,46 +121,50 @@ class NewtonEnv:
         else:
             raise ValueError(f"Unknown solver_type: {solver_type!r}")
 
-    def step(self, u_cmd: wp.array | None = None, dt: float | None = None) -> None:
+    def step(self, u_cmd: Any | None = None, dt: float | None = None) -> None:
         if dt is None:
             dt = self._dt
 
         if u_cmd is not None:
             self._u_cmd = u_cmd
 
-        nu = self.state_in.body_qd
-        quat = _extract_quat(self.state_in.body_q)
+        body_q = _require_array(self.state_in.body_q, "body_q")
+        body_qd = _require_array(self.state_in.body_qd, "body_qd")
+        body_f = _require_array(self.state_in.body_f, "body_f")
+        quat = _extract_quat(body_q)
 
         self.state_in.clear_forces()
-        self.tier1.compute_wrench(nu, quat, self._u_cmd, dt)
-        self.tier1.write_to_body_f(self.state_in.body_f)
+        self.tier1.compute_wrench(body_qd, quat, self._u_cmd, dt)
+        self.tier1.write_to_body_f(body_f)
 
         self.solver.step(self.state_in, self.state_out, self.control, None, dt)
         self.state_in, self.state_out = self.state_out, self.state_in
 
     def _reset_tier1_buffers(self, env_ids: list[int] | np.ndarray | None = None) -> None:
         if env_ids is None:
-            self.tier1.nu_prev.zero_()
-            self.tier1.nu_dot_prev.zero_()
-            self.tier1.u_eff_prev.zero_()
+            cast(Any, self.tier1.nu_prev).zero_()
+            cast(Any, self.tier1.nu_dot_prev).zero_()
+            cast(Any, self.tier1.u_eff_prev).zero_()
             return
 
         ids = np.asarray(env_ids)
-        nu_np = self.tier1.nu_prev.numpy()
+        nu_np = _wp_numpy(self.tier1.nu_prev)
         nu_np[ids] = 0.0
         wp.copy(self.tier1.nu_prev, wp.array(nu_np, dtype=wp.spatial_vectorf, device=self._device))
-        nud_np = self.tier1.nu_dot_prev.numpy()
+        nud_np = _wp_numpy(self.tier1.nu_dot_prev)
         nud_np[ids] = 0.0
-        wp.copy(self.tier1.nu_dot_prev, wp.array(nud_np, dtype=wp.spatial_vectorf, device=self._device))
-        u_prev_np = self.tier1.u_eff_prev.numpy()
+        wp.copy(
+            self.tier1.nu_dot_prev, wp.array(nud_np, dtype=wp.spatial_vectorf, device=self._device)
+        )
+        u_prev_np = _wp_numpy(self.tier1.u_eff_prev)
         u_prev_np[ids] = 0.0
         wp.copy(self.tier1.u_eff_prev, wp.array(u_prev_np, dtype=wp.float32, device=self._device))
 
     def reset(self, env_ids: list[int] | np.ndarray | None = None) -> None:
-        import numpy as np
-
-        q_np = self.state_in.body_q.numpy()
-        qd_np = self.state_in.body_qd.numpy()
+        body_q = _require_array(self.state_in.body_q, "body_q")
+        body_qd = _require_array(self.state_in.body_qd, "body_qd")
+        q_np = _wp_numpy(body_q)
+        qd_np = _wp_numpy(body_qd)
 
         if env_ids is None:
             env_ids = np.arange(self._n_envs)
@@ -156,22 +174,24 @@ class NewtonEnv:
             q_np[idx, 3:] = [0.0, 0.0, 0.0, 1.0]
             qd_np[idx, :] = 0.0
 
-        wp.copy(self.state_in.body_q, wp.array(q_np, dtype=wp.transformf, device=self._device))
-        wp.copy(self.state_in.body_qd, wp.array(qd_np, dtype=wp.spatial_vectorf, device=self._device))
+        wp.copy(body_q, wp.array(q_np, dtype=wp.transformf, device=self._device))
+        wp.copy(body_qd, wp.array(qd_np, dtype=wp.spatial_vectorf, device=self._device))
         self._u_cmd = wp.zeros((self._n_envs, 6), dtype=wp.float32, device=self._device)
         self._reset_tier1_buffers(env_ids)
 
         if self._domain_rand:
             self.tier1.randomize_coeffs(env_ids=env_ids)
 
-    def get_state(self) -> dict[str, np.ndarray]:
-        q_np = self.state_in.body_q.numpy()
-        qd_np = self.state_in.body_qd.numpy()
+    def get_state(self) -> dict[str, FloatArray]:
+        body_q = _require_array(self.state_in.body_q, "body_q")
+        body_qd = _require_array(self.state_in.body_qd, "body_qd")
+        q_np = _wp_numpy(body_q)
+        qd_np = _wp_numpy(body_qd)
         return {
-            "position": q_np[:, :3].copy(),
-            "orientation": q_np[:, 3:7].copy(),
-            "velocity": qd_np[:, :3].copy(),
-            "angular_velocity": qd_np[:, 3:6].copy(),
+            "position": cast(FloatArray, q_np[:, :3].copy()),
+            "orientation": cast(FloatArray, q_np[:, 3:7].copy()),
+            "velocity": cast(FloatArray, qd_np[:, :3].copy()),
+            "angular_velocity": cast(FloatArray, qd_np[:, 3:6].copy()),
         }
 
     @property

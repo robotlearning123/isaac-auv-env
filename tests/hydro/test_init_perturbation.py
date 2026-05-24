@@ -1,33 +1,32 @@
 """Test random initial position perturbation in ROVEnv."""
 
 import numpy as np
-import pytest
 
 
 def _make_env(n_envs=8, **kwargs):
     from oceanscale.rov_env import ROVEnv
+
     return ROVEnv(n_envs=n_envs, device="cpu", sensor_noise_std=0.0, **kwargs)
 
 
 def test_reset_with_noise_varies_across_envs():
     env = _make_env(init_pos_noise_std=1.0, init_yaw_noise_std=0.5)
-    obs, _ = env.reset(seed=42)
+    _obs, _ = env.reset(seed=42)
     positions = env.state_curr.body_q.numpy()[:, :3]
-    assert not np.allclose(positions, env.target_pos, atol=0.01), \
+    assert not np.allclose(positions, env.target_pos, atol=0.01), (
         "Positions should differ from target with noise enabled"
+    )
     env.close()
 
 
 def test_reset_no_noise_deterministic():
     env = _make_env(init_pos_noise_std=0.0, init_yaw_noise_std=0.0)
-    obs1, _ = env.reset(seed=42)
+    _obs1, _ = env.reset(seed=42)
     pos1 = env.state_curr.body_q.numpy()[:, :3].copy()
-    obs2, _ = env.reset(seed=42)
+    _obs2, _ = env.reset(seed=42)
     pos2 = env.state_curr.body_q.numpy()[:, :3].copy()
-    assert np.allclose(pos1, pos2, atol=1e-6), \
-        "Deterministic reset should reproduce same positions"
-    assert np.allclose(pos1, env.target_pos, atol=1e-6), \
-        "No noise: all envs at target"
+    assert np.allclose(pos1, pos2, atol=1e-6), "Deterministic reset should reproduce same positions"
+    assert np.allclose(pos1, env.target_pos, atol=1e-6), "No noise: all envs at target"
     env.close()
 
 
@@ -43,10 +42,9 @@ def test_mean_radius_approx_noise_std():
 
 def test_seed_reproducibility():
     env = _make_env(init_pos_noise_std=0.5, init_yaw_noise_std=0.3)
-    obs1, _ = env.reset(seed=99)
+    _obs1, _ = env.reset(seed=99)
     pos1 = env.state_curr.body_q.numpy()[:, :3].copy()
-    obs2, _ = env.reset(seed=99)
+    _obs2, _ = env.reset(seed=99)
     pos2 = env.state_curr.body_q.numpy()[:, :3].copy()
-    assert np.allclose(pos1, pos2, atol=1e-6), \
-        "Same seed should give same perturbation"
+    assert np.allclose(pos1, pos2, atol=1e-6), "Same seed should give same perturbation"
     env.close()

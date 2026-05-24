@@ -19,6 +19,7 @@ from __future__ import annotations
 import json
 import sys
 import time
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Any
 
@@ -35,7 +36,7 @@ def measure_setup_time() -> dict[str, float]:
     env = ROVEnv(n_envs=1, device="cuda")
     t_created = time.perf_counter()
 
-    obs, info = env.reset()
+    _obs, _info = env.reset()
     t_reset = time.perf_counter()
 
     action = env.action_space.sample()
@@ -60,12 +61,12 @@ def measure_throughput(
     warmup: int = 10,
     bench_steps: int = 200,
 ) -> dict[str, Any]:
-    from oceanscale.rov_env import ROVEnv
-
     import warp as wp
 
+    from oceanscale.rov_env import ROVEnv
+
     env = ROVEnv(n_envs=n_envs, device="cuda")
-    obs, _ = env.reset()
+    _obs, _ = env.reset()
     wp.synchronize()
 
     # Compute GPU memory from actual Warp array sizes
@@ -130,12 +131,20 @@ def _compute_env_memory(env) -> float:
     # Tier1 buffers
     t1 = env.tier1
     for attr in [
-        "wrench_buf", "nu_prev", "nu_dot_prev",
-        "u_eff_prev", "u_eff_out",
-        "M_A_lin", "M_A_ang",
-        "d_lin_lin", "d_lin_ang",
-        "d_quad_lin", "d_quad_ang",
-        "mass_arr", "volume_arr", "coBM_arr",
+        "wrench_buf",
+        "nu_prev",
+        "nu_dot_prev",
+        "u_eff_prev",
+        "u_eff_out",
+        "M_A_lin",
+        "M_A_ang",
+        "d_lin_lin",
+        "d_lin_ang",
+        "d_quad_lin",
+        "d_quad_ang",
+        "mass_arr",
+        "volume_arr",
+        "coBM_arr",
         "T_matrix",
     ]:
         arr = getattr(t1, attr, None)
@@ -150,15 +159,6 @@ def _compute_env_memory(env) -> float:
 # 5. Physics features
 # ---------------------------------------------------------------------------
 def inspect_physics_features() -> dict[str, Any]:
-    from oceanscale.hydro.tier1_kernels import (
-        tier1_added_mass,
-        tier1_coriolis_a,
-        tier1_damping,
-        tier1_restoring,
-        tier1_thruster_alloc,
-        tier1_update_nu_dot_ema,
-    )
-
     return {
         "model": "Fossen 6-DOF (Fossen 2011 Handbook)",
         "kernels": [
@@ -175,7 +175,7 @@ def inspect_physics_features() -> dict[str, Any]:
             "linear_damping": True,
             "quadratic_damping": True,
             "restoring_forces": True,
-            "cross_coupling_damping": True,
+            "cross_coupling_damping": False,
             "thruster_model": "T200_lowpass_deadband",
             "ocean_current_fsi": True,
         },
@@ -190,13 +190,13 @@ def inspect_physics_features() -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 def inspect_sensor_features() -> dict[str, Any]:
     return {
-        "imu": False,
-        "dvl": False,
+        "imu": True,
+        "dvl": True,
         "sonar_imaging": False,
         "camera_model": False,
         "depth_pressure": True,
         "acoustic_comms": False,
-        "note": "v0.0.2: headless only. 26-dim proprioceptive obs (pose, vel, wrench). Sensor noise via Gaussian injection.",
+        "note": "Headless core with IMU, DVL, and pressure/depth sensor stubs. No sonar, camera, or acoustic comms model yet.",
     }
 
 
@@ -211,7 +211,7 @@ def inspect_rl_integration() -> dict[str, Any]:
     from oceanscale.vec_env import BatchedVecEnv
 
     env = ROVEnv(n_envs=4, device="cuda")
-    obs, _ = env.reset()
+    _obs, _ = env.reset()
 
     result = {
         "gymnasium_version": gym.__version__,
@@ -253,8 +253,7 @@ def inspect_fidelity() -> dict[str, Any]:
             "position_rms_m": round(gpu["position"]["l2_rms_m"], 6),
             "position_max_m": round(gpu["position"]["l2_max_m"], 6),
             "pass": (
-                gpu["position"]["relative_final_pct"] < 5.0
-                and gpu["attitude"]["rms_deg"] < 3.0
+                gpu["position"]["relative_final_pct"] < 5.0 and gpu["attitude"]["rms_deg"] < 3.0
             ),
         }
 
@@ -271,6 +270,10 @@ def main() -> int:
     import warp as wp
 
     wp.init()
+    try:
+        oceanscale_version = version("oceanscale")
+    except PackageNotFoundError:
+        oceanscale_version = "unknown"
 
     W = 72
     print("=" * W)
@@ -280,7 +283,7 @@ def main() -> int:
 
     results: dict[str, Any] = {
         "benchmark": "oceanscale_standard",
-        "version": "0.0.2",
+        "version": oceanscale_version,
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "gpu": {
             "name": wp.get_device("cuda:0").name,
@@ -293,18 +296,22 @@ def main() -> int:
     # -- 1. Setup time --
     print("\n[1/8] Setup time (n_envs=1)...")
     results["setup_time"] = measure_setup_time()
-    print(f"  Create: {results['setup_time']['create_s']}s  "
-          f"Reset: {results['setup_time']['first_reset_s']}s  "
-          f"First step: {results['setup_time']['first_step_s']}s  "
-          f"Total: {results['setup_time']['total_setup_s']}s")
+    print(
+        f"  Create: {results['setup_time']['create_s']}s  "
+        f"Reset: {results['setup_time']['first_reset_s']}s  "
+        f"First step: {results['setup_time']['first_step_s']}s  "
+        f"Total: {results['setup_time']['total_setup_s']}s"
+    )
 
     # -- 2. Single-env throughput --
     print("\n[2/8] Single-env throughput (n_envs=1)...")
     single = measure_throughput(n_envs=1)
     results["single_env"] = single
-    print(f"  {single['steps_per_second']} steps/s  "
-          f"GPU mem: {single['gpu_mem_total_mb']} MB  "
-          f"per env: {single['gpu_mem_per_env_mb']} MB")
+    print(
+        f"  {single['steps_per_second']} steps/s  "
+        f"GPU mem: {single['gpu_mem_total_mb']} MB  "
+        f"per env: {single['gpu_mem_per_env_mb']} MB"
+    )
 
     # -- 3-4. Batched throughput + memory --
     batched = []
@@ -313,10 +320,12 @@ def main() -> int:
         try:
             r = measure_throughput(n_envs=n)
             batched.append(r)
-            print(f"  {r['steps_per_second']} steps/s  "
-                  f"({r['env_steps_per_second']:.0f} env-steps/s)  "
-                  f"GPU: {r['gpu_mem_total_mb']} MB  "
-                  f"per env: {r['gpu_mem_per_env_mb']} MB")
+            print(
+                f"  {r['steps_per_second']} steps/s  "
+                f"({r['env_steps_per_second']:.0f} env-steps/s)  "
+                f"GPU: {r['gpu_mem_total_mb']} MB  "
+                f"per env: {r['gpu_mem_per_env_mb']} MB"
+            )
         except Exception as e:
             print(f"  SKIPPED: {e}")
             batched.append({"n_envs": n, "error": str(e)})
@@ -337,19 +346,23 @@ def main() -> int:
     # -- 7. RL integration --
     print("\n[7/8] RL integration...")
     results["rl_integration"] = inspect_rl_integration()
-    print(f"  Gymnasium {results['rl_integration']['gymnasium_version']}  "
-          f"SB3 {results['rl_integration']['stable_baselines3_version']}  "
-          f"Obs {results['rl_integration']['observation_space']['shape']}  "
-          f"Act {results['rl_integration']['action_space']['shape']}")
+    print(
+        f"  Gymnasium {results['rl_integration']['gymnasium_version']}  "
+        f"SB3 {results['rl_integration']['stable_baselines3_version']}  "
+        f"Obs {results['rl_integration']['observation_space']['shape']}  "
+        f"Act {results['rl_integration']['action_space']['shape']}"
+    )
 
     # -- 8. Fidelity --
     print("\n[8/8] Fidelity...")
     results["fidelity"] = inspect_fidelity()
     if "position_error_pct" in results["fidelity"]:
         f = results["fidelity"]
-        print(f"  vs von Benzon: {f['position_error_pct']}% pos error, "
-              f"{f['attitude_rms_deg']} deg attitude RMS  "
-              f"{'PASS' if f['pass'] else 'FAIL'}")
+        print(
+            f"  vs von Benzon: {f['position_error_pct']}% pos error, "
+            f"{f['attitude_rms_deg']} deg attitude RMS  "
+            f"{'PASS' if f['pass'] else 'FAIL'}"
+        )
     else:
         print(f"  {results['fidelity'].get('result', 'N/A')}")
 

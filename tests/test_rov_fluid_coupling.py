@@ -8,12 +8,11 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
-
 import warp as wp
 
-wp.init()
-
 from oceanscale.rov_env import ROVEnv
+
+wp.init()
 
 
 @pytest.fixture
@@ -49,13 +48,13 @@ class TestFluidInit:
         assert no_fluid_env.use_fluid is False
 
     def test_fluid_env_resets(self, fluid_env):
-        obs, info = fluid_env.reset()
+        obs, _info = fluid_env.reset()
         assert obs.shape == (4, 26)
 
     def test_fluid_env_steps(self, fluid_env):
         fluid_env.reset()
         actions = np.zeros((4, 6), dtype=np.float32)
-        obs, reward, terminated, truncated, info = fluid_env.step(actions)
+        obs, reward, _terminated, _truncated, _info = fluid_env.step(actions)
         assert obs.shape == (4, 26)
         assert reward.shape == (4,)
         assert np.all(np.isfinite(obs))
@@ -66,7 +65,7 @@ class TestFluidInit:
         fluid_env.reset()
         for _ in range(100):
             actions = np.zeros((4, 6), dtype=np.float32)
-            obs, reward, terminated, truncated, info = fluid_env.step(actions)
+            obs, reward, _terminated, _truncated, _info = fluid_env.step(actions)
             assert np.all(np.isfinite(obs)), "NaN/Inf in observations"
             assert np.all(np.isfinite(reward)), "NaN/Inf in rewards"
 
@@ -184,7 +183,7 @@ class TestFluidTraining:
         rewards = []
         for _ in range(50):
             actions = np.random.uniform(-1, 1, (4, 6)).astype(np.float32)
-            obs, reward, terminated, truncated, info = env.step(actions)
+            obs, reward, _terminated, _truncated, _info = env.step(actions)
             rewards.append(np.mean(reward))
             assert np.all(np.isfinite(obs))
             assert np.all(np.isfinite(reward))

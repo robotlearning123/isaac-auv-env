@@ -10,20 +10,19 @@ batched independence, sensor noise, observation structure, termination.
 
 from __future__ import annotations
 
+import gymnasium as gym
 import numpy as np
 import pytest
-
-import gymnasium as gym
 import warp as wp
-
-wp.init()
 
 from oceanscale.rov_env import ROVEnv
 
+wp.init()
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _obs_shape(env):
     """Return expected obs shape — always (n_envs, 26) for GPU-vectorized env."""
@@ -41,6 +40,7 @@ def _scalar_or_array(env, val):
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def env():
     e = ROVEnv(n_envs=1, device="cuda")
@@ -50,8 +50,13 @@ def env():
 
 @pytest.fixture
 def env_no_noise():
-    e = ROVEnv(n_envs=1, device="cuda", sensor_noise_std=0.0,
-               init_pos_noise_std=0.0, init_yaw_noise_std=0.0)
+    e = ROVEnv(
+        n_envs=1,
+        device="cuda",
+        sensor_noise_std=0.0,
+        init_pos_noise_std=0.0,
+        init_yaw_noise_std=0.0,
+    )
     yield e
     e.close()
 
@@ -66,6 +71,7 @@ def batched_env():
 # ---------------------------------------------------------------------------
 # 1. Gymnasium spaces
 # ---------------------------------------------------------------------------
+
 
 class TestGymSpaces:
     def test_is_gym_env(self, env):
@@ -91,6 +97,7 @@ class TestGymSpaces:
 # ---------------------------------------------------------------------------
 # 2. Reset
 # ---------------------------------------------------------------------------
+
 
 class TestReset:
     def test_returns_tuple(self, env):
@@ -148,6 +155,7 @@ class TestReset:
 # 3. Step
 # ---------------------------------------------------------------------------
 
+
 class TestStep:
     def test_returns_five_tuple(self, env):
         env.reset()
@@ -204,24 +212,32 @@ class TestStep:
 # 4. Reward shaping
 # ---------------------------------------------------------------------------
 
+
 class TestRewardShaping:
     def _reward_scalar(self, env, r):
         return float(r[0]) if isinstance(r, np.ndarray) else float(r)
 
     def test_stay_better_than_drift(self, env_no_noise):
         env_no_noise.reset()
-        rewards_stay = [self._reward_scalar(env_no_noise, env_no_noise.step(np.zeros(6, dtype=np.float32))[1]) for _ in range(20)]
+        rewards_stay = [
+            self._reward_scalar(env_no_noise, env_no_noise.step(np.zeros(6, dtype=np.float32))[1])
+            for _ in range(20)
+        ]
 
         env_no_noise.reset()
         drift = np.array([1.0, 0, 0, 0, 0, 0], dtype=np.float32)
-        rewards_drift = [self._reward_scalar(env_no_noise, env_no_noise.step(drift)[1]) for _ in range(20)]
+        rewards_drift = [
+            self._reward_scalar(env_no_noise, env_no_noise.step(drift)[1]) for _ in range(20)
+        ]
 
         assert np.mean(rewards_stay) > np.mean(rewards_drift)
 
     def test_reward_degrades_with_distance(self, env_no_noise):
         env_no_noise.reset()
         drift = np.array([0.8, 0, 0, 0, 0, 0], dtype=np.float32)
-        rewards = [self._reward_scalar(env_no_noise, env_no_noise.step(drift)[1]) for _ in range(50)]
+        rewards = [
+            self._reward_scalar(env_no_noise, env_no_noise.step(drift)[1]) for _ in range(50)
+        ]
         assert np.mean(rewards[:10]) > np.mean(rewards[-10:])
 
     def test_info_has_components(self, env):
@@ -241,6 +257,7 @@ class TestRewardShaping:
 # ---------------------------------------------------------------------------
 # 5. Partial reset
 # ---------------------------------------------------------------------------
+
 
 class TestPartialReset:
     def test_reset_envs_exists(self, batched_env):
@@ -265,6 +282,7 @@ class TestPartialReset:
 # 6. Batched independence
 # ---------------------------------------------------------------------------
 
+
 class TestBatchedIndependence:
     def test_different_actions_different_states(self, batched_env):
         batched_env.reset()
@@ -288,6 +306,7 @@ class TestBatchedIndependence:
 # ---------------------------------------------------------------------------
 # 7. Sensor noise
 # ---------------------------------------------------------------------------
+
 
 class TestSensorNoise:
     def test_noise_varies_obs(self):
@@ -320,6 +339,7 @@ class TestSensorNoise:
 # ---------------------------------------------------------------------------
 # 8. Observation structure (n_envs=1)
 # ---------------------------------------------------------------------------
+
 
 class TestObservationStructure:
     def _flat(self, obs):
@@ -354,6 +374,7 @@ class TestObservationStructure:
 # 9. Termination
 # ---------------------------------------------------------------------------
 
+
 class TestTermination:
     def test_max_steps_default(self, env):
         assert env.max_episode_steps == 1000
@@ -374,6 +395,7 @@ class TestTermination:
 # ---------------------------------------------------------------------------
 # 10. Configuration
 # ---------------------------------------------------------------------------
+
 
 class TestConfiguration:
     def test_custom_n_envs(self):
@@ -402,6 +424,7 @@ class TestConfiguration:
 # 11. Domain randomization
 # ---------------------------------------------------------------------------
 
+
 class TestDomainRandomization:
     def test_flag_default_off(self):
         e = ROVEnv(n_envs=1, device="cuda")
@@ -415,8 +438,11 @@ class TestDomainRandomization:
 
     def test_custom_ranges(self):
         from oceanscale.hydro.tier1 import RandomizationRanges
+
         ranges = RandomizationRanges(mass=0.1, d_lin=0.05)
-        e = ROVEnv(n_envs=1, device="cuda", use_domain_randomization=True, randomization_ranges=ranges)
+        e = ROVEnv(
+            n_envs=1, device="cuda", use_domain_randomization=True, randomization_ranges=ranges
+        )
         assert e.randomization_ranges.mass == pytest.approx(0.1)
         assert e.randomization_ranges.d_lin == pytest.approx(0.05)
         e.close()
@@ -444,9 +470,7 @@ class TestDomainRandomization:
         e = ROVEnv(n_envs=4, device="cuda", use_domain_randomization=True)
         e.reset()
         for _ in range(20):
-            obs, reward, terminated, truncated, _ = e.step(
-                np.zeros((4, 6), dtype=np.float32)
-            )
+            obs, reward, _terminated, _truncated, _ = e.step(np.zeros((4, 6), dtype=np.float32))
             assert np.all(np.isfinite(obs))
             assert np.all(np.isfinite(reward))
         e.close()
@@ -478,13 +502,17 @@ class TestDomainRandomization:
     def test_thruster_gain_affects_force(self):
         """Same action should produce different velocities with different gains."""
         import torch
-        e = ROVEnv(n_envs=4, device="cuda", sensor_noise_std=0.0,
-                    init_pos_noise_std=0.0, init_yaw_noise_std=0.0)
+
+        e = ROVEnv(
+            n_envs=4,
+            device="cuda",
+            sensor_noise_std=0.0,
+            init_pos_noise_std=0.0,
+            init_yaw_noise_std=0.0,
+        )
         e.reset()
         e._thruster_gain[:] = [0.8, 1.0, 1.0, 1.2]
-        e._thruster_gain_gpu = torch.tensor(
-            e._thruster_gain, device=e.device, dtype=torch.float32
-        )
+        e._thruster_gain_gpu = torch.tensor(e._thruster_gain, device=e.device, dtype=torch.float32)
         action = np.array([[1.0, 0, 0, 0, 0, 0]] * 4, dtype=np.float32)
         for _ in range(50):
             obs, _, _, _, _ = e.step(action)
@@ -500,11 +528,13 @@ class TestDomainRandomization:
 # 12. GPU-native torch interface
 # ---------------------------------------------------------------------------
 
+
 class TestTorchInterface:
     def test_reset_torch_returns_cuda_tensors(self):
         import torch
+
         e = ROVEnv(n_envs=4, device="cuda")
-        obs, info = e.reset_torch()
+        obs, _info = e.reset_torch()
         assert isinstance(obs, torch.Tensor)
         assert obs.device.type == "cuda"
         assert obs.shape == (4, 26)
@@ -513,10 +543,11 @@ class TestTorchInterface:
 
     def test_step_torch_returns_cuda_tensors(self):
         import torch
+
         e = ROVEnv(n_envs=4, device="cuda")
         e.reset_torch()
         action = torch.zeros(4, 6, device="cuda", dtype=torch.float32)
-        obs, reward, terminated, truncated, info = e.step_torch(action)
+        obs, reward, terminated, truncated, _info = e.step_torch(action)
         assert isinstance(obs, torch.Tensor)
         assert obs.device.type == "cuda"
         assert obs.shape == (4, 26)
@@ -532,8 +563,14 @@ class TestTorchInterface:
     def test_step_torch_matches_step(self):
         """step_torch and step produce identical values with no noise."""
         import torch
-        e = ROVEnv(n_envs=4, device="cuda", sensor_noise_std=0.0,
-                    init_pos_noise_std=0.0, init_yaw_noise_std=0.0)
+
+        e = ROVEnv(
+            n_envs=4,
+            device="cuda",
+            sensor_noise_std=0.0,
+            init_pos_noise_std=0.0,
+            init_yaw_noise_std=0.0,
+        )
         action_np = np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0]] * 4, dtype=np.float32)
         action_t = torch.from_numpy(action_np).to("cuda")
 

@@ -13,7 +13,7 @@ export default {
     },
     {
       title: "Data scarcity",
-      body: "Legacy simulators were not built for 8192 parallel environments or RL-scale training.",
+      body: "Legacy simulators were not built for thousands of parallel environments or RL-scale training.",
     },
   ],
 };

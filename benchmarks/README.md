@@ -5,6 +5,7 @@ GPU throughput benchmarks for the OceanScale simulation stack. OceanScale vs PyB
 ## What is here
 
 **OceanScale vs PyBullet:**
+- `competitive/oceanscale_standard_bench.py` — launch-standardized OceanScale throughput, feature, RL, and fidelity evidence
 - `oceanscale_vs_bullet.py` — BlueROV2 hover task, apples-to-apples throughput comparison
 - `tier1_throughput.py` — Tier-1 hydrodynamics kernel throughput at varying batch sizes
 
@@ -54,6 +55,9 @@ uv sync --extra dev
 # OceanScale vs PyBullet head-to-head
 uv run python benchmarks/oceanscale_vs_bullet.py
 
+# Launch-standardized OceanScale evidence
+uv run python benchmarks/competitive/oceanscale_standard_bench.py
+
 # Tier-1 throughput sweep
 uv run python benchmarks/tier1_throughput.py
 
@@ -66,7 +70,7 @@ uv run python benchmarks/kernel_throughput.py
 
 ## Current results
 
-See [`RESULTS.md`](RESULTS.md) for full methodology, hardware config, and numbers. Headline: 17K env-steps/s at n=64 on a single RTX 5090, 10.5x over PyBullet n=1.
+See [`RESULTS.md`](RESULTS.md) for full methodology, hardware config, and numbers. Current standardized launch benchmark: 85,824 env-steps/s at n=64 and 4,588,922 env-steps/s at n=4096 on a single RTX 5090. The older PyBullet comparison remains a separate CPU-baseline sweep: 17,427 env-steps/s at n=64, 10.5x over PyBullet n=1.
 
 ## Further reading
 

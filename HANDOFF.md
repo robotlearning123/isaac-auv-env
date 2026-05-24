@@ -1,47 +1,67 @@
-> **Historical note**: This handoff is dated 2026-05-19, before the v0.0.1 identity reset (2026-05-22). For current state see `PROGRESS.md`. For brand law see `POSITIONING.md`. For the reset rationale see `DECISIONS.md` ADR-008.
+# Session Handoff — 2026-05-24 (session 3)
 
-# Session Handoff — 2026-05-19
+## What happened
 
-**Workspace**: `/home/robot/workspace/46-marine/`
-**Branch**: `main`
-**This session shipped**: **deploy infrastructure** — Cloudflare Pages migrated to Git integration, tag-driven release pipeline, account-wide CF API token in 1Password.
+Website v2 redesign: expanded from 4 bare sections to 7 polished sections with SVG visuals, scroll-triggered animations, workflow comparison diagrams, and metrics strip. Deployed v0.0.26 → v0.0.29 via 4 PRs (#43-#46). Cross-model review passed (0 BLOCK, 0 WARN after fixes).
 
-## What changed
+## Live site
 
-1. **Git** — branch consolidation. 5 legacy branches deleted; `main` is now the single source of truth, both locally and on origin. GitHub default branch flipped to `main`.
+v0.0.29 on https://oceanscale-web.pages.dev
 
-2. **Cloudflare Pages** — `oceanscale-web` migrated from direct-upload to Git-integration with `robotlearning123/oceanscale @ main`. Monorepo watch path set to `website/*` so non-website commits don't trigger builds. Production auto-deploy is **disabled**; tags trigger production via GitHub Actions.
+## Deployed changes (this session)
 
-3. **GitHub Actions** — `.github/workflows/release.yml` triggers on `v*.*.*` tag push. Reads `CLOUDFLARE_API_TOKEN` from repo secret, calls CF Pages API, polls deployment, verifies live URL. ~30s end-to-end.
+| Version | PR | Summary |
+|---------|-----|---------|
+| v0.0.26 | #43 | 7 sections + SVG card visuals + pipeline diagram |
+| v0.0.27 | #44 | Hero gradient fix + CSS scroll animations + mobile tagline |
+| v0.0.28 | #45 | Cross-model WARN fixes (enemy verbatim, SVG a11y, form mailto, ZH spacing) |
+| v0.0.29 | #46 | Workflow loop comparison + metrics strip + IntersectionObserver scroll reveal + hover effects |
 
-4. **1Password** — account-wide CF API token (18 permissions) saved to Dev vault: `op://Dev/Cloudflare Account Master Token/credential`. Use in any session.
+## Current site structure (7 sections)
 
-5. **Docs** — `CLAUDE.md`, `CHANGELOG.md`, `VERSION` created. `README.md` updated with deployment contract.
+1. **Hero** — "OceanScale" + tagline + video background + scroll hint
+2. **Problem** — Verbatim enemy line (§5) + LEGACY loop (5 nodes + REPEAT arc) vs OCEANSCALE linear (4 nodes + fanout) + metrics strip (TIME/SCALE/COST)
+3. **Vision** — "Train in simulation. Deploy in the ocean." + 3 cards
+4. **Product** — "A virtual ocean for underwater robots" + 4 SVG cards (physics/parallel/sensors/code)
+5. **Use Cases** — Docking / Station Keeping / Inspection
+6. **Roadmap** — NOW (Alpha SDK) / NEXT (more vehicles) / FUTURE (Sim2Real)
+7. **Contact** — Simple form (mailto:business@oceanscale.cn)
 
-## Deploy workflow
+## Dynamic effects
 
-```
-git push origin main                # preview only (no production change)
-git tag v0.5.1 && git push --tags   # → GH Action → CF API → live in ~30s
-```
+- IntersectionObserver scroll-triggered reveal (fade-up on scroll)
+- SVG fanout trace animation under SIMULATE node
+- Legacy pipeline loop-back dashed arc
+- Card hover: scale(1.02) + border glow
+- Nav link: underline on hover (::after pseudo-element)
+- Button: pulsing glow on hover
+- Noise grain texture overlay
 
-## Next Priorities — 2026-05-21
+## Cross-model review status
 
-1. **v0.6.0 ship** — concept-mainly website edits landing (content collections rewrite in progress, uncommitted — see git status); tag when shipped
-2. **W2 autograd gate** — `tests/hydro/test_tier1_autograd.py` must pass before W3 start (kernels in `oceanscale/hydro/tier1*.py` written, autograd test pending)
-3. **von Benzon reference dataset** — `validation/vonbenzon_reference.py` scaffold; generates ground-truth BlueROV2 trajectories from von Benzon 2022 Simulink model (R13 unblocker, blocks physics validation)
-4. **GitHub full repo update** — push current working tree state to origin; many modified files across website + hydro
+Passed. Remaining NOTEs (low priority):
+- ~150 lines unused CSS in global.css (os-card, os-metric, os-terminal families)
+- All component styles use `is:global` (workaround for Astro scoping)
+- Hero video is cinematic ocean — planned replacement with Seedance "parallel sim" video
+- Form uses mailto fallback — needs real Formspree endpoint
 
-### Carried from prior session (v0.5.1 polish)
+## Uncommitted changes
 
-1. EN eyebrow wrap (mobile)
-2. BuiltOn region logos
-3. Demos featured card styling
-4. Hero CTAs above the fold
-5. Mobile pass
+~90 non-website files on main worktree (Python sim, tests, artifacts from prior sessions). Not related to website work.
 
-## Reference
+## Lovable project
 
-- **Live**: https://oceanscale-web.pages.dev/
-- **Full session report (CN)**: `artifacts/infra-migration-2026-05-19.html`
-- **CF token retrieval**: `CF_TOKEN=$(op read 'op://Dev/Cloudflare Account Master Token/credential')`
+`c6b331fd-d2fd-4673-9fce-d11adab360cd` — has a React implementation of the same spec. Can be used for visual design iteration. MCP connected.
+
+## Next priorities
+
+1. **Hero video** — Seedance 2.0 "massive parallel simulation" video to replace storm footage
+2. **Formspree** — real endpoint for contact form
+3. **Unused CSS cleanup** — remove ~150 lines of dead styles
+4. **Scroll animation polish** — add stagger to card grids
+5. **Mobile QA** — full device testing
+6. **ZH page verification** — browse /zh/ and verify all content
+
+## Git
+
+Branch: main. Latest: 639add5. All work merged via PRs.

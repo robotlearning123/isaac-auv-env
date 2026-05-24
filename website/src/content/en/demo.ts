@@ -13,6 +13,6 @@ export default {
     ["n=16", "5,076", "197 s", "3.1x"],
     ["n=64", "17,427", "57 s", "10.5x"],
   ],
-  benchNote: "Measured on RTX 5090, BlueROV2 hover task, 30K steps. See benchmarks/RESULTS.md for methodology.",
+  benchNote: "CPU-baseline sweep measured on RTX 5090, BlueROV2 hover task, 30K steps. See benchmarks/RESULTS.md for methodology; current standardized throughput is in benchmarks/competitive/results.json.",
   caveat: "v0.1 alpha — hover policy reaches depth target but drifts ~0.41m laterally over a 33s eval. Full station-keeping is v0.2.",
 };

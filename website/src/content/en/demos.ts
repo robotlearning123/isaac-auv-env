@@ -4,13 +4,13 @@ export default {
   items: [
     {
       title: "BlueROV2 RL training",
-      body: "RTX 5090 measured result: 11,435 FPS single-env.",
+      body: "RTX 5090 measured result: 85,824 env-steps/s at n=64.",
       video: "/videos/bluerov2-demo.mp4",
       status: "Available",
     },
     {
       title: "Multi-AUV formation",
-      body: "Multi-agent navigation and collision avoidance. Concept render, planned for v0.3.",
+      body: "Multi-AUV navigation and collision avoidance. Concept render, planned for v0.3.",
       video: "/videos/auv-demo.mp4",
       status: "Preview · v0.3",
     },

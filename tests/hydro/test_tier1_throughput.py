@@ -37,7 +37,8 @@ def _make_tier1(n_envs: int) -> Tier1:
 def _make_inputs(n_envs: int, rng: np.random.Generator):
     nu = wp.array(
         rng.normal(0, 0.5, (n_envs, 6)).astype(np.float32),
-        dtype=wp.spatial_vectorf, device="cuda",
+        dtype=wp.spatial_vectorf,
+        device="cuda",
     )
     q_np = np.tile([0.0, 0.0, 0.0, 1.0], (n_envs, 1)).astype(np.float32)
     q_np[:, 0] = rng.normal(0, 0.05, n_envs).astype(np.float32)
@@ -45,7 +46,8 @@ def _make_inputs(n_envs: int, rng: np.random.Generator):
     quat = wp.array(q_np, dtype=wp.quatf, device="cuda")
     u_cmd = wp.array(
         rng.uniform(-0.5, 0.5, (n_envs, 8)).astype(np.float32),
-        dtype=wp.float32, device="cuda",
+        dtype=wp.float32,
+        device="cuda",
     )
     return nu, quat, u_cmd
 
@@ -70,10 +72,9 @@ def test_tier1_throughput(n_envs: int) -> None:
     elapsed = time.perf_counter() - t0
 
     rate = n_envs * _STEPS / elapsed
-    print(f"\n  n_envs={n_envs:5d}  steps={_STEPS}  "
-          f"elapsed={elapsed:.3f}s  env-steps/s={rate:,.0f}")
+    print(
+        f"\n  n_envs={n_envs:5d}  steps={_STEPS}  elapsed={elapsed:.3f}s  env-steps/s={rate:,.0f}"
+    )
 
     if n_envs == 8192:
-        assert rate >= 100_000, (
-            f"Throughput {rate:,.0f} env-steps/s < 100k gate at n_envs=8192"
-        )
+        assert rate >= 100_000, f"Throughput {rate:,.0f} env-steps/s < 100k gate at n_envs=8192"
