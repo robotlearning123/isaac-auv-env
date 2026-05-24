@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #060b12; color: #e8edf3; font-family: "DM Sans", system-ui, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
+
+.comparison { max-width: 900px; width: 100%; }
+
+.lane { display: flex; align-items: center; gap: 0; margin-bottom: 3rem; position: relative; }
+.lane:last-child { margin-bottom: 0; }
+
+.lane-label {
+  width: 100px; flex-shrink: 0;
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+  font-family: "JetBrains Mono", monospace;
+}
+.lane-old .lane-label { color: #5a6070; }
+.lane-new .lane-label { color: #2dd4bf; }
+
+.steps { display: flex; align-items: center; flex: 1; gap: 0; }
+
+.step {
+  display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+  position: relative;
+}
+
+.step-node {
+  width: 56px; height: 56px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.55rem; text-align: center; padding: 0.25rem;
+  font-family: "JetBrains Mono", monospace;
+  line-height: 1.2;
+}
+
+.lane-old .step-node {
+  background: #12151c;
+  border: 1px solid #2a2f3a;
+  color: #6a7080;
+}
+
+.lane-old .step-bottleneck .step-node {
+  width: 64px; height: 64px;
+  border-color: #8b4513;
+  background: #1a1008;
+  color: #d4956a;
+  box-shadow: 0 0 20px rgba(139, 69, 19, 0.15);
+}
+
+.lane-old .step-output .step-node {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: #5a4020;
+  border: 1px solid #8b6530;
+  font-size: 0;
+}
+
+.arrow {
+  width: 24px; height: 1px;
+  background: #2a2f3a;
+  position: relative;
+}
+.arrow::after {
+  content: ""; position: absolute; right: -3px; top: -3px;
+  border: 3px solid transparent; border-left-color: #2a2f3a;
+}
+
+.lane-new .arrow { background: #1a6b60; }
+.lane-new .arrow::after { border-left-color: #1a6b60; }
+
+.lane-new .step-node {
+  background: #0a1a18;
+  border: 1px solid #1a4a42;
+  color: #2dd4bf;
+}
+
+.lane-new .step-core .step-node {
+  width: 64px; height: 64px;
+  border-color: #2dd4bf;
+  background: #0a2420;
+  box-shadow: 0 0 30px rgba(45, 212, 191, 0.12);
+}
+
+.lane-new .step-parallel {
+  flex: 1;
+}
+
+.parallel-grid {
+  display: grid;
+  grid-template-columns: repeat(20, 1fr);
+  gap: 2px;
+  padding: 0.5rem;
+  background: #0a1a18;
+  border: 1px solid #1a4a42;
+  border-radius: 6px;
+  min-height: 80px;
+  align-content: center;
+}
+
+.parallel-dot {
+  width: 100%; aspect-ratio: 1;
+  background: #2dd4bf;
+  border-radius: 1px;
+  opacity: 0.4;
+}
+.parallel-dot:nth-child(3n) { opacity: 0.7; }
+.parallel-dot:nth-child(7n) { opacity: 1; }
+
+.lane-new .step-output .step-node {
+  width: 56px; height: 56px;
+  border-color: #2dd4bf;
+  background: #0a2420;
+  color: #2dd4bf;
+}
+
+.step-caption {
+  font-size: 0.6rem;
+  color: #4a5060;
+  text-align: center;
+  max-width: 70px;
+}
+.lane-new .step-caption { color: #1a6b60; }
+.lane-old .step-bottleneck .step-caption { color: #8b6530; }
+</style>
+</head>
+<body>
+
+<div class="comparison">
+  <!-- Old lane -->
+  <div class="lane lane-old">
+    <div class="lane-label">Today</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-node">Design</div>
+        <div class="step-caption">Months</div>
+      </div>
+      <div class="arrow"></div>
+      <div class="step">
+        <div class="step-node">CFD</div>
+        <div class="step-caption">Weeks</div>
+      </div>
+      <div class="arrow"></div>
+      <div class="step">
+        <div class="step-node">Pool</div>
+        <div class="step-caption">Weeks</div>
+      </div>
+      <div class="arrow"></div>
+      <div class="step step-bottleneck">
+        <div class="step-node">Sea Trial</div>
+        <div class="step-caption">$$$$</div>
+      </div>
+      <div class="arrow"></div>
+      <div class="step step-output">
+        <div class="step-node"></div>
+        <div class="step-caption">1 data point</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New lane -->
+  <div class="lane lane-new">
+    <div class="lane-label">OceanScale</div>
+    <div class="steps">
+      <div class="step step-core">
+        <div class="step-node">Simulate</div>
+      </div>
+      <div class="arrow"></div>
+      <div class="step step-parallel">
+        <div class="parallel-grid">
+          <!-- 100 dots representing parallel runs -->
+          <div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div><div class="parallel-dot"></div>
+        </div>
+        <div class="step-caption">Thousands of parallel runs</div>
+      </div>
+      <div class="arrow"></div>
+      <div class="step">
+        <div class="step-node">Validate</div>
+      </div>
+      <div class="arrow"></div>
+      <div class="step step-output">
+        <div class="step-node">Deploy</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

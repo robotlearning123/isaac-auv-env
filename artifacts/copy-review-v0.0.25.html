@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OceanScale Copy Review — v0.0.25</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, "Inter", sans-serif; background: #0a0e14; color: #e0e4ea; line-height: 1.7; padding: 2rem; max-width: 960px; margin: auto; }
+h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem; color: #fff; }
+h2 { font-size: 1.3rem; font-weight: 700; margin: 2.5rem 0 0.8rem; color: #2dd4bf; border-bottom: 1px solid #1e2d40; padding-bottom: 0.5rem; }
+h3 { font-size: 1rem; font-weight: 600; margin: 1.2rem 0 0.4rem; color: #a0b0c0; }
+.meta { color: #5a6a7a; font-size: 0.85rem; margin-bottom: 2rem; }
+.section { background: #0f1520; border: 1px solid #1e2d40; border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }
+.label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 0.2rem 0.5rem; border-radius: 3px; display: inline-block; margin-bottom: 0.5rem; }
+.label-en { background: #1a3a2a; color: #4ade80; }
+.label-zh { background: #3a1a2a; color: #f472b6; }
+.label-issue { background: #3a2a1a; color: #fb923c; }
+.label-source { background: #1a2a3a; color: #60a5fa; }
+.copy { font-size: 1.05rem; margin: 0.3rem 0; padding: 0.8rem 1rem; background: #080c12; border-left: 3px solid #1e2d40; border-radius: 0 4px 4px 0; }
+.copy-h1 { font-size: 1.6rem; font-weight: 900; line-height: 1.1; border-left-color: #2dd4bf; }
+.copy-enemy { font-style: italic; color: #8a9aaa; border-left-color: #f59e0b; }
+.issue { background: #1a1008; border: 1px solid #92400e; border-radius: 6px; padding: 1rem; margin: 0.8rem 0; }
+.ok { background: #081a10; border: 1px solid #166534; border-radius: 6px; padding: 0.6rem 1rem; margin: 0.5rem 0; font-size: 0.9rem; color: #4ade80; }
+.card-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; margin: 0.5rem 0; }
+.card { background: #080c12; border: 1px solid #1e2d40; border-radius: 6px; padding: 0.8rem; font-size: 0.85rem; }
+.card strong { color: #e0e4ea; display: block; margin-bottom: 0.3rem; }
+.card span { color: #6a7a8a; font-size: 0.8rem; }
+table { width: 100%; border-collapse: collapse; margin: 0.5rem 0; font-size: 0.85rem; }
+th, td { padding: 0.5rem 0.8rem; border: 1px solid #1e2d40; text-align: left; }
+th { background: #15202e; color: #a0b0c0; font-size: 0.75rem; text-transform: uppercase; }
+td { color: #8a9aaa; }
+.verdict { background: #0f1520; border: 2px solid #2dd4bf; border-radius: 8px; padding: 1.5rem; margin: 2rem 0; }
+.verdict h2 { color: #2dd4bf; border: none; margin-top: 0; }
+ul { padding-left: 1.2rem; }
+li { margin: 0.3rem 0; color: #a0b0c0; }
+li strong { color: #e0e4ea; }
+code { font-family: "JetBrains Mono", monospace; font-size: 0.85em; background: #15202e; padding: 0.15rem 0.4rem; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>OceanScale Website Copy Review</h1>
+<div class="meta">v0.0.25 | 2026-05-24 | Source: POSITIONING.md v1.1</div>
+
+<!-- ════════════════════════════════════════ -->
+<h2>Section 1: HERO</h2>
+<div class="section">
+  <h3>Eyebrow</h3>
+  <span class="label label-en">EN</span>
+  <div class="copy">AI-native simulation infrastructure</div>
+  <span class="label label-zh">ZH</span>
+  <div class="copy">AI 原生仿真基础设施</div>
+  <span class="label label-source">POSITIONING.md §7</span>
+  <div class="ok">Matches required lexicon exactly.</div>
+
+  <h3>H1 (Anchor Sentence, §3)</h3>
+  <span class="label label-en">EN</span>
+  <div class="copy copy-h1">The ocean simulator for underwater robotics</div>
+  <span class="label label-zh">ZH</span>
+  <div class="copy copy-h1">面向水下机器人的海洋仿真基础设施</div>
+  <span class="label label-source">POSITIONING.md §3</span>
+  <div class="ok">Matches anchor sentence. Repeat is the point.</div>
+
+  <h3>Enemy Line (§5)</h3>
+  <span class="label label-en">EN</span>
+  <div class="copy copy-enemy">Underwater robots still learn in the most expensive test environment on earth: the real ocean.</div>
+  <span class="label label-zh">ZH</span>
+  <div class="copy copy-enemy">水下机器人,仍然在地球上最昂贵的测试环境中学习:真实海洋。</div>
+  <span class="label label-source">POSITIONING.md §5</span>
+  <div class="ok">Verbatim match. Required canonical opener.</div>
+
+  <h3>Sub (hero.sub)</h3>
+  <span class="label label-en">EN</span>
+  <div class="copy">OceanScale builds the simulator where underwater robots train, test, and validate before deployment.</div>
+  <span class="label label-zh">ZH</span>
+  <div class="copy">OceanScale 构建海洋仿真基础设施,让水下机器人在部署前完成训练、测试与验证。</div>
+
+  <div class="issue">
+    <span class="label label-issue">ISSUE: EN/ZH 不对称</span>
+    <p>EN says "the simulator" (产品), ZH says "海洋仿真基础设施" (基础设施). POSITIONING.md A3 reference:</p>
+    <ul>
+      <li>EN: "...the simulator where they train, test, and validate before they dive."</li>
+      <li>ZH: "...海洋仿真基础设施,让水下机器人在下海之前完成训练、测试与验证。"</li>
+    </ul>
+    <p>A3 用 "before they dive" / "下海之前", 当前用 "before deployment" / "部署前".</p>
+    <p><strong>建议:</strong> 统一为 A3 版本, 更生动.</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<h2>Section 2: WHY (/01 Challenge)</h2>
+<div class="section">
+  <h3>H2</h3>
+  <span class="label label-en">EN</span>
+  <div class="copy copy-h1">Field testing is the bottleneck</div>
+  <span class="label label-zh">ZH</span>
+  <div class="copy copy-h1">现场测试是瓶颈</div>
+  <div class="ok">Clean. Derived from §5 enemy framing.</div>
+
+  <h3>Body</h3>
+  <span class="label label-en">EN</span>
+  <div class="copy">Most of the iteration loop runs in the ocean itself. Ship time, weather windows, crew costs, and the risk of losing an expensive vehicle to a current set the pace of progress.</div>
+  <span class="label label-zh">ZH</span>
+  <div class="copy">迭代回路的大部分都跑在真实海洋里。船时、天气窗口、人员成本,以及一台昂贵机器人随时可能被洋流带走的风险,决定了进步速度。</div>
+  <span class="label label-source">POSITIONING.md A6</span>
+  <div class="ok">Nearly verbatim from A6. Good.</div>
+
+  <h3>Cards (3x)</h3>
+  <div class="card-grid">
+    <div class="card"><strong>Weather windows</strong><span>Real ocean conditions cannot be queued like compute jobs. Every delay costs weeks.</span></div>
+    <div class="card"><strong>Iteration cost</strong><span>Each field trial requires vessel time, crew, and equipment — the most expensive test loop on earth.</span></div>
+    <div class="card"><strong>Data scarcity</strong><span>Legacy simulators were not built for 8192 parallel environments or RL-scale training.</span></div>
+  </div>
+  <div class="issue">
+    <span class="label label-issue">ISSUE: Card 3 跑题</span>
+    <p>"Data scarcity" + "8192 parallel environments" 是平台能力描述, 不是 challenge. Challenge 应该是: 现场数据采集慢/贵/危险.</p>
+    <p><strong>建议:</strong> "Data scarcity" → 改为描述真实数据获取困难, 如 "每次下水只能采集有限数据, 无法满足 RL 训练对数据量的要求."</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<h2>Section 3: WHAT (/02 Platform)</h2>
+<div class="section">
+  <h3>H2</h3>
+  <span class="label label-en">EN</span>
+  <div class="copy copy-h1">From physics to policy</div>
+  <span class="label label-zh">ZH</span>
+  <div class="copy copy-h1">从物理到策略</div>
+  <div class="ok">Good. Concise, captures sim→RL pipeline.</div>
+
+  <h3>Body</h3>
+  <span class="label label-en">EN</span>
+  <div class="copy">A GPU-native training platform for underwater robots.</div>
+  <span class="label label-zh">ZH</span>
+  <div class="copy">面向水下机器人的 GPU-native 训练平台。</div>
+  <div class="issue">
+    <span class="label label-issue">ISSUE: 定位偏差</span>
+    <p>POSITIONING.md §1: "OceanScale is an infrastructure company." 这里用 "training platform" 暗示公司做的是训练平台, 不是仿真基础设施.</p>
+    <p><strong>建议:</strong> "GPU-native ocean simulation infrastructure for underwater robots." / "面向水下机器人的 GPU 原生海洋仿真基础设施。"</p>
+  </div>
+
+  <h3>Cards (4x)</h3>
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="card"><strong>01 / GPU-native ocean simulation</strong><span>Newton + Warp physics...</span></div>
+    <div class="card"><strong>02 / Parallel training at scale</strong><span>64+ vectorized envs...</span></div>
+    <div class="card"><strong>03 / Fossen hydrodynamics</strong><span>6-DOF dynamics, von Benzon 2022...</span></div>
+    <div class="card"><strong>04 / Gymnasium-native RL</strong><span>Standard interface, PPO/SAC...</span></div>
+  </div>
+  <div class="ok">Cards are solid technical content. No issues.</div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<h2>Section 4: BENCHMARKS (/03)</h2>
+<div class="section">
+  <h3>H2</h3>
+  <span class="label label-en">EN</span>
+  <div class="copy copy-h1">GPU speed meets underwater fidelity.</div>
+  <span class="label label-zh">ZH</span>
+  <div class="copy copy-h1">GPU 速度与水下保真度的交汇。</div>
+  <div class="issue">
+    <span class="label label-issue">ISSUE: 句号</span>
+    <p>H2 不应该有句号 (display heading convention).</p>
+  </div>
+
+  <h3>Table</h3>
+  <table>
+    <tr><th>Capability</th><th>Classic Sims</th><th>GPU Sims</th><th>OceanScale</th></tr>
+    <tr><td>GPU-parallel envs</td><td>—</td><td>✓</td><td>✓ (Newton+Warp)</td></tr>
+    <tr><td>Fossen hydrodynamics</td><td>✓</td><td>Weak</td><td>✓ (GPU kernel)</td></tr>
+    <tr><td>DVL / IMU / pressure</td><td>✓</td><td>Partial</td><td>✓ (stub + GPU)</td></tr>
+    <tr><td>RL-ready (Gymnasium)</td><td>Difficult</td><td>Partial</td><td>Native</td></tr>
+    <tr><td>Throughput (n=64)</td><td>~800 FPS</td><td>250K+</td><td>17,427 env-steps/s</td></tr>
+  </table>
+  <div class="issue">
+    <span class="label label-issue">ISSUE: "stub + GPU" 不自信</span>
+    <p>"stub" 暗示传感器未完成. 如果是真实实现, 去掉 "stub". 如果确实是 stub, 不应出现在对外比较表.</p>
+  </div>
+  <div class="issue">
+    <span class="label label-issue">ISSUE: 250K+ vs 17K</span>
+    <p>GPU Sims throughput 列写 "250K+" 但 OceanScale 只有 17K. 这让 OceanScale 看起来比竞品慢 15x. 需要澄清单位或上下文差异 (env-steps vs raw physics steps?).</p>
+  </div>
+  <div class="issue">
+    <span class="label label-issue">ISSUE: eyebrow "Early Benchmarks"</span>
+    <p>"Early" 暗示不成熟/不可靠. 如果数据是实测的, 去掉 "Early" — 直接叫 "Benchmarks".</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<h2>Section 5: DEMO (/04)</h2>
+<div class="section">
+  <h3>H2</h3>
+  <span class="label label-en">EN</span>
+  <div class="copy copy-h1">Train BlueROV2 hover 10.5x faster than CPU baseline</div>
+  <span class="label label-zh">ZH</span>
+  <div class="copy copy-h1">BlueROV2 悬停训练比 CPU 快 10.5 倍</div>
+  <div class="issue">
+    <span class="label label-issue">ISSUE: 不需要此 section</span>
+    <p>当前 Demo section 只有一个标题 + 一个视频. 标题内容 (10.5x faster) 和 Benchmarks section 重复. 视频可以合并到 Benchmarks 或 Hero.</p>
+    <p><strong>建议:</strong> 考虑合并 Demo 到 Benchmarks, 或者 Demo 改为纯视觉展示 (无标题文字, 全屏视频).</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<h2>Section 6: CONTACT (/05)</h2>
+<div class="section">
+  <h3>H2</h3>
+  <span class="label label-en">EN</span>
+  <div class="copy copy-h1">Building underwater robots?</div>
+  <span class="label label-zh">ZH</span>
+  <div class="copy copy-h1">在造水下机器人？</div>
+  <div class="ok">Direct, conversational, on-brand.</div>
+
+  <h3>Intro</h3>
+  <span class="label label-en">EN</span>
+  <div class="copy">For teams building underwater robots who need faster iteration than the ocean allows.</div>
+  <span class="label label-zh">ZH</span>
+  <div class="copy">面向需要比真实海洋更快迭代速度的水下机器人团队。</div>
+  <div class="ok">Clean. No issues.</div>
+
+  <h3>Emails</h3>
+  <div class="copy">business@oceanscale.cn · tech@oceanscale.cn · partnerships@oceanscale.cn</div>
+  <div class="ok">3 emails, appropriate split.</div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<div class="verdict">
+  <h2>COPY REVIEW VERDICT</h2>
+  <h3>Must Fix (before next deploy)</h3>
+  <ul>
+    <li><strong>Hero sub:</strong> EN/ZH 不对称 — 统一为 A3 版本 ("before they dive" / "下海之前")</li>
+    <li><strong>Benchmarks H2:</strong> 去掉句号</li>
+    <li><strong>Benchmarks eyebrow:</strong> "Early Benchmarks" → "Benchmarks"</li>
+    <li><strong>Benchmarks table "stub + GPU":</strong> 去掉 "stub" 或去掉该行</li>
+    <li><strong>Benchmarks table 250K+:</strong> 澄清单位差异或修正数据, 不能让 OceanScale 看起来比竞品慢</li>
+  </ul>
+  <h3>Should Fix</h3>
+  <ul>
+    <li><strong>Why card 3 "Data scarcity":</strong> 改为真正的 challenge 描述 (数据获取难), 不是平台能力</li>
+    <li><strong>What body:</strong> "training platform" → "simulation infrastructure" (match §1 category)</li>
+    <li><strong>Demo section:</strong> 考虑合并到 Benchmarks 或改为纯视觉</li>
+  </ul>
+  <h3>No Change Needed</h3>
+  <ul>
+    <li>Hero eyebrow, H1, enemy line — all match POSITIONING.md verbatim</li>
+    <li>Why H2 + body — derived from A6, correct</li>
+    <li>What cards — solid technical content</li>
+    <li>Contact — clean and on-brand</li>
+  </ul>
+</div>
+
+</body>
+</html>

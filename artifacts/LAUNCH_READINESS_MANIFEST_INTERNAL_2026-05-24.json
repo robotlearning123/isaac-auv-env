@@ -1,0 +1,178 @@
+{
+  "generated_at": "2026-05-24T13:12:10-04:00",
+  "scope": "internal_alpha_readiness",
+  "public_launch": false,
+  "repository": "/home/robot/workspace/46-marine",
+  "objective": "review all test for project/startup/tech stack and prepare an internal suite of data, benchmark, pipeline, product, and results evidence",
+  "source_of_truth": {
+    "benchmark": "benchmarks/competitive/results.json",
+    "package": "pyproject.toml",
+    "package_version_normalized": "oceanscale/__init__.py",
+    "website_package": "website/package.json",
+    "workflow_directory": ".github/workflows",
+    "data_directory": "oceanscale/data",
+    "internal_report": "artifacts/LAUNCH_READINESS_INTERNAL_2026-05-24.md",
+    "final_gate": "artifacts/LAUNCH_FINAL_GATE_INTERNAL_2026-05-24.md",
+    "evidence_index": "artifacts/LAUNCH_EVIDENCE_INDEX_INTERNAL_2026-05-24.md",
+    "decision_matrix": "artifacts/RELEASE_DECISION_MATRIX_INTERNAL_2026-05-24.md",
+    "boss_packet": "artifacts/BOSS_PACKET_INTERNAL_2026-05-24.md",
+    "runbook": "artifacts/INTERNAL_LAUNCH_RUNBOOK_2026-05-24.md",
+    "hardening_backlog": "artifacts/INTERNAL_HARDENING_BACKLOG_2026-05-24.md",
+    "handoff": "artifacts/INTERNAL_LAUNCH_HANDOFF_2026-05-24.md",
+    "completion_audit": "artifacts/LAUNCH_COMPLETION_AUDIT_INTERNAL_2026-05-24.md",
+    "test_matrix": "artifacts/TEST_TECH_STACK_MATRIX_INTERNAL_2026-05-24.md",
+    "package_data_evidence": "artifacts/PACKAGE_DATA_EVIDENCE_INTERNAL_2026-05-24.md",
+    "product_capability_evidence": "artifacts/PRODUCT_CAPABILITY_EVIDENCE_INTERNAL_2026-05-24.md",
+    "package_data_policy_tests": "tests/test_package_data.py",
+    "version_identity_tests": "tests/test_version_identity.py",
+    "launch_suite_verifier": "scripts/verify_internal_launch_suite.py",
+    "launch_suite_verifier_tests": "tests/test_launch_suite_verifier.py",
+    "external_launch_state": "artifacts/EXTERNAL_LAUNCH_STATE_INTERNAL_2026-05-24.json",
+    "external_launch_state_script": "scripts/refresh_external_launch_state.py",
+    "external_launch_state_tests": "tests/test_external_launch_state.py",
+    "package_artifact_state": "artifacts/PACKAGE_ARTIFACT_STATE_INTERNAL_2026-05-24.json",
+    "package_artifact_state_script": "scripts/refresh_package_artifact_state.py",
+    "package_artifact_state_tests": "tests/test_package_artifact_state.py"
+  },
+  "areas": {
+    "product": {
+      "status": "yellow",
+      "evidence": [
+        "ROVEnv exists in oceanscale/rov_env.py",
+        "BatchedVecEnv exists in oceanscale/vec_env.py",
+        "BlueROV2 model exists in oceanscale/vehicles/bluerov2.py",
+        "station keeping, docking, and waypoint task files exist under oceanscale/envs",
+        "CLI version/help smoke passes",
+        "ROVEnv and task env reset/step smoke passes on CUDA n_envs=4",
+        "IMU, DVL, and pressure sensor smoke passes",
+        "BatchedVecEnv and OceanScaleVecEnv smoke passes",
+        "8-step skrl train smoke saves policy and value artifacts",
+        "hover demo command exits 0 via bundled SB3 checkpoint fallback"
+      ],
+      "limits": [
+        "do not claim sonar model",
+        "do not claim physical camera model",
+        "do not claim acoustic comms",
+        "do not claim cross-coupling damping is enabled",
+        "do not claim high-quality hover convergence from the bundled SB3 demo; latest smoke ended with 1.2721m position error"
+      ]
+    },
+    "data": {
+      "status": "yellow",
+      "packaged_patterns": ["data/*.zip", "data/*.npz"],
+      "tracked_artifacts": [
+        "oceanscale/data/bluerov2_station_keep_final.zip",
+        "oceanscale/data/vec_normalize.npz",
+        "oceanscale/data/vec_normalize.pkl"
+      ],
+      "supported_artifacts": [
+        "oceanscale/data/bluerov2_station_keep_final.zip",
+        "oceanscale/data/vec_normalize.npz"
+      ],
+      "package_artifact_evidence": {
+        "wheel": "oceanscale-0.1.0a0-py3-none-any.whl",
+        "sdist": "oceanscale-0.1.0a0.tar.gz",
+        "twine_check": "pass",
+        "wheel_has_zip": true,
+        "wheel_has_npz": true,
+        "wheel_has_pkl": false,
+        "installed_wheel_has_pkl": false,
+        "package_data_policy_tests": "4 passed",
+        "package_artifact_state": "green",
+        "source_data_hygiene": "yellow"
+      },
+      "open_decision": "vec_normalize.pkl is tracked in source but not packaged; deletion requires owner approval"
+    },
+    "benchmark": {
+      "status": "green",
+      "version": "0.1.0a0",
+      "timestamp": "2026-05-24T11:54:13-0400",
+      "gpu": "NVIDIA GeForce RTX 5090",
+      "throughput_env_steps_per_second": {
+        "1": 1326,
+        "64": 85824,
+        "256": 303206,
+        "1024": 1272106,
+        "4096": 4588922
+      },
+      "fidelity": {
+        "reference": "von Benzon et al.",
+        "pass": true,
+        "position_error_pct": 0.013,
+        "attitude_rms_deg": 0.0025
+      },
+      "feature_truth": {
+        "imu": true,
+        "dvl": true,
+        "depth_pressure": true,
+        "sonar_imaging": false,
+        "camera_model": false,
+        "acoustic_comms": false,
+        "cross_coupling_damping": false
+      }
+    },
+    "tests": {
+      "status": "green_from_recorded_final_gate",
+      "recorded_results": [
+        {"gate": "ruff", "result": "pass"},
+        {"gate": "mypy oceanscale", "result": "pass"},
+        {"gate": "pytest tests", "result": "373 passed, 5 xfailed in 23.11s"},
+        {"gate": "package data policy", "result": "4 passed"},
+        {"gate": "version identity policy", "result": "2 passed"},
+        {"gate": "launch suite verifier", "result": "15 checks passed; 2 tests passed"},
+        {"gate": "external launch state parser", "result": "4 passed"},
+        {"gate": "package artifact state", "result": "package artifact green; 3 tests passed"},
+        {"gate": "launch suite scripts mypy", "result": "pass"},
+        {"gate": "website build", "result": "pass"},
+        {"gate": "benchmark json", "result": "pass"},
+        {"gate": "uv build and twine check", "result": "pass"},
+        {"gate": "git diff --check", "result": "pass"}
+      ]
+    },
+    "pipeline": {
+      "status": "deferred_not_public",
+      "release_deploy": {
+        "latest_checked_tags": ["v0.0.21", "v0.0.22", "v0.0.23", "v0.0.24", "v0.0.25"],
+        "conclusion": "historical success for latest checked tags; automatic tag deploy now disabled and workflow is manual-only"
+      },
+      "publish_pypi": {
+        "latest_checked_tags": ["v0.0.21", "v0.0.22", "v0.0.23", "v0.0.24", "v0.0.25"],
+        "conclusion": "historical failures recorded; public publish path is now disabled and workflow only builds/checks artifacts",
+        "latest_failed_run_id": 26365095288,
+        "latest_failure_reason": "Tag 0.0.25 does not match pyproject.toml version 0.1.0-alpha"
+      },
+      "pypi_availability": "deferred_not_public",
+      "workflow_policy_issues": [],
+      "workflow_runner_policy": "green; all workflow runs-on entries use oceanscale-arc",
+      "release_policy": "green; no automatic tag-triggered release deploy",
+      "public_pypi_policy": "green; no public PyPI/TestPyPI publish action or OIDC publish permission",
+      "external_state_artifact": "artifacts/EXTERNAL_LAUNCH_STATE_INTERNAL_2026-05-24.json"
+    },
+    "version_identity": {
+      "status": "red_for_release_identity",
+      "package_internal_guard": "tests/test_version_identity.py passes for pyproject normalized version, installed metadata, and oceanscale.__version__",
+      "sources": {
+        "VERSION": "0.0.2",
+        "pyproject.toml": "0.1.0-alpha",
+        "oceanscale/__init__.py": "0.1.0a0",
+        "website/package.json": "0.0.1",
+        "remote_tag_train": "v0.0.x"
+      }
+    },
+    "public_surface": {
+      "status": "deferred",
+      "reason": "user instructed not public",
+      "known_issue": "live site is reachable but claim alignment is stale from prior verification"
+    }
+  },
+  "approvals_required": [
+    "delete oceanscale/data/vec_normalize.pkl",
+    "deploy or update public website",
+    "publish to PyPI or TestPyPI"
+  ],
+  "go_no_go": {
+    "internal_alpha_technical_review": "go",
+    "design_partner_preview_prep": "conditional_go",
+    "public_launch": "no_go"
+  }
+}

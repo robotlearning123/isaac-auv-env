@@ -1,0 +1,166 @@
+{
+  "approvals_required_to_fix": [
+    "delete oceanscale/data/vec_normalize.pkl"
+  ],
+  "build": {
+    "build_dir": "/tmp/oceanscale-package-artifact-state-20260524",
+    "command": [
+      "uv",
+      "build",
+      "--out-dir",
+      "/tmp/oceanscale-package-artifact-state-20260524"
+    ],
+    "exit_code": 0,
+    "sdists": [
+      "/tmp/oceanscale-package-artifact-state-20260524/oceanscale-0.1.0a0.tar.gz"
+    ],
+    "stderr": "Building source distribution...\nrunning egg_info\nwriting oceanscale.egg-info/PKG-INFO\nwriting dependency_links to oceanscale.egg-info/dependency_links.txt\nwriting entry points to oceanscale.egg-info/entry_points.txt\nwriting requirements to oceanscale.egg-info/requires.txt\nwriting top-level names to oceanscale.egg-info/top_level.txt\nreading manifest file 'oceanscale.egg-info/SOURCES.txt'\nadding license file 'LICENSE'\nwriting manifest file 'oceanscale.egg-info/SOURCES.txt'\nrunning sdist\nrunning egg_info\nwriting oceanscale.egg-info/PKG-INFO\nwriting dependency_links to oceanscale.egg-info/dependency_links.txt\nwriting entry points to oceanscale.egg-info/entry_points.txt\nwriting requirements to oceanscale.egg-info/requires.txt\nwriting top-level names to oceanscale.egg-info/top_level.txt\nreading manifest file 'oceanscale.egg-info/SOURCES.txt'\nadding license file 'LICENSE'\nwriting manifest file 'oceanscale.egg-info/SOURCES.txt'\nrunning check\ncreating oceanscale-0.1.0a0\ncreating oceanscale-0.1.0a0/oceanscale\ncreating oceanscale-0.1.0a0/oceanscale.egg-info\ncreating oceanscale-0.1.0a0/oceanscale/data\ncreating oceanscale-0.1.0a0/oceanscale/envs\ncreating oceanscale-0.1.0a0/oceanscale/fluid\ncreating oceanscale-0.1.0a0/oceanscale/hydro\ncreating oceanscale-0.1.0a0/oceanscale/sensors\ncreating oceanscale-0.1.0a0/oceanscale/training\ncreating oceanscale-0.1.0a0/oceanscale/validation\ncreating oceanscale-0.1.0a0/oceanscale/vehicles\ncreating oceanscale-0.1.0a0/tests\ncopying files to oceanscale-0.1.0a0...\ncopying LICENSE -> oceanscale-0.1.0a0\ncopying README.md -> oceanscale-0.1.0a0\ncopying pyproject.toml -> oceanscale-0.1.0a0\ncopying oceanscale/__init__.py -> oceanscale-0.1.0a0/oceanscale\ncopying oceanscale/cli.py -> oceanscale-0.1.0a0/oceanscale\ncopying oceanscale/newton_env.py -> oceanscale-0.1.0a0/oceanscale\ncopying oceanscale/rendering.py -> oceanscale-0.1.0a0/oceanscale\ncopying oceanscale/rov_env.py -> oceanscale-0.1.0a0/oceanscale\ncopying oceanscale/vec_env.py -> oceanscale-0.1.0a0/oceanscale\ncopying oceanscale.egg-info/PKG-INFO -> oceanscale-0.1.0a0/oceanscale.egg-info\ncopying oceanscale.egg-info/SOURCES.txt -> oceanscale-0.1.0a0/oceanscale.egg-info\ncopying oceanscale.egg-info/dependency_links.txt -> oceanscale-0.1.0a0/oceanscale.egg-info\ncopying oceanscale.egg-info/entry_points.txt -> oceanscale-0.1.0a0/oceanscale.egg-info\ncopying oceanscale.egg-info/requires.txt -> oceanscale-0.1.0a0/oceanscale.egg-info\ncopying oceanscale.egg-info/top_level.txt -> oceanscale-0.1.0a0/oceanscale.egg-info\ncopying oceanscale/data/__init__.py -> oceanscale-0.1.0a0/oceanscale/data\ncopying oceanscale/data/bluerov2_station_keep_final.zip -> oceanscale-0.1.0a0/oceanscale/data\ncopying oceanscale/data/vec_normalize.npz -> oceanscale-0.1.0a0/oceanscale/data\ncopying oceanscale/envs/__init__.py -> oceanscale-0.1.0a0/oceanscale/envs\ncopying oceanscale/envs/docking_env.py -> oceanscale-0.1.0a0/oceanscale/envs\ncopying oceanscale/envs/station_keeping_env.py -> oceanscale-0.1.0a0/oceanscale/envs\ncopying oceanscale/envs/waypoint_env.py -> oceanscale-0.1.0a0/oceanscale/envs\ncopying oceanscale/fluid/__init__.py -> oceanscale-0.1.0a0/oceanscale/fluid\ncopying oceanscale/fluid/grid.py -> oceanscale-0.1.0a0/oceanscale/fluid\ncopying oceanscale/fluid/mpm.py -> oceanscale-0.1.0a0/oceanscale/fluid\ncopying oceanscale/hydro/__init__.py -> oceanscale-0.1.0a0/oceanscale/hydro\ncopying oceanscale/hydro/tier1.py -> oceanscale-0.1.0a0/oceanscale/hydro\ncopying oceanscale/hydro/tier1_kernels.py -> oceanscale-0.1.0a0/oceanscale/hydro\ncopying oceanscale/sensors/__init__.py -> oceanscale-0.1.0a0/oceanscale/sensors\ncopying oceanscale/sensors/dvl.py -> oceanscale-0.1.0a0/oceanscale/sensors\ncopying oceanscale/sensors/imu.py -> oceanscale-0.1.0a0/oceanscale/sensors\ncopying oceanscale/sensors/pressure.py -> oceanscale-0.1.0a0/oceanscale/sensors\ncopying oceanscale/training/__init__.py -> oceanscale-0.1.0a0/oceanscale/training\ncopying oceanscale/training/skrl_trainer.py -> oceanscale-0.1.0a0/oceanscale/training\ncopying oceanscale/validation/__init__.py -> oceanscale-0.1.0a0/oceanscale/validation\ncopying oceanscale/validation/vonbenzon_reference.py -> oceanscale-0.1.0a0/oceanscale/validation\ncopying oceanscale/vehicles/__init__.py -> oceanscale-0.1.0a0/oceanscale/vehicles\ncopying oceanscale/vehicles/bluerov2.py -> oceanscale-0.1.0a0/oceanscale/vehicles\ncopying tests/test_cli.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_docking_env.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_energy_conservation.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_environment.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_external_launch_state.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_grid_fluid.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_launch_suite_verifier.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_mpm_fluid.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_newton_env.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_newton_smoke.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_package_artifact_state.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_package_data.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_param_fidelity.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_rov_env.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_rov_fluid_coupling.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_sensors.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_sph_fluid.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_station_keeping.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_trajectory_parity.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_vec_env.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_version_compat.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_version_identity.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_warp_smoke.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_waypoint_env.py -> oceanscale-0.1.0a0/tests\ncopying tests/test_worlds_poc.py -> oceanscale-0.1.0a0/tests\ncopying oceanscale.egg-info/SOURCES.txt -> oceanscale-0.1.0a0/oceanscale.egg-info\nWriting oceanscale-0.1.0a0/setup.cfg\nCreating tar archive\nremoving 'oceanscale-0.1.0a0' (and everything under it)\nBuilding wheel from source distribution...\nrunning egg_info\nwriting oceanscale.egg-info/PKG-INFO\nwriting dependency_links to oceanscale.egg-info/dependency_links.txt\nwriting entry points to oceanscale.egg-info/entry_points.txt\nwriting requirements to oceanscale.egg-info/requires.txt\nwriting top-level names to oceanscale.egg-info/top_level.txt\nreading manifest file 'oceanscale.egg-info/SOURCES.txt'\nadding license file 'LICENSE'\nwriting manifest file 'oceanscale.egg-info/SOURCES.txt'\nrunning bdist_wheel\nrunning build\nrunning build_py\ncreating build/lib/oceanscale\ncopying oceanscale/__init__.py -> build/lib/oceanscale\ncopying oceanscale/rov_env.py -> build/lib/oceanscale\ncopying oceanscale/vec_env.py -> build/lib/oceanscale\ncopying oceanscale/newton_env.py -> build/lib/oceanscale\ncopying oceanscale/cli.py -> build/lib/oceanscale\ncopying oceanscale/rendering.py -> build/lib/oceanscale\ncreating build/lib/oceanscale/fluid\ncopying oceanscale/fluid/mpm.py -> build/lib/oceanscale/fluid\ncopying oceanscale/fluid/__init__.py -> build/lib/oceanscale/fluid\ncopying oceanscale/fluid/grid.py -> build/lib/oceanscale/fluid\ncreating build/lib/oceanscale/training\ncopying oceanscale/training/__init__.py -> build/lib/oceanscale/training\ncopying oceanscale/training/skrl_trainer.py -> build/lib/oceanscale/training\ncreating build/lib/oceanscale/sensors\ncopying oceanscale/sensors/__init__.py -> build/lib/oceanscale/sensors\ncopying oceanscale/sensors/imu.py -> build/lib/oceanscale/sensors\ncopying oceanscale/sensors/dvl.py -> build/lib/oceanscale/sensors\ncopying oceanscale/sensors/pressure.py -> build/lib/oceanscale/sensors\ncreating build/lib/oceanscale/data\ncopying oceanscale/data/__init__.py -> build/lib/oceanscale/data\ncreating build/lib/oceanscale/envs\ncopying oceanscale/envs/waypoint_env.py -> build/lib/oceanscale/envs\ncopying oceanscale/envs/__init__.py -> build/lib/oceanscale/envs\ncopying oceanscale/envs/docking_env.py -> build/lib/oceanscale/envs\ncopying oceanscale/envs/station_keeping_env.py -> build/lib/oceanscale/envs\ncreating build/lib/oceanscale/hydro\ncopying oceanscale/hydro/__init__.py -> build/lib/oceanscale/hydro\ncopying oceanscale/hydro/tier1.py -> build/lib/oceanscale/hydro\ncopying oceanscale/hydro/tier1_kernels.py -> build/lib/oceanscale/hydro\ncreating build/lib/oceanscale/vehicles\ncopying oceanscale/vehicles/bluerov2.py -> build/lib/oceanscale/vehicles\ncopying oceanscale/vehicles/__init__.py -> build/lib/oceanscale/vehicles\ncreating build/lib/oceanscale/validation\ncopying oceanscale/validation/__init__.py -> build/lib/oceanscale/validation\ncopying oceanscale/validation/vonbenzon_reference.py -> build/lib/oceanscale/validation\nrunning egg_info\nwriting oceanscale.egg-info/PKG-INFO\nwriting dependency_links to oceanscale.egg-info/dependency_links.txt\nwriting entry points to oceanscale.egg-info/entry_points.txt\nwriting requirements to oceanscale.egg-info/requires.txt\nwriting top-level names to oceanscale.egg-info/top_level.txt\nreading manifest file 'oceanscale.egg-info/SOURCES.txt'\nadding license file 'LICENSE'\nwriting manifest file 'oceanscale.egg-info/SOURCES.txt'\ncopying oceanscale/data/bluerov2_station_keep_final.zip -> build/lib/oceanscale/data\ncopying oceanscale/data/vec_normalize.npz -> build/lib/oceanscale/data\ncopying oceanscale/data/bluerov2_station_keep_final.zip -> build/lib/oceanscale/data\ncopying oceanscale/data/vec_normalize.npz -> build/lib/oceanscale/data\ninstalling to build/bdist.linux-x86_64/wheel\nrunning install\nrunning install_lib\ncreating build/bdist.linux-x86_64/wheel\ncreating build/bdist.linux-x86_64/wheel/oceanscale\ncreating build/bdist.linux-x86_64/wheel/oceanscale/fluid\ncopying build/lib/oceanscale/fluid/mpm.py -> build/bdist.linux-x86_64/wheel/./oceanscale/fluid\ncopying build/lib/oceanscale/fluid/__init__.py -> build/bdist.linux-x86_64/wheel/./oceanscale/fluid\ncopying build/lib/oceanscale/fluid/grid.py -> build/bdist.linux-x86_64/wheel/./oceanscale/fluid\ncopying build/lib/oceanscale/__init__.py -> build/bdist.linux-x86_64/wheel/./oceanscale\ncreating build/bdist.linux-x86_64/wheel/oceanscale/training\ncopying build/lib/oceanscale/training/__init__.py -> build/bdist.linux-x86_64/wheel/./oceanscale/training\ncopying build/lib/oceanscale/training/skrl_trainer.py -> build/bdist.linux-x86_64/wheel/./oceanscale/training\ncreating build/bdist.linux-x86_64/wheel/oceanscale/sensors\ncopying build/lib/oceanscale/sensors/__init__.py -> build/bdist.linux-x86_64/wheel/./oceanscale/sensors\ncopying build/lib/oceanscale/sensors/imu.py -> build/bdist.linux-x86_64/wheel/./oceanscale/sensors\ncopying build/lib/oceanscale/sensors/dvl.py -> build/bdist.linux-x86_64/wheel/./oceanscale/sensors\ncopying build/lib/oceanscale/sensors/pressure.py -> build/bdist.linux-x86_64/wheel/./oceanscale/sensors\ncreating build/bdist.linux-x86_64/wheel/oceanscale/data\ncopying build/lib/oceanscale/data/__init__.py -> build/bdist.linux-x86_64/wheel/./oceanscale/data\ncopying build/lib/oceanscale/data/vec_normalize.npz -> build/bdist.linux-x86_64/wheel/./oceanscale/data\ncopying build/lib/oceanscale/data/bluerov2_station_keep_final.zip -> build/bdist.linux-x86_64/wheel/./oceanscale/data\ncopying build/lib/oceanscale/rov_env.py -> build/bdist.linux-x86_64/wheel/./oceanscale\ncreating build/bdist.linux-x86_64/wheel/oceanscale/envs\ncopying build/lib/oceanscale/envs/waypoint_env.py -> build/bdist.linux-x86_64/wheel/./oceanscale/envs\ncopying build/lib/oceanscale/envs/__init__.py -> build/bdist.linux-x86_64/wheel/./oceanscale/envs\ncopying build/lib/oceanscale/envs/docking_env.py -> build/bdist.linux-x86_64/wheel/./oceanscale/envs\ncopying build/lib/oceanscale/envs/station_keeping_env.py -> build/bdist.linux-x86_64/wheel/./oceanscale/envs\ncreating build/bdist.linux-x86_64/wheel/oceanscale/hydro\ncopying build/lib/oceanscale/hydro/__init__.py -> build/bdist.linux-x86_64/wheel/./oceanscale/hydro\ncopying build/lib/oceanscale/hydro/tier1.py -> build/bdist.linux-x86_64/wheel/./oceanscale/hydro\ncopying build/lib/oceanscale/hydro/tier1_kernels.py -> build/bdist.linux-x86_64/wheel/./oceanscale/hydro\ncopying build/lib/oceanscale/vec_env.py -> build/bdist.linux-x86_64/wheel/./oceanscale\ncopying build/lib/oceanscale/newton_env.py -> build/bdist.linux-x86_64/wheel/./oceanscale\ncreating build/bdist.linux-x86_64/wheel/oceanscale/vehicles\ncopying build/lib/oceanscale/vehicles/bluerov2.py -> build/bdist.linux-x86_64/wheel/./oceanscale/vehicles\ncopying build/lib/oceanscale/vehicles/__init__.py -> build/bdist.linux-x86_64/wheel/./oceanscale/vehicles\ncreating build/bdist.linux-x86_64/wheel/oceanscale/validation\ncopying build/lib/oceanscale/validation/__init__.py -> build/bdist.linux-x86_64/wheel/./oceanscale/validation\ncopying build/lib/oceanscale/validation/vonbenzon_reference.py -> build/bdist.linux-x86_64/wheel/./oceanscale/validation\ncopying build/lib/oceanscale/cli.py -> build/bdist.linux-x86_64/wheel/./oceanscale\ncopying build/lib/oceanscale/rendering.py -> build/bdist.linux-x86_64/wheel/./oceanscale\nrunning install_egg_info\nCopying oceanscale.egg-info to build/bdist.linux-x86_64/wheel/./oceanscale-0.1.0a0-py3.12.egg-info\nrunning install_scripts\ncreating build/bdist.linux-x86_64/wheel/oceanscale-0.1.0a0.dist-info/WHEEL\ncreating '/tmp/oceanscale-package-artifact-state-20260524/.tmp-pu4yzkbv/oceanscale-0.1.0a0-py3-none-any.whl' and adding 'build/bdist.linux-x86_64/wheel' to it\nadding 'oceanscale/__init__.py'\nadding 'oceanscale/cli.py'\nadding 'oceanscale/newton_env.py'\nadding 'oceanscale/rendering.py'\nadding 'oceanscale/rov_env.py'\nadding 'oceanscale/vec_env.py'\nadding 'oceanscale/data/__init__.py'\nadding 'oceanscale/data/bluerov2_station_keep_final.zip'\nadding 'oceanscale/data/vec_normalize.npz'\nadding 'oceanscale/envs/__init__.py'\nadding 'oceanscale/envs/docking_env.py'\nadding 'oceanscale/envs/station_keeping_env.py'\nadding 'oceanscale/envs/waypoint_env.py'\nadding 'oceanscale/fluid/__init__.py'\nadding 'oceanscale/fluid/grid.py'\nadding 'oceanscale/fluid/mpm.py'\nadding 'oceanscale/hydro/__init__.py'\nadding 'oceanscale/hydro/tier1.py'\nadding 'oceanscale/hydro/tier1_kernels.py'\nadding 'oceanscale/sensors/__init__.py'\nadding 'oceanscale/sensors/dvl.py'\nadding 'oceanscale/sensors/imu.py'\nadding 'oceanscale/sensors/pressure.py'\nadding 'oceanscale/training/__init__.py'\nadding 'oceanscale/training/skrl_trainer.py'\nadding 'oceanscale/validation/__init__.py'\nadding 'oceanscale/validation/vonbenzon_reference.py'\nadding 'oceanscale/vehicles/__init__.py'\nadding 'oceanscale/vehicles/bluerov2.py'\nadding 'oceanscale-0.1.0a0.dist-info/licenses/LICENSE'\nadding 'oceanscale-0.1.0a0.dist-info/METADATA'\nadding 'oceanscale-0.1.0a0.dist-info/WHEEL'\nadding 'oceanscale-0.1.0a0.dist-info/entry_points.txt'\nadding 'oceanscale-0.1.0a0.dist-info/top_level.txt'\nadding 'oceanscale-0.1.0a0.dist-info/RECORD'\nremoving build/bdist.linux-x86_64/wheel\nSuccessfully built /tmp/oceanscale-package-artifact-state-20260524/oceanscale-0.1.0a0.tar.gz\nSuccessfully built /tmp/oceanscale-package-artifact-state-20260524/oceanscale-0.1.0a0-py3-none-any.whl\n",
+    "stdout": "",
+    "wheels": [
+      "/tmp/oceanscale-package-artifact-state-20260524/oceanscale-0.1.0a0-py3-none-any.whl"
+    ]
+  },
+  "generated_at": "2026-05-24T17:48:49.630357Z",
+  "install_smoke": {
+    "install": {
+      "command": [
+        "/tmp/oceanscale-wheel-smoke-71bfkal3/venv/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--no-deps",
+        "/tmp/oceanscale-package-artifact-state-20260524/oceanscale-0.1.0a0-py3-none-any.whl"
+      ],
+      "exit_code": 0,
+      "stderr": "\n[notice] A new release of pip is available: 25.0.1 -> 26.1.1\n[notice] To update, run: /tmp/oceanscale-wheel-smoke-71bfkal3/venv/bin/python -m pip install --upgrade pip\n",
+      "stdout": "Processing ./oceanscale-package-artifact-state-20260524/oceanscale-0.1.0a0-py3-none-any.whl\nInstalling collected packages: oceanscale\nSuccessfully installed oceanscale-0.1.0a0\n"
+    },
+    "passed": true,
+    "probe": {
+      "command": [
+        "/tmp/oceanscale-wheel-smoke-71bfkal3/venv/bin/python",
+        "-c",
+        "import importlib.metadata as md, importlib.resources as res, json, oceanscale; data=res.files('oceanscale.data'); entries=sorted(child.name for child in data.iterdir()); print(json.dumps({'version': oceanscale.__version__, 'metadata_version': md.version('oceanscale'), 'entry_points': [str(ep) for ep in md.entry_points(group='console_scripts') if ep.name == 'oceanscale'], 'data_entries': entries, 'has_zip': 'bluerov2_station_keep_final.zip' in entries, 'has_npz': 'vec_normalize.npz' in entries, 'has_pkl': 'vec_normalize.pkl' in entries}))"
+      ],
+      "exit_code": 0,
+      "parsed": {
+        "data_entries": [
+          "__init__.py",
+          "__pycache__",
+          "bluerov2_station_keep_final.zip",
+          "vec_normalize.npz"
+        ],
+        "entry_points": [
+          "EntryPoint(name='oceanscale', value='oceanscale.cli:main', group='console_scripts')"
+        ],
+        "has_npz": true,
+        "has_pkl": false,
+        "has_zip": true,
+        "metadata_version": "0.1.0a0",
+        "version": "0.1.0a0"
+      },
+      "stderr": "",
+      "stdout": "{\"version\": \"0.1.0a0\", \"metadata_version\": \"0.1.0a0\", \"entry_points\": [\"EntryPoint(name='oceanscale', value='oceanscale.cli:main', group='console_scripts')\"], \"data_entries\": [\"__init__.py\", \"__pycache__\", \"bluerov2_station_keep_final.zip\", \"vec_normalize.npz\"], \"has_zip\": true, \"has_npz\": true, \"has_pkl\": false}\n"
+    }
+  },
+  "public_launch": false,
+  "repository": "/home/robot/workspace/46-marine",
+  "scope": "internal_alpha_readiness",
+  "sdist": {
+    "data_entries": [
+      {
+        "path": "oceanscale-0.1.0a0/oceanscale/data/__init__.py",
+        "size": 0
+      },
+      {
+        "path": "oceanscale-0.1.0a0/oceanscale/data/bluerov2_station_keep_final.zip",
+        "size": 521719
+      },
+      {
+        "path": "oceanscale-0.1.0a0/oceanscale/data/vec_normalize.npz",
+        "size": 1700
+      }
+    ],
+    "has_supported_npz": true,
+    "has_supported_zip": true,
+    "has_unsupported_pkl": false,
+    "path": "/tmp/oceanscale-package-artifact-state-20260524/oceanscale-0.1.0a0.tar.gz",
+    "size": 565750
+  },
+  "source_data": {
+    "data_files": [
+      {
+        "packaged_by_pattern": false,
+        "path": "oceanscale/data/__init__.py",
+        "size": 0,
+        "supported": false
+      },
+      {
+        "packaged_by_pattern": true,
+        "path": "oceanscale/data/bluerov2_station_keep_final.zip",
+        "size": 521719,
+        "supported": true
+      },
+      {
+        "packaged_by_pattern": true,
+        "path": "oceanscale/data/vec_normalize.npz",
+        "size": 1700,
+        "supported": true
+      },
+      {
+        "packaged_by_pattern": false,
+        "path": "oceanscale/data/vec_normalize.pkl",
+        "size": 2921,
+        "supported": false
+      }
+    ],
+    "package_data_patterns": [
+      "data/*.zip",
+      "data/*.npz"
+    ],
+    "source_pkl_exists": true,
+    "supported_files_exist": true
+  },
+  "status": {
+    "package_artifact": "green",
+    "source_data_hygiene": "yellow"
+  },
+  "twine_check": {
+    "command": [
+      "uvx",
+      "--from",
+      "twine",
+      "twine",
+      "check",
+      "/tmp/oceanscale-package-artifact-state-20260524/oceanscale-0.1.0a0-py3-none-any.whl",
+      "/tmp/oceanscale-package-artifact-state-20260524/oceanscale-0.1.0a0.tar.gz"
+    ],
+    "exit_code": 0,
+    "passed": true,
+    "stderr": "",
+    "stdout": "Checking \n/tmp/oceanscale-package-artifact-state-20260524/oceanscale-0.1.0a0-py3-none-any.\nwhl: \u001b[32mPASSED\u001b[0m\nChecking \n/tmp/oceanscale-package-artifact-state-20260524/oceanscale-0.1.0a0.tar.gz: \u001b[32mPASSED\u001b[0m\n"
+  },
+  "wheel": {
+    "data_entries": [
+      {
+        "path": "oceanscale/data/__init__.py",
+        "size": 0
+      },
+      {
+        "path": "oceanscale/data/bluerov2_station_keep_final.zip",
+        "size": 521719
+      },
+      {
+        "path": "oceanscale/data/vec_normalize.npz",
+        "size": 1700
+      }
+    ],
+    "entry_point_present": true,
+    "has_supported_npz": true,
+    "has_supported_zip": true,
+    "has_unsupported_pkl": false,
+    "metadata_version": "0.1.0a0",
+    "path": "/tmp/oceanscale-package-artifact-state-20260524/oceanscale-0.1.0a0-py3-none-any.whl",
+    "size": 535270
+  }
+}
