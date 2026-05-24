@@ -61,13 +61,14 @@ def tier1_damping(
     f3 = -(dla[0] + dqa[0] * wp.abs(v_ang[0])) * v_ang[0]
     f4 = -(dla[1] + dqa[1] * wp.abs(v_ang[1])) * v_ang[1]
     f5 = -(dla[2] + dqa[2] * wp.abs(v_ang[2])) * v_ang[2]
-    # Cross-coupling per MarineGym underwaterVehicle.py:239-244
-    # axis 1 (sway) + axis 5 (yaw): F_sway -= D_quad[1] * |r| * r ;  F_yaw -= D_quad[5] * |v| * v
-    f1 = f1 - dql[1] * wp.abs(v_ang[2]) * v_ang[2]
-    f5 = f5 - dqa[2] * wp.abs(v_lin[1]) * v_lin[1]
-    # axis 2 (heave) + axis 4 (pitch): F_heave -= D_quad[2] * |q| * q ; F_pitch -= D_quad[4] * |w| * w
-    f2 = f2 - dql[2] * wp.abs(v_ang[1]) * v_ang[1]
-    f4 = f4 - dqa[1] * wp.abs(v_lin[2]) * v_lin[2]
+    # cross-coupling disabled in v0.1 — coefficients not independently identified
+    # (see YAW_CROSSCOUPLING_ANALYSIS.md)
+    # # axis 1 (sway) + axis 5 (yaw): F_sway -= D_quad[1] * |r| * r ;  F_yaw -= D_quad[5] * |v| * v
+    # f1 = f1 - dql[1] * wp.abs(v_ang[2]) * v_ang[2]
+    # f5 = f5 - dqa[2] * wp.abs(v_lin[1]) * v_lin[1]
+    # # axis 2 (heave) + axis 4 (pitch): F_heave -= D_quad[2] * |q| * q ; F_pitch -= D_quad[4] * |w| * w
+    # f2 = f2 - dql[2] * wp.abs(v_ang[1]) * v_ang[1]
+    # f4 = f4 - dqa[1] * wp.abs(v_lin[2]) * v_lin[2]
 
     f = wp.spatial_vector(wp.vec3f(f0, f1, f2), wp.vec3f(f3, f4, f5))
     wp.atomic_add(wrench, i, f)

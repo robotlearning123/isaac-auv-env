@@ -48,6 +48,8 @@ class RandomizationRanges:
     d_quad: float = 0.30
     volume: float = 0.15
     coBM: float = 0.50
+    thruster_gain: float = 0.20
+    current_speed_max: float = 0.5
 
 
 class Tier1:
@@ -106,6 +108,7 @@ class Tier1:
         self.mass_arr: wp.array | None = None
         self.volume_arr: wp.array | None = None
         self.coBM_arr: wp.array | None = None
+        self.current_vec_arr: wp.array | None = None
         self.T_matrix: wp.array | None = None
 
     def set_coeffs(
@@ -242,6 +245,25 @@ class Tier1:
         c_np = self.coBM_arr.numpy()
         c_np[ids] = base["coBM"] * (1.0 + rng.uniform(-ranges.coBM, ranges.coBM, n).astype(np.float32))
         self.coBM_arr = wp.array(c_np, dtype=wp.float32, device=self.device)
+
+        # Ocean current: speed in [0, max] × random unit direction
+        if ranges.current_speed_max > 0:
+            speeds = rng.uniform(0, ranges.current_speed_max, n).astype(np.float32)
+            theta = rng.uniform(0, 2 * np.pi, n).astype(np.float32)
+            cos_phi = rng.uniform(-1, 1, n).astype(np.float32)
+            sin_phi = np.sqrt(np.clip(1.0 - cos_phi**2, 0, None)).astype(np.float32)
+            current_vec = np.stack([
+                speeds * sin_phi * np.cos(theta),
+                speeds * sin_phi * np.sin(theta),
+                speeds * cos_phi,
+            ], axis=-1).astype(np.float32)
+            cv_np = (
+                self.current_vec_arr.numpy().copy()
+                if self.current_vec_arr is not None
+                else np.zeros((self.n_envs, 3), dtype=np.float32)
+            )
+            cv_np[ids] = current_vec
+            self.current_vec_arr = wp.array(cv_np, dtype=wp.vec3f, device=self.device)
 
     def zero_wrench(self) -> None:
         wp.launch(tier1_zero_wrench, dim=self.n_envs, inputs=[self.wrench_buf], device=self.device)

@@ -20,11 +20,13 @@ from typing import Any, ClassVar
 
 import gymnasium as gym
 import numpy as np
+import torch
 import warp as wp
 from gymnasium import spaces
 
 from oceanscale.fluid.grid import GridFluidSolver
 from oceanscale.hydro.tier1 import DEFAULT_DT, RandomizationRanges, Tier1
+from oceanscale.hydro.tier1_kernels import tier1_zero_wrench
 from oceanscale.vehicles.bluerov2 import BlueROV2Heavy
 
 
@@ -32,6 +34,38 @@ def _default_bluerov_coeffs() -> dict[str, Any]:
     """BlueROV2 Heavy coefficients from von Benzon et al. 2022."""
     vehicle = BlueROV2Heavy()
     return vehicle.set_coeffs_kwargs()
+
+
+def _rotate_to_world_torch(
+    quat: torch.Tensor, vec_body: torch.Tensor
+) -> torch.Tensor:
+    """Rotate vectors from body to world frame using quaternion (xyzw) on GPU."""
+    qx, qy, qz, qw = quat[:, 0], quat[:, 1], quat[:, 2], quat[:, 3]
+    vx, vy, vz = vec_body[:, 0], vec_body[:, 1], vec_body[:, 2]
+    t0 = 2.0 * (qy * vz - qz * vy)
+    t1 = 2.0 * (qz * vx - qx * vz)
+    t2 = 2.0 * (qx * vy - qy * vx)
+    return torch.stack([
+        vx + qw * t0 + qy * t2 - qz * t1,
+        vy + qw * t1 + qz * t0 - qx * t2,
+        vz + qw * t2 + qx * t1 - qy * t0,
+    ], dim=-1)
+
+
+def _rotate_to_body_torch(
+    quat: torch.Tensor, vec_world: torch.Tensor
+) -> torch.Tensor:
+    """Rotate vectors from world to body frame using quaternion (xyzw) on GPU."""
+    qx, qy, qz, qw = quat[:, 0], quat[:, 1], quat[:, 2], quat[:, 3]
+    vx, vy, vz = vec_world[:, 0], vec_world[:, 1], vec_world[:, 2]
+    t0 = 2.0 * (qy * vz - qz * vy)
+    t1 = 2.0 * (qz * vx - qx * vz)
+    t2 = 2.0 * (qx * vy - qy * vx)
+    return torch.stack([
+        vx - qw * t0 - qy * t2 + qz * t1,
+        vy - qw * t1 - qz * t0 + qx * t2,
+        vz - qw * t2 - qx * t1 + qy * t0,
+    ], dim=-1)
 
 
 class ROVEnv(gym.Env):
@@ -80,6 +114,8 @@ class ROVEnv(gym.Env):
         randomization_ranges: RandomizationRanges | None = None,
         init_pos_noise_std: float = 0.5,
         init_yaw_noise_std: float = 0.5,
+        current_drag_coeff: float = 5.0,
+        gpu_obs: bool = False,
     ) -> None:
         super().__init__()
 
@@ -101,6 +137,8 @@ class ROVEnv(gym.Env):
         self.randomization_ranges = randomization_ranges or RandomizationRanges()
         self.init_pos_noise_std = init_pos_noise_std
         self.init_yaw_noise_std = init_yaw_noise_std
+        self.current_drag_coeff = current_drag_coeff
+        self.gpu_obs = gpu_obs
 
         if target_pos is None:
             target_pos = np.array([0.0, 0.0, -1.5], dtype=np.float32)
@@ -119,12 +157,10 @@ class ROVEnv(gym.Env):
         else:
             self._t_pinv = None
 
-        w = reward_weights or {}
-        self._w_pos = w.get("pos", 1.0)
-        self._w_vel = w.get("vel", 0.1)
-        self._w_act = w.get("act", 0.01)
-        self._w_depth = w.get("depth", 2.0)
-        self._w_heading = w.get("heading", 0.5)
+        # reward_weights kept for API compat but unused (exponential shaping is fixed)
+        self._w_pos = 0.5
+        self._w_vel = 0.3
+        self._w_act = 0.2
 
         self.observation_space = spaces.Box(
             low=-np.inf, high=np.inf, shape=(26,), dtype=np.float32
@@ -132,6 +168,8 @@ class ROVEnv(gym.Env):
         self.action_space = spaces.Box(
             low=-1.0, high=1.0, shape=(6,), dtype=np.float32
         )
+
+        self._target_pos_torch = torch.from_numpy(self.target_pos).to(self.device)
 
         self._built = False
 
@@ -147,8 +185,11 @@ class ROVEnv(gym.Env):
 
         template = newton.ModelBuilder()
         template.gravity = 0.0  # Tier1 restoring kernel handles buoyancy/gravity
-        body = template.add_body(mass=self.coeffs["mass"])
-        template.add_shape_sphere(body, radius=0.1)
+        mass = self.coeffs["mass"]
+        I_max = max(self.coeffs.get("Ix", 0.26), self.coeffs.get("Iy", 0.23), self.coeffs.get("Iz", 0.37))
+        radius = (5.0 * I_max / (2.0 * mass)) ** 0.5
+        body = template.add_body(mass=mass)
+        template.add_shape_sphere(body, radius=radius)
         template.joint_q = [
             self.target_pos[0], self.target_pos[1], self.target_pos[2],
             0.0, 0.0, 0.0, 1.0,
@@ -174,17 +215,32 @@ class ROVEnv(gym.Env):
         tier1_kwargs = dict(self.coeffs)
         if self._t_matrix is not None:
             tier1_kwargs["T_matrix"] = self._t_matrix
+        tier1_kwargs.pop("Ix", None)
+        tier1_kwargs.pop("Iy", None)
+        tier1_kwargs.pop("Iz", None)
         self.tier1.set_coeffs(**tier1_kwargs)
 
         self._u_cmd = wp.zeros(
             (self.n_envs, self.n_thrusters), dtype=wp.float32, device=self.device
         )
 
+        self._thruster_gain = np.ones(self.n_envs, dtype=np.float32)
+        self._thruster_gain_gpu = torch.ones(self.n_envs, device=self.device, dtype=torch.float32)
+
         self._prev_action = np.zeros((self.n_envs, 6), dtype=np.float32)
         self._prev_wrench = np.zeros((self.n_envs, 6), dtype=np.float32)
         self._step_count = np.zeros(self.n_envs, dtype=np.int32)
         self._done = np.zeros(self.n_envs, dtype=bool)
         self._last_info: dict[str, Any] = {}
+
+        # GPU-side persistent tensors (zero-copy via wp.to_torch)
+        self._prev_action_gpu = torch.zeros(
+            self.n_envs, 6, device=self.device, dtype=torch.float32
+        )
+        self._prev_wrench_gpu = torch.zeros(
+            self.n_envs, 6, device=self.device, dtype=torch.float32
+        )
+        self._quat_buf = wp.zeros(self.n_envs, dtype=wp.quatf, device=self.device)
 
         # Fluid solver for ocean current FSI coupling
         self._fluid: GridFluidSolver | None = None
@@ -219,6 +275,7 @@ class ROVEnv(gym.Env):
         if options is not None and "target_position" in options:
             new_target = np.asarray(options["target_position"], dtype=np.float32)
             self.target_pos = new_target
+            self._target_pos_torch = torch.from_numpy(new_target).to(self.device)
             info["target_position"] = new_target.copy()
 
         if env_ids is not None:
@@ -235,6 +292,33 @@ class ROVEnv(gym.Env):
         """Partial reset: reset only specified env indices."""
         return self.reset(env_ids=env_ids)
 
+    def reset_torch(
+        self,
+        seed: int | None = None,
+        options: dict[str, Any] | None = None,
+        env_ids: list[int] | np.ndarray | None = None,
+    ) -> tuple[torch.Tensor, dict[str, Any]]:
+        """GPU-native reset: returns CUDA tensor obs, no CPU transfer."""
+        super().reset(seed=seed)
+        if not self._built:
+            self._build()
+
+        info: dict[str, Any] = {"target_position": self.target_pos.copy()}
+
+        if options is not None and "target_position" in options:
+            new_target = np.asarray(options["target_position"], dtype=np.float32)
+            self.target_pos = new_target
+            self._target_pos_torch = torch.from_numpy(new_target).to(self.device)
+            info["target_position"] = new_target.copy()
+
+        if env_ids is not None:
+            self._reset_indices(np.asarray(env_ids, dtype=np.int32))
+        else:
+            self._reset_indices(np.arange(self.n_envs))
+
+        obs = self._get_obs_torch()
+        return obs, info
+
     def step(
         self, action: np.ndarray
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, dict[str, Any]]:
@@ -248,6 +332,9 @@ class ROVEnv(gym.Env):
 
         action = np.clip(action, -1.0, 1.0)
         self._prev_action = action.copy()
+        self._prev_action_gpu = torch.tensor(
+            action, device=self.device, dtype=torch.float32
+        )
 
         # Map 6-DOF wrench action to n_thrusters via T_matrix pseudoinverse
         if self._t_pinv is not None:
@@ -256,7 +343,14 @@ class ROVEnv(gym.Env):
             u_cmd = np.zeros((self.n_envs, self.n_thrusters), dtype=np.float32)
             for i in range(min(6, self.n_thrusters)):
                 u_cmd[:, i] = action[:, i]
+        u_cmd *= self._thruster_gain[:, np.newaxis]
         self._u_cmd = wp.array(u_cmd, dtype=wp.float32, device=self.device)
+
+        # Zero body forces before applying new hydro wrench
+        wp.launch(
+            tier1_zero_wrench, dim=self.n_envs,
+            inputs=[self.state_curr.body_f], device=self.device,
+        )
 
         # Tier1 hydro wrench
         self.tier1.compute_wrench(
@@ -271,6 +365,10 @@ class ROVEnv(gym.Env):
         if self._fluid is not None:
             self._apply_ocean_current()
 
+        # Domain-randomized ocean current force
+        if self.use_domain_randomization and self.tier1.current_vec_arr is not None:
+            self._apply_dr_current()
+
         self.solver.step(
             self.state_curr, self.state_next, self.control, None, self.dt
         )
@@ -278,25 +376,29 @@ class ROVEnv(gym.Env):
 
         self.state_curr, self.state_next = self.state_next, self.state_curr
 
-        self._prev_wrench = self.tier1.wrench_buf.numpy().copy()
+        # GPU-side wrench snapshot (no CPU transfer)
+        wrench_t = wp.to_torch(self.tier1.wrench_buf)
+        self._prev_wrench_gpu.copy_(wrench_t.reshape_as(self._prev_wrench_gpu))
         self._step_count += 1
 
-        # Compute rewards and done flags
+        # Compute rewards and done flags (GPU torch)
         reward, reward_components = self._compute_reward_with_components()
-        terminated = np.zeros(self.n_envs, dtype=bool)
-        truncated = self._step_count >= self.max_episode_steps
+
+        terminated = torch.zeros(self.n_envs, dtype=torch.bool, device=self.device)
+        step_t = torch.from_numpy(self._step_count).to(self.device)
+        truncated = step_t >= self.max_episode_steps
 
         # Out-of-bounds termination (>5m from target)
-        pos, _, _ = self._get_body_state()
-        oob = np.linalg.norm(pos - self.target_pos, axis=-1) > 5.0
+        pos, _, _ = self._get_body_state_torch()
+        oob = torch.linalg.norm(pos - self._target_pos_torch, dim=-1) > 5.0
         terminated = terminated | oob
 
-        self._done = terminated | truncated
+        self._done = (terminated | truncated).cpu().numpy()
 
         # Auto-reset divergent or out-of-bounds envs
-        divergent = ~np.isfinite(reward) | oob
-        if np.any(divergent):
-            div_ids = np.where(divergent)[0]
+        divergent = ~torch.isfinite(reward) | oob
+        if torch.any(divergent):
+            div_ids = torch.where(divergent)[0].cpu().numpy()
             self._reset_indices(div_ids)
             reward[div_ids] = 0.0
             terminated[div_ids] = False
@@ -304,6 +406,90 @@ class ROVEnv(gym.Env):
 
         obs = self._get_flat_obs()
         info: dict[str, Any] = reward_components
+        if self.gpu_obs:
+            return obs, reward, terminated, truncated, info
+        return obs, reward.cpu().numpy(), terminated.cpu().numpy(), truncated.cpu().numpy(), info
+
+    def step_torch(
+        self, action: torch.Tensor
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, dict[str, Any]]:
+        """GPU-native step: accepts and returns CUDA tensors. No CPU transfer."""
+        if not self._built:
+            raise RuntimeError("Call reset() or reset_torch() first")
+
+        action = action.to(device=self.device, dtype=torch.float32)
+        if action.ndim == 1:
+            action = action.unsqueeze(0).expand(self.n_envs, -1).clone()
+        action = action.clamp(-1.0, 1.0)
+
+        self._prev_action_gpu.copy_(action)
+        self._prev_action = action.cpu().numpy()
+
+        # Thruster allocation on GPU (avoids numpy round-trip)
+        if self._t_pinv is not None:
+            if not hasattr(self, "_t_pinv_torch"):
+                self._t_pinv_torch = torch.from_numpy(self._t_pinv).to(self.device)
+            u_cmd = (action @ self._t_pinv_torch.T).clamp(-1.0, 1.0)
+        else:
+            u_cmd = torch.zeros(self.n_envs, self.n_thrusters, device=self.device, dtype=torch.float32)
+            for i in range(min(6, self.n_thrusters)):
+                u_cmd[:, i] = action[:, i]
+        u_cmd *= self._thruster_gain_gpu.unsqueeze(1)
+        self._u_cmd = wp.from_torch(u_cmd.contiguous(), dtype=wp.float32)
+
+        wp.launch(
+            tier1_zero_wrench, dim=self.n_envs,
+            inputs=[self.state_curr.body_f], device=self.device,
+        )
+
+        self.tier1.compute_wrench(
+            nu=self.state_curr.body_qd,
+            quat=self._extract_quat(),
+            u_cmd=self._u_cmd,
+            dt=self.dt,
+        )
+        self.tier1.write_to_body_f(self.state_curr.body_f)
+
+        if self._fluid is not None:
+            self._apply_ocean_current()
+
+        # Domain-randomized ocean current force
+        if self.use_domain_randomization and self.tier1.current_vec_arr is not None:
+            self._apply_dr_current()
+
+        self.solver.step(
+            self.state_curr, self.state_next, self.control, None, self.dt
+        )
+        wp.synchronize()
+
+        self.state_curr, self.state_next = self.state_next, self.state_curr
+
+        wrench_t = wp.to_torch(self.tier1.wrench_buf)
+        self._prev_wrench_gpu.copy_(wrench_t.reshape_as(self._prev_wrench_gpu))
+        self._step_count += 1
+
+        reward, info = self._compute_reward_with_components()
+
+        terminated = torch.zeros(self.n_envs, dtype=torch.bool, device=self.device)
+        step_t = torch.from_numpy(self._step_count).to(self.device)
+        truncated = step_t >= self.max_episode_steps
+
+        pos, _, _ = self._get_body_state_torch()
+        oob = torch.linalg.norm(pos - self._target_pos_torch, dim=-1) > 5.0
+        terminated = terminated | oob
+
+        self._done = (terminated | truncated).cpu().numpy()
+
+        divergent = ~torch.isfinite(reward) | oob
+        if torch.any(divergent):
+            div_ids = torch.where(divergent)[0].cpu().numpy()
+            self._reset_indices(div_ids)
+            reward[div_ids] = 0.0
+            terminated[div_ids] = False
+            truncated[div_ids] = False
+
+        obs = self._get_obs_torch()
+
         return obs, reward, terminated, truncated, info
 
     def action_space_sample(self) -> np.ndarray:
@@ -344,45 +530,48 @@ class ROVEnv(gym.Env):
         )
 
     def _apply_ocean_current(self) -> None:
-        """Sample pre-computed fluid velocity at ROV positions and apply drag force."""
-        body_q = self.state_curr.body_q.numpy()
-        positions = body_q[:, 0:3].copy()
+        """Sample fluid velocity at ROV positions and apply drag force.
 
-        # Shift positions into fluid grid space (grid covers [0, domain_size])
+        All computation stays on GPU via wp.to_torch + torch ops.
+        """
+        body_q = wp.to_torch(self.state_curr.body_q)
+        positions = body_q[:, 0:3].clone()
+
         domain_size = self._fluid.domain_size
         half = domain_size / 2.0
-        positions += half  # center domain at origin
+        positions += half
 
-        self._fluid_positions = wp.array(positions, dtype=wp.vec3, device=self.device)
+        self._fluid_positions = wp.from_torch(positions.contiguous(), dtype=wp.vec3)
 
-        # Sample pre-computed velocity field (no stepping)
         fluid_vel = self._fluid.sample_velocity_at(self._fluid_positions)
-        fluid_vel_np = fluid_vel.numpy()  # (n_envs, 3) world frame
+        fluid_vel_t = wp.to_torch(fluid_vel)
 
-        # Body velocity in world frame
-        body_qd = self.state_curr.body_qd.numpy()
-        body_vel_body = body_qd[:, 0:3]  # linear velocity in body frame
+        body_qd = wp.to_torch(self.state_curr.body_qd)
+        body_vel_body = body_qd[:, 0:3]
 
-        # Rotate body velocity to world frame using quaternion
-        quat = body_q[:, 3:7]  # xyzw
-        body_vel_world = self._rotate_to_world(quat, body_vel_body)
+        quat = body_q[:, 3:7]
+        body_vel_world = _rotate_to_world_torch(quat, body_vel_body)
 
-        # Relative velocity (fluid - body) in world frame
-        v_rel = fluid_vel_np - body_vel_world
-
-        # FSI drag: F = coupling_strength * v_rel (Morison linear drag)
-        # Independent of vehicle damping — models current force on submerged body
+        v_rel = fluid_vel_t - body_vel_world
         coupling_strength = self.fluid_config.get("coupling_strength", 8.0)
         force_world = coupling_strength * v_rel
-        force_body = self._rotate_to_body(quat, force_world)
+        force_body = _rotate_to_body_torch(quat, force_world)
 
-        # Apply to body_f (additive)
-        body_f = self.state_curr.body_f.numpy()
+        body_f = wp.to_torch(self.state_curr.body_f)
         body_f[:, 0:3] += force_body
-        wp.copy(
-            self.state_curr.body_f,
-            wp.array(body_f, dtype=wp.float32, device=self.device),
-        )
+
+    def _apply_dr_current(self) -> None:
+        """Apply domain-randomized ocean current as drag force (GPU-only)."""
+        current_vec_t = wp.to_torch(self.tier1.current_vec_arr)  # (n, 3) world frame
+        body_q = wp.to_torch(self.state_curr.body_q)
+        body_qd = wp.to_torch(self.state_curr.body_qd)
+        quat = body_q[:, 3:7]
+        body_vel_world = _rotate_to_world_torch(quat, body_qd[:, 0:3])
+        v_rel = current_vec_t - body_vel_world
+        force_world = self.current_drag_coeff * v_rel
+        force_body = _rotate_to_body_torch(quat, force_world)
+        body_f = wp.to_torch(self.state_curr.body_f)
+        body_f[:, 0:3] += force_body
 
     @staticmethod
     def _rotate_to_world(
@@ -437,10 +626,11 @@ class ROVEnv(gym.Env):
     # ------------------------------------------------------------------
 
     def _extract_quat(self) -> wp.array:
-        """Extract quaternion from body_q (transform: xyz + quat_xyzw)."""
-        body_q = self.state_curr.body_q.numpy()
-        quat = body_q[:, 3:7].copy()
-        return wp.array(quat, dtype=wp.quatf, device=self.device)
+        """Extract quaternion from body_q without CPU transfer."""
+        body_q_t = wp.to_torch(self.state_curr.body_q)
+        quat_dst = wp.to_torch(self._quat_buf)
+        quat_dst.copy_(body_q_t[:, 3:7])
+        return self._quat_buf
 
     def _get_body_state(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """Return (position, quaternion, velocity) arrays, each (n_envs, ...)."""
@@ -451,77 +641,103 @@ class ROVEnv(gym.Env):
         vel = body_qd[:, 0:6]
         return pos, quat, vel
 
-    def _get_obs_for(self, env_ids: np.ndarray) -> np.ndarray:
-        """Compute observations for specified envs. Shape: (len(env_ids), 26)."""
-        pos, quat, vel = self._get_body_state()
+    def _get_body_state_torch(self) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        """GPU-only body state via wp.to_torch (zero-copy, no CPU transfer)."""
+        body_q = wp.to_torch(self.state_curr.body_q)
+        body_qd = wp.to_torch(self.state_curr.body_qd)
+        return body_q[:, :3], body_q[:, 3:7], body_qd[:, :6]
 
-        obs = np.zeros((len(env_ids), 26), dtype=np.float32)
+    def _get_obs_for(self, env_ids: np.ndarray) -> np.ndarray:
+        """Compute observations on GPU. Shape: (len(env_ids), 26)."""
+        pos, quat, vel = self._get_body_state_torch()
+        env_ids_t = torch.as_tensor(env_ids, device=self.device)
+        n = len(env_ids)
+
+        obs = torch.zeros(n, 26, device=self.device, dtype=torch.float32)
 
         # Position error (target - current)
-        obs[:, 0:3] = self.target_pos - pos[env_ids]
+        obs[:, 0:3] = self._target_pos_torch - pos[env_ids_t]
 
         # Orientation quaternion (xyzw)
-        obs[:, 3:7] = quat[env_ids]
+        obs[:, 3:7] = quat[env_ids_t]
 
         # Body velocity: linear + angular
-        obs[:, 7:10] = vel[env_ids, 0:3]
-        obs[:, 10:13] = vel[env_ids, 3:6]
+        obs[:, 7:10] = vel[env_ids_t, 0:3]
+        obs[:, 10:13] = vel[env_ids_t, 3:6]
 
         # Depth error
-        depth_err = self.target_pos[2] - pos[env_ids, 2]
-        obs[:, 13] = depth_err
+        obs[:, 13] = self._target_pos_torch[2] - pos[env_ids_t, 2]
 
-        # Heading error (roll, pitch from quaternion, small-angle approximation)
-        q = quat[env_ids]
-        roll_err = 2.0 * np.arctan2(q[:, 2], q[:, 3])
-        pitch_err = 2.0 * np.arcsin(np.clip(-q[:, 0] * q[:, 2] + q[:, 1] * q[:, 3], -1, 1))
-        obs[:, 14] = roll_err
-        obs[:, 15] = pitch_err
+        # Heading error (roll, pitch from quaternion)
+        q = quat[env_ids_t]
+        obs[:, 14] = 2.0 * torch.atan2(q[:, 2], q[:, 3])
+        obs[:, 15] = 2.0 * torch.asin(
+            torch.clamp(-q[:, 0] * q[:, 2] + q[:, 1] * q[:, 3], -1, 1)
+        )
 
         # Previous action
-        obs[:, 16:22] = self._prev_action[env_ids]
+        obs[:, 16:22] = self._prev_action_gpu[env_ids_t]
 
         # Previous wrench summary (fz, mx, my, mz)
-        obs[:, 22:26] = self._prev_wrench[env_ids, 2:6]
+        obs[:, 22:26] = self._prev_wrench_gpu[env_ids_t, 2:6]
 
         # Sensor noise
         if self.sensor_noise_std > 0:
-            obs += self.np_random.normal(0, self.sensor_noise_std, obs.shape).astype(np.float32)
+            obs += torch.randn_like(obs) * self.sensor_noise_std
 
         # Clamp non-finite values
-        np.nan_to_num(obs, copy=False, nan=0.0, posinf=1e6, neginf=-1e6)
+        obs = torch.nan_to_num(obs, nan=0.0, posinf=1e6, neginf=-1e6)
+
+        if self.gpu_obs:
+            return obs
+        return obs.cpu().numpy()
+
+    def _get_obs_torch(self) -> torch.Tensor:
+        """Observations as CUDA tensor. Shape: (n_envs, 26). No CPU transfer."""
+        pos, quat, vel = self._get_body_state_torch()
+
+        obs = torch.zeros(self.n_envs, 26, device=self.device, dtype=torch.float32)
+        obs[:, 0:3] = self._target_pos_torch - pos
+        obs[:, 3:7] = quat
+        obs[:, 7:10] = vel[:, 0:3]
+        obs[:, 10:13] = vel[:, 3:6]
+        obs[:, 13] = self._target_pos_torch[2] - pos[:, 2]
+
+        obs[:, 14] = 2.0 * torch.atan2(quat[:, 2], quat[:, 3])
+        obs[:, 15] = 2.0 * torch.asin(
+            torch.clamp(-quat[:, 0] * quat[:, 2] + quat[:, 1] * quat[:, 3], -1, 1)
+        )
+
+        obs[:, 16:22] = self._prev_action_gpu
+        obs[:, 22:26] = self._prev_wrench_gpu[:, 2:6]
+
+        if self.sensor_noise_std > 0:
+            obs += torch.randn_like(obs) * self.sensor_noise_std
+
+        obs = torch.nan_to_num(obs, nan=0.0, posinf=1e6, neginf=-1e6)
         return obs
 
     def _compute_reward_with_components(
         self,
-    ) -> tuple[np.ndarray, dict[str, Any]]:
-        """Station-keeping reward with component breakdown."""
-        pos, _, vel = self._get_body_state()
+    ) -> tuple[torch.Tensor, dict[str, Any]]:
+        """Exponential shaping reward: r = exp(-error/scale), always (0, 1]."""
+        pos, quat, vel = self._get_body_state_torch()
+        target = self._target_pos_torch
 
-        pos_err = np.linalg.norm(self.target_pos - pos, axis=-1)
-        depth_err = np.abs(self.target_pos[2] - pos[:, 2])
-        vel_norm = np.linalg.norm(vel, axis=-1)
-        act_norm = np.linalg.norm(self._prev_action, axis=-1)
+        pos_err = torch.linalg.norm(target - pos, dim=-1)
+        vel_norm = torch.linalg.norm(vel, dim=-1)
+        act_norm = torch.linalg.norm(self._prev_action_gpu, dim=-1)
 
-        q = self.state_curr.body_q.numpy()[:, 3:7]
-        roll = 2.0 * np.arctan2(q[:, 2], q[:, 3])
-        pitch = 2.0 * np.arcsin(np.clip(-q[:, 0] * q[:, 2] + q[:, 1] * q[:, 3], -1, 1))
-        heading_err = np.abs(roll) + np.abs(pitch)
+        r_pos = torch.exp(-pos_err / 1.0)
+        r_vel = torch.exp(-vel_norm / 0.5)
+        r_act = torch.exp(-act_norm / 1.0)
 
-        r_pos = -self._w_pos * pos_err
-        r_vel = -self._w_vel * vel_norm
-        r_act = -self._w_act * act_norm
-        r_depth = -self._w_depth * depth_err
-        r_heading = -self._w_heading * heading_err
-
-        reward = (r_pos + r_vel + r_act + r_depth + r_heading).astype(np.float32)
+        reward = 0.5 * r_pos + 0.3 * r_vel + 0.2 * r_act
 
         info = {
-            "reward_distance": float(np.mean(r_pos)),
-            "reward_action": float(np.mean(r_act)),
-            "reward_velocity": float(np.mean(r_vel)),
-            "reward_depth": float(np.mean(r_depth)),
-            "reward_heading": float(np.mean(r_heading)),
+            "reward_distance": r_pos.mean().item(),
+            "reward_velocity": r_vel.mean().item(),
+            "reward_action": r_act.mean().item(),
         }
         return reward, info
 
@@ -558,6 +774,12 @@ class ROVEnv(gym.Env):
 
         newton.eval_fk(self.model, self.model.joint_q, self.model.joint_qd, self.state_curr)
 
+        # Zero body forces to prevent accumulation from previous step
+        wp.launch(
+            tier1_zero_wrench, dim=self.n_envs,
+            inputs=[self.state_curr.body_f], device=self.device,
+        )
+
         # Reset Tier1 internal buffers for specified envs
         nu_prev = self.tier1.nu_prev.numpy()
         nu_dot_prev = self.tier1.nu_dot_prev.numpy()
@@ -578,6 +800,19 @@ class ROVEnv(gym.Env):
                 env_ids=env_ids,
                 ranges=self.randomization_ranges,
             )
+            # Per-env thruster gain: scale max thrust by ±thruster_gain range
+            gain_range = self.randomization_ranges.thruster_gain
+            self._thruster_gain[env_ids] = 1.0 + self.np_random.uniform(
+                -gain_range, gain_range, n_reset
+            ).astype(np.float32)
+            self._thruster_gain_gpu = torch.tensor(
+                self._thruster_gain, device=self.device, dtype=torch.float32
+            )
+
+        # Zero GPU-side prev tensors for reset envs
+        env_ids_t = torch.as_tensor(env_ids, device=self.device)
+        self._prev_action_gpu[env_ids_t] = 0.0
+        self._prev_wrench_gpu[env_ids_t] = 0.0
 
         self._prev_action[env_ids] = 0.0
         self._prev_wrench[env_ids] = 0.0
