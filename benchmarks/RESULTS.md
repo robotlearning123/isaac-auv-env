@@ -1,5 +1,44 @@
 # OceanScale vs PyBullet Benchmark Results
 
+## Current Launch-Standardized Benchmark
+
+This section is the current single-source launch benchmark for OceanScale-only
+throughput, feature, RL, and fidelity evidence.
+
+- Command: `uv run python benchmarks/competitive/oceanscale_standard_bench.py`
+- Raw artifact: `benchmarks/competitive/results.json`
+- Run date: 2026-05-24
+- GPU: NVIDIA GeForce RTX 5090 (31 GiB, sm_120)
+- Driver: 580.95.05, NVIDIA-SMI CUDA 13.0
+- Runtime: Torch CUDA 12.8, Warp 1.13.0, Newton 1.2.0
+- Package: oceanscale 0.1.0a0
+
+| Envs | Env-steps/s | Wall time | Bench steps |
+|------|-------------|-----------|-------------|
+| 1 | 1,326 | 0.1508 s | 200 |
+| 64 | 85,824 | 0.1491 s | 200 |
+| 256 | 303,206 | 0.1689 s | 200 |
+| 1024 | 1,272,106 | 0.1610 s | 200 |
+| 4096 | 4,588,922 | 0.1785 s | 200 |
+
+Feature evidence from the same run:
+
+- Physics: Fossen 6-DOF with added mass, Coriolis/centripetal, linear and
+  quadratic damping, restoring forces, thruster low-pass/deadband, ocean-current
+  coupling. Cross-coupling damping is disabled in v0.1 because coefficients are
+  not independently identified.
+- Sensors: IMU, DVL, and depth/pressure stubs are present. Sonar, camera, and
+  acoustic comms are not present.
+- RL integration: Gymnasium 1.2.3, Stable-Baselines3 2.8.0, 26-dim observation
+  space, 6-dim action space, partial reset, domain randomization, VecNormalize
+  support via `oceanscale/data/vec_normalize.npz`.
+- Fidelity: von Benzon comparison passes with 0.013% position error and
+  0.0025 deg attitude RMS.
+
+The PyBullet comparison below is a separate 2026-05-22 CPU-baseline sweep. Do
+not mix the 17,427 env-steps/s PyBullet comparison number with the current
+85,824 env-steps/s launch-standardized OceanScale-only benchmark.
+
 ## TL;DR
 
 At **n_envs = 64**, OceanScale (Newton+Warp GPU) runs **10.5× faster** than PyBullet
@@ -38,7 +77,7 @@ training cares about.
 | Aspect | OceanScale Tier-1 | PyBullet baseline |
 |--------|-------------------|-------------------|
 | Init position | Disabled noise in benchmark (default is ±0.5 m random) | Always exact target |
-| Damping | Diagonal + 4 cross-coupling terms (`oceanscale/hydro/tier1_kernels.py`) | Diagonal only (`benchmarks/bullet_bluerov_env.py`) |
+| Damping | Diagonal damping; cross-coupling disabled in v0.1 (`oceanscale/hydro/tier1_kernels.py`) | Diagonal only (`benchmarks/bullet_bluerov_env.py`) |
 | Coriolis | Full skew-symmetric C(ν) (M_RB + M_A) | Simplified angular-momentum form |
 | Restoring | Euler-angle form per von Benzon Eq 12 | Quaternion-derived equivalent |
 | Thruster | Tier-1 deadband + saturation | Low-pass filter only, no deadband |
