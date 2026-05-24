@@ -1,19 +1,19 @@
 export default {
   eyebrow: "Challenge",
-  title: "The bottleneck is iteration speed.",
-  label: "Iteration cost / underwater robotics",
+  title: "Field testing is the bottleneck",
+  label: "Most of the iteration loop runs in the ocean itself. Ship time, weather windows, crew costs, and the risk of losing an expensive vehicle to a current set the pace of progress.",
   problems: [
     {
-      title: "Sea windows",
-      body: "Real ocean conditions cannot be queued like compute jobs.",
+      title: "Weather windows",
+      body: "Real ocean conditions cannot be queued like compute jobs. Every delay costs weeks.",
     },
     {
-      title: "Physics cost",
-      body: "High-fidelity fluid solvers are too expensive for policy search loops.",
+      title: "Iteration cost",
+      body: "Each field trial requires vessel time, crew, and equipment — the most expensive test loop on earth.",
     },
     {
-      title: "Training scale",
-      body: "Legacy simulators were not built for 8192 environments or RL workloads.",
+      title: "Data scarcity",
+      body: "Legacy simulators were not built for 8192 parallel environments or RL-scale training.",
     },
   ],
 };

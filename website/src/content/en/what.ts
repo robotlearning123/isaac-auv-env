@@ -1,30 +1,30 @@
 export default {
   eyebrow: "Platform",
-  title: "Physics to policy.",
+  title: "From physics to policy",
   capabilities: [
     {
       metric: null,
-      metricLabel: "01 / Sim Core",
-      title: "GPU-native simulation kernel",
-      body: "Newton + Warp physics path for high-throughput training loops.",
+      metricLabel: "01 / Simulator",
+      title: "GPU-native ocean simulation",
+      body: "Newton + Warp physics running sensor-accurate ocean environments at GPU scale.",
     },
     {
       metric: null,
-      metricLabel: "02 / Vector Fabric",
-      title: "Parallel environment matrix",
-      body: "8192 vectorized environments for policy search at scale.",
+      metricLabel: "02 / Environments",
+      title: "Parallel training at scale",
+      body: "64+ vectorized environments on a single GPU for policy search.",
     },
     {
       metric: null,
-      metricLabel: "03 / Fossen Dynamics",
-      title: "Hydrodynamics and sensors",
-      body: "6-DoF dynamics, current approximations, acoustic and underwater sensing hooks.",
+      metricLabel: "03 / Dynamics",
+      title: "Fossen hydrodynamics",
+      body: "6-DOF dynamics with validated coefficients from von Benzon et al. (2022).",
     },
     {
       metric: null,
-      metricLabel: "04 / Robotics Bridge",
-      title: "Robot training interfaces",
-      body: "Gymnasium, OpenUSD, and ROS 2 interfaces (Isaac Sim: future integration path).",
+      metricLabel: "04 / Interface",
+      title: "Gymnasium-native RL",
+      body: "Standard Gymnasium interface. Train with PPO, SAC, or any RL algorithm.",
     },
   ],
 };
