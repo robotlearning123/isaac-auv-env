@@ -2,7 +2,7 @@ import { ui, defaultLang, type Lang, type UIKey } from './ui';
 
 export function getLangFromUrl(url: URL): Lang {
   const [, lang] = url.pathname.split('/');
-  if (lang === 'en') return 'en';
+  if (lang === 'zh') return 'zh';
   return defaultLang;
 }
 
@@ -13,8 +13,8 @@ export function useTranslations(lang: Lang) {
 }
 
 export function getOtherLangUrl(currentLang: Lang, pathname: string): string {
-  if (currentLang === 'zh') {
-    return '/en' + (pathname === '/' ? '/' : pathname);
+  if (currentLang === 'en') {
+    return '/zh' + (pathname === '/' ? '/' : pathname);
   }
-  return pathname.replace(/^\/en/, '') || '/';
+  return pathname.replace(/^\/zh/, '') || '/';
 }
