@@ -14,20 +14,22 @@ Usage:
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import matplotlib
+
 matplotlib.use("Agg")  # headless — must be set before pyplot import
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.axes import Axes
 
 try:
     import imageio.v3 as iio
-except ImportError:
+except ImportError as exc:
     raise ImportError(
         "imageio + imageio-ffmpeg required. Install with: uv pip install imageio imageio-ffmpeg"
-    )
+    ) from exc
 
 
 def _quat_yaw(q: np.ndarray) -> float:
@@ -103,7 +105,10 @@ class VideoExporter:
             self._figsize = (16, 9)
             self._dpi = 100
             self._fig, self._axes = plt.subplots(
-                2, 2, figsize=self._figsize, dpi=self._dpi,
+                2,
+                2,
+                figsize=self._figsize,
+                dpi=self._dpi,
                 gridspec_kw={"hspace": 0.35, "wspace": 0.3},
             )
         else:
@@ -141,7 +146,7 @@ class VideoExporter:
 
         self._trail.append(pos.copy())
         if len(self._trail) > self._trail_length:
-            self._trail = self._trail[-self._trail_length:]
+            self._trail = self._trail[-self._trail_length :]
 
         if self._target is not None:
             self._depth_errors.append(abs(pos[2] - self._target[2]))
@@ -157,30 +162,35 @@ class VideoExporter:
         else:
             self._render_frame(pos, quat)
 
-    def _draw_trail(self, ax: plt.Axes, trail: np.ndarray, ix: int, iy: int) -> None:
+    def _draw_trail(self, ax: Axes, trail: np.ndarray, ix: int, iy: int) -> None:
         n = len(trail)
         for i in range(max(0, n - 100), n - 1):
             alpha = 0.1 + 0.9 * (i - max(0, n - 100)) / min(n, 100)
             ax.plot(
-                trail[i : i + 2, ix], trail[i : i + 2, iy],
-                color="steelblue", alpha=alpha, linewidth=1.5,
+                trail[i : i + 2, ix],
+                trail[i : i + 2, iy],
+                color="steelblue",
+                alpha=alpha,
+                linewidth=1.5,
             )
 
-    def _draw_vehicle(self, ax: plt.Axes, pos: np.ndarray, quat: np.ndarray,
-                      ix: int, iy: int, yaw: float) -> None:
+    def _draw_vehicle(
+        self, ax: Axes, pos: np.ndarray, quat: np.ndarray, ix: int, iy: int, yaw: float
+    ) -> None:
         arrow_len = 0.3
         if iy == 2:  # side view
             dx, dy = arrow_len * np.cos(yaw), 0.0
         else:  # top view
             dx, dy = arrow_len * np.cos(yaw), arrow_len * np.sin(yaw)
         ax.annotate(
-            "", xy=(pos[ix] + dx, pos[iy] + dy), xytext=(pos[ix], pos[iy]),
+            "",
+            xy=(pos[ix] + dx, pos[iy] + dy),
+            xytext=(pos[ix], pos[iy]),
             arrowprops=dict(arrowstyle="->", color="darkorange", lw=2),
         )
         ax.plot(pos[ix], pos[iy], marker="o", color="navy", markersize=6)
 
-    def _auto_scale(self, ax: plt.Axes, trail: np.ndarray, pos: np.ndarray,
-                    ix: int, iy: int) -> None:
+    def _auto_scale(self, ax: Axes, trail: np.ndarray, pos: np.ndarray, ix: int, iy: int) -> None:
         margin = 1.5
         all_x = np.append(trail[:, ix], pos[ix])
         all_y = np.append(trail[:, iy], pos[iy])
@@ -192,8 +202,9 @@ class VideoExporter:
         ax.set_xlim(cx - span / 2, cx + span / 2)
         ax.set_ylim(cy - span / 2, cy + span / 2)
 
-    def _render_cinematic(self, pos: np.ndarray, quat: np.ndarray,
-                          action: np.ndarray | None) -> None:
+    def _render_cinematic(
+        self, pos: np.ndarray, quat: np.ndarray, action: np.ndarray | None
+    ) -> None:
         axes = self._axes
         for ax in axes.flat:
             ax.cla()
@@ -211,8 +222,14 @@ class VideoExporter:
         ax_side.grid(True, alpha=0.3)
         self._draw_trail(ax_side, trail, 0, 2)
         if self._target is not None:
-            ax_side.plot(self._target[0], self._target[2], marker="x", color="red",
-                         markersize=10, markeredgewidth=2)
+            ax_side.plot(
+                self._target[0],
+                self._target[2],
+                marker="x",
+                color="red",
+                markersize=10,
+                markeredgewidth=2,
+            )
         self._draw_vehicle(ax_side, pos, quat, 0, 2, yaw)
         self._auto_scale(ax_side, trail, pos, 0, 2)
         ax_side.tick_params(labelsize=7)
@@ -226,8 +243,14 @@ class VideoExporter:
         ax_top.grid(True, alpha=0.3)
         self._draw_trail(ax_top, trail, 0, 1)
         if self._target is not None:
-            ax_top.plot(self._target[0], self._target[1], marker="x", color="red",
-                         markersize=10, markeredgewidth=2)
+            ax_top.plot(
+                self._target[0],
+                self._target[1],
+                marker="x",
+                color="red",
+                markersize=10,
+                markeredgewidth=2,
+            )
         self._draw_vehicle(ax_top, pos, quat, 0, 1, yaw)
         self._auto_scale(ax_top, trail, pos, 0, 1)
         ax_top.tick_params(labelsize=7)
@@ -247,7 +270,6 @@ class VideoExporter:
                 ax_depth.plot(t_arr[mask], e_arr[mask], color="crimson", linewidth=1.5)
                 ax_depth.fill_between(t_arr[mask], 0, e_arr[mask], alpha=0.15, color="crimson")
             else:
-                n_de = len(self._depth_errors)
                 max_pts = int(window * self._fps)
                 recent = self._depth_errors[-max_pts:]
                 ax_depth.plot(recent, color="crimson", linewidth=1.5)
@@ -262,30 +284,36 @@ class VideoExporter:
         ax_thr.grid(True, alpha=0.3, axis="y")
         if action is not None and len(action) >= 8:
             colors = ["#2196F3" if v >= 0 else "#FF5722" for v in action[:8]]
-            ax_thr.bar(range(1, 9), action[:8], color=colors, edgecolor="white",
-                       linewidth=0.5, width=0.7)
+            ax_thr.bar(
+                range(1, 9), action[:8], color=colors, edgecolor="white", linewidth=0.5, width=0.7
+            )
             ax_thr.set_xticks(range(1, 9))
             ax_thr.set_xticklabels([f"T{i}" for i in range(1, 9)], fontsize=6)
         elif self._thruster_actions:
             last = self._thruster_actions[-1]
             if len(last) >= 8:
                 colors = ["#2196F3" if v >= 0 else "#FF5722" for v in last[:8]]
-                ax_thr.bar(range(1, 9), last[:8], color=colors, edgecolor="white",
-                           linewidth=0.5, width=0.7)
+                ax_thr.bar(
+                    range(1, 9), last[:8], color=colors, edgecolor="white", linewidth=0.5, width=0.7
+                )
                 ax_thr.set_xticks(range(1, 9))
                 ax_thr.set_xticklabels([f"T{i}" for i in range(1, 9)], fontsize=6)
         ax_thr.tick_params(labelsize=7)
 
         # HUD overlay
-        depth_err = abs(pos[2] - self._target[2]) if self._target is not None else 0
-        pos_err = float(np.linalg.norm(pos - self._target)) if self._target is not None else 0
+        target = self._target
+        target_depth = target[2] if target is not None else float("nan")
+        depth_err = abs(pos[2] - target_depth) if target is not None else 0.0
+        pos_err = float(np.linalg.norm(pos - target)) if target is not None else 0.0
         t_now = self._step_times[-1] if self._step_times else len(self._frames) / self._fps
-        hud = f"Depth: {pos[2]:.2f}m  Target: {self._target[2]:.2f}m  |  " \
-              f"Err: {depth_err:.3f}m  Pos: {pos_err:.3f}m  |  t={t_now:.1f}s"
+        hud = (
+            f"Depth: {pos[2]:.2f}m  Target: {target_depth:.2f}m  |  "
+            f"Err: {depth_err:.3f}m  Pos: {pos_err:.3f}m  |  t={t_now:.1f}s"
+        )
         self._fig.suptitle(hud, fontsize=9, fontfamily="monospace", color="#333333", y=0.98)
 
         self._fig.canvas.draw()
-        buf = np.asarray(self._fig.canvas.buffer_rgba())
+        buf = np.asarray(cast(Any, self._fig.canvas).buffer_rgba())
         self._frames.append(buf[:, :, :3].copy())
 
     def _render_frame(self, pos: np.ndarray, quat: np.ndarray) -> None:
@@ -297,7 +325,10 @@ class VideoExporter:
         labels = {0: "X (m)", 1: "Y (m)", 2: "Z (m)"}
         ax.set_xlabel(labels[ix])
         ax.set_ylabel(labels[iy])
-        ax.set_title(f"BlueROV2 — {self._view} view" + (f"  (z={pos[2]:.2f}m)" if self._view == "top" else ""))
+        ax.set_title(
+            f"BlueROV2 — {self._view} view"
+            + (f"  (z={pos[2]:.2f}m)" if self._view == "top" else "")
+        )
         ax.set_aspect("equal")
         ax.grid(True, alpha=0.3)
 
@@ -306,8 +337,12 @@ class VideoExporter:
 
         if self._target is not None:
             ax.plot(
-                self._target[ix], self._target[iy],
-                marker="x", color="red", markersize=12, markeredgewidth=2,
+                self._target[ix],
+                self._target[iy],
+                marker="x",
+                color="red",
+                markersize=12,
+                markeredgewidth=2,
                 label="target",
             )
 
@@ -320,7 +355,7 @@ class VideoExporter:
         ax.legend(loc="upper right", fontsize=8)
 
         self._fig.canvas.draw()
-        buf = np.asarray(self._fig.canvas.buffer_rgba())
+        buf = np.asarray(cast(Any, self._fig.canvas).buffer_rgba())
         self._frames.append(buf[:, :, :3].copy())
 
     def _make_card_frame(self, text: str) -> np.ndarray:
@@ -330,13 +365,20 @@ class VideoExporter:
         ax.set_facecolor("#0a0e1a")
         fig.patch.set_facecolor("#0a0e1a")
         ax.axis("off")
-        for line in text.split("\n"):
-            pass
-        ax.text(0.5, 0.55, text, transform=ax.transAxes,
-                fontsize=16, fontfamily="monospace", color="white",
-                ha="center", va="center", linespacing=1.8)
+        ax.text(
+            0.5,
+            0.55,
+            text,
+            transform=ax.transAxes,
+            fontsize=16,
+            fontfamily="monospace",
+            color="white",
+            ha="center",
+            va="center",
+            linespacing=1.8,
+        )
         fig.canvas.draw()
-        buf = np.asarray(fig.canvas.buffer_rgba())
+        buf = np.asarray(cast(Any, fig.canvas).buffer_rgba())
         frame = buf[:, :, :3].copy()
         plt.close(fig)
         return frame

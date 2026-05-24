@@ -6,12 +6,17 @@ OceanScaleVecEnv wraps NewtonEnv as a gymnasium.vector.VectorEnv.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 import gymnasium as gym
 import numpy as np
+from numpy.typing import NDArray
 
 from oceanscale.newton_env import NewtonEnv
+
+FloatArray = NDArray[np.float32]
+BoolArray = NDArray[np.bool_]
+AnyArray = NDArray[Any]
 
 
 class BatchedVecEnv:
@@ -20,46 +25,63 @@ class BatchedVecEnv:
     Inherits from SB3's VecEnv ABC to pass isinstance checks.
     """
 
-    def __init__(self, env):
+    num_envs: int
+    observation_space: gym.Space[Any]
+    action_space: gym.Space[Any]
+    render_mode: str | None
+
+    def __init__(self, env: Any) -> None:
         from stable_baselines3.common.vec_env import VecEnv
 
-        self.__class__ = type("BatchedVecEnv", (type(self), VecEnv), dict(self.__class__.__dict__))
-        VecEnv.__init__(self, env.n_envs, env.observation_space, env.action_space)
-
         self.env = env
-        self._buf_actions = None
+        self.render_mode = cast(str | None, getattr(env, "render_mode", None))
+        self.__class__ = type("BatchedVecEnv", (type(self), VecEnv), dict(self.__class__.__dict__))
+        cast(Any, VecEnv).__init__(self, env.n_envs, env.observation_space, env.action_space)
 
-    def reset(self, **kwargs):
-        obs, info = self.env.reset(**kwargs)
-        return obs
+        self._buf_actions: FloatArray | None = None
 
-    def step_async(self, actions):
-        self._buf_actions = np.asarray(actions, dtype=np.float32)
+    def reset(self, **kwargs: Any) -> FloatArray:
+        obs, _info = self.env.reset(**kwargs)
+        return cast(FloatArray, obs)
 
-    def step_wait(self):
+    def step_async(self, actions: Any) -> None:
+        self._buf_actions = cast(FloatArray, np.asarray(actions, dtype=np.float32))
+
+    def step_wait(self) -> tuple[FloatArray, FloatArray, BoolArray, list[dict[str, Any]]]:
+        if self._buf_actions is None:
+            raise RuntimeError("step_async must be called before step_wait")
         obs, reward, terminated, truncated, info = self.env.step(self._buf_actions)
+        obs = cast(FloatArray, obs)
+        reward = cast(FloatArray, reward)
+        terminated = cast(BoolArray, terminated)
+        truncated = cast(BoolArray, truncated)
+        info = cast(dict[str, Any], info)
         done = terminated | truncated
-        infos = [dict(info, _terminated=bool(terminated[i]), _truncated=bool(truncated[i]))
-                 for i in range(self.num_envs)]
+        infos = [
+            dict(info, _terminated=bool(terminated[i]), _truncated=bool(truncated[i]))
+            for i in range(self.num_envs)
+        ]
         return obs, reward, done, infos
 
-    def get_attr(self, attr, indices=None):
+    def get_attr(self, attr: str, indices: Any = None) -> list[Any]:
+        if attr == "render_mode":
+            return [self.render_mode] * self.num_envs
         return [getattr(self.env, attr)] * self.num_envs
 
-    def close(self):
+    def close(self) -> None:
         self.env.close()
 
-    def env_is_wrapped(self, wrapper_class, indices=None):
+    def env_is_wrapped(self, wrapper_class: Any, indices: Any = None) -> list[bool]:
         return [False] * self.num_envs
 
-    def seed(self, seed=None):
+    def seed(self, seed: int | None = None) -> None:
         pass
 
-    def render(self):
+    def render(self) -> None:
         pass
 
 
-class OceanScaleVecEnv(gym.vector.VectorEnv):
+class OceanScaleVecEnv(gym.vector.VectorEnv[FloatArray, FloatArray, AnyArray]):
     """Vectorized environment backed by a single GPU-batched NewtonEnv.
 
     Observation space (per env): 18-dim float32 vector
@@ -73,8 +95,6 @@ class OceanScaleVecEnv(gym.vector.VectorEnv):
     reward_fn callback.
     """
 
-    metadata = {"autoreset_mode": gym.vector.AutoresetMode.NEXT_STEP}
-
     def __init__(
         self,
         n_envs: int = 16,
@@ -87,6 +107,8 @@ class OceanScaleVecEnv(gym.vector.VectorEnv):
     ) -> None:
         super().__init__()
 
+        self.metadata = {"autoreset_mode": gym.vector.AutoresetMode.NEXT_STEP}
+        self.num_envs = n_envs
         self._n_envs = n_envs
         self._max_steps = max_episode_steps
         self._step_count = np.zeros(n_envs, dtype=np.int64)
@@ -101,20 +123,12 @@ class OceanScaleVecEnv(gym.vector.VectorEnv):
         self.observation_space = gym.spaces.Box(
             low=-np.inf, high=np.inf, shape=(n_envs, obs_dim), dtype=np.float32
         )
-        self.single_action_space = gym.spaces.Box(
-            low=-1.0, high=1.0, shape=(6,), dtype=np.float32
-        )
-        self.action_space = gym.spaces.Box(
-            low=-1.0, high=1.0, shape=(n_envs, 6), dtype=np.float32
-        )
+        self.single_action_space = gym.spaces.Box(low=-1.0, high=1.0, shape=(6,), dtype=np.float32)
+        self.action_space = gym.spaces.Box(low=-1.0, high=1.0, shape=(n_envs, 6), dtype=np.float32)
 
         self._obs_fn = obs_fn
         self._reward_fn = reward_fn
         self._termination_fn = termination_fn
-
-    @property
-    def num_envs(self) -> int:
-        return self._n_envs
 
     def reset(
         self,
@@ -131,18 +145,18 @@ class OceanScaleVecEnv(gym.vector.VectorEnv):
         return obs, {}
 
     def step(
-        self, actions: np.ndarray
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, dict[str, Any]]:
+        self, actions: FloatArray
+    ) -> tuple[FloatArray, FloatArray, BoolArray, BoolArray, dict[str, Any]]:
         import warp as wp
 
-        actions = np.asarray(actions, dtype=np.float32)
+        actions = cast(FloatArray, np.asarray(actions, dtype=np.float32))
         if actions.shape == (6,):
-            actions = np.tile(actions, (self._n_envs, 1))
+            actions = cast(FloatArray, np.tile(actions, (self._n_envs, 1)))
         assert actions.shape == (self._n_envs, 6), (
             f"Expected actions shape ({self._n_envs}, 6), got {actions.shape}"
         )
 
-        u_cmd = wp.array(actions, dtype=wp.float32, device=self._env.device)
+        u_cmd: Any = wp.array(actions, dtype=wp.float32, device=self._env.device)
         self._env.step(u_cmd)
         self._prev_action = actions.copy()
         self._step_count += 1
@@ -152,9 +166,9 @@ class OceanScaleVecEnv(gym.vector.VectorEnv):
 
         positions = obs[:, :3]
         if self._termination_fn is not None:
-            terminated = self._termination_fn(obs)
+            terminated = cast(BoolArray, self._termination_fn(obs))
         else:
-            terminated = np.linalg.norm(positions, axis=-1) > 100.0
+            terminated = cast(BoolArray, np.linalg.norm(positions, axis=-1) > 100.0)
 
         truncated = self._step_count >= self._max_steps
 
@@ -173,9 +187,9 @@ class OceanScaleVecEnv(gym.vector.VectorEnv):
         infos: dict[str, Any] = {}
         return obs, rewards, ret_terminated, ret_truncated, infos
 
-    def _get_obs(self) -> np.ndarray:
+    def _get_obs(self) -> FloatArray:
         if self._obs_fn is not None:
-            return self._obs_fn(self._env, self._prev_action)
+            return cast(FloatArray, self._obs_fn(self._env, self._prev_action))
         state = self._env.get_state()
         obs = np.concatenate(
             [
@@ -187,9 +201,9 @@ class OceanScaleVecEnv(gym.vector.VectorEnv):
             ],
             axis=-1,
         )
-        return obs.astype(np.float32)
+        return cast(FloatArray, obs.astype(np.float32))
 
-    def _get_obs_envs(self, env_ids: list[int] | np.ndarray) -> np.ndarray:
+    def _get_obs_envs(self, env_ids: list[int] | np.ndarray) -> FloatArray:
         state = self._env.get_state()
         ids = np.asarray(env_ids)
         obs = np.concatenate(
@@ -202,13 +216,13 @@ class OceanScaleVecEnv(gym.vector.VectorEnv):
             ],
             axis=-1,
         )
-        return obs.astype(np.float32)
+        return cast(FloatArray, obs.astype(np.float32))
 
-    def _get_reward(self, obs: np.ndarray) -> np.ndarray:
+    def _get_reward(self, obs: FloatArray) -> FloatArray:
         if self._reward_fn is not None:
-            return self._reward_fn(obs)
+            return cast(FloatArray, self._reward_fn(obs))
         positions = obs[:, :3]
-        return -np.linalg.norm(positions, axis=-1).astype(np.float32)
+        return cast(FloatArray, -np.linalg.norm(positions, axis=-1).astype(np.float32))
 
-    def close(self) -> None:
+    def close(self, **kwargs: Any) -> None:
         pass
