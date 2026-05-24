@@ -44,7 +44,7 @@ BlueROV2 hover task, 30K steps, RTX 5090, zero policy. Full methodology in [`ben
 
 OceanScale's advantage is parallelism, not per-step latency. Below n=8, PyBullet wins on wall-clock. For RL with vectorized environments (the standard pattern), OceanScale at n>=16 delivers the speedup.
 
-## Status (v0.1 alpha)
+## Status (v0.0.2 alpha)
 
 **Works:**
 - BlueROV2 6-DOF dynamics (Fossen + von Benzon 2022)

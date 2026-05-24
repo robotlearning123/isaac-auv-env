@@ -587,10 +587,12 @@ Training loop entry/exit point. `env.step(actions)` is the canonical call.
 
 ## 8. RL Algorithm Backends (L6)
 
-### 8.1 skrl 2.0 — Default
+### 8.1 skrl 2.0 — ACTIVE DEFAULT (v0.1)
 **What**: Modular RL library supporting PyTorch, JAX, and **Warp** backends. Works with Isaac Lab + MuJoCo Playground + Brax.
 
 **Why default**: spans all three array libraries. We can switch from PyTorch (default) to JAX (for PureJaxRL-style end-to-end) without changing the env or algorithm code. Modular agents — policy + value + critic + memory are all swappable.
+
+**Decision note**: SB3 deprecated in v0.0.3. skrl 2.0+ is the default. RSL-RL is the performance baseline for all comparisons.
 
 **When**: most experiments. ~95% of training runs.
 
@@ -624,9 +626,13 @@ Training loop entry/exit point. `env.step(actions)` is the canonical call.
 
 **When**: for the **sparse-reward, hardware-validated** tasks (docking, pipe inspection). DreamerV3's single-config-fits-all property is a big draw.
 
-### Why not Stable-Baselines3 / CleanRL
-- CPU rollout collection — slow with Isaac Lab vectorized GPU envs.
-- Less Isaac Lab integration.
+### 8.6 Stable-Baselines3 — Legacy
+**What**: Popular PyTorch RL library used in v0.0.x for early prototyping.
+
+**Status**: **Deprecated as of v0.0.3.** CPU rollout collection — slow with Isaac Lab vectorized GPU envs. Less Isaac Lab integration. Retained for backward compat only; do not start new experiments with SB3.
+
+### Why not CleanRL
+- Single-algorithm, research-focused; less Isaac Lab integration than skrl/rl_games.
 
 ---
 
@@ -929,10 +935,10 @@ Added 2026-05-15 per explicit user feedback: "we should have a main tech stack, 
 | Physics | **Newton 1.x** (primary) + **PhysX 5** (fallback via Isaac Lab multi-backend) | Newton ≥1.2, pin tag | LF governance; Apache-2.0; Warp-native; multi-solver. |
 | Rigid solver | **MuJoCo-Warp** | Newton-bundled | Best-validated rigid + built-in fluid drag. |
 | GPU kernels | **NVIDIA Warp** | 1.13.x | Differentiable; bottom of the new stack. |
-| Env framework | **Isaac Lab 3.0** | 3.0 Beta → GA when shipped | ManagerBasedEnv composability; multi-GPU; ONNX. v0.2 integration; v0.1 uses Newton standalone + SB3 (per ADR-007). |
-| RL default | **skrl 2.0** | 2.0.x | Spans PyTorch / JAX / Warp. |
+| Env framework | **Isaac Lab 3.0** | v0.2 target (was in locked list) | ManagerBasedEnv composability; multi-GPU; ONNX. **Moved to watchlist** — v0.1 uses Newton standalone + skrl (per ADR-007). v0.2 integration planned. |
+| RL default | **skrl 2.0** | 2.0.x | Spans PyTorch / JAX / Warp. **ACTIVE DEFAULT.** |
 | RL throughput | **rl_games 1.6.5** | 1.6.x | Battle-tested PPO + NCCL multi-node. |
-| RL sim-to-real | **RSL-RL v5** | v5.x | ETH conventions for zero-shot. |
+| RL sim-to-real | **RSL-RL v5** | v5.x | ETH conventions for zero-shot. **Performance baseline.** |
 | World model (optional) | **DreamerV3** | as published | Sample-efficient for sparse rewards. |
 | Hydrodynamics | **Custom OceanScale Warp kernels** (Tier 0-3) | this project | Nobody else solves it on Newton+USD. |
 | Sensors | **Custom OceanScale Warp kernels** (sonar/AK-T/DVL/IMU/BELLHOP) | this project | Same — fill the gap. |
@@ -963,6 +969,7 @@ Updated as new things appear. Status values:
 | **HoloOcean 2.x** | 2025-10 | **monitor** | Source of validated Fossen coefficients + sonar reference. Compare numerically. |
 | **Stonefish 1.6 + ICRA 2025** | 2025-05 | **monitor** | Hydro reference + ROS2 pattern. |
 | **DreamerV3 / TD-MPC2** | 2025 | **evaluate** | Decide world-model adoption at v0.3 once sample efficiency matters. |
+| **Isaac Lab 3.0** (env framework) | 2025 | **adopt at v0.2** | Moved from locked list. Newton backend still experimental; v0.1 uses Newton standalone + skrl. Full Isaac Lab integration deferred to v0.2. |
 | **NeRD (Neural Robot Dynamics)** | 2025-2026 | **monitor** | Learned residual dynamics — possible Tier-1 enhancement. |
 | **Hybrid Neural-MPM** (arXiv 2505.18926) | 2025-05 | **monitor** | Real-time CFD candidate for Tier-2. |
 | **Q-D acoustic channel** (arXiv 2501.04238) | 2025-01 | **adopt** | Direct ingredient for our BELLHOP+Q-D kernel. |

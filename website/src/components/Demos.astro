@@ -44,12 +44,12 @@ const { title, eyebrow, subhead, installCommand, installLabel, colabLabel, colab
           </a>
         </div>
 
-        <div class="rounded-lg border border-[var(--color-border)] overflow-hidden">
-          <table class="w-full text-sm">
+        <div class="rounded-lg border border-[var(--color-border)] overflow-x-auto mobile-scroll-hint">
+          <table class="w-full text-sm min-w-[420px]">
             <thead>
               <tr class="bg-[var(--color-bg)]">
                 {benchHeaders.map((h: string) => (
-                  <th class="px-4 py-2 text-left font-mono text-[10px] uppercase tracking-[0.15em] text-[var(--color-accent)]">{h}</th>
+                  <th class="px-3 sm:px-4 py-2 text-left font-mono text-[10px] uppercase tracking-[0.15em] text-[var(--color-accent)]">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -57,7 +57,7 @@ const { title, eyebrow, subhead, installCommand, installLabel, colabLabel, colab
               {benchRows.map((row: string[], i: number) => (
                 <tr class={`border-t border-[var(--color-border)] ${i === benchRows.length - 1 ? 'bg-[var(--color-accent)]/5' : ''}`}>
                   {row.map((cell: string, j: number) => (
-                    <td class={`px-4 py-2 font-mono ${j === 3 && i === 2 ? 'text-[var(--color-accent)] font-bold' : 'text-[var(--color-text-muted)]'}`}>{cell}</td>
+                    <td class={`px-3 sm:px-4 py-2 font-mono text-xs sm:text-sm ${j === 3 && i === 2 ? 'text-[var(--color-accent)] font-bold' : 'text-[var(--color-text-muted)]'}`}>{cell}</td>
                   ))}
                 </tr>
               ))}

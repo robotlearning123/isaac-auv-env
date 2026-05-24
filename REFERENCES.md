@@ -217,14 +217,21 @@ Anything failing 1-3 → §5 Anti-references.
 | **Stack** | Isaac Lab + rsl_rl (ETH minimalist PPO) + Isaac Sim |
 | **Obs space** | `Box(shape=(17,), float64)` |
 | **Action space** | `Box(low=-1, high=1, shape=(6,), float64)` |
-| **Sim-to-real** | BlueROV2-class, **zero-shot deployed, beats hand-tuned PID** |
+| **Vehicle** | **CUREE** (custom WHOI AUV, 6× T200 thrusters, 22.7 kg) — NOT BlueROV2 |
+| **Sim-to-real** | **Zero-shot deployed, qualitatively "comparable to PID"** — no quantitative metrics published |
 
 **Reuse plan**:
 - **v0.1**: lift 17-D obs design + reward shaping + PPO hyperparameters; **write our own SB3 wrapper** (not Isaac Lab dependent)
 - **v0.2**: port their Isaac Lab env config 1:1 once we integrate Isaac Lab
 - **v0.3**: use as benchmark target — compare our sim-to-real to theirs
 
-**Caveat on action dimension**: They use 6-D direct body-frame thrust commands, not 8 per-thruster commands. We will test both at T4.1 — 8-thruster gives policy more freedom but harder credit assignment; 6-D is easier to learn but requires a fixed allocation matrix (acceptable since allocation is well-known).
+**Physics model**: MJX inertia-based ellipsoid fluid (NOT Fossen 6-DOF). No added mass, no Coriolis, no cross-coupling. Drag derived from body inertia tensor + ellipsoid approximation. "Good enough for RL" because DR absorbs model error.
+
+**Caveat on action dimension**: They use 6-D direct body-frame thrust commands (CUREE has 6 thrusters, not 8 like BlueROV2 Heavy). We will test both at T4.1 — 8-thruster gives policy more freedom but harder credit assignment; 6-D is easier to learn but requires a fixed allocation matrix (acceptable since allocation is well-known).
+
+**DR**: Only volume (±13%) and COB-COM offset (0.05m radius). Mass NOT randomized. Very narrow DR — our Fossen model + broader DR should generalize better.
+
+**See also**: Deep analysis at `install_log/competitor_analysis/isaac_auv_deep.md` (462 lines, source-code-verified).
 
 **Risk**: Inherited Isaac Lab BSD-3-Clause means our port carries upstream copyright attribution. Keep NOTICE.
 
