@@ -108,6 +108,18 @@ def _train_bluerov2_hover(args: argparse.Namespace) -> None:
     import torch
 
     from oceanscale.rov_env import ROVEnv
+
+    if getattr(args, "legacy", False):
+        from stable_baselines3 import PPO
+        print("WARNING: --legacy uses SB3 CPU trainer (deprecated)")
+        env = ROVEnv(n_envs=args.n_envs, device=args.device, sensor_noise_std=0.02)
+        model = PPO("MlpPolicy", env, n_steps=128, batch_size=256, verbose=1, device=args.device)
+        model.learn(total_timesteps=args.total)
+        Path(args.checkpoint_dir).mkdir(parents=True, exist_ok=True)
+        model.save(str(Path(args.checkpoint_dir) / "bluerov2_sb3_model"))
+        print(f"Legacy model saved to {args.checkpoint_dir}/bluerov2_sb3_model.zip")
+        return
+
     from oceanscale.training.skrl_trainer import train_skrl_ppo
 
     checkpoint_dir = Path(args.checkpoint_dir)
@@ -237,7 +249,8 @@ def _build_parser() -> argparse.ArgumentParser:
     train_parser.add_argument(
         "--checkpoint-dir", type=str, default="checkpoints", dest="checkpoint_dir"
     )
-    train_parser.add_argument("--legacy", action="store_true", help="Use SB3 instead of skrl (deprecated)")
+    train_parser.add_argument("--legacy", action="store_true",
+                              help="Use legacy SB3 trainer (deprecated, will be removed in v0.2)")
     train_parser.add_argument("--render-mp4", type=str, default=None, help="Render after train")
 
     return parser
