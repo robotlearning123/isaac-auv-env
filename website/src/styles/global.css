@@ -3,13 +3,13 @@
 /* ── New monochrome token system (DESIGN.md v1 compliant) ──────────── */
 @theme {
   /* Primary palette: monochrome + one accent */
-  --color-bg: #0a0a0a;
-  --color-surface: #141414;
-  --color-surface-raised: #1a1a1a;
-  --color-border: #262626;
-  --color-border-hover: #404040;
-  --color-text: #e5e5e5;
-  --color-text-muted: #737373;
+  --color-bg: #0d1420;
+  --color-surface: #172030;
+  --color-surface-raised: #1f2b3d;
+  --color-border: #2e3f55;
+  --color-border-hover: #4a5d75;
+  --color-text: #f0f4f8;
+  --color-text-muted: #94a3b8;
   --color-accent: #2dd4bf;
   --color-accent-dim: rgba(45, 212, 191, 0.12);
   --color-danger: #ef4444;
@@ -79,16 +79,20 @@
 
   /* ── Section dividers ──────────────────────────────────────────── */
   .section-divider {
-    height: 1px;
+    height: 2px;
     background: linear-gradient(
       to right,
       transparent,
-      var(--color-border) 20%,
+      var(--color-border) 15%,
       var(--color-accent) 50%,
-      var(--color-border) 80%,
+      var(--color-border) 85%,
       transparent
     );
-    opacity: 0.4;
+    opacity: 0.7;
+  }
+
+  section:nth-of-type(even) {
+    background: var(--color-surface) !important;
   }
 
   .footer-divider {
