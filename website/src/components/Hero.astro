@@ -35,24 +35,3 @@ const strip = (s: string) => s.replace(/[.。]+$/u, '');
   </div>
 </section>
 
-<!-- SCREEN 2: Terminal proof layer -->
-<section class="os-section os-section--surface">
-  <div class="os-container" style="max-width: 640px;">
-    <p class="mb-6" style="color: var(--color-text-muted); font-size: 1rem; max-width: 52ch;">
-      {hero.sub}
-    </p>
-    <div class="os-terminal">
-      <div class="os-terminal__bar">
-        <span class="os-terminal__dot os-terminal__dot--red"></span>
-        <span class="os-terminal__dot os-terminal__dot--yellow"></span>
-        <span class="os-terminal__dot os-terminal__dot--green"></span>
-        <span class="os-terminal__title">oceanscale run</span>
-      </div>
-      <pre><code><span class="prompt">$</span> pip install oceanscale
-<span class="prompt">$</span> oceanscale demo bluerov2-hover --envs 64
-<span class="muted">sim</span> <span class="bold">17,427 env-steps/s</span>
-<span class="muted">model</span> Fossen 6-DoF · Newton+Warp
-<span class="muted">status</span> <span class="bold">reproducible benchmark ready</span></code></pre>
-    </div>
-  </div>
-</section>
