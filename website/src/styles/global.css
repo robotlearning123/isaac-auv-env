@@ -105,14 +105,29 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: url("/images/bench-landscape.webp") center / cover no-repeat;
-    filter: grayscale(1) brightness(0.12);
-    opacity: 0.35;
+    background: url("/images/hero-bg.webp") center / cover no-repeat;
+    filter: brightness(0.25);
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .os-section--bg-contact {
+    overflow: hidden;
+  }
+
+  .os-section--bg-contact::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("/images/hero-impact-alt.webp") center / cover no-repeat;
+    filter: brightness(0.12);
+    opacity: 0.5;
     pointer-events: none;
   }
 
   .os-section--bg-why > .os-container,
-  .os-section--bg-bench > .os-container {
+  .os-section--bg-bench > .os-container,
+  .os-section--bg-contact > .os-container {
     position: relative;
     z-index: 1;
   }
@@ -408,6 +423,14 @@
     width: 100%;
     aspect-ratio: 16 / 9;
     object-fit: cover;
+  }
+
+  .os-frame--inset {
+    margin-top: 3rem;
+  }
+
+  .os-frame--inset img {
+    aspect-ratio: 21 / 9;
   }
 
   .os-frame--hero figcaption {

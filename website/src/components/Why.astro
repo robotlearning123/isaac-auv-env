@@ -12,4 +12,9 @@ const strip = (s: string) => s.replace(/[.。]+$/u, '');
     <h2 class="os-h2">{strip(fm.title)}</h2>
     <p class="os-body os-body--centered">{fm.label}</p>
   </div>
+  <div class="os-container">
+    <figure class="os-frame--hero os-frame--inset">
+      <img src="/images/challenge-whiteboard.webp" alt={lang === 'zh' ? '现场测试 vs 仿真验证' : 'Field testing vs simulation validation'} loading="lazy" />
+    </figure>
+  </div>
 </section>

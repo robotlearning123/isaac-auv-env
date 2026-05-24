@@ -6,7 +6,7 @@ const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
 const strip = (s: string) => s.replace(/[.。]+$/u, '');
 ---
-<section id="contact" class="os-section os-section--dark">
+<section id="contact" class="os-section os-section--dark os-section--bg-contact">
   <div class="os-container os-centered">
     <div class="os-kicker">/05 · {fm.eyebrow}</div>
     <h2 class="os-h2">{strip(fm.title)}</h2>
