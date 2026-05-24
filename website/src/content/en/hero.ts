@@ -1,6 +1,6 @@
 export default {
-  eyebrow: "Ocean AI Infrastructure",
+  eyebrow: "AI-native simulation infrastructure",
   enemyLine: "Underwater robots still learn in the most expensive test environment on earth: the real ocean.",
   h1: "The ocean simulator for underwater robotics",
-  sub: "Physics simulation, vectorized environments, reproducible benchmarks.",
+  sub: "OceanScale builds the simulator where they train, test, and validate before they dive.",
 };

@@ -5,86 +5,55 @@ import { getLangFromUrl } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
-const { title, eyebrow, headers, rows, caveat, landscapeNote } = fm;
-const topMetrics = [
-  { value: '17,427', label: 'env-steps/s (n=64)' },
-  { value: '10.5×', label: 'vs CPU baseline' },
-  { value: 'RTX 5090', label: 'CUDA 12.9' },
-];
+const cleanHeadline = (value: string) => value.replace(/[.。]+$/u, '');
+const renderEmphasis = (value: string) =>
+  value.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 ---
-<section id="benchmarks" class="relative overflow-hidden py-24 md:py-32" style="background:var(--color-surface)">
-  <div class="relative max-w-[1320px] mx-auto px-5 md:px-8 w-full">
-    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 mb-12">
-      <div>
-        <div class="font-mono text-[var(--color-accent)] text-xs uppercase eyebrow-tracking mb-4">/03 · {eyebrow}</div>
-        <h2 class="font-display text-4xl md:text-6xl lg:text-7xl font-black text-[var(--color-text)] tracking-tight max-w-4xl leading-[0.98]">{title}</h2>
-      </div>
-      <div class="grid grid-cols-3 border border-[var(--color-border)] bg-[var(--color-surface)] min-w-full lg:min-w-[34rem]">
-        {topMetrics.map((m) => (
-          <div class="p-4 md:p-5 border-r last:border-r-0 border-[var(--color-border)]">
-            <div class="font-mono text-2xl md:text-4xl font-bold text-[var(--color-accent)] leading-none">{m.value}</div>
-            <div class="mt-2 font-mono text-[9px] md:text-[10px] uppercase eyebrow-tracking text-[var(--color-text-muted)]">{m.label}</div>
-          </div>
-        ))}
-      </div>
+<section id="benchmarks" class="landing-section section-light">
+  <div class="section-inner">
+    <div class="section-header">
+      <p class="section-kicker">/03 · {fm.eyebrow}</p>
+      <h2 class="section-title">{cleanHeadline(fm.title)}</h2>
+      <p class="section-copy">{fm.caveat}</p>
     </div>
 
-    <div class="relative overflow-x-auto border border-[var(--color-border)] bg-[var(--color-surface)] mobile-scroll-hint">
-      <table class="w-full text-left text-sm min-w-[640px] border-collapse">
-        <thead>
-          <tr class="bg-[var(--color-surface-raised)]">
-            {headers.map((h: string, i: number) => (
-              <th class:list={[
-                'px-5 py-5 font-mono uppercase tracking-[0.15em] text-[11px] align-bottom',
-                i === 0 ? 'text-[var(--color-text-muted)] w-[28%]' :
-                i === 3 ? 'text-[var(--color-bg)] bg-[var(--color-accent)] relative' :
-                'text-[var(--color-text-muted)]'
-              ]}>
-                {i === 3 ? (
-                  <span class="flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-bg)]"></span>
-                    {h}
-                  </span>
-                ) : h}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row: string[], ri: number) => (
-            <tr class:list={[
-              'border-t border-[var(--color-border)] transition-colors',
-              ri % 2 === 1 ? 'bg-[var(--color-bg)]/30' : '',
-              'hover:bg-[var(--color-surface-raised)]/40'
-            ]}>
-              {row.map((cell: string, i: number) => (
-                i === 0 ? (
-                  <th scope="row" class="px-5 py-4 align-middle text-[var(--color-text)] font-medium text-left" set:html={cell}></th>
-                ) : (
-                  <td class:list={[
-                    'px-5 py-4 align-middle',
-                    i === 3 ? 'text-[var(--color-accent)] font-mono font-semibold bg-[var(--color-accent)]/[0.06] border-l border-r border-[var(--color-accent)]/30 text-base' :
-                    'text-[var(--color-text-muted)] font-mono'
-                  ]} set:html={cell.replace(/\*\*(.+?)\*\*/g, '<strong class="text-[var(--color-text)] text-base">$1</strong>')}>
-                  </td>
-                )
+    <div class="grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
+      <div class="table-shell mobile-scroll-hint">
+        <table>
+          <thead>
+            <tr>
+              {fm.headers.map((header: string, index: number) => (
+                <th class={index === fm.headers.length - 1 ? 'is-oceanscale' : ''}>{header}</th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-    <div class="mt-10 grid lg:grid-cols-2 gap-8 items-start">
-      <div class="border border-[var(--color-border)] overflow-hidden rounded-sm">
-        <img src="/images/bench-landscape.webp" alt="Underwater simulator competitive landscape — OceanScale fills the GPU speed + underwater fidelity gap" class="w-full" loading="lazy" />
+          </thead>
+          <tbody>
+            {fm.rows.map((row: string[]) => (
+              <tr>
+                {row.map((cell: string, index: number) => (
+                  index === 0 ? (
+                    <th scope="row" set:html={renderEmphasis(cell)}></th>
+                  ) : (
+                    <td class={index === row.length - 1 ? 'is-oceanscale' : ''} set:html={renderEmphasis(cell)}></td>
+                  )
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-      <div>
-        {landscapeNote && (
-          <p class="text-sm text-[var(--color-text-muted)] mb-4 leading-relaxed">{landscapeNote}</p>
-        )}
-        {caveat && (
-          <p class="text-xs text-[var(--color-text-muted)] leading-relaxed border-l-2 border-[var(--color-border)] pl-4">{caveat}</p>
-        )}
+
+      <div class="space-y-4">
+        <figure class="media-frame">
+          <img
+            src="/images/bench-landscape.webp"
+            alt={lang === 'zh' ? '水下仿真竞争格局白板' : 'Underwater simulation competitive landscape whiteboard'}
+            class="h-full w-full object-cover"
+            loading="lazy"
+          />
+          <figcaption>{lang === 'zh' ? '竞争格局 · GPU 速度与水下保真度' : 'Competitive landscape · GPU speed and underwater fidelity'}</figcaption>
+        </figure>
+        <p class="evidence-note">{fm.landscapeNote}</p>
       </div>
     </div>
   </div>

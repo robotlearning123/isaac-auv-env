@@ -5,28 +5,47 @@ import { getLangFromUrl } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
-const { title, eyebrow, intro, emails } = fm;
+const cleanHeadline = (value: string) => value.replace(/[.。]+$/u, '');
 ---
-<section id="contact" class="relative overflow-hidden py-24 md:py-32" style="background:var(--color-surface)">
-  <div class="relative max-w-[1320px] mx-auto px-5 md:px-8 w-full grid lg:grid-cols-[1fr_0.9fr] gap-10 lg:gap-16 items-center">
+<section id="contact" class="landing-section section-light">
+  <div class="section-inner grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
     <div>
-      <div class="font-mono text-[var(--color-accent)] text-xs uppercase eyebrow-tracking mb-4">/04 · {eyebrow}</div>
-      <h2 class="font-display text-4xl md:text-6xl lg:text-7xl font-black text-[var(--color-text)] tracking-tight max-w-4xl leading-[0.98]">{title}</h2>
-      <p class="mt-7 text-[var(--color-text-muted)] max-w-2xl leading-relaxed text-base md:text-lg">{intro}</p>
-    </div>
+      <p class="section-kicker">/05 · {fm.eyebrow}</p>
+      <h2 class="section-title">{cleanHeadline(fm.title)}</h2>
+      <p class="section-copy">{fm.intro}</p>
 
-    <div class="space-y-6">
-      <div class="border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-5 rounded-sm font-mono text-sm">
-        <div class="text-[var(--color-text-muted)] mb-2"><span class="text-[var(--color-accent)]">$</span> pip install oceanscale</div>
-        <div class="text-[var(--color-accent)]">Successfully installed oceanscale-0.0.2</div>
-      </div>
-      <div class="grid gap-3">
-        {emails.map((e: { label: string; email: string }) => (
-          <a href={`mailto:${e.email}`} class="contact-link">
-            <span>{e.label}</span>
-            <strong>{e.email}</strong>
+      <div class="mt-8 grid gap-3">
+        {fm.emails.map((entry: { label: string; email: string }) => (
+          <a href={'mailto:' + entry.email} class="contact-link">
+            <span>{entry.label}</span>
+            <strong>{entry.email}</strong>
           </a>
         ))}
+      </div>
+    </div>
+
+    <div class="space-y-4">
+      <figure class="media-frame contact-image">
+        <img
+          src="/images/hero-impact.webp"
+          alt={lang === 'zh' ? '风暴甲板照片' : 'Storm deck photo'}
+          class="h-full w-full object-cover"
+          loading="lazy"
+        />
+        <figcaption>{lang === 'zh' ? '从现场试验到可重复仿真' : 'From field trials to reproducible simulation'}</figcaption>
+      </figure>
+
+      <div class="terminal-panel">
+        <div class="terminal-panel__bar">
+          <span></span>
+          <span></span>
+          <span></span>
+          <strong>package install</strong>
+        </div>
+        <pre><code><span class="terminal-prompt">$</span> pip install oceanscale
+<span class="terminal-muted">Successfully installed</span> oceanscale-0.0.2
+<span class="terminal-prompt">$</span> python -c "import oceanscale as os"
+<span class="terminal-muted">ready</span> simulation loop online</code></pre>
       </div>
     </div>
   </div>

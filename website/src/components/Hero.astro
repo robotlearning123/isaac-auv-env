@@ -1,130 +1,73 @@
 ---
 import zhData from '../content/zh/hero';
 import enData from '../content/en/hero';
-import { getLangFromUrl, useTranslations } from '../i18n/utils';
+import statsZh from '../content/zh/stats';
+import statsEn from '../content/en/stats';
+import { getLangFromUrl } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
 const fm: any = lang === 'zh' ? zhData : enData;
-const { h1, sub, eyebrow, enemyLine } = fm;
-const metrics = [
-  { label: 'Throughput', value: '17,427', unit: 'env-steps/s' },
-  { label: 'Speedup', value: '10.5×', unit: 'vs CPU baseline' },
-  { label: 'Parallel', value: '64', unit: 'GPU worlds' },
-];
-const terminalLines = [
-  { left: 'env = ROVEnv(n_envs=64, device="cuda")', right: '', accent: false },
-  { left: 'Throughput:', right: '17,427 env-steps/s', accent: true },
-  { left: 'Physics:', right: 'Fossen 6-DOF (GPU)', accent: true },
-  { left: 'Sensors:', right: 'DVL + IMU + Pressure', accent: true },
-];
-const terminalMeta = ['Newton 1.2.0 + Warp 1.13.0 · CUDA 12.9', 'BlueROV2 · RTX 5090'];
+const stats: any = lang === 'zh' ? statsZh : statsEn;
+const cleanHeadline = (value: string) => value.replace(/[.。]+$/u, '');
+const metrics = stats.items.slice(0, 3);
+const isZh = lang === 'zh';
 ---
-<section class="relative overflow-hidden flex items-center hero-section" style="background: var(--color-bg);">
-  <div class="absolute inset-0 opacity-40 hero-bg" style="background: url('/images/hero-bg.webp') 58% center/cover no-repeat;"></div>
-  <div class="absolute inset-0" style="background: linear-gradient(to right, var(--color-bg) 0%, var(--color-bg) 35%, rgba(10,15,20,0.5) 65%, transparent 100%);"></div>
-
-  <div class="relative max-w-[1320px] mx-auto px-5 md:px-8 py-12 lg:py-16 w-full hero-grid">
-    <div class="hero-copy relative z-10">
-      <div class="inline-flex items-center gap-3 font-mono text-[var(--color-accent)] text-xs uppercase eyebrow-tracking mb-5">
-        <span class="h-px w-10 bg-[var(--color-accent)]"></span>
-        {eyebrow}
-      </div>
-
-      <p class="text-sm md:text-base text-[var(--color-text-muted)] max-w-xl mb-4 leading-relaxed italic">
-        {enemyLine}
+<section id="hero" class="landing-section section-dark min-h-[calc(100svh-76px)]">
+  <div class="section-inner grid gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
+    <div class="relative z-10 max-w-4xl">
+      <p class="section-kicker">/00 · {fm.eyebrow}</p>
+      <h1 class="hero-title">{cleanHeadline(fm.h1)}</h1>
+      <p class="mt-6 max-w-3xl text-xl leading-relaxed text-[var(--color-text)] md:text-2xl">
+        {fm.enemyLine}
+      </p>
+      <p class="mt-4 max-w-2xl text-base leading-relaxed text-[var(--color-text-muted)] md:text-lg">
+        {fm.sub}
       </p>
 
-      <h1 class={`font-display text-balance hero-h1 font-black text-[var(--color-text)] mb-5 tracking-tight max-w-[760px] ${lang === 'zh' ? 'break-keep-all' : ''}`} style="text-shadow: 0 2px 16px rgba(0,0,0,0.7);">
-        {h1}
-      </h1>
-
-      <p class="text-base md:text-xl text-[var(--color-text-muted)] max-w-xl mb-7 leading-relaxed">
-        {sub}
-      </p>
-
-      <div class="flex flex-wrap items-center gap-4 mb-8">
-        <a href="#benchmarks" class="btn-lumen">
-          {t('cta.demos')}
-          <span aria-hidden="true">&rarr;</span>
-        </a>
-        <a href="#contact" class="btn-ghost">{t('cta.contact')}</a>
-      </div>
-
-      <div class="flex flex-wrap gap-5 sm:gap-0 sm:grid sm:grid-cols-3 max-w-lg border-y border-[var(--color-border)]">
-        {metrics.map((m) => (
-          <div class="py-4 pr-4 sm:border-r last:border-r-0 border-[var(--color-border)]">
-            <div class="font-mono text-[10px] uppercase eyebrow-tracking text-[var(--color-text-muted)]">{m.label}</div>
-            <div class="mt-1.5 flex items-end gap-1.5">
-              <span class="font-mono text-xl md:text-2xl font-bold text-[var(--color-accent)] leading-none">{m.value}</span>
-              <span class="font-mono text-[9px] uppercase text-[var(--color-text-muted)] pb-0.5">{m.unit}</span>
+      <div class="mt-10 grid gap-3 sm:grid-cols-3">
+        {metrics.map((metric: { value: string; suffix: string; label: string }) => (
+          <div class="metric-tile">
+            <div class="metric-value">
+              {metric.value}<span>{metric.suffix}</span>
             </div>
+            <div class="metric-label">{metric.label}</div>
           </div>
         ))}
       </div>
     </div>
 
-    <div class="hero-visual relative">
-      <div class="border border-[var(--color-border)] overflow-hidden card-glow rounded-sm">
-        <video autoplay loop muted playsinline class="w-full aspect-video object-cover" poster="/images/hero-impact.webp">
-          <source src="/videos/hero-storm.mp4" type="video/mp4" />
-          <img src="/images/hero-impact.webp" alt="BlueROV2 on research vessel deck during weather hold" class="w-full aspect-video object-cover" />
-        </video>
+    <div class="relative">
+      <div class="media-frame hero-media">
+        <video
+          src="/videos/hero-storm.mp4"
+          poster="/images/hero-impact.webp"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          class="h-full w-full object-cover"
+          aria-label={isZh ? '风暴海面测试影像' : 'Storm test deck footage'}
+        ></video>
+        <div class="absolute left-4 top-4 rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)]/85 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-accent)] backdrop-blur">
+          RTX 5090 · CUDA 12.9
+        </div>
       </div>
-      <div class="mt-3 border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden rounded-sm">
-        <div class="flex items-center justify-between px-3 py-1.5 border-b border-[var(--color-border)] bg-[var(--color-surface-raised)]">
-          <span class="font-mono text-[10px] uppercase eyebrow-tracking text-[var(--color-text-muted)]">meanwhile</span>
-          <span class="font-mono text-[10px] uppercase text-[var(--color-accent)]">RUNNING</span>
+
+      <div class="terminal-panel hero-terminal">
+        <div class="terminal-panel__bar">
+          <span></span>
+          <span></span>
+          <span></span>
+          <strong>oceanscale run</strong>
         </div>
-        <div class="p-3 font-mono text-xs">
-          {terminalLines.map((line) => (
-            <div class="flex items-center justify-between py-0.5">
-              <span class={line.accent ? 'text-[var(--color-text-muted)]' : 'text-[var(--color-accent)] text-[11px]'}>{line.left}</span>
-              {line.right && <span class="text-[var(--color-accent)] font-bold text-xs">{line.right}</span>}
-            </div>
-          ))}
-          <div class="border-t border-[var(--color-border)] mt-1.5 pt-1.5">
-            {terminalMeta.map((meta) => (
-              <div class="text-[var(--color-text-muted)] text-[10px] py-0.5">{meta}</div>
-            ))}
-          </div>
-        </div>
+        <pre><code><span class="terminal-prompt">$</span> pip install oceanscale
+<span class="terminal-muted">collecting oceanscale</span>
+<span class="terminal-prompt">$</span> oceanscale demo bluerov2-hover --envs 64
+<span class="terminal-muted">sim</span> 17,427 env-steps/s
+<span class="terminal-muted">model</span> Fossen 6-DoF · Newton+Warp
+<span class="terminal-muted">status</span> reproducible benchmark ready</code></pre>
       </div>
     </div>
   </div>
 </section>
-
-<style>
-  .hero-section {
-    min-height: calc(100svh - 77px);
-  }
-  .hero-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    align-items: center;
-  }
-  .hero-h1 {
-    font-size: clamp(2.5rem, 7.2vw, 6rem);
-    line-height: 0.94;
-  }
-  @media (min-width: 1024px) {
-    .hero-grid {
-      grid-template-columns: 1fr minmax(380px, 520px);
-      gap: clamp(3rem, 5vw, 5rem);
-    }
-  }
-  @media (max-width: 700px) {
-    .hero-section {
-      min-height: auto;
-      padding-top: 1rem;
-    }
-    .hero-h1 {
-      font-size: clamp(2.5rem, 12vw, 3.5rem);
-    }
-    .hero-bg {
-      background-position: 62% top !important;
-      opacity: 0.3 !important;
-    }
-  }
-</style>

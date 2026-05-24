@@ -5,33 +5,39 @@ import { getLangFromUrl } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
-const { title, eyebrow, capabilities } = fm;
-type Cap = { metric?: string | null; metricLabel: string; title: string; body: string };
-const caps = capabilities as Cap[];
+const cleanHeadline = (value: string) => value.replace(/[.。]+$/u, '');
+const lead =
+  lang === 'zh'
+    ? '一个面向 AUV 与 ROV 的 GPU-native 训练平台：物理、水动力、传感器与策略接口在同一循环中运行。'
+    : 'A GPU-native training platform for AUVs and ROVs: physics, hydrodynamics, sensors, and policy interfaces in one loop.';
 ---
-<section id="what" class="relative overflow-hidden py-24 md:py-32 dot-grid" style="background:var(--color-bg)">
-  <div class="relative max-w-[1320px] mx-auto px-5 md:px-8 w-full">
-    <div class="grid lg:grid-cols-[0.82fr_1.18fr] gap-10 lg:gap-16 items-start min-w-0">
-      <div class="lg:sticky lg:top-28 min-w-0">
-        <div class="font-mono text-[var(--color-accent)] text-xs uppercase eyebrow-tracking mb-4">/02 · {eyebrow}</div>
-        <h2 class="font-display text-4xl md:text-6xl lg:text-7xl font-black text-[var(--color-text)] tracking-tight max-w-4xl leading-[0.98]">{title}</h2>
+<section id="what" class="landing-section section-dark">
+  <div class="section-inner">
+    <div class="grid gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-end">
+      <div class="section-header mb-0">
+        <p class="section-kicker">/02 · {fm.eyebrow}</p>
+        <h2 class="section-title">{cleanHeadline(fm.title)}</h2>
+        <p class="section-copy">{lead}</p>
       </div>
+      <figure class="media-frame">
+        <img
+          src="/images/platform-desk.webp"
+          alt={lang === 'zh' ? 'OceanScale 开发者工作台' : 'OceanScale developer workspace'}
+          class="h-full w-full object-cover"
+          loading="lazy"
+        />
+        <figcaption>{lang === 'zh' ? '开发者工作台 · 仿真、训练、基准' : 'Developer workspace · simulation, training, benchmarks'}</figcaption>
+      </figure>
+    </div>
 
-      <div class="architecture-panel min-w-0">
-        <div class="border border-[var(--color-border)] overflow-hidden rounded-sm mb-8">
-          <img src="/images/platform-desk.webp" alt="Developer workspace — OceanScale code editor with simulation viewport" class="w-full" loading="lazy" />
-        </div>
-        {caps.map((c, i) => (
-          <div class="architecture-row group">
-            <div class="architecture-index">{String(i + 1).padStart(2, '0')}</div>
-            <div>
-              <div class="font-mono uppercase eyebrow-tracking text-[10px] text-[var(--color-accent)] mb-3">{c.metricLabel}</div>
-              <h3 class="font-display text-2xl md:text-3xl font-black text-[var(--color-text)] leading-tight min-w-0">{c.title}</h3>
-              <p class="mt-3 text-[var(--color-text-muted)] leading-relaxed text-sm md:text-base max-w-xl">{c.body}</p>
-            </div>
-          </div>
-        ))}
-      </div>
+    <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {fm.capabilities.map((capability: { metricLabel: string; title: string; body: string }) => (
+        <article class="landing-card capability-card">
+          <div class="card-index">{capability.metricLabel}</div>
+          <h3>{cleanHeadline(capability.title)}</h3>
+          <p>{capability.body}</p>
+        </article>
+      ))}
     </div>
   </div>
 </section>

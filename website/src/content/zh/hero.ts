@@ -1,6 +1,6 @@
 export default {
-  eyebrow: "Ocean AI Infrastructure",
-  enemyLine: "水下机器人仍然在地球上最昂贵的测试环境中学习：真实的海洋。",
+  eyebrow: "AI 原生仿真基础设施",
+  enemyLine: "水下机器人,仍然在地球上最昂贵的测试环境中学习:真实海洋。",
   h1: "面向水下机器人的​海洋仿真​基础设施",
-  sub: "物理仿真、并行环境、可复现实测基准。",
+  sub: "OceanScale 构建海洋仿真基础设施,让水下机器人在下海之前完成训练、测试与验证。",
 };

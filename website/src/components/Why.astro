@@ -5,34 +5,49 @@ import { getLangFromUrl } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
-const { title, eyebrow, label, problems } = fm;
+const cleanHeadline = (value: string) => value.replace(/[.。]+$/u, '');
+const captions =
+  lang === 'zh'
+    ? ['现场窗口不可排队', '仿真与海试之间的差距']
+    : ['Field windows do not queue', 'The field-versus-sim gap'];
 ---
-<section id="why" class="relative overflow-hidden py-24 md:py-32 section-cool" style="background:var(--color-bg)">
-  <div class="relative max-w-[1320px] mx-auto px-5 md:px-8 w-full">
-    <div class="mb-12">
-      <div class="font-mono text-[var(--color-accent)] text-xs uppercase eyebrow-tracking mb-4">/01 · {eyebrow}</div>
-      <h2 class="font-display text-4xl md:text-6xl lg:text-7xl font-black text-[var(--color-text)] tracking-tight max-w-3xl leading-[0.98]">{title}</h2>
+<section id="why" class="landing-section section-light">
+  <div class="section-inner">
+    <div class="section-header">
+      <p class="section-kicker">/01 · {fm.eyebrow}</p>
+      <h2 class="section-title">{cleanHeadline(fm.title)}</h2>
+      <p class="section-copy">{fm.label}</p>
     </div>
 
-    <div class="grid lg:grid-cols-2 gap-8 mb-12">
-      <div class="border border-[var(--color-border)] overflow-hidden rounded-sm">
-        <img src="/images/challenge-vessel.webp" alt="Research vessel alone in open ocean — the most expensive test environment on earth" class="w-full" loading="lazy" />
-      </div>
-      <div class="border border-[var(--color-border)] overflow-hidden rounded-sm">
-        <img src="/images/challenge-whiteboard.webp" alt="Field Campaign Q3 sparse timeline vs Sim Validation Matrix dense checkmarks" class="w-full" loading="lazy" />
-      </div>
+    <div class="grid gap-4 lg:grid-cols-2">
+      <figure class="media-frame">
+        <img
+          src="/images/challenge-vessel.webp"
+          alt={lang === 'zh' ? '海上船只俯拍照片' : 'Aerial vessel field-test photo'}
+          class="h-full w-full object-cover"
+          loading="lazy"
+        />
+        <figcaption>{captions[0]}</figcaption>
+      </figure>
+      <figure class="media-frame">
+        <img
+          src="/images/challenge-whiteboard.webp"
+          alt={lang === 'zh' ? '现场与仿真白板图' : 'Field versus simulation whiteboard'}
+          class="h-full w-full object-cover"
+          loading="lazy"
+        />
+        <figcaption>{captions[1]}</figcaption>
+      </figure>
     </div>
 
-    <ol class="challenge-stack list-none grid lg:grid-cols-3 gap-6">
-      {problems.map((p: { title: string; body: string }, i: number) => (
-        <li class="challenge-row">
-          <div class="font-mono text-[var(--color-accent)] text-sm">{String(i + 1).padStart(2, '0')}</div>
-          <div>
-            <h3 class="font-display text-2xl md:text-3xl font-black text-[var(--color-text)] leading-tight">{p.title}</h3>
-            <p class="mt-3 text-[var(--color-text-muted)] leading-relaxed text-sm md:text-base max-w-xl">{p.body}</p>
-          </div>
-        </li>
+    <div class="mt-6 grid gap-4 md:grid-cols-3">
+      {fm.problems.map((problem: { title: string; body: string }, index: number) => (
+        <article class="landing-card">
+          <div class="card-index">{String(index + 1).padStart(2, '0')}</div>
+          <h3>{cleanHeadline(problem.title)}</h3>
+          <p>{problem.body}</p>
+        </article>
       ))}
-    </ol>
+    </div>
   </div>
 </section>

@@ -5,69 +5,82 @@ import { getLangFromUrl } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
-const { title, eyebrow, subhead, installCommand, installLabel, colabLabel, colabUrl, videoSrc, benchHeaders, benchRows, benchNote, caveat } = fm;
+const cleanHeadline = (value: string) => value.replace(/[.。]+$/u, '');
 ---
-<section id="demo" class="relative overflow-hidden py-24 md:py-32" style="background:var(--color-bg)">
-  <div class="relative max-w-[1280px] mx-auto px-6 w-full">
-    <div class="font-mono text-[var(--color-accent)] text-xs uppercase eyebrow-tracking mb-3">/05 · {eyebrow}</div>
-    <h2 class="font-display text-4xl md:text-6xl font-bold text-[var(--color-text)] mb-4 tracking-tight max-w-4xl">{title}</h2>
-    <p class="text-[var(--color-text-muted)] text-lg md:text-xl max-w-3xl mb-12">{subhead}</p>
+<section id="demo" class="landing-section section-dark">
+  <div class="section-inner">
+    <div class="section-header">
+      <p class="section-kicker">/04 · {fm.eyebrow}</p>
+      <h2 class="section-title">{cleanHeadline(fm.title)}</h2>
+      <p class="section-copy">{fm.subhead}</p>
+    </div>
 
-    <div class="grid lg:grid-cols-2 gap-8 items-start">
-      <div class="rounded-lg overflow-hidden border border-[var(--color-border)] bg-[var(--color-bg)]">
-        <div class="aspect-video relative bg-[var(--color-bg)] flex items-center justify-center">
-          <div class="text-center px-6">
-            <div class="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-accent)] mb-2">Demo video</div>
-            <div class="font-mono text-xs text-[var(--color-text-muted)]">4-panel hover demo lands at the v0.1 tag.<br />Run it locally now: <span class="text-[var(--color-accent)]">oceanscale demo bluerov2-hover --cinematic</span></div>
-          </div>
-          <div class="absolute bottom-3 right-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-accent)] bg-[var(--color-bg)]/80 px-2 py-1">
-            v0.1 alpha
-          </div>
+    <div class="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
+      <div class="space-y-4">
+        <div class="media-frame demo-video">
+          <video
+            src={fm.videoSrc}
+            poster="/images/hero-impact-alt.webp"
+            muted
+            loop
+            autoplay
+            playsinline
+            preload="metadata"
+            class="h-full w-full object-cover"
+            aria-label={lang === 'zh' ? 'BlueROV2 悬停演示' : 'BlueROV2 hover demo'}
+          ></video>
         </div>
+        <figure class="media-frame demo-map">
+          <img
+            src="/images/hero-bg.webp"
+            alt={lang === 'zh' ? '海底地形等高线图' : 'Bathymetric contour map'}
+            class="h-full w-full object-cover"
+            loading="lazy"
+          />
+          <figcaption>{lang === 'zh' ? '可复现实验场景' : 'Reproducible test scene'}</figcaption>
+        </figure>
       </div>
 
-      <div class="space-y-6">
-        <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] overflow-hidden">
-          <div class="flex items-center gap-2 px-4 py-2 border-b border-[var(--color-border)]">
-            <div class="w-3 h-3 rounded-full bg-red-500/60"></div>
-            <div class="w-3 h-3 rounded-full bg-yellow-500/60"></div>
-            <div class="w-3 h-3 rounded-full bg-green-500/60"></div>
-            <span class="ml-2 font-mono text-[10px] text-[var(--color-text-muted)]">terminal</span>
+      <div class="space-y-4">
+        <div class="terminal-panel">
+          <div class="terminal-panel__bar">
+            <span></span>
+            <span></span>
+            <span></span>
+            <strong>{fm.installLabel}</strong>
           </div>
-          <pre class="px-4 py-3 text-sm font-mono text-[var(--color-accent)] overflow-x-auto"><code>{installCommand}</code></pre>
+          <pre><code><span class="terminal-prompt">$</span> {fm.installCommand}</code></pre>
         </div>
 
-        <div class="flex gap-3">
-          <a href={colabUrl} target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--color-accent)] text-[var(--color-bg)] font-mono text-sm font-semibold hover:opacity-90 transition-opacity">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.5 14.5h-9a1.5 1.5 0 0 1 0-3h9a1.5 1.5 0 0 1 0 3zm-9-6a1.5 1.5 0 0 1 0-3h9a1.5 1.5 0 0 1 0 3h-9z"/></svg>
-            {colabLabel}
-          </a>
-        </div>
-
-        <div class="rounded-lg border border-[var(--color-border)] overflow-x-auto mobile-scroll-hint">
-          <table class="w-full text-sm min-w-[420px]">
+        <div class="table-shell compact mobile-scroll-hint">
+          <table>
             <thead>
-              <tr class="bg-[var(--color-bg)]">
-                {benchHeaders.map((h: string) => (
-                  <th class="px-3 sm:px-4 py-2 text-left font-mono text-[10px] uppercase tracking-[0.15em] text-[var(--color-accent)]">{h}</th>
+              <tr>
+                {fm.benchHeaders.map((header: string) => (
+                  <th>{header}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {benchRows.map((row: string[], i: number) => (
-                <tr class={`border-t border-[var(--color-border)] ${i === benchRows.length - 1 ? 'bg-[var(--color-accent)]/5' : ''}`}>
-                  {row.map((cell: string, j: number) => (
-                    <td class={`px-3 sm:px-4 py-2 font-mono text-xs sm:text-sm ${j === 3 && i === 2 ? 'text-[var(--color-accent)] font-bold' : 'text-[var(--color-text-muted)]'}`}>{cell}</td>
+              {fm.benchRows.map((row: string[], rowIndex: number) => (
+                <tr class={rowIndex === fm.benchRows.length - 1 ? 'highlight-row' : ''}>
+                  {row.map((cell: string) => (
+                    <td>{cell}</td>
                   ))}
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <p class="text-[var(--color-text-muted)] text-xs font-mono">{benchNote}</p>
-        {caveat && (
-          <p class="text-[var(--color-danger)] text-xs font-mono leading-relaxed border-l-2 border-[var(--color-danger)] pl-3 mt-2">{caveat}</p>
-        )}
+
+        <div class="evidence-card">
+          <p>{fm.benchNote}</p>
+          {fm.caveat && <p>{fm.caveat}</p>}
+        </div>
+
+        <a href={fm.colabUrl} target="_blank" rel="noopener" class="btn-lumen">
+          {fm.colabLabel}
+        </a>
       </div>
     </div>
   </div>
