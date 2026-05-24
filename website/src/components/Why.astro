@@ -6,36 +6,15 @@ const lang = getLangFromUrl(Astro.url);
 const fm = lang === 'zh' ? zhData : enData;
 const strip = (s: string) => s.replace(/[.。]+$/u, '');
 ---
-<!-- Full-viewport challenge with vessel background -->
-<section id="why" class="relative min-h-screen flex items-center" style="background: var(--color-bg);">
-  <img src="/images/challenge-vessel.webp" alt="" class="absolute inset-0 w-full h-full object-cover opacity-30" loading="lazy" />
-  <div class="absolute inset-0" style="background: linear-gradient(to right, var(--color-bg) 0%, rgba(6,11,18,0.7) 50%, rgba(6,11,18,0.4) 100%);"></div>
-
-  <div class="os-container relative z-10 py-16">
+<section id="why" class="os-section os-section--dark os-section--bg-why">
+  <div class="os-container os-centered">
     <div class="os-kicker">/01 · {fm.eyebrow}</div>
-    <h2 class="os-h2 mt-4" style="font-size: clamp(2.5rem, 6vw, 4.5rem); max-width: 14ch;">
-      {strip(fm.title)}
-    </h2>
-    <p class="mt-6 max-w-lg" style="color: var(--color-text-muted); font-size: 1.05rem; line-height: 1.7;">
-      {fm.label}
-    </p>
-    <div class="grid gap-4 sm:grid-cols-3 mt-12 max-w-3xl">
-      {fm.problems.map((p: { title: string; body: string }, i: number) => (
-        <div class="os-card">
-          <span class="os-card__index">{String(i + 1).padStart(2, '0')}</span>
-          <h3>{strip(p.title)}</h3>
-          <p>{p.body}</p>
-        </div>
-      ))}
-    </div>
+    <h2 class="os-h2">{strip(fm.title)}</h2>
+    <p class="os-body os-body--centered">{fm.label}</p>
   </div>
-</section>
-
-<!-- Whiteboard evidence strip -->
-<section class="os-section os-section--surface" style="padding: 2.5rem 0;">
   <div class="os-container">
-    <figure class="os-frame" style="max-width: 720px;">
-      <img src="/images/challenge-whiteboard.webp" alt="Field Campaign Q3 vs Sim Validation Matrix" class="aspect-[2/1] object-cover" loading="lazy" />
+    <figure class="os-frame--hero os-frame--inset">
+      <img src="/images/challenge-whiteboard.webp" alt={lang === 'zh' ? '现场测试 vs 仿真验证' : 'Field testing vs simulation validation'} loading="lazy" />
     </figure>
   </div>
 </section>

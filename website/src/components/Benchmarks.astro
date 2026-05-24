@@ -7,35 +7,29 @@ const fm: any = lang === 'zh' ? zhData : enData;
 const strip = (s: string) => s.replace(/[.。]+$/u, '');
 const bold = (s: string) => s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 ---
-<section id="benchmarks" class="os-section os-section--surface" style="min-height: 80vh; display: flex; align-items: center;">
-  <div class="os-container w-full">
+<section id="benchmarks" class="os-section os-section--dark os-section--bg-bench">
+  <div class="os-container os-centered">
     <div class="os-kicker">/03 · {fm.eyebrow}</div>
-    <h2 class="os-h2 mt-4 mb-8" style="font-size: clamp(2rem, 5vw, 3.5rem);">
-      {strip(fm.title)}
-    </h2>
-    
-    <div class="grid gap-8 xl:grid-cols-[1.3fr_0.7fr] xl:items-start">
-      <div class="os-table-wrap">
-        <table>
-          <thead><tr>{fm.headers.map((h: string) => <th>{h}</th>)}</tr></thead>
-          <tbody>
-            {fm.rows.map((row: string[]) => (
-              <tr>
-                {row.map((cell: string, i: number) => (
-                  i === 0 ? <th scope="row" set:html={bold(cell)}></th> : <td set:html={bold(cell)}></td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <div>
-        <figure class="os-frame">
-          <img src="/images/bench-landscape.webp" alt="Competitive landscape" class="aspect-[4/3] object-cover" loading="lazy" />
-          <figcaption>{lang === 'zh' ? 'GPU 速度 × 水下保真度' : 'GPU speed × underwater fidelity'}</figcaption>
-        </figure>
-        <p class="mt-4" style="color: var(--color-text-muted); font-size: 0.82rem; line-height: 1.6;">{fm.caveat}</p>
-      </div>
+    <h2 class="os-h2">{strip(fm.title)}</h2>
+  </div>
+  <div class="os-container">
+    <div class="os-table-wrap">
+      <table>
+        <thead><tr>{fm.headers.map((h: string) => <th>{h}</th>)}</tr></thead>
+        <tbody>
+          {fm.rows.map((row: string[]) => (
+            <tr>
+              {row.map((cell: string, i: number) => (
+                i === 0 ? <th scope="row" set:html={bold(cell)}></th> : <td set:html={bold(cell)}></td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
+    <p class="os-caveat">{fm.caveat}</p>
+    <figure class="os-frame--hero os-frame--inset">
+      <img src="/images/bench-landscape.webp" alt={lang === 'zh' ? '水下仿真竞争象限' : 'Underwater sim competitive landscape'} loading="lazy" />
+    </figure>
   </div>
 </section>
