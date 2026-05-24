@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Tier-1 Fossen orchestrator — owns per-env buffers, calls kernels in order,
 writes wrench to Newton's state.body_f.
 
@@ -12,10 +10,14 @@ Usage pattern (env loop):
     solver.step(state_curr, state_next, control, None, dt)
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass
+from typing import Any, cast
 
 import numpy as np
 import warp as wp
+from numpy.typing import NDArray
 
 from oceanscale.hydro.tier1_kernels import (
     tier1_accumulate_to_body_f,
@@ -33,6 +35,18 @@ DEFAULT_G = 9.81
 DEFAULT_DT = 1.0 / 240.0
 DEFAULT_EMA_ALPHA = 0.3  # per MarineGym L230
 
+FloatArray = NDArray[np.float32]
+
+
+def _wp_numpy(array: Any) -> NDArray[Any]:
+    return cast(NDArray[Any], array.numpy())
+
+
+def _require_value(value: Any, name: str) -> Any:
+    if value is None:
+        raise RuntimeError(f"Tier1 missing {name}; call set_coeffs() first")
+    return value
+
 
 @dataclass
 class RandomizationRanges:
@@ -47,7 +61,7 @@ class RandomizationRanges:
     d_lin: float = 0.30
     d_quad: float = 0.30
     volume: float = 0.15
-    coBM: float = 0.50
+    coBM: float = 0.50  # noqa: N815
     thruster_gain: float = 0.20
     current_speed_max: float = 0.5
 
@@ -99,17 +113,17 @@ class Tier1:
         self.u_eff_out = wp.zeros((n_envs, n_thrusters), dtype=wp.float32, device=device)
 
         # Coefficient slots (filled by set_coeffs)
-        self.M_A_lin: wp.array | None = None
-        self.M_A_ang: wp.array | None = None
-        self.d_lin_lin: wp.array | None = None
-        self.d_lin_ang: wp.array | None = None
-        self.d_quad_lin: wp.array | None = None
-        self.d_quad_ang: wp.array | None = None
-        self.mass_arr: wp.array | None = None
-        self.volume_arr: wp.array | None = None
-        self.coBM_arr: wp.array | None = None
-        self.current_vec_arr: wp.array | None = None
-        self.T_matrix: wp.array | None = None
+        self.M_A_lin: Any | None = None
+        self.M_A_ang: Any | None = None
+        self.d_lin_lin: Any | None = None
+        self.d_lin_ang: Any | None = None
+        self.d_quad_lin: Any | None = None
+        self.d_quad_ang: Any | None = None
+        self.mass_arr: Any | None = None
+        self.volume_arr: Any | None = None
+        self.coBM_arr: Any | None = None
+        self.current_vec_arr: Any | None = None
+        self.T_matrix: Any | None = None
 
     def set_coeffs(
         self,
@@ -167,7 +181,7 @@ class Tier1:
         self.T_matrix = wp.array(T, dtype=wp.float32, device=self.device)
 
         # Store base values for domain randomization
-        self._base_coeffs = {
+        self._base_coeffs: dict[str, Any] = {
             "added_mass": np.array(added_mass, dtype=np.float32),
             "d_lin": np.array(d_lin, dtype=np.float32),
             "d_quad": np.array(d_quad, dtype=np.float32),
@@ -204,10 +218,12 @@ class Tier1:
         base = self._base_coeffs
 
         # Added mass (6-DOF): per-env, per-axis
-        ma_scale = 1.0 + rng.uniform(-ranges.added_mass, ranges.added_mass, (n, 6)).astype(np.float32)
-        ma_rand = base["added_mass"][np.newaxis, :] * ma_scale
-        ma_lin_np = self.M_A_lin.numpy()
-        ma_ang_np = self.M_A_ang.numpy()
+        ma_scale = 1.0 + rng.uniform(-ranges.added_mass, ranges.added_mass, (n, 6)).astype(
+            np.float32
+        )
+        ma_rand = cast(FloatArray, base["added_mass"])[np.newaxis, :] * ma_scale
+        ma_lin_np = _wp_numpy(_require_value(self.M_A_lin, "M_A_lin"))
+        ma_ang_np = _wp_numpy(_require_value(self.M_A_ang, "M_A_ang"))
         ma_lin_np[ids] = ma_rand[:, :3]
         ma_ang_np[ids] = ma_rand[:, 3:]
         self.M_A_lin = wp.array(ma_lin_np, dtype=wp.vec3f, device=self.device)
@@ -215,9 +231,9 @@ class Tier1:
 
         # Damping linear (6-DOF)
         dl_scale = 1.0 + rng.uniform(-ranges.d_lin, ranges.d_lin, (n, 6)).astype(np.float32)
-        dl_rand = base["d_lin"][np.newaxis, :] * dl_scale
-        dll_np = self.d_lin_lin.numpy()
-        dla_np = self.d_lin_ang.numpy()
+        dl_rand = cast(FloatArray, base["d_lin"])[np.newaxis, :] * dl_scale
+        dll_np = _wp_numpy(_require_value(self.d_lin_lin, "d_lin_lin"))
+        dla_np = _wp_numpy(_require_value(self.d_lin_ang, "d_lin_ang"))
         dll_np[ids] = dl_rand[:, :3]
         dla_np[ids] = dl_rand[:, 3:]
         self.d_lin_lin = wp.array(dll_np, dtype=wp.vec3f, device=self.device)
@@ -225,25 +241,31 @@ class Tier1:
 
         # Damping quadratic (6-DOF)
         dq_scale = 1.0 + rng.uniform(-ranges.d_quad, ranges.d_quad, (n, 6)).astype(np.float32)
-        dq_rand = base["d_quad"][np.newaxis, :] * dq_scale
-        dql_np = self.d_quad_lin.numpy()
-        dqa_np = self.d_quad_ang.numpy()
+        dq_rand = cast(FloatArray, base["d_quad"])[np.newaxis, :] * dq_scale
+        dql_np = _wp_numpy(_require_value(self.d_quad_lin, "d_quad_lin"))
+        dqa_np = _wp_numpy(_require_value(self.d_quad_ang, "d_quad_ang"))
         dql_np[ids] = dq_rand[:, :3]
         dqa_np[ids] = dq_rand[:, 3:]
         self.d_quad_lin = wp.array(dql_np, dtype=wp.vec3f, device=self.device)
         self.d_quad_ang = wp.array(dqa_np, dtype=wp.vec3f, device=self.device)
 
         # Mass, volume, coBM (scalar per env)
-        m_np = self.mass_arr.numpy()
-        m_np[ids] = base["mass"] * (1.0 + rng.uniform(-ranges.mass, ranges.mass, n).astype(np.float32))
+        m_np = _wp_numpy(_require_value(self.mass_arr, "mass_arr"))
+        m_np[ids] = float(base["mass"]) * (
+            1.0 + rng.uniform(-ranges.mass, ranges.mass, n).astype(np.float32)
+        )
         self.mass_arr = wp.array(m_np, dtype=wp.float32, device=self.device)
 
-        v_np = self.volume_arr.numpy()
-        v_np[ids] = base["volume"] * (1.0 + rng.uniform(-ranges.volume, ranges.volume, n).astype(np.float32))
+        v_np = _wp_numpy(_require_value(self.volume_arr, "volume_arr"))
+        v_np[ids] = float(base["volume"]) * (
+            1.0 + rng.uniform(-ranges.volume, ranges.volume, n).astype(np.float32)
+        )
         self.volume_arr = wp.array(v_np, dtype=wp.float32, device=self.device)
 
-        c_np = self.coBM_arr.numpy()
-        c_np[ids] = base["coBM"] * (1.0 + rng.uniform(-ranges.coBM, ranges.coBM, n).astype(np.float32))
+        c_np = _wp_numpy(_require_value(self.coBM_arr, "coBM_arr"))
+        c_np[ids] = float(base["coBM"]) * (
+            1.0 + rng.uniform(-ranges.coBM, ranges.coBM, n).astype(np.float32)
+        )
         self.coBM_arr = wp.array(c_np, dtype=wp.float32, device=self.device)
 
         # Ocean current: speed in [0, max] × random unit direction
@@ -252,13 +274,16 @@ class Tier1:
             theta = rng.uniform(0, 2 * np.pi, n).astype(np.float32)
             cos_phi = rng.uniform(-1, 1, n).astype(np.float32)
             sin_phi = np.sqrt(np.clip(1.0 - cos_phi**2, 0, None)).astype(np.float32)
-            current_vec = np.stack([
-                speeds * sin_phi * np.cos(theta),
-                speeds * sin_phi * np.sin(theta),
-                speeds * cos_phi,
-            ], axis=-1).astype(np.float32)
+            current_vec = np.stack(
+                [
+                    speeds * sin_phi * np.cos(theta),
+                    speeds * sin_phi * np.sin(theta),
+                    speeds * cos_phi,
+                ],
+                axis=-1,
+            ).astype(np.float32)
             cv_np = (
-                self.current_vec_arr.numpy().copy()
+                _wp_numpy(self.current_vec_arr).copy()
                 if self.current_vec_arr is not None
                 else np.zeros((self.n_envs, 3), dtype=np.float32)
             )
@@ -270,9 +295,9 @@ class Tier1:
 
     def compute_wrench(
         self,
-        nu: wp.array,  # current body velocity (n_envs,) spatial_vectorf
-        quat: wp.array,  # body orientation (n_envs,) quatf
-        u_cmd: wp.array,  # (n_envs, n_thrusters)
+        nu: Any,  # current body velocity (n_envs,) spatial_vectorf
+        quat: Any,  # body orientation (n_envs,) quatf
+        u_cmd: Any,  # (n_envs, n_thrusters)
         dt: float = DEFAULT_DT,
     ) -> None:
         """Launch all 5 hydro kernels + thruster, accumulating into wrench_buf.
@@ -357,7 +382,7 @@ class Tier1:
         # swap thruster low-pass state
         self.u_eff_prev, self.u_eff_out = self.u_eff_out, self.u_eff_prev
 
-    def write_to_body_f(self, body_f: wp.array) -> None:
+    def write_to_body_f(self, body_f: Any) -> None:
         """Add accumulated hydro wrench into Newton's state.body_f."""
         wp.launch(
             tier1_accumulate_to_body_f,

@@ -8,11 +8,15 @@ frozen-snapshot baseline for regression testing of the GPU implementation.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable
+from typing import cast
 
 import numpy as np
+from numpy.typing import NDArray
+
+FloatArray = NDArray[np.float64]
 
 
 @dataclass
@@ -40,27 +44,31 @@ class VonBenzonParams:
     d_quad: tuple[float, ...] = (141.0, 217.0, 190.0, 1.19, 0.47, 1.5)
 
 
-def _Rz(a: float) -> np.ndarray:
+def _rz(a: float) -> FloatArray:
     c, s = np.cos(a), np.sin(a)
     return np.array([[c, -s, 0], [s, c, 0], [0, 0, 1]])
 
 
-def _quat_to_rotmat(q: np.ndarray) -> np.ndarray:
+def _quat_to_rotmat(q: np.ndarray) -> FloatArray:
     qx, qy, qz, qw = q
-    return np.array([
-        [1 - 2 * (qy * qy + qz * qz), 2 * (qx * qy - qw * qz), 2 * (qx * qz + qw * qy)],
-        [2 * (qx * qy + qw * qz), 1 - 2 * (qx * qx + qz * qz), 2 * (qy * qz - qw * qx)],
-        [2 * (qx * qz - qw * qy), 2 * (qy * qz + qw * qx), 1 - 2 * (qx * qx + qy * qy)],
-    ])
+    return np.array(
+        [
+            [1 - 2 * (qy * qy + qz * qz), 2 * (qx * qy - qw * qz), 2 * (qx * qz + qw * qy)],
+            [2 * (qx * qy + qw * qz), 1 - 2 * (qx * qx + qz * qz), 2 * (qy * qz - qw * qx)],
+            [2 * (qx * qz - qw * qy), 2 * (qy * qz + qw * qx), 1 - 2 * (qx * qx + qy * qy)],
+        ]
+    )
 
 
-def _quat_mul(a: np.ndarray, b: np.ndarray) -> np.ndarray:
-    return np.array([
-        a[3] * b[0] + a[0] * b[3] + a[1] * b[2] - a[2] * b[1],
-        a[3] * b[1] - a[0] * b[2] + a[1] * b[3] + a[2] * b[0],
-        a[3] * b[2] + a[0] * b[1] - a[1] * b[0] + a[2] * b[3],
-        a[3] * b[3] - a[0] * b[0] - a[1] * b[1] - a[2] * b[2],
-    ])
+def _quat_mul(a: np.ndarray, b: np.ndarray) -> FloatArray:
+    return np.array(
+        [
+            a[3] * b[0] + a[0] * b[3] + a[1] * b[2] - a[2] * b[1],
+            a[3] * b[1] - a[0] * b[2] + a[1] * b[3] + a[2] * b[0],
+            a[3] * b[2] + a[0] * b[1] - a[1] * b[0] + a[2] * b[3],
+            a[3] * b[3] - a[0] * b[0] - a[1] * b[1] - a[2] * b[2],
+        ]
+    )
 
 
 def _quat_to_euler(q: np.ndarray) -> tuple[float, float, float]:
@@ -72,7 +80,7 @@ def _quat_to_euler(q: np.ndarray) -> tuple[float, float, float]:
     return roll, pitch, yaw
 
 
-def _build_allocation_matrix() -> np.ndarray:
+def _build_allocation_matrix() -> FloatArray:
     """Thruster allocation T ∈ R^{6×8} — research.md L84-91 (Eq 15, Table A1 §2)."""
     p_h = np.array([0.156, 0.111, 0.085])
     e_h = np.array([1.0 / np.sqrt(2), -1.0 / np.sqrt(2), 0.0])
@@ -85,12 +93,12 @@ def _build_allocation_matrix() -> np.ndarray:
 
     T = np.zeros((6, 8))
     for i in range(4):
-        r = _Rz(alpha[i]) @ p_h
-        e = _Rz(beta[i]) @ e_h
+        r = _rz(alpha[i]) @ p_h
+        e = _rz(beta[i]) @ e_h
         T[:3, i] = e
         T[3:, i] = np.cross(r, e)
     for i in range(4):
-        r = _Rz(gamma[i]) @ p_v
+        r = _rz(gamma[i]) @ p_v
         T[:3, 4 + i] = e_v
         T[3:, 4 + i] = np.cross(r, e_v)
     return T
@@ -111,14 +119,16 @@ class VonBenzonReferenceModel:
     def __init__(self, params: VonBenzonParams | None = None) -> None:
         self.p = params or VonBenzonParams()
         p = self.p
-        M_diag = np.array([
-            p.mass + p.added_mass[0],
-            p.mass + p.added_mass[1],
-            p.mass + p.added_mass[2],
-            p.I_x + p.added_mass[3],
-            p.I_y + p.added_mass[4],
-            p.I_z + p.added_mass[5],
-        ])
+        M_diag = np.array(
+            [
+                p.mass + p.added_mass[0],
+                p.mass + p.added_mass[1],
+                p.mass + p.added_mass[2],
+                p.I_x + p.added_mass[3],
+                p.I_y + p.added_mass[4],
+                p.I_z + p.added_mass[5],
+            ]
+        )
         self._M_inv = np.diag(1.0 / M_diag)
         self._W = p.mass * p.g
         self._B = p.rho * p.g * p.volume
@@ -129,41 +139,47 @@ class VonBenzonReferenceModel:
         self._ma_ang = np.array(p.added_mass[3:])
         self.T_alloc = _build_allocation_matrix()
 
-    def _coriolis(self, nu: np.ndarray) -> np.ndarray:
+    def _coriolis(self, nu: np.ndarray) -> FloatArray:
         """C(ν)·ν = C_RB·ν + C_A·ν."""
         u, v, w, p, q, r = nu
         m = self.p.mass
         # C_RB·ν — rigid-body Coriolis (Newton-Euler, r_g=0)
-        c_rb = np.array([
-            m * (q * w - r * v),
-            m * (r * u - p * w),
-            m * (p * v - q * u),
-            (self.p.I_z - self.p.I_y) * q * r,
-            (self.p.I_x - self.p.I_z) * p * r,
-            (self.p.I_y - self.p.I_x) * p * q,
-        ])
+        c_rb = np.array(
+            [
+                m * (q * w - r * v),
+                m * (r * u - p * w),
+                m * (p * v - q * u),
+                (self.p.I_z - self.p.I_y) * q * r,
+                (self.p.I_x - self.p.I_z) * p * r,
+                (self.p.I_y - self.p.I_x) * p * q,
+            ]
+        )
         # C_A·ν — added-mass Coriolis, matching tier1_coriolis_a kernel formulation
         ab_l = self._ma_lin * nu[:3]
         ab_a = self._ma_ang * nu[3:]
-        c_a = np.concatenate([
-            np.cross(ab_l, nu[3:]),
-            np.cross(ab_l, nu[:3]) + np.cross(ab_a, nu[3:]),
-        ])
-        return c_rb + c_a
+        c_a = np.concatenate(
+            [
+                np.cross(ab_l, nu[3:]),
+                np.cross(ab_l, nu[:3]) + np.cross(ab_a, nu[3:]),
+            ]
+        )
+        return cast(FloatArray, c_rb + c_a)
 
     def _restoring(self, q: np.ndarray) -> np.ndarray:
         """g(η) — restoring force, research.md L179-201 (Eq 12, §7)."""
         phi, theta, _ = _quat_to_euler(q)
         W, B = self._W, self._B
         xb, yb, zb = self._r_b
-        return np.array([
-            (W - B) * np.sin(theta),
-            -(W - B) * np.cos(theta) * np.sin(phi),
-            -(W - B) * np.cos(theta) * np.cos(phi),
-            yb * B * np.cos(theta) * np.cos(phi) - zb * B * np.cos(theta) * np.sin(phi),
-            -zb * B * np.sin(theta) - xb * B * np.cos(theta) * np.cos(phi),
-            xb * B * np.cos(theta) * np.sin(phi) + yb * B * np.sin(theta),
-        ])
+        return np.array(
+            [
+                (W - B) * np.sin(theta),
+                -(W - B) * np.cos(theta) * np.sin(phi),
+                -(W - B) * np.cos(theta) * np.cos(phi),
+                yb * B * np.cos(theta) * np.cos(phi) - zb * B * np.cos(theta) * np.sin(phi),
+                -zb * B * np.sin(theta) - xb * B * np.cos(theta) * np.cos(phi),
+                xb * B * np.cos(theta) * np.sin(phi) + yb * B * np.sin(theta),
+            ]
+        )
 
     def _deriv(self, state: np.ndarray, tau: np.ndarray) -> np.ndarray:
         q = state[3:7]
@@ -193,7 +209,10 @@ class VonBenzonReferenceModel:
             dict with keys t(N,), pos(N,3), quat(N,4), vel(N,6), omega(N,3).
         """
         if thrust_func is None:
-            thrust_func = lambda t: np.zeros(6)
+
+            def thrust_func(t: float) -> np.ndarray:
+                return np.zeros(6)
+
         if initial_state is None:
             initial_state = np.zeros(13)
             initial_state[6] = 1.0  # qw = 1

@@ -6,13 +6,29 @@ Observation: 29-dim (26 base + 3 current velocity body frame).
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
+import torch
 import warp as wp
 from gymnasium import spaces
+from numpy.typing import NDArray
 
 from oceanscale.rov_env import ROVEnv
+
+FloatArray = NDArray[np.float32]
+BoolArray = NDArray[np.bool_]
+StepReturn = tuple[
+    FloatArray,
+    FloatArray | float,
+    BoolArray | bool,
+    BoolArray | bool,
+    dict[str, Any],
+]
+
+
+def _wp_numpy(array: Any) -> NDArray[Any]:
+    return cast(NDArray[Any], array.numpy())
 
 
 class CurrentStationKeepingEnv(ROVEnv):
@@ -33,6 +49,7 @@ class CurrentStationKeepingEnv(ROVEnv):
         current_coupling_strength: float = 8.0,
         **kwargs: Any,
     ) -> None:
+        randomize_sensor_noise = "sensor_noise_std" not in kwargs
         kwargs.setdefault("max_episode_steps", 2400)
         kwargs.setdefault("use_domain_randomization", True)
         kwargs.setdefault("init_pos_noise_std", 0.5)
@@ -40,15 +57,18 @@ class CurrentStationKeepingEnv(ROVEnv):
         super().__init__(n_envs=n_envs, n_thrusters=n_thrusters, device=device, **kwargs)
 
         self.observation_space = spaces.Box(
-            low=-np.inf, high=np.inf, shape=(29,), dtype=np.float32,
+            low=-np.inf,
+            high=np.inf,
+            shape=(29,),
+            dtype=np.float32,
         )
         self.current_coupling_strength = current_coupling_strength
-
 
         self._current_params = np.zeros((n_envs, 5), dtype=np.float32)
         self._current_world = np.zeros((n_envs, 3), dtype=np.float32)
         self._pos_error_history = np.full((n_envs, 300), np.inf, dtype=np.float32)
         self._history_idx = np.zeros(n_envs, dtype=np.int32)
+        self._randomize_sensor_noise = randomize_sensor_noise
 
     def _build(self) -> None:
         super()._build()
@@ -57,7 +77,7 @@ class CurrentStationKeepingEnv(ROVEnv):
         self._pos_error_history = np.full((self.n_envs, 300), np.inf, dtype=np.float32)
         self._history_idx = np.zeros(self.n_envs, dtype=np.int32)
         # Sentinel: base step() calls _apply_ocean_current() when _fluid is not None
-        self._fluid = object()
+        self._fluid = cast(Any, object())
 
     # ------------------------------------------------------------------
     # Current model
@@ -71,7 +91,8 @@ class CurrentStationKeepingEnv(ROVEnv):
         amplitude = (self.np_random.uniform(0, 1, n) * 0.5 * speed).astype(np.float32)
         phase = self.np_random.uniform(0, 2 * np.pi, n).astype(np.float32)
         self._current_params[env_ids] = np.stack(
-            [speed, direction, period, amplitude, phase], axis=-1,
+            [speed, direction, period, amplitude, phase],
+            axis=-1,
         )
 
     def _compute_current(self) -> np.ndarray:
@@ -92,16 +113,20 @@ class CurrentStationKeepingEnv(ROVEnv):
     def _apply_ocean_current(self) -> None:
         current_world = self._compute_current()
 
-        body_qd = self.state_curr.body_qd.numpy()
+        assert self.state_curr.body_qd is not None
+        assert self.state_curr.body_q is not None
+        assert self.state_curr.body_f is not None
+
+        body_qd = _wp_numpy(self.state_curr.body_qd)
         body_vel_body = body_qd[:, 0:3]
-        quat = self.state_curr.body_q.numpy()[:, 3:7]
+        quat = _wp_numpy(self.state_curr.body_q)[:, 3:7]
         body_vel_world = self._rotate_to_world(quat, body_vel_body)
 
         v_rel = current_world - body_vel_world
         force_world = self.current_coupling_strength * v_rel
         force_body = self._rotate_to_body(quat, force_world)
 
-        body_f = self.state_curr.body_f.numpy()
+        body_f = _wp_numpy(self.state_curr.body_f)
         body_f[:, 0:3] += force_body
         wp.copy(
             self.state_curr.body_f,
@@ -118,7 +143,8 @@ class CurrentStationKeepingEnv(ROVEnv):
         self._compute_current()
         self._pos_error_history[env_ids] = np.inf
         self._history_idx[env_ids] = 0
-        self.sensor_noise_std = float(self.np_random.uniform(0.01, 0.05))
+        if self._randomize_sensor_noise:
+            self.sensor_noise_std = float(self.np_random.uniform(0.01, 0.05))
 
     def reset(
         self,
@@ -133,9 +159,10 @@ class CurrentStationKeepingEnv(ROVEnv):
         info["success"] = False
         return obs, info
 
-    def step(
-        self, action: np.ndarray,
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, dict[str, Any]]:
+    def step(  # type: ignore[override]
+        self,
+        action: np.ndarray,
+    ) -> StepReturn:
         obs, reward, terminated, truncated, info = super().step(action)
 
         pos, _, _ = self._get_body_state()
@@ -152,10 +179,13 @@ class CurrentStationKeepingEnv(ROVEnv):
         info["per_env_success"] = success
         info["mean_pos_error"] = mean_errors
         if self.n_envs == 1:
-            obs = obs.squeeze(0)
-            reward = float(reward.item())
-            terminated = bool(terminated.item())
-            truncated = bool(truncated.item())
+            return (
+                cast(FloatArray, obs.squeeze(0)),
+                float(reward.item()),
+                bool(terminated.item()),
+                bool(truncated.item()),
+                info,
+            )
         return obs, reward, terminated, truncated, info
 
     # ------------------------------------------------------------------
@@ -166,16 +196,14 @@ class CurrentStationKeepingEnv(ROVEnv):
         base_obs = super()._get_obs_for(env_ids)
         obs = np.zeros((len(env_ids), 29), dtype=np.float32)
         obs[:, :26] = base_obs
-        if self._current_world is not None:
-            quat = self.state_curr.body_q.numpy()[env_ids, 3:7]
-            obs[:, 26:29] = self._rotate_to_body(quat, self._current_world[env_ids])
+        assert self.state_curr.body_q is not None
+        quat = _wp_numpy(self.state_curr.body_q)[env_ids, 3:7]
+        obs[:, 26:29] = self._rotate_to_body(quat, self._current_world[env_ids])
         return obs
 
     def _compute_reward_with_components(
         self,
-    ) -> tuple[np.ndarray, dict[str, Any]]:
-        import torch
-
+    ) -> tuple[torch.Tensor, dict[str, Any]]:
         pos, _, vel = self._get_body_state()
 
         pos_err = np.clip(np.linalg.norm(self.target_pos - pos, axis=-1), 0, 5.0)

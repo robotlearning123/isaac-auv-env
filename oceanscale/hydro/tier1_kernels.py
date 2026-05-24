@@ -1,3 +1,4 @@
+# mypy: ignore-errors
 """Tier-1 Fossen Warp kernels — added-mass, damping, Coriolis (C_A), restoring,
 thruster allocation. All operate per-world on (n_envs,) sized arrays.
 
@@ -164,12 +165,12 @@ def tier1_thruster_alloc(
     n_thrusters = u_cmd.shape[1]
     # First-order lag + deadband + saturation per thruster
     alpha = dt / (tau_lag + dt)  # discrete-time approx of dt/τ
-    fx = float(0.0)
-    fy = float(0.0)
-    fz = float(0.0)
-    mx = float(0.0)
-    my = float(0.0)
-    mz = float(0.0)
+    fx = float(0.0)  # noqa: UP018
+    fy = float(0.0)  # noqa: UP018
+    fz = float(0.0)  # noqa: UP018
+    mx = float(0.0)  # noqa: UP018
+    my = float(0.0)  # noqa: UP018
+    mz = float(0.0)  # noqa: UP018
     for k in range(n_thrusters):
         u_raw = u_cmd[i, k]
         # saturation in [-1, +1]

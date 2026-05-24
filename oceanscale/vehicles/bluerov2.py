@@ -22,7 +22,7 @@ from typing import Any
 import numpy as np
 
 
-def _Rz(angle: float) -> np.ndarray:
+def _rz(angle: float) -> np.ndarray:
     """Rotation matrix about z-axis."""
     c, s = np.cos(angle), np.sin(angle)
     return np.array([[c, -s, 0], [s, c, 0], [0, 0, 1]])
@@ -52,7 +52,7 @@ class BlueROV2Heavy:
     # Center of buoyancy offset from CoG in body frame (m).
     # von Benzon (z-down): (0, 0, -0.01) → COB 1cm above COG.
     # Our z-up convention: COB above COG → coBM = +0.01.
-    coBM: float = 0.01
+    coBM: float = 0.01  # noqa: N815
 
     # --- Thrusters ---
     n_thrusters: int = 8  # 4 horizontal vectored + 4 vertical
@@ -62,8 +62,8 @@ class BlueROV2Heavy:
     # --- Hydrodynamic coefficients (Fossen 6-tuple ordering) ---
     # Added mass (kg, kg·m²) — von Benzon Table A1
     added_mass: tuple[float, float, float, float, float, float] = (
-        6.36,   # X_udot  — surge
-        7.12,   # Y_vdot  — sway
+        6.36,  # X_udot  — surge
+        7.12,  # Y_vdot  — sway
         18.68,  # Z_wdot  — heave
         0.189,  # K_pdot  — roll
         0.135,  # M_qdot  — pitch
@@ -74,11 +74,11 @@ class BlueROV2Heavy:
     # Positive values: kernel applies -(d_lin + d_quad*|v|)*v
     d_lin: tuple[float, float, float, float, float, float] = (
         13.7,  # Xu  — surge
-        0.0,   # Yv  — sway (identified as zero)
+        0.0,  # Yv  — sway (identified as zero)
         33.0,  # Zw  — heave
-        0.0,   # Kp  — roll (identified as zero)
-        0.8,   # Mq  — pitch
-        0.0,   # Nr  — yaw (identified as zero)
+        0.0,  # Kp  — roll (identified as zero)
+        0.8,  # Mq  — pitch
+        0.0,  # Nr  — yaw (identified as zero)
     )
 
     # Quadratic damping (N·s²/m², N·m·s²/rad²) — von Benzon Table A1
@@ -86,9 +86,9 @@ class BlueROV2Heavy:
         141.0,  # Xu|u|  — surge
         217.0,  # Yv|v|  — sway
         190.0,  # Zw|w|  — heave
-        1.19,   # Kp|p|  — roll
-        0.47,   # Mq|q|  — pitch
-        1.5,    # Nr|r|  — yaw
+        1.19,  # Kp|p|  — roll
+        0.47,  # Mq|q|  — pitch
+        1.5,  # Nr|r|  — yaw
     )
 
     def compute_t_matrix(self) -> list[list[float]]:
@@ -126,14 +126,14 @@ class BlueROV2Heavy:
 
         # Horizontal thrusters T1-T4
         for i in range(4):
-            pos = _Rz(alphas[i]) @ base_pos_h
-            dirn = _Rz(betas[i]) @ base_dir_h
+            pos = _rz(alphas[i]) @ base_pos_h
+            dirn = _rz(betas[i]) @ base_dir_h
             T[:3, i] = dirn
             T[3:, i] = np.cross(pos, dirn)
 
         # Vertical thrusters T5-T8
         for j in range(4):
-            pos = _Rz(gammas[j]) @ base_pos_v
+            pos = _rz(gammas[j]) @ base_pos_v
             T[:3, 4 + j] = base_dir_v
             T[3:, 4 + j] = np.cross(pos, base_dir_v)
 

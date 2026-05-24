@@ -22,9 +22,7 @@ class PressureSensor:
 
     dim: int = 1  # depth scalar
 
-    def __init__(
-        self, n_envs: int, device: str = "cuda", noise_std: float = 0.0
-    ) -> None:
+    def __init__(self, n_envs: int, device: str = "cuda", noise_std: float = 0.0) -> None:
         self.n_envs = n_envs
         self.device = device
         self.noise_std = noise_std
