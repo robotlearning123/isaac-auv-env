@@ -137,7 +137,7 @@ def test_wrench_after_randomization(tier1_64) -> None:
 @pytest.mark.gpu
 def test_zero_range_no_change(tier1_64) -> None:
     """Ranges all zero => coefficients unchanged."""
-    ranges = RandomizationRanges(mass=0.0, added_mass=0.0, d_lin=0.0, d_quad=0.0, volume=0.0, coBM=0.0)
+    ranges = RandomizationRanges(mass=0.0, added_mass=0.0, d_lin=0.0, d_quad=0.0, volume=0.0, coBM=0.0, current_speed_max=0.0)
     ma_before = tier1_64.M_A_lin.numpy().copy()
     m_before = tier1_64.mass_arr.numpy().copy()
 
@@ -146,3 +146,93 @@ def test_zero_range_no_change(tier1_64) -> None:
 
     np.testing.assert_array_equal(tier1_64.M_A_lin.numpy(), ma_before)
     np.testing.assert_array_equal(tier1_64.mass_arr.numpy(), m_before)
+    assert tier1_64.current_vec_arr is None
+
+
+# ── current_speed domain randomization tests ──
+
+
+@pytest.mark.gpu
+def test_current_speed_populated(tier1_64) -> None:
+    """current_vec_arr is populated after randomize_coeffs with current_speed_max > 0."""
+    rng = np.random.default_rng(42)
+    ranges = RandomizationRanges(current_speed_max=0.5)
+    tier1_64.randomize_coeffs(ranges=ranges, rng=rng)
+    assert tier1_64.current_vec_arr is not None
+    cv = tier1_64.current_vec_arr.numpy()
+    assert cv.shape == (64, 3)
+    assert np.all(np.isfinite(cv))
+
+
+@pytest.mark.gpu
+def test_current_speed_bounds(tier1_64) -> None:
+    """Current speed per env stays in [0, max]."""
+    max_speed = 0.5
+    ranges = RandomizationRanges(current_speed_max=max_speed)
+    for seed in range(50):
+        rng = np.random.default_rng(seed)
+        tier1_64.randomize_coeffs(ranges=ranges, rng=rng)
+        cv = tier1_64.current_vec_arr.numpy()
+        speeds = np.linalg.norm(cv, axis=-1)
+        assert np.all(speeds >= 0)
+        assert np.all(speeds <= max_speed + 1e-6)
+
+
+@pytest.mark.gpu
+def test_current_direction_unit(tier1_64) -> None:
+    """Direction is a proper unit vector (norm == speed)."""
+    rng = np.random.default_rng(7)
+    ranges = RandomizationRanges(current_speed_max=0.5)
+    tier1_64.randomize_coeffs(ranges=ranges, rng=rng)
+    cv = tier1_64.current_vec_arr.numpy()
+    speeds = np.linalg.norm(cv, axis=-1)
+    nonzero = speeds > 1e-6
+    if np.any(nonzero):
+        directions = cv[nonzero] / speeds[nonzero, np.newaxis]
+        dir_norms = np.linalg.norm(directions, axis=-1)
+        np.testing.assert_allclose(dir_norms, 1.0, atol=1e-5)
+
+
+@pytest.mark.gpu
+def test_current_per_env_unique(tier1_64) -> None:
+    """Each env gets a different current vector."""
+    rng = np.random.default_rng(42)
+    ranges = RandomizationRanges(current_speed_max=0.5)
+    tier1_64.randomize_coeffs(ranges=ranges, rng=rng)
+    cv = tier1_64.current_vec_arr.numpy()
+    assert not np.allclose(cv[0], cv[1])
+    assert not np.allclose(cv[0], cv[2])
+
+
+@pytest.mark.gpu
+def test_current_subset_envs(tier1_64) -> None:
+    """Only specified env_ids get current randomized."""
+    rng = np.random.default_rng(123)
+    ranges = RandomizationRanges(current_speed_max=0.5)
+    tier1_64.randomize_coeffs(ranges=ranges, rng=rng)
+    cv_before = tier1_64.current_vec_arr.numpy().copy()
+
+    ids = [0, 5, 10]
+    tier1_64.randomize_coeffs(env_ids=ids, ranges=ranges, rng=rng)
+    cv_after = tier1_64.current_vec_arr.numpy()
+
+    for i in ids:
+        assert not np.allclose(cv_after[i], cv_before[i])
+    for i in range(64):
+        if i not in ids:
+            np.testing.assert_array_equal(cv_after[i], cv_before[i])
+
+
+@pytest.mark.gpu
+def test_current_reproducible(tier1_64) -> None:
+    """Same RNG seed produces same current vectors."""
+    rng1 = np.random.default_rng(999)
+    ranges = RandomizationRanges(current_speed_max=0.5)
+    tier1_64.randomize_coeffs(ranges=ranges, rng=rng1)
+    cv1 = tier1_64.current_vec_arr.numpy().copy()
+
+    rng2 = np.random.default_rng(999)
+    tier1_64.randomize_coeffs(ranges=ranges, rng=rng2)
+    cv2 = tier1_64.current_vec_arr.numpy()
+
+    np.testing.assert_array_equal(cv1, cv2)

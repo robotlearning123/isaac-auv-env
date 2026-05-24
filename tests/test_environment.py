@@ -13,9 +13,12 @@ def test_python_version() -> None:
 
 
 def test_oceanscale_importable() -> None:
+    import importlib.metadata
+
     import oceanscale
 
-    assert oceanscale.__version__ == "0.0.1"
+    expected = importlib.metadata.version("oceanscale")
+    assert oceanscale.__version__ == expected
 
 
 def test_numpy() -> None:
@@ -70,6 +73,7 @@ def test_newton_import() -> None:
 
 
 def test_usd_import() -> None:
+    pytest.importorskip("pxr", reason="usd-core is optional (install with [viz])")
     from pxr import Usd
 
     assert Usd.GetVersion() >= (0, 25, 11)
