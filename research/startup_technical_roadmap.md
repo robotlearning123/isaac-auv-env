@@ -14,9 +14,9 @@ All numbers below were measured on the project's RTX 5090. These are the floor f
 | Benchmark | Result | Source |
 |-----------|--------|--------|
 | Warp stencil throughput | 200.9B cells/s at 128^3 (3.05x PyTorch eager) | `benchmarks/warp_fluid_bench.py` |
-| Triton stencil throughput | 0.014 ms/iter at 128^3 (3.44x PyTorch eager) | `benchmarks/triton_cfd_bench.py` |
+| Triton stencil throughput | 0.014 ms/iter at 128^3 (3.44x PyTorch eager) | `benchmarks/jacobi_stencil_bench.py` |
 | Newton SemiImplicit batched | 1.45M env-steps/s at N=256, flat scaling | `benchmarks/newton_worlds_throughput.py` |
-| Newton bridge (our wrapper) | 84.8M env-steps/s at N=4096 worlds | `benchmarks/newton_bridge_bench.py` |
+| Newton bridge (our wrapper) | 84.8M env-steps/s at N=4096 worlds | `benchmarks/newton_underwater_bench.py` |
 | MuJoCo-Warp dynamics | ~1.3M env-steps/s at N=4096 (GPU-sensitive) | `benchmarks/mujoco_warp_bench.py` |
 | Kamino (Disney) | 70 steps/s free body; ONLY correct for kinematic loops | `benchmarks/kamino_solver_bench.py` |
 | CuPy LBM D2Q9 | 36,617 MLUPS peak at 1024^2 | `benchmarks/cupy_lbm_bench.py` |
