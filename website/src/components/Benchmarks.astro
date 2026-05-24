@@ -7,7 +7,7 @@ const fm: any = lang === 'zh' ? zhData : enData;
 const strip = (s: string) => s.replace(/[.。]+$/u, '');
 const bold = (s: string) => s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 ---
-<section id="benchmarks" class="os-section os-section--dark os-focus-section">
+<section id="benchmarks" class="os-section os-section--dark os-focus-section os-section--bg-bench">
   <div class="os-container">
     <div class="os-kicker">/03 · {fm.eyebrow}</div>
     <h2 class="os-h2 os-section-title">{strip(fm.title)}</h2>

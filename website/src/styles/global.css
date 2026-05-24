@@ -68,17 +68,50 @@
   }
 
   .os-focus-section {
-    min-height: 86vh;
     display: flex;
     align-items: center;
   }
 
-  .os-section--dark { background: rgba(5, 6, 8, 0.94); }
+  .os-section--dark {
+    background: var(--color-bg);
+  }
 
   .os-section--surface {
-    background: var(--color-surface);
+    background: var(--color-surface-raised);
     border-top: 1px solid var(--color-border);
     border-bottom: 1px solid var(--color-border);
+  }
+
+  .os-section--bg-why,
+  .os-section--bg-bench {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .os-section--bg-why::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("/images/challenge-vessel.webp") center / cover no-repeat;
+    filter: grayscale(1) brightness(0.18);
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  .os-section--bg-bench::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("/images/bench-landscape.webp") center / cover no-repeat;
+    filter: grayscale(1) brightness(0.15);
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  .os-section--bg-why > .os-container,
+  .os-section--bg-bench > .os-container {
+    position: relative;
+    z-index: 1;
   }
 
   .os-container {
@@ -179,12 +212,12 @@
     inset: 0;
     z-index: 0;
     background-image: url("/images/platform-desk.webp");
-    background-position: 86% 46%;
+    background-position: 78% 50%;
     background-repeat: no-repeat;
-    background-size: min(56vw, 54rem) auto;
-    filter: grayscale(1) contrast(1.08);
-    mix-blend-mode: screen;
-    opacity: 0.16;
+    background-size: min(52vw, 48rem) auto;
+    filter: contrast(1.05) brightness(0.7);
+    mix-blend-mode: lighten;
+    opacity: 0.32;
     pointer-events: none;
   }
 
@@ -243,7 +276,6 @@
   }
 
   .os-runtime {
-    min-height: 38rem;
     display: grid;
     grid-template-rows: auto 1fr auto auto;
     background: rgba(7, 9, 12, 0.9);
@@ -443,7 +475,7 @@
   }
 
   .os-evidence-board {
-    min-height: 24rem;
+    min-height: 18rem;
     display: grid;
     grid-template-rows: auto 1fr;
     background: var(--color-bg-elevated);
@@ -506,7 +538,7 @@
 
   .os-architecture {
     position: relative;
-    min-height: 24rem;
+    min-height: 16rem;
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     align-items: center;
@@ -828,7 +860,6 @@
       grid-template-columns: 1fr;
     }
 
-    .os-runtime { min-height: auto; }
     .os-card-row,
     .os-card-row--four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
@@ -837,7 +868,6 @@
     body { background-size: 42px 42px; }
     .os-container { width: min(100% - 2rem, 1320px); }
     .os-section { padding: 4rem 0; }
-    .os-focus-section { min-height: auto; }
     .os-hero { min-height: auto; }
     .os-hero::after {
       background-position: 70% 11rem;
