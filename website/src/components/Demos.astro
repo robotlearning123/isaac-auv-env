@@ -9,7 +9,7 @@ const strip = (s: string) => s.replace(/[.。]+$/u, '');
 ---
 <section id="demo" class="os-section os-section--dark">
   <div class="os-container">
-    <div class="max-w-3xl mb-12 reveal">
+    <div class="max-w-3xl mb-12">
       <div class="os-kicker">/04 · {fm.eyebrow}</div>
       <h2 class="os-h2">{strip(fm.title)}</h2>
       <p class="os-body">{fm.subhead}</p>
@@ -17,7 +17,7 @@ const strip = (s: string) => s.replace(/[.。]+$/u, '');
 
     <div class="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
       <div class="space-y-5">
-        <figure class="os-frame reveal reveal-delay-1">
+        <figure class="os-frame">
           <video
             src={fm.videoSrc}
             poster="/images/hero-impact.webp"
@@ -26,14 +26,14 @@ const strip = (s: string) => s.replace(/[.。]+$/u, '');
           ></video>
           <figcaption>{lang === 'zh' ? 'BlueROV2 悬停训练' : 'BlueROV2 hover training'}</figcaption>
         </figure>
-        <figure class="os-frame reveal reveal-delay-2">
+        <figure class="os-frame">
           <img src="/images/hero-bg.webp" alt="Bathymetric map" class="aspect-[2/1] object-cover" loading="lazy" />
           <figcaption>{lang === 'zh' ? '可复现场景' : 'Reproducible test scene'}</figcaption>
         </figure>
       </div>
 
       <div class="space-y-5">
-        <div class="os-terminal reveal reveal-delay-1">
+        <div class="os-terminal">
           <div class="os-terminal__bar">
             <span class="os-terminal__dot os-terminal__dot--red"></span>
             <span class="os-terminal__dot os-terminal__dot--yellow"></span>
@@ -43,7 +43,7 @@ const strip = (s: string) => s.replace(/[.。]+$/u, '');
           <pre><code><span class="prompt">$</span> {fm.installCommand}</code></pre>
         </div>
 
-        <div class="os-table-wrap reveal reveal-delay-2">
+        <div class="os-table-wrap">
           <table>
             <thead>
               <tr>
@@ -60,12 +60,12 @@ const strip = (s: string) => s.replace(/[.。]+$/u, '');
           </table>
         </div>
 
-        <div class="os-card reveal reveal-delay-3">
+        <div class="os-card">
           <p style="color: var(--color-text-muted); font-size: 0.85rem; line-height: 1.6; margin: 0;">{fm.benchNote}</p>
           {fm.caveat && <p style="color: var(--color-text-muted); font-size: 0.8rem; line-height: 1.5; margin: 0.5rem 0 0; opacity: 0.8;">{fm.caveat}</p>}
         </div>
 
-        <a href={fm.colabUrl} target="_blank" rel="noopener" class="os-btn os-btn--primary reveal reveal-delay-4">
+        <a href={fm.colabUrl} target="_blank" rel="noopener" class="os-btn os-btn--primary">
           {fm.colabLabel} <span aria-hidden="true">&rarr;</span>
         </a>
       </div>

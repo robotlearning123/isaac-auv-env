@@ -12,15 +12,15 @@ type Cap = { metricLabel: string; title: string; body: string };
   <div class="os-container">
     <div class="grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-start">
       <div>
-        <div class="os-kicker reveal">/02 · {fm.eyebrow}</div>
-        <h2 class="os-h2 reveal reveal-delay-1">{strip(fm.title)}</h2>
-        <p class="os-body reveal reveal-delay-2">
+        <div class="os-kicker">/02 · {fm.eyebrow}</div>
+        <h2 class="os-h2">{strip(fm.title)}</h2>
+        <p class="os-body">
           {lang === 'zh'
             ? '一个面向 AUV 与 ROV 的 GPU-native 训练平台：物理、水动力、传感器与策略接口在同一循环中运行。'
             : 'A GPU-native training platform for AUVs and ROVs: physics, hydrodynamics, sensors, and policy interfaces in one loop.'}
         </p>
       </div>
-      <figure class="os-frame reveal reveal-delay-2">
+      <figure class="os-frame">
         <img
           src="/images/platform-desk.webp"
           alt={lang === 'zh' ? 'OceanScale 开发者工作台' : 'OceanScale developer workspace'}
@@ -33,7 +33,7 @@ type Cap = { metricLabel: string; title: string; body: string };
 
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-10">
       {(fm.capabilities as Cap[]).map((c, i) => (
-        <div class={`os-card reveal reveal-delay-${i + 1}`}>
+        <div class={`os-card-delay-${i + 1}`}>
           <span class="os-card__index">{c.metricLabel}</span>
           <h3>{strip(c.title)}</h3>
           <p>{c.body}</p>

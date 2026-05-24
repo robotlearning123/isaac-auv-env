@@ -12,18 +12,18 @@ const captions = lang === 'zh'
 ---
 <section id="why" class="os-section os-section--surface">
   <div class="os-container">
-    <div class="max-w-2xl mb-12 reveal">
+    <div class="max-w-2xl mb-12">
       <div class="os-kicker">/01 · {fm.eyebrow}</div>
       <h2 class="os-h2">{strip(fm.title)}</h2>
       <p class="os-body">{fm.label}</p>
     </div>
 
     <div class="grid gap-5 lg:grid-cols-2 mb-10">
-      <figure class="os-frame reveal reveal-delay-1">
+      <figure class="os-frame">
         <img src="/images/challenge-vessel.webp" alt={captions[0]} class="aspect-[16/10] object-cover" loading="lazy" />
         <figcaption>{captions[0]}</figcaption>
       </figure>
-      <figure class="os-frame reveal reveal-delay-2">
+      <figure class="os-frame">
         <img src="/images/challenge-whiteboard.webp" alt={captions[1]} class="aspect-[16/10] object-cover" loading="lazy" />
         <figcaption>{captions[1]}</figcaption>
       </figure>
@@ -31,7 +31,7 @@ const captions = lang === 'zh'
 
     <div class="grid gap-4 md:grid-cols-3">
       {fm.problems.map((p: { title: string; body: string }, i: number) => (
-        <div class={`os-card reveal reveal-delay-${i + 1}`}>
+        <div class={`os-card-delay-${i + 1}`}>
           <span class="os-card__index">{String(i + 1).padStart(2, '0')}</span>
           <h3>{strip(p.title)}</h3>
           <p>{p.body}</p>

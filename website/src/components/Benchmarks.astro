@@ -10,14 +10,14 @@ const bold = (s: string) => s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 ---
 <section id="benchmarks" class="os-section os-section--surface">
   <div class="os-container">
-    <div class="max-w-2xl mb-12 reveal">
+    <div class="max-w-2xl mb-12">
       <div class="os-kicker">/03 · {fm.eyebrow}</div>
       <h2 class="os-h2">{strip(fm.title)}</h2>
       <p class="os-body">{fm.caveat}</p>
     </div>
 
     <div class="grid gap-8 xl:grid-cols-[1.2fr_0.8fr] xl:items-start">
-      <div class="os-table-wrap reveal reveal-delay-1">
+      <div class="os-table-wrap">
         <table>
           <thead>
             <tr>
@@ -40,7 +40,7 @@ const bold = (s: string) => s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
         </table>
       </div>
 
-      <div class="space-y-5 reveal reveal-delay-2">
+      <div class="space-y-5">
         <figure class="os-frame">
           <img
             src="/images/bench-landscape.webp"
