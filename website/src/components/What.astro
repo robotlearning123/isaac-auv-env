@@ -10,7 +10,7 @@ type Cap = { metricLabel: string; title: string; body: string };
 ---
 <section id="what" class="os-section os-section--dark">
   <div class="os-container">
-    <div class="grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-start">
+    <div class="grid gap-6 lg:grid-cols-[1fr_1fr] lg:items-start">
       <div>
         <div class="os-kicker">/02 · {fm.eyebrow}</div>
         <h2 class="os-h2">{strip(fm.title)}</h2>
@@ -31,7 +31,7 @@ type Cap = { metricLabel: string; title: string; body: string };
       </figure>
     </div>
 
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-10">
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-6">
       {(fm.capabilities as Cap[]).map((c, i) => (
         <div class={`os-card-delay-${i + 1}`}>
           <span class="os-card__index">{c.metricLabel}</span>

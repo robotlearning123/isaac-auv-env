@@ -15,7 +15,7 @@ const strip = (s: string) => s.replace(/[.。]+$/u, '');
   <div class="absolute inset-0 opacity-35" style="background: url('/images/hero-bg.webp') center/cover no-repeat;"></div>
   <div class="absolute inset-0" style="background: linear-gradient(160deg, var(--color-bg) 35%, transparent 100%);"></div>
 
-  <div class="os-container relative grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center" style="padding-block: 1rem;">
+  <div class="os-container relative grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center" style="padding-block: 0;">
     <div>
       <div class="os-kicker">{hero.eyebrow}</div>
 
@@ -38,7 +38,7 @@ const strip = (s: string) => s.replace(/[.。]+$/u, '');
         <a href="#contact" class="os-btn os-btn--ghost">{t('cta.contact')}</a>
       </div>
 
-      <div class="grid grid-cols-3 gap-3 mt-10">
+      <div class="grid grid-cols-3 gap-3 mt-6">
         {stats.items.map((s: any) => (
           <div class="os-metric">
             <div class="os-metric__value">{s.value}<span>{s.suffix}</span></div>

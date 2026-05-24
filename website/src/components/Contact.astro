@@ -8,7 +8,7 @@ const fm: any = lang === 'zh' ? zhData : enData;
 const strip = (s: string) => s.replace(/[.。]+$/u, '');
 ---
 <section id="contact" class="os-section os-section--surface">
-  <div class="os-container grid gap-10 lg:grid-cols-2 lg:items-center">
+  <div class="os-container grid gap-6 lg:grid-cols-2 lg:items-center">
     <div >
       <div class="os-kicker">/05 · {fm.eyebrow}</div>
       <h2 class="os-h2">{strip(fm.title)}</h2>
@@ -24,7 +24,7 @@ const strip = (s: string) => s.replace(/[.。]+$/u, '');
       </div>
     </div>
 
-    <div class="space-y-5">
+    <div class="space-y-3">
       <figure class="os-frame">
         <img
           src="/images/hero-impact.webp"

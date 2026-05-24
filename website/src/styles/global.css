@@ -61,7 +61,7 @@
 
   .os-section {
     position: relative;
-    padding: clamp(5rem, 10vw, 8rem) 0;
+    padding: clamp(3rem, 6vw, 5rem) 0;
   }
 
   .os-section--dark {
@@ -82,7 +82,7 @@
   .os-divider {
     width: min(100% - 3rem, 1280px);
     margin-inline: auto;
-    height: 1px;
+    height: 1px; margin-block: 0;
     background: linear-gradient(90deg, var(--color-accent) 0%, var(--color-accent) 25%, var(--color-border) 25%, var(--color-border) 100%);
   }
 
@@ -467,3 +467,8 @@
   }
 }
 
+
+@media (min-width: 1440px) {
+  .os-section { padding: 3.5rem 0; }
+  .os-container { width: min(100% - 4rem, 1320px); }
+}
