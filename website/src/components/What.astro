@@ -4,39 +4,40 @@ import enData from '../content/en/what';
 import { getLangFromUrl } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
-const fm: any = lang === 'zh' ? zhData : enData;
-const cleanHeadline = (value: string) => value.replace(/[.。]+$/u, '');
-const lead =
-  lang === 'zh'
-    ? '一个面向 AUV 与 ROV 的 GPU-native 训练平台：物理、水动力、传感器与策略接口在同一循环中运行。'
-    : 'A GPU-native training platform for AUVs and ROVs: physics, hydrodynamics, sensors, and policy interfaces in one loop.';
+const fm = lang === 'zh' ? zhData : enData;
+const strip = (s: string) => s.replace(/[.。]+$/u, '');
+type Cap = { metricLabel: string; title: string; body: string };
 ---
-<section id="what" class="landing-section section-dark">
-  <div class="section-inner">
-    <div class="grid gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-end">
-      <div class="section-header mb-0">
-        <p class="section-kicker">/02 · {fm.eyebrow}</p>
-        <h2 class="section-title">{cleanHeadline(fm.title)}</h2>
-        <p class="section-copy">{lead}</p>
+<section id="what" class="os-section os-section--dark">
+  <div class="os-container">
+    <div class="grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-start">
+      <div>
+        <div class="os-kicker reveal">/02 · {fm.eyebrow}</div>
+        <h2 class="os-h2 reveal reveal-delay-1">{strip(fm.title)}</h2>
+        <p class="os-body reveal reveal-delay-2">
+          {lang === 'zh'
+            ? '一个面向 AUV 与 ROV 的 GPU-native 训练平台：物理、水动力、传感器与策略接口在同一循环中运行。'
+            : 'A GPU-native training platform for AUVs and ROVs: physics, hydrodynamics, sensors, and policy interfaces in one loop.'}
+        </p>
       </div>
-      <figure class="media-frame">
+      <figure class="os-frame reveal reveal-delay-2">
         <img
           src="/images/platform-desk.webp"
           alt={lang === 'zh' ? 'OceanScale 开发者工作台' : 'OceanScale developer workspace'}
-          class="h-full w-full object-cover"
+          class="aspect-[16/10] object-cover"
           loading="lazy"
         />
-        <figcaption>{lang === 'zh' ? '开发者工作台 · 仿真、训练、基准' : 'Developer workspace · simulation, training, benchmarks'}</figcaption>
+        <figcaption>{lang === 'zh' ? '仿真 · 训练 · 基准' : 'Simulation · training · benchmarks'}</figcaption>
       </figure>
     </div>
 
-    <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {fm.capabilities.map((capability: { metricLabel: string; title: string; body: string }) => (
-        <article class="landing-card capability-card">
-          <div class="card-index">{capability.metricLabel}</div>
-          <h3>{cleanHeadline(capability.title)}</h3>
-          <p>{capability.body}</p>
-        </article>
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-10">
+      {(fm.capabilities as Cap[]).map((c, i) => (
+        <div class={`os-card reveal reveal-delay-${i + 1}`}>
+          <span class="os-card__index">{c.metricLabel}</span>
+          <h3>{strip(c.title)}</h3>
+          <p>{c.body}</p>
+        </div>
       ))}
     </div>
   </div>

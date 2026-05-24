@@ -5,47 +5,47 @@ import { getLangFromUrl } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
-const cleanHeadline = (value: string) => value.replace(/[.。]+$/u, '');
+const strip = (s: string) => s.replace(/[.。]+$/u, '');
 ---
-<section id="contact" class="landing-section section-light">
-  <div class="section-inner grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
-    <div>
-      <p class="section-kicker">/05 · {fm.eyebrow}</p>
-      <h2 class="section-title">{cleanHeadline(fm.title)}</h2>
-      <p class="section-copy">{fm.intro}</p>
+<section id="contact" class="os-section os-section--surface">
+  <div class="os-container grid gap-10 lg:grid-cols-2 lg:items-center">
+    <div class="reveal">
+      <div class="os-kicker">/05 · {fm.eyebrow}</div>
+      <h2 class="os-h2">{strip(fm.title)}</h2>
+      <p class="os-body">{fm.intro}</p>
 
-      <div class="mt-8 grid gap-3">
-        {fm.emails.map((entry: { label: string; email: string }) => (
-          <a href={'mailto:' + entry.email} class="contact-link">
-            <span>{entry.label}</span>
-            <strong>{entry.email}</strong>
+      <div class="grid gap-3 mt-8">
+        {fm.emails.map((e: { label: string; email: string }) => (
+          <a href={`mailto:${e.email}`} class="os-contact-link">
+            <span>{e.label}</span>
+            <strong>{e.email}</strong>
           </a>
         ))}
       </div>
     </div>
 
-    <div class="space-y-4">
-      <figure class="media-frame contact-image">
+    <div class="space-y-5 reveal reveal-delay-2">
+      <figure class="os-frame">
         <img
           src="/images/hero-impact.webp"
-          alt={lang === 'zh' ? '风暴甲板照片' : 'Storm deck photo'}
-          class="h-full w-full object-cover"
+          alt={lang === 'zh' ? '暴风雨甲板' : 'Storm deck — from field trials to simulation'}
+          class="aspect-[16/10] object-cover"
           loading="lazy"
         />
-        <figcaption>{lang === 'zh' ? '从现场试验到可重复仿真' : 'From field trials to reproducible simulation'}</figcaption>
+        <figcaption>{lang === 'zh' ? '从现场试验到可复现仿真' : 'From field trials to reproducible simulation'}</figcaption>
       </figure>
 
-      <div class="terminal-panel">
-        <div class="terminal-panel__bar">
-          <span></span>
-          <span></span>
-          <span></span>
-          <strong>package install</strong>
+      <div class="os-terminal">
+        <div class="os-terminal__bar">
+          <span class="os-terminal__dot os-terminal__dot--red"></span>
+          <span class="os-terminal__dot os-terminal__dot--yellow"></span>
+          <span class="os-terminal__dot os-terminal__dot--green"></span>
+          <span class="os-terminal__title">package install</span>
         </div>
-        <pre><code><span class="terminal-prompt">$</span> pip install oceanscale
-<span class="terminal-muted">Successfully installed</span> oceanscale-0.0.2
-<span class="terminal-prompt">$</span> python -c "import oceanscale as os"
-<span class="terminal-muted">ready</span> simulation loop online</code></pre>
+        <pre><code><span class="prompt">$</span> pip install oceanscale
+<span class="muted">Successfully installed</span> oceanscale-0.0.2
+<span class="prompt">$</span> python -c "import oceanscale"
+<span class="muted">ready</span> <span class="bold">simulation loop online</span></code></pre>
       </div>
     </div>
   </div>

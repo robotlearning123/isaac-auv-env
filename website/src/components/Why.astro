@@ -4,49 +4,38 @@ import enData from '../content/en/why';
 import { getLangFromUrl } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
-const fm: any = lang === 'zh' ? zhData : enData;
-const cleanHeadline = (value: string) => value.replace(/[.。]+$/u, '');
-const captions =
-  lang === 'zh'
-    ? ['现场窗口不可排队', '仿真与海试之间的差距']
-    : ['Field windows do not queue', 'The field-versus-sim gap'];
+const fm = lang === 'zh' ? zhData : enData;
+const strip = (s: string) => s.replace(/[.。]+$/u, '');
+const captions = lang === 'zh'
+  ? ['研究船——地球上最昂贵的测试环境', '现场试验 vs 仿真覆盖']
+  : ['Research vessel — the most expensive test environment on earth', 'Field trials vs simulation coverage'];
 ---
-<section id="why" class="landing-section section-light">
-  <div class="section-inner">
-    <div class="section-header">
-      <p class="section-kicker">/01 · {fm.eyebrow}</p>
-      <h2 class="section-title">{cleanHeadline(fm.title)}</h2>
-      <p class="section-copy">{fm.label}</p>
+<section id="why" class="os-section os-section--surface">
+  <div class="os-container">
+    <div class="max-w-2xl mb-12 reveal">
+      <div class="os-kicker">/01 · {fm.eyebrow}</div>
+      <h2 class="os-h2">{strip(fm.title)}</h2>
+      <p class="os-body">{fm.label}</p>
     </div>
 
-    <div class="grid gap-4 lg:grid-cols-2">
-      <figure class="media-frame">
-        <img
-          src="/images/challenge-vessel.webp"
-          alt={lang === 'zh' ? '海上船只俯拍照片' : 'Aerial vessel field-test photo'}
-          class="h-full w-full object-cover"
-          loading="lazy"
-        />
+    <div class="grid gap-5 lg:grid-cols-2 mb-10">
+      <figure class="os-frame reveal reveal-delay-1">
+        <img src="/images/challenge-vessel.webp" alt={captions[0]} class="aspect-[16/10] object-cover" loading="lazy" />
         <figcaption>{captions[0]}</figcaption>
       </figure>
-      <figure class="media-frame">
-        <img
-          src="/images/challenge-whiteboard.webp"
-          alt={lang === 'zh' ? '现场与仿真白板图' : 'Field versus simulation whiteboard'}
-          class="h-full w-full object-cover"
-          loading="lazy"
-        />
+      <figure class="os-frame reveal reveal-delay-2">
+        <img src="/images/challenge-whiteboard.webp" alt={captions[1]} class="aspect-[16/10] object-cover" loading="lazy" />
         <figcaption>{captions[1]}</figcaption>
       </figure>
     </div>
 
-    <div class="mt-6 grid gap-4 md:grid-cols-3">
-      {fm.problems.map((problem: { title: string; body: string }, index: number) => (
-        <article class="landing-card">
-          <div class="card-index">{String(index + 1).padStart(2, '0')}</div>
-          <h3>{cleanHeadline(problem.title)}</h3>
-          <p>{problem.body}</p>
-        </article>
+    <div class="grid gap-4 md:grid-cols-3">
+      {fm.problems.map((p: { title: string; body: string }, i: number) => (
+        <div class={`os-card reveal reveal-delay-${i + 1}`}>
+          <span class="os-card__index">{String(i + 1).padStart(2, '0')}</span>
+          <h3>{strip(p.title)}</h3>
+          <p>{p.body}</p>
+        </div>
       ))}
     </div>
   </div>

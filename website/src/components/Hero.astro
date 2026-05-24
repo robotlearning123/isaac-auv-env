@@ -1,72 +1,75 @@
 ---
 import zhData from '../content/zh/hero';
 import enData from '../content/en/hero';
-import statsZh from '../content/zh/stats';
-import statsEn from '../content/en/stats';
-import { getLangFromUrl } from '../i18n/utils';
+import zhStats from '../content/zh/stats';
+import enStats from '../content/en/stats';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
-const fm: any = lang === 'zh' ? zhData : enData;
-const stats: any = lang === 'zh' ? statsZh : statsEn;
-const cleanHeadline = (value: string) => value.replace(/[.。]+$/u, '');
-const metrics = stats.items.slice(0, 3);
-const isZh = lang === 'zh';
+const t = useTranslations(lang);
+const hero = lang === 'zh' ? zhData : enData;
+const stats = lang === 'zh' ? zhStats : enStats;
+const strip = (s: string) => s.replace(/[.。]+$/u, '');
 ---
-<section id="hero" class="landing-section section-dark ">
-  <div class="section-inner grid gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
-    <div class="relative z-10 max-w-4xl">
-      <p class="section-kicker">/00 · {fm.eyebrow}</p>
-      <h1 class="hero-title">{cleanHeadline(fm.h1)}</h1>
-      <p class="mt-6 max-w-3xl text-xl leading-relaxed text-[var(--color-text)] md:text-2xl">
-        {fm.enemyLine}
-      </p>
-      <p class="mt-4 max-w-2xl text-base leading-relaxed text-[var(--color-text-muted)] md:text-lg">
-        {fm.sub}
+<section class="os-section os-section--dark relative">
+  <div class="absolute inset-0 opacity-35" style="background: url('/images/hero-bg.webp') center/cover no-repeat;"></div>
+  <div class="absolute inset-0" style="background: linear-gradient(160deg, var(--color-bg) 35%, transparent 100%);"></div>
+
+  <div class="os-container relative grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center" style="padding-block: 1rem;">
+    <div>
+      <div class="os-kicker reveal">{hero.eyebrow}</div>
+
+      <h1 class="os-h1 reveal reveal-delay-1" style="max-width: 14ch;">
+        {strip(hero.h1)}
+      </h1>
+
+      <p class="os-body reveal reveal-delay-2 italic" style="max-width: 48ch;">
+        {hero.enemyLine}
       </p>
 
-      <div class="mt-10 grid gap-3 sm:grid-cols-3">
-        {metrics.map((metric: { value: string; suffix: string; label: string }) => (
-          <div class="metric-tile">
-            <div class="metric-value">
-              {metric.value}<span>{metric.suffix}</span>
-            </div>
-            <div class="metric-label">{metric.label}</div>
+      <p class="reveal reveal-delay-2" style="margin-top: 0.75rem; color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.6;">
+        {hero.sub}
+      </p>
+
+      <div class="flex flex-wrap gap-3 mt-8 reveal reveal-delay-3">
+        <a href="#benchmarks" class="os-btn os-btn--primary">
+          {t('cta.demos')} <span aria-hidden="true">&rarr;</span>
+        </a>
+        <a href="#contact" class="os-btn os-btn--ghost">{t('cta.contact')}</a>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3 mt-10 reveal reveal-delay-4">
+        {stats.items.map((s: any) => (
+          <div class="os-metric">
+            <div class="os-metric__value">{s.value}<span>{s.suffix}</span></div>
+            <div class="os-metric__label">{s.label}</div>
           </div>
         ))}
       </div>
     </div>
 
-    <div class="relative">
-      <div class="media-frame hero-media">
-        <video
-          src="/videos/hero-storm.mp4"
-          poster="/images/hero-impact.webp"
-          autoplay
-          muted
-          loop
-          playsinline
-          preload="metadata"
-          class="h-full w-full object-cover"
-          aria-label={isZh ? '风暴海面测试影像' : 'Storm test deck footage'}
-        ></video>
-        <div class="absolute left-4 top-4 rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)]/85 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-accent)] backdrop-blur">
-          RTX 5090 · CUDA 12.9
-        </div>
-      </div>
+    <div class="space-y-4 reveal reveal-delay-3">
+      <figure class="os-frame">
+        <video autoplay loop muted playsinline poster="/images/hero-impact.webp" class="aspect-[16/10] object-cover">
+          <source src="/videos/hero-storm.mp4" type="video/mp4" />
+          <img src="/images/hero-impact.webp" alt="BlueROV2 on storm deck — DAY 4 WAITING" />
+        </video>
+        <figcaption>RTX 5090 · CUDA 12.9</figcaption>
+      </figure>
 
-      <div class="terminal-panel hero-terminal">
-        <div class="terminal-panel__bar">
-          <span></span>
-          <span></span>
-          <span></span>
-          <strong>oceanscale run</strong>
+      <div class="os-terminal">
+        <div class="os-terminal__bar">
+          <span class="os-terminal__dot os-terminal__dot--red"></span>
+          <span class="os-terminal__dot os-terminal__dot--yellow"></span>
+          <span class="os-terminal__dot os-terminal__dot--green"></span>
+          <span class="os-terminal__title">oceanscale run</span>
         </div>
-        <pre><code><span class="terminal-prompt">$</span> pip install oceanscale
-<span class="terminal-muted">collecting oceanscale</span>
-<span class="terminal-prompt">$</span> oceanscale demo bluerov2-hover --envs 64
-<span class="terminal-muted">sim</span> 17,427 env-steps/s
-<span class="terminal-muted">model</span> Fossen 6-DoF · Newton+Warp
-<span class="terminal-muted">status</span> reproducible benchmark ready</code></pre>
+        <pre><code><span class="prompt">$</span> pip install oceanscale
+<span class="muted">collecting oceanscale</span>
+<span class="prompt">$</span> oceanscale demo bluerov2-hover --envs 64
+<span class="muted">sim</span> <span class="bold">17,427 env-steps/s</span>
+<span class="muted">model</span> Fossen 6-DoF · Newton+Warp
+<span class="muted">status</span> <span class="bold">reproducible benchmark ready</span></code></pre>
       </div>
     </div>
   </div>

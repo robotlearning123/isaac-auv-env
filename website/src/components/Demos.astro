@@ -5,81 +5,68 @@ import { getLangFromUrl } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
-const cleanHeadline = (value: string) => value.replace(/[.。]+$/u, '');
+const strip = (s: string) => s.replace(/[.。]+$/u, '');
 ---
-<section id="demo" class="landing-section section-dark">
-  <div class="section-inner">
-    <div class="section-header">
-      <p class="section-kicker">/04 · {fm.eyebrow}</p>
-      <h2 class="section-title">{cleanHeadline(fm.title)}</h2>
-      <p class="section-copy">{fm.subhead}</p>
+<section id="demo" class="os-section os-section--dark">
+  <div class="os-container">
+    <div class="max-w-3xl mb-12 reveal">
+      <div class="os-kicker">/04 · {fm.eyebrow}</div>
+      <h2 class="os-h2">{strip(fm.title)}</h2>
+      <p class="os-body">{fm.subhead}</p>
     </div>
 
-    <div class="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
-      <div class="space-y-4">
-        <div class="media-frame demo-video">
+    <div class="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
+      <div class="space-y-5">
+        <figure class="os-frame reveal reveal-delay-1">
           <video
             src={fm.videoSrc}
-            poster="/images/hero-impact-alt.webp"
-            muted
-            loop
-            autoplay
-            playsinline
-            preload="metadata"
-            class="h-full w-full object-cover"
-            aria-label={lang === 'zh' ? 'BlueROV2 悬停演示' : 'BlueROV2 hover demo'}
+            poster="/images/hero-impact.webp"
+            muted loop autoplay playsinline preload="metadata"
+            class="aspect-video object-cover"
           ></video>
-        </div>
-        <figure class="media-frame demo-map">
-          <img
-            src="/images/hero-bg.webp"
-            alt={lang === 'zh' ? '海底地形等高线图' : 'Bathymetric contour map'}
-            class="h-full w-full object-cover"
-            loading="lazy"
-          />
-          <figcaption>{lang === 'zh' ? '可复现实验场景' : 'Reproducible test scene'}</figcaption>
+          <figcaption>{lang === 'zh' ? 'BlueROV2 悬停训练' : 'BlueROV2 hover training'}</figcaption>
+        </figure>
+        <figure class="os-frame reveal reveal-delay-2">
+          <img src="/images/hero-bg.webp" alt="Bathymetric map" class="aspect-[2/1] object-cover" loading="lazy" />
+          <figcaption>{lang === 'zh' ? '可复现场景' : 'Reproducible test scene'}</figcaption>
         </figure>
       </div>
 
-      <div class="space-y-4">
-        <div class="terminal-panel">
-          <div class="terminal-panel__bar">
-            <span></span>
-            <span></span>
-            <span></span>
-            <strong>{fm.installLabel}</strong>
+      <div class="space-y-5">
+        <div class="os-terminal reveal reveal-delay-1">
+          <div class="os-terminal__bar">
+            <span class="os-terminal__dot os-terminal__dot--red"></span>
+            <span class="os-terminal__dot os-terminal__dot--yellow"></span>
+            <span class="os-terminal__dot os-terminal__dot--green"></span>
+            <span class="os-terminal__title">{fm.installLabel}</span>
           </div>
-          <pre><code><span class="terminal-prompt">$</span> {fm.installCommand}</code></pre>
+          <pre><code><span class="prompt">$</span> {fm.installCommand}</code></pre>
         </div>
 
-        <div class="table-shell compact mobile-scroll-hint">
+        <div class="os-table-wrap reveal reveal-delay-2">
           <table>
             <thead>
               <tr>
-                {fm.benchHeaders.map((header: string) => (
-                  <th>{header}</th>
-                ))}
+                {fm.benchHeaders.map((h: string) => <th>{h}</th>)}
               </tr>
             </thead>
             <tbody>
-              {fm.benchRows.map((row: string[], rowIndex: number) => (
-                <tr class={rowIndex === fm.benchRows.length - 1 ? 'highlight-row' : ''}>
-                  {row.map((cell: string) => (
-                    <td>{cell}</td>
-                  ))}
+              {fm.benchRows.map((row: string[], ri: number) => (
+                <tr>
+                  {row.map((cell: string) => <td>{cell}</td>)}
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        <div class="evidence-card">
-          <p>{fm.benchNote}</p>
-          {fm.caveat && <p>{fm.caveat}</p>}
+        <div class="os-card reveal reveal-delay-3">
+          <p style="color: var(--color-text-muted); font-size: 0.85rem; line-height: 1.6; margin: 0;">{fm.benchNote}</p>
+          {fm.caveat && <p style="color: var(--color-text-muted); font-size: 0.8rem; line-height: 1.5; margin: 0.5rem 0 0; opacity: 0.8;">{fm.caveat}</p>}
         </div>
 
-        <a href={fm.colabUrl} target="_blank" rel="noopener" class="btn-lumen">
-          {fm.colabLabel}
+        <a href={fm.colabUrl} target="_blank" rel="noopener" class="os-btn os-btn--primary reveal reveal-delay-4">
+          {fm.colabLabel} <span aria-hidden="true">&rarr;</span>
         </a>
       </div>
     </div>

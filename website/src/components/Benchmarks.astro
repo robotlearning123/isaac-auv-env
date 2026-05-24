@@ -5,37 +5,34 @@ import { getLangFromUrl } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
-const cleanHeadline = (value: string) => value.replace(/[.。]+$/u, '');
-const renderEmphasis = (value: string) =>
-  value.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+const strip = (s: string) => s.replace(/[.。]+$/u, '');
+const bold = (s: string) => s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 ---
-<section id="benchmarks" class="landing-section section-light">
-  <div class="section-inner">
-    <div class="section-header">
-      <p class="section-kicker">/03 · {fm.eyebrow}</p>
-      <h2 class="section-title">{cleanHeadline(fm.title)}</h2>
-      <p class="section-copy">{fm.caveat}</p>
+<section id="benchmarks" class="os-section os-section--surface">
+  <div class="os-container">
+    <div class="max-w-2xl mb-12 reveal">
+      <div class="os-kicker">/03 · {fm.eyebrow}</div>
+      <h2 class="os-h2">{strip(fm.title)}</h2>
+      <p class="os-body">{fm.caveat}</p>
     </div>
 
-    <div class="grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
-      <div class="table-shell mobile-scroll-hint">
+    <div class="grid gap-8 xl:grid-cols-[1.2fr_0.8fr] xl:items-start">
+      <div class="os-table-wrap reveal reveal-delay-1">
         <table>
           <thead>
             <tr>
-              {fm.headers.map((header: string, index: number) => (
-                <th class={index === fm.headers.length - 1 ? 'is-oceanscale' : ''}>{header}</th>
+              {fm.headers.map((h: string) => (
+                <th>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {fm.rows.map((row: string[]) => (
               <tr>
-                {row.map((cell: string, index: number) => (
-                  index === 0 ? (
-                    <th scope="row" set:html={renderEmphasis(cell)}></th>
-                  ) : (
-                    <td class={index === row.length - 1 ? 'is-oceanscale' : ''} set:html={renderEmphasis(cell)}></td>
-                  )
+                {row.map((cell: string, i: number) => (
+                  i === 0
+                    ? <th scope="row" set:html={bold(cell)}></th>
+                    : <td set:html={bold(cell)}></td>
                 ))}
               </tr>
             ))}
@@ -43,17 +40,19 @@ const renderEmphasis = (value: string) =>
         </table>
       </div>
 
-      <div class="space-y-4">
-        <figure class="media-frame">
+      <div class="space-y-5 reveal reveal-delay-2">
+        <figure class="os-frame">
           <img
             src="/images/bench-landscape.webp"
-            alt={lang === 'zh' ? '水下仿真竞争格局白板' : 'Underwater simulation competitive landscape whiteboard'}
-            class="h-full w-full object-cover"
+            alt={lang === 'zh' ? '水下仿真竞争格局' : 'Underwater simulation competitive landscape'}
+            class="aspect-[4/3] object-cover"
             loading="lazy"
           />
-          <figcaption>{lang === 'zh' ? '竞争格局 · GPU 速度与水下保真度' : 'Competitive landscape · GPU speed and underwater fidelity'}</figcaption>
+          <figcaption>{lang === 'zh' ? 'GPU 速度 × 水下保真度' : 'GPU speed × underwater fidelity'}</figcaption>
         </figure>
-        <p class="evidence-note">{fm.landscapeNote}</p>
+        {fm.landscapeNote && (
+          <p style="color: var(--color-text-muted); font-size: 0.85rem; line-height: 1.6;">{fm.landscapeNote}</p>
+        )}
       </div>
     </div>
   </div>
