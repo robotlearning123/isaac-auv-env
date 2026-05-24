@@ -5,21 +5,32 @@ import { getLangFromUrl } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const fm = lang === 'zh' ? zhData : enData;
 const strip = (s: string) => s.replace(/[.。]+$/u, '');
+const months = lang === 'zh' ? ['7 月', '8 月', '9 月'] : ['July', 'August', 'September'];
 ---
-<!-- Full-viewport challenge with vessel background -->
-<section id="why" class="relative min-h-screen flex items-center" style="background: var(--color-bg);">
-  <img src="/images/challenge-vessel.webp" alt="" class="absolute inset-0 w-full h-full object-cover opacity-30" loading="lazy" />
-  <div class="absolute inset-0" style="background: linear-gradient(to right, var(--color-bg) 0%, rgba(6,11,18,0.7) 50%, rgba(6,11,18,0.4) 100%);"></div>
+<section id="why" class="os-section os-section--dark os-focus-section">
+  <div class="os-container os-split">
+    <div>
+      <div class="os-kicker">/01 · {fm.eyebrow}</div>
+      <h2 class="os-h2 os-section-title">{strip(fm.title)}</h2>
+      <p class="os-body">{fm.label}</p>
+    </div>
 
-  <div class="os-container relative z-10 py-16">
-    <div class="os-kicker">/01 · {fm.eyebrow}</div>
-    <h2 class="os-h2 mt-4" style="font-size: clamp(2.5rem, 6vw, 4.5rem); max-width: 14ch;">
-      {strip(fm.title)}
-    </h2>
-    <p class="mt-6 max-w-lg" style="color: var(--color-text-muted); font-size: 1.05rem; line-height: 1.7;">
-      {fm.label}
-    </p>
-    <div class="grid gap-4 sm:grid-cols-3 mt-12 max-w-3xl">
+    <div class="os-evidence-board">
+      <div class="os-evidence-board__head">
+        <span>{lang === 'zh' ? '现场回路' : 'field loop'}</span>
+        <span>{lang === 'zh' ? '仿真回路' : 'sim loop'}</span>
+      </div>
+      <div class="os-evidence-board__body">
+        <div class="os-evidence-board__timeline">
+          {months.map((m) => <span>{m}</span>)}
+        </div>
+        <div class="os-evidence-board__checks" aria-hidden="true">
+          {Array.from({ length: 84 }).map((_, i) => <span class:list={[i % 13 === 0 && 'is-muted']}></span>)}
+        </div>
+      </div>
+    </div>
+
+    <div class="os-card-row">
       {fm.problems.map((p: { title: string; body: string }, i: number) => (
         <div class="os-card">
           <span class="os-card__index">{String(i + 1).padStart(2, '0')}</span>
@@ -28,14 +39,5 @@ const strip = (s: string) => s.replace(/[.。]+$/u, '');
         </div>
       ))}
     </div>
-  </div>
-</section>
-
-<!-- Whiteboard evidence strip -->
-<section class="os-section os-section--surface" style="padding: 2.5rem 0;">
-  <div class="os-container">
-    <figure class="os-frame" style="max-width: 720px;">
-      <img src="/images/challenge-whiteboard.webp" alt="Field Campaign Q3 vs Sim Validation Matrix" class="aspect-[2/1] object-cover" loading="lazy" />
-    </figure>
   </div>
 </section>
