@@ -5,39 +5,11 @@ import { getLangFromUrl } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const fm = lang === 'zh' ? zhData : enData;
 const strip = (s: string) => s.replace(/[.。]+$/u, '');
-const months = lang === 'zh' ? ['7 月', '8 月', '9 月'] : ['July', 'August', 'September'];
 ---
-<section id="why" class="os-section os-section--dark os-focus-section os-section--bg-why">
-  <div class="os-container os-split">
-    <div>
-      <div class="os-kicker">/01 · {fm.eyebrow}</div>
-      <h2 class="os-h2 os-section-title">{strip(fm.title)}</h2>
-      <p class="os-body">{fm.label}</p>
-    </div>
-
-    <div class="os-evidence-board">
-      <div class="os-evidence-board__head">
-        <span>{lang === 'zh' ? '现场回路' : 'field loop'}</span>
-        <span>{lang === 'zh' ? '仿真回路' : 'sim loop'}</span>
-      </div>
-      <div class="os-evidence-board__body">
-        <div class="os-evidence-board__timeline">
-          {months.map((m) => <span>{m}</span>)}
-        </div>
-        <div class="os-evidence-board__checks" aria-hidden="true">
-          {Array.from({ length: 84 }).map((_, i) => <span class:list={[i % 13 === 0 && 'is-muted']}></span>)}
-        </div>
-      </div>
-    </div>
-
-    <div class="os-card-row">
-      {fm.problems.map((p: { title: string; body: string }, i: number) => (
-        <div class="os-card">
-          <span class="os-card__index">{String(i + 1).padStart(2, '0')}</span>
-          <h3>{strip(p.title)}</h3>
-          <p>{p.body}</p>
-        </div>
-      ))}
-    </div>
+<section id="why" class="os-section os-section--dark os-section--bg-why">
+  <div class="os-container os-centered">
+    <div class="os-kicker">/01 · {fm.eyebrow}</div>
+    <h2 class="os-h2">{strip(fm.title)}</h2>
+    <p class="os-body os-body--centered">{fm.label}</p>
   </div>
 </section>

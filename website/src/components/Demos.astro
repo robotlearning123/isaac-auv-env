@@ -6,38 +6,30 @@ const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
 const strip = (s: string) => s.replace(/[.。]+$/u, '');
 ---
-<section id="demo" class="os-section os-section--surface os-focus-section">
-  <div class="os-container">
+<section id="demo" class="os-section os-section--surface">
+  <div class="os-container os-centered">
     <div class="os-kicker">/04 · {fm.eyebrow}</div>
-    <h2 class="os-h2 os-section-title">{strip(fm.title)}</h2>
-    <p class="os-body">{fm.subhead}</p>
-
-    <div class="os-demo-grid">
-      <figure class="os-frame">
-        <video src={fm.videoSrc} poster="/images/platform-desk.webp" muted loop autoplay playsinline class="aspect-video object-cover"></video>
-        <figcaption>{lang === 'zh' ? 'BlueROV2 悬停训练' : 'BlueROV2 hover training'}</figcaption>
-      </figure>
-
-      <div class="os-demo-grid__stack">
-        <div class="os-terminal">
-          <div class="os-terminal__bar">
-            <span class="os-terminal__dot os-terminal__dot--red"></span>
-            <span class="os-terminal__dot os-terminal__dot--yellow"></span>
-            <span class="os-terminal__dot os-terminal__dot--green"></span>
-            <span class="os-terminal__title">{fm.installLabel}</span>
-          </div>
-          <pre><code><span class="prompt">$</span> {fm.installCommand}</code></pre>
+    <h2 class="os-h2">{strip(fm.title)}</h2>
+    <p class="os-body os-body--centered">{fm.subhead}</p>
+  </div>
+  <div class="os-container">
+    <figure class="os-frame os-frame--hero">
+      <video src={fm.videoSrc} poster="/images/platform-desk.webp" muted loop autoplay playsinline></video>
+      <figcaption>{lang === 'zh' ? 'BlueROV2 悬停训练' : 'BlueROV2 hover training'}</figcaption>
+    </figure>
+    <div class="os-demo-actions">
+      <div class="os-terminal os-terminal--compact">
+        <div class="os-terminal__bar">
+          <span class="os-terminal__dot os-terminal__dot--red"></span>
+          <span class="os-terminal__dot os-terminal__dot--yellow"></span>
+          <span class="os-terminal__dot os-terminal__dot--green"></span>
+          <span class="os-terminal__title">{fm.installLabel}</span>
         </div>
-        <div class="os-table-wrap">
-          <table>
-            <thead><tr>{fm.benchHeaders.map((h: string) => <th>{h}</th>)}</tr></thead>
-            <tbody>{fm.benchRows.map((row: string[]) => <tr>{row.map((c: string) => <td>{c}</td>)}</tr>)}</tbody>
-          </table>
-        </div>
-        <a href={fm.colabUrl} target="_blank" rel="noopener" class="os-btn os-btn--primary">
-          {fm.colabLabel} <span aria-hidden="true">&rarr;</span>
-        </a>
+        <pre><code><span class="prompt">$</span> {fm.installCommand}</code></pre>
       </div>
+      <a href={fm.colabUrl} target="_blank" rel="noopener" class="os-btn os-btn--primary">
+        {fm.colabLabel} <span aria-hidden="true">&rarr;</span>
+      </a>
     </div>
   </div>
 </section>

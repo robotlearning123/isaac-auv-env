@@ -9,66 +9,18 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const hero = lang === 'zh' ? zhData : enData;
 const stats = lang === 'zh' ? zhStats : enStats;
-const proofLabel = lang === 'zh' ? '仿真循环' : 'simulation loop';
-const panelLabel = lang === 'zh' ? '运行剖面' : 'runtime profile';
-const stackLabel = lang === 'zh' ? '栈' : 'stack';
-const envLabel = lang === 'zh' ? '环境' : 'envs';
 ---
 <section class="os-hero">
-  <div class="os-container os-hero__layout">
-    <div class="os-hero__copy">
-      <div class="os-kicker">{hero.eyebrow}</div>
-      <h1 class="os-h1 os-hero__title">{hero.h1}</h1>
-      <p class="os-hero__enemy">{hero.enemyLine}</p>
-      <p class="os-hero__sub">{hero.sub}</p>
-      <div class="os-hero__actions">
-        <a href="#benchmarks" class="os-btn os-btn--primary">
-          {t('cta.demos')} <span aria-hidden="true">&rarr;</span>
-        </a>
-        <a href="#contact" class="os-btn os-btn--ghost">{t('cta.contact')}</a>
-      </div>
+  <div class="os-hero__content">
+    <div class="os-kicker">{hero.eyebrow}</div>
+    <h1 class="os-h1 os-hero__title">{hero.h1}</h1>
+    <p class="os-hero__sub">{hero.sub}</p>
+    <div class="os-hero__actions">
+      <a href="#demo" class="os-btn os-btn--primary">
+        {t('cta.demos')} <span aria-hidden="true">&rarr;</span>
+      </a>
+      <a href="#contact" class="os-btn os-btn--ghost">{t('cta.contact')}</a>
     </div>
-
-    <aside class="os-runtime" aria-label={panelLabel}>
-      <div class="os-runtime__top">
-        <span>{proofLabel}</span>
-        <span>RTX 5090</span>
-      </div>
-      <div class="os-sim-map" aria-hidden="true">
-        <div class="os-sim-map__vehicle"></div>
-        <div class="os-sim-map__axis os-sim-map__axis--x"></div>
-        <div class="os-sim-map__axis os-sim-map__axis--y"></div>
-      </div>
-      <dl class="os-runtime__grid">
-        <div>
-          <dt>{stackLabel}</dt>
-          <dd>Newton + Warp</dd>
-        </div>
-        <div>
-          <dt>{envLabel}</dt>
-          <dd>64</dd>
-        </div>
-        <div>
-          <dt>Dynamics</dt>
-          <dd>Fossen 6-DOF</dd>
-        </div>
-        <div>
-          <dt>IO</dt>
-          <dd>DVL / IMU / Pressure</dd>
-        </div>
-      </dl>
-      <div class="os-terminal os-runtime__terminal">
-        <div class="os-terminal__bar">
-          <span class="os-terminal__dot os-terminal__dot--red"></span>
-          <span class="os-terminal__dot os-terminal__dot--yellow"></span>
-          <span class="os-terminal__dot os-terminal__dot--green"></span>
-          <span class="os-terminal__title">oceanscale run</span>
-        </div>
-        <pre><code><span class="prompt">$</span> oceanscale demo bluerov2-hover --envs 64
-<span class="muted">sim</span> <span class="bold">17,427 env-steps/s</span>
-<span class="muted">status</span> reproducible benchmark ready</code></pre>
-      </div>
-    </aside>
   </div>
 </section>
 

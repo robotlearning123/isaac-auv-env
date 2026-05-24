@@ -7,34 +7,26 @@ const fm: any = lang === 'zh' ? zhData : enData;
 const strip = (s: string) => s.replace(/[.。]+$/u, '');
 const bold = (s: string) => s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 ---
-<section id="benchmarks" class="os-section os-section--dark os-focus-section os-section--bg-bench">
-  <div class="os-container">
+<section id="benchmarks" class="os-section os-section--dark os-section--bg-bench">
+  <div class="os-container os-centered">
     <div class="os-kicker">/03 · {fm.eyebrow}</div>
-    <h2 class="os-h2 os-section-title">{strip(fm.title)}</h2>
-
-    <div class="os-benchmark-grid">
-      <div class="os-table-wrap">
-        <table>
-          <thead><tr>{fm.headers.map((h: string) => <th>{h}</th>)}</tr></thead>
-          <tbody>
-            {fm.rows.map((row: string[]) => (
-              <tr>
-                {row.map((cell: string, i: number) => (
-                  i === 0 ? <th scope="row" set:html={bold(cell)}></th> : <td set:html={bold(cell)}></td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <div class="os-benchmark-plot" aria-label={lang === 'zh' ? 'GPU 速度与水下保真度' : 'GPU speed and underwater fidelity'}>
-        <div class="os-benchmark-plot__axis os-benchmark-plot__axis--x">GPU Speed</div>
-        <div class="os-benchmark-plot__axis os-benchmark-plot__axis--y">Underwater Fidelity</div>
-        <span class="os-benchmark-plot__dot os-benchmark-plot__dot--classic">Classic Sims</span>
-        <span class="os-benchmark-plot__dot os-benchmark-plot__dot--gpu">GPU Sims</span>
-        <span class="os-benchmark-plot__dot os-benchmark-plot__dot--os">OceanScale</span>
-        <p>{fm.caveat}</p>
-      </div>
+    <h2 class="os-h2">{strip(fm.title)}</h2>
+  </div>
+  <div class="os-container">
+    <div class="os-table-wrap">
+      <table>
+        <thead><tr>{fm.headers.map((h: string) => <th>{h}</th>)}</tr></thead>
+        <tbody>
+          {fm.rows.map((row: string[]) => (
+            <tr>
+              {row.map((cell: string, i: number) => (
+                i === 0 ? <th scope="row" set:html={bold(cell)}></th> : <td set:html={bold(cell)}></td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
+    <p class="os-caveat">{fm.caveat}</p>
   </div>
 </section>
