@@ -1,6 +1,6 @@
 # OceanScale — Positioning
 
-**Status:** Canonical v1.1. Last revised 2026-05-22.
+**Status:** Canonical v1.2. Last revised 2026-05-24.
 **Authority:** Single source of truth for OceanScale messaging, scope, and voice. Website copy, package READMEs, fundraising deck, talks, social posts, and AI-agent prompts derive from this file. When any downstream artifact conflicts with this file, fix the artifact.
 **Maintenance:** Changes happen here first, downstream follows. Edits to category / scope / anchor / hierarchy / lexicon require a new entry in the Changelog at the bottom.
 
@@ -14,7 +14,11 @@ This doc is brand law. The reference voice versions are in Appendix A — they a
 
 Specifically: AI-native simulation infrastructure for underwater robotics.
 
-Not an AI lab (Wayve / 1X / Physical Intelligence pattern). Not a generic simulation tool (Gazebo / Stonefish / HoloOcean pattern). Not a foundation-model company. Any external doc names the category as infrastructure.
+Not an AI lab (Wayve / 1X / Physical Intelligence pattern). Not a generic simulation tool (Gazebo / Stonefish / HoloOcean pattern). Not a toolkit or library (Gymnasium / Stable-Baselines3 pattern). Not a foundation-model company. Any external doc names the category as infrastructure.
+
+**NVIDIA ecosystem position:** OceanScale is the ocean layer in the NVIDIA robotics simulation ecosystem. Newton provides the physics engine. Warp provides GPU kernel primitives. OceanScale provides ocean physics — hydrodynamics, fluid dynamics, ocean environments, and underwater sensor models. Lightwheel built the physical AI infrastructure for robots on land. OceanScale builds it for robots in the ocean.
+
+**Technical foundation:** Newton solvers (ImplicitMPM for fluids, XPBD for deformables) + Warp GPU kernels (HashGrid for spatial search, custom SPH/Grid/MPM kernels) + Warp differentiable simulation (for sim2real optimization). The physics stack is NVIDIA-native from the ground up, not wrapped around a third-party engine.
 
 Voice models for tone: Lightwheel, Modal Labs, Anthropic. Compress, do not accumulate.
 
@@ -51,6 +55,19 @@ Appears as: site `<title>`, homepage H1, deck cover, root `README.md` first line
 | 3 | ocean foundation model | 海洋基础模型 | research notes / private deck depth only, with explicit distinction from tier 2 | promote outward only with (a) data scale evidence, (b) model trained at meaningful parameter scale, (c) distribution leverage |
 
 Why this hierarchy: a simulator is a concrete product primitive. A world model is a deeper technical claim. A foundation model is a status claim. Promote each tier outward only when evidence catches up.
+
+**Fluid fidelity ladder (within Tier 1):** The ocean simulator operates at multiple physics fidelity levels, all GPU-native on Newton + Warp:
+
+| Level | Method | Speed | Accuracy | Use case |
+|-------|--------|-------|----------|----------|
+| 0 | Fossen 6-DOF (analytical) | Fastest | Baseline | Rapid RL iteration, policy search |
+| 1 | Grid Eulerian (Chorin projection) | Fast | Medium | Spatially varying current fields |
+| 2 | SPH (Warp HashGrid) | Medium | Good | Fluid-body interaction, drag |
+| 3 | MPM (Newton SolverImplicitMPM) | Slower | Best | Deformable terrain, sediment, splash |
+
+Fossen is the baseline, not the differentiator. The differentiator is having all four levels on GPU with seamless switching. The goal is to infinitely approach the real ocean — each level closes the sim-to-real gap further.
+
+**Sim-to-real transfer as validation:** Zero-shot sim-to-real transfer for underwater robots is the north star for Tier 1 + Tier 2 combined. A policy trained in the virtual ocean should work on the first dive. Sim2real success is the ultimate evidence that the simulator is approaching the real ocean. Public sim2real claims require a shipped experiment with quantified transfer gap on a real robot.
 
 ---
 
@@ -110,6 +127,11 @@ Use exactly. Where two forms are listed for ZH, the first is primary; the second
 | Loop verb | train, test, and validate | 训练、测试与验证 | — |
 | Loop endpoint | before deployment | 部署前 | 下海之前 (narrative contexts) |
 | Enemy noun | field testing / field trials | 现场试验 | 现场测试 |
+| Physics stack | Newton + Warp | Newton + Warp | — |
+| Fluid fidelity | fluid fidelity ladder | 流体保真度阶梯 | — |
+| Transfer goal | zero-shot sim-to-real transfer | 零样本仿真到真实迁移 | sim2real 迁移 (short form) |
+| Solver coupling | multi-physics coupling | 多物理场耦合 | — |
+| Infrastructure peer | Lightwheel (reference, not claim) | Lightwheel (参考，非等同) | — |
 
 ---
 
@@ -129,6 +151,11 @@ Use exactly. Where two forms are listed for ZH, the first is primary; the second
 - `GPU + HPC` stacked (pick one; GPU is enough)
 - `embodied AI` / `具身智能`
 - `world's first` / `全球首个`
+- `toolkit` / `工具包` / `tool` — OceanScale is infrastructure, not a toolkit
+- `wrapper` / `封装` / `binding` — we build on NVIDIA's stack natively, not wrap third-party engines
+- `plugin` / `插件` — we are a platform, not an extension to another platform
+- `RL training tool` / `RL 训练工具` — we are simulation infrastructure, not a training tool
+- `Gazebo alternative` / `Gazebo 替代` — we are not replacing Gazebo, we are building something fundamentally different (GPU-native multi-physics vs CPU single-physics)
 
 ### Analogy fatigue (banned)
 - Tesla / autonomous-driving analogy lazily applied. If used at all, lead with the *differences* (ocean economics, regulation, data sparsity).
@@ -168,12 +195,35 @@ Current answer: only when a shipped demo shows the learned layer improving simul
 
 Currently English-only (`沧渊` retired). If a new Chinese name is chosen, add it to §7 and update all surfaces atomically.
 
+### 9.4 When does sim2real transfer become a public positioning element?
+
+Current answer: when a shipped experiment demonstrates measurable sim-to-real transfer on a real underwater robot, with quantified transfer gap. Until then, sim2real stays in the deck architecture slide and technical discussions, not in the anchor sentence or homepage.
+
+### 9.5 When does "physical AI infrastructure" replace "simulation infrastructure"?
+
+Current answer: not yet. "Simulation infrastructure" is concrete and verifiable. "Physical AI infrastructure" is the Lightwheel framing. Consider adopting when OceanScale ships the evaluation platform (OceanFinals) and sim2real pipeline, not just the simulator. The anchor sentence stays "ocean simulator" until then.
+
+### 9.6 Market expansion to all fluid-domain robotics
+
+Current answer: premature. But the $26B underwater market may not be large enough for VC scale alone. The fluid physics engine (SPH/MPM/Grid on Warp) is domain-agnostic. Track whether commercial conversations pull toward surface vessels or aerial drones in fluid environments. Revisit alongside §9.1.
+
+### 9.7 When to adopt additional Newton solvers?
+
+Current answer: evaluate at v0.3+. Newton provides solvers highly relevant to underwater robotics beyond ImplicitMPM:
+- **Kamino** (ADMM): closed-chain mechanisms — relevant for manipulator arms on ROVs
+- **VBD**: cables and friction — relevant for tethered ROV umbilicals
+- **SDF collision**: signed-distance-field contacts — relevant for docking and grasping
+- **Hydroelastic contact**: water-body contact modeling — directly relevant for underwater
+
+Adopt when a specific task scenario (e.g., tethered docking) requires the solver's capability, not speculatively.
+
 ---
 
 ## Changelog
 
 - **2026-05-22 v0** — Initial draft. Anchor: "ocean simulator for underwater robotics." Six voice versions inline.
 - **2026-05-22 v1** — Post cx review. Fixed EN/ZH drift in enemy line (Marine→Underwater). Softened tier-2 tech claim ("classical fluid physics cannot" removed). Generic-ized the `$300k vehicle` reference. Replaced "do not write a seventh" with a derivation rule. Cut roadmap from positioning law (moves to a future `ROADMAP.md`). Cut cross-model-review process bloat. Added §6 derivation/translation/audience/visual rules. Added §4 tier promotion thresholds. Added §9 open positioning questions. Expanded §8 banned terms. Moved v4–v6 to Appendix A as derived examples.
+- **2026-05-24 v1.2** — Post YC office hours + 6-review synthesis. Added NVIDIA ecosystem position to §1 (Newton + Warp as technical foundation, OceanScale as ocean layer). Added fluid fidelity ladder to §4 (4 levels: Fossen/Grid/SPH/MPM, all GPU-native). Added sim2real north star note to §4. Added 5 new lexicon terms to §7 (physics stack, fluid fidelity, transfer goal, solver coupling, infrastructure peer). Added 5 new banned terms to §8 (toolkit, wrapper, plugin, RL training tool, Gazebo alternative). Added 4 new open questions to §9 (9.4 sim2real public timing, 9.5 physical AI infrastructure adoption, 9.6 fluid-domain expansion, 9.7 Newton solver adoption). Fossen explicitly marked as baseline, not differentiator. Goal stated: infinitely approach the real ocean.
 - **2026-05-22 v1.1** — Post second cx review. Fixed README surface mapping ambiguity (split into 4 distinct surfaces in §6). Generalized tier-2 promotion threshold beyond "learned dynamics" to any "learned layer improving simulator fidelity or transfer." Recategorized `offshore autonomy` from defense to scope drift (correct classification — offshore inspection/wind/subsea ops are civilian). Softened defense-policy scope from "banned everywhere" to "public-facing surfaces and fundraising materials" (matches original public-copy-only policy intent). A5 "marine environments" → "ocean environments." Changed status wording from "Locked" to "Canonical v1.1."
 
 ---
