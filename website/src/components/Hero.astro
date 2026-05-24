@@ -8,22 +8,23 @@ const t = useTranslations(lang);
 const fm: any = lang === 'zh' ? zhData : enData;
 const { h1, sub, eyebrow, enemyLine } = fm;
 const metrics = [
-  { label: 'Single env', value: '11,435', unit: 'FPS' },
-  { label: 'Vectorized', value: '90M', unit: 'env-steps/s' },
-  { label: 'Scale', value: '8192', unit: 'parallel envs' },
+  { label: 'Throughput', value: '17,427', unit: 'env-steps/s' },
+  { label: 'Speedup', value: '10.5×', unit: 'vs CPU baseline' },
+  { label: 'Parallel', value: '64', unit: 'GPU worlds' },
 ];
 const terminalLines = [
-  { left: 'Single env:', right: '11,435 FPS', accent: true },
-  { left: 'Vectorized:', right: '90M env-steps/s', accent: true },
-  { left: 'Scale:', right: '8,192 parallel envs', accent: true },
+  { left: 'env = ROVEnv(n_envs=64, device="cuda")', right: '', accent: false },
+  { left: 'Throughput:', right: '17,427 env-steps/s', accent: true },
+  { left: 'Physics:', right: 'Fossen 6-DOF (GPU)', accent: true },
+  { left: 'Sensors:', right: 'DVL + IMU + Pressure', accent: true },
 ];
-const terminalMeta = lang === 'zh'
-  ? ['Newton + Warp · Fossen 6-DOF', 'BlueROV2 · CUDA 12.8']
-  : ['Newton + Warp · Fossen 6-DOF', 'BlueROV2 · CUDA 12.8'];
+const terminalMeta = ['Newton 1.2.0 + Warp 1.13.0 · CUDA 12.9', 'BlueROV2 · RTX 5090'];
 ---
 <section class="relative overflow-hidden min-h-[calc(100vh-77px)] flex items-center" style="background: var(--color-bg);">
+  <div class="absolute inset-0 opacity-40" style="background: url('/images/hero-bg.webp') center/cover no-repeat;"></div>
+  <div class="absolute inset-0" style="background: linear-gradient(to right, var(--color-bg) 0%, var(--color-bg) 40%, rgba(10,15,20,0.4) 70%, transparent 100%);"></div>
 
-  <div class="relative max-w-[1320px] mx-auto px-5 md:px-8 py-20 md:py-24 grid lg:grid-cols-12 gap-8 lg:gap-12 items-center w-full">
+  <div class="relative max-w-[1320px] mx-auto px-5 md:px-8 py-12 md:py-16 grid lg:grid-cols-12 gap-6 lg:gap-10 items-center w-full">
     <div class="lg:col-span-7 relative z-10">
       <div class="inline-flex items-center gap-3 font-mono text-[var(--color-accent)] text-xs uppercase eyebrow-tracking mb-7 anim-rise">
         <span class="h-px w-10 bg-[var(--color-accent)]"></span>
@@ -34,7 +35,7 @@ const terminalMeta = lang === 'zh'
         {enemyLine}
       </p>
 
-      <h1 class={`font-display text-balance text-5xl md:text-7xl lg:text-[6.8rem] font-black leading-[0.94] text-[var(--color-text)] mb-8 tracking-tight anim-rise delay-150 max-w-5xl ${lang === 'zh' ? 'break-keep-all' : ''}`}>
+      <h1 class={`font-display text-balance text-5xl md:text-7xl lg:text-[6.8rem] font-black leading-[0.94] text-[var(--color-text)] mb-8 tracking-tight anim-rise delay-150 max-w-5xl ${lang === 'zh' ? 'break-keep-all' : ''}`} style="text-shadow: 0 2px 20px rgba(0,0,0,0.8);">
         {h1}
       </h1>
 
@@ -64,27 +65,26 @@ const terminalMeta = lang === 'zh'
     </div>
 
     <div class="lg:col-span-5 relative anim-rise delay-700">
-      <div class="border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden card-glow">
-        <div class="flex items-center justify-between px-4 py-2.5 border-b border-[var(--color-border)] bg-[var(--color-surface-raised)]">
-          <span class="font-mono text-[10px] uppercase eyebrow-tracking text-[var(--color-text-muted)]">{t('hero.benchLabel')}</span>
-          <span class="font-mono text-[10px] uppercase text-[var(--color-accent)]">ONLINE</span>
+      <div class="border border-[var(--color-border)] overflow-hidden card-glow rounded-sm">
+        <img src="/images/hero-impact.webp" alt="BlueROV2 on research vessel deck during weather hold — DAY 4 WAITING" class="w-full max-h-[320px] object-cover" loading="eager" />
+      </div>
+      <div class="mt-3 border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden rounded-sm">
+        <div class="flex items-center justify-between px-4 py-2 border-b border-[var(--color-border)] bg-[var(--color-surface-raised)]">
+          <span class="font-mono text-[10px] uppercase eyebrow-tracking text-[var(--color-text-muted)]">meanwhile</span>
+          <span class="font-mono text-[10px] uppercase text-[var(--color-accent)]">RUNNING</span>
         </div>
-
-        <div class="p-5 md:p-6 font-mono text-sm">
-          <div class="text-[var(--color-text-muted)] mb-3">
-            <span class="text-[var(--color-accent)]">$</span> oceanscale bench --device rtx5090<span class="animate-pulse text-[var(--color-accent)]">_</span>
-          </div>
-          <div class="border-t border-[var(--color-border)] my-3"></div>
+        <div class="p-4 font-mono text-sm">
           {terminalLines.map((line) => (
-            <div class="flex items-center justify-between py-1.5">
-              <span class="text-[var(--color-text-muted)]">{line.left}</span>
-              <span class={line.accent ? 'text-[var(--color-accent)] font-bold' : 'text-[var(--color-text)]'}>{line.right}</span>
+            <div class="flex items-center justify-between py-1">
+              <span class={line.accent ? 'text-[var(--color-text-muted)]' : 'text-[var(--color-accent)] text-xs'}>{line.left}</span>
+              {line.right && <span class="text-[var(--color-accent)] font-bold">{line.right}</span>}
             </div>
           ))}
-          <div class="border-t border-[var(--color-border)] my-3"></div>
-          {terminalMeta.map((meta) => (
-            <div class="text-[var(--color-text-muted)] text-xs py-0.5">{meta}</div>
-          ))}
+          <div class="border-t border-[var(--color-border)] mt-2 pt-2">
+            {terminalMeta.map((meta) => (
+              <div class="text-[var(--color-text-muted)] text-xs py-0.5">{meta}</div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

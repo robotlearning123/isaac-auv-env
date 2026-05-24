@@ -5,11 +5,11 @@ import { getLangFromUrl } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
-const { title, eyebrow, headers, rows, caveat } = fm;
+const { title, eyebrow, headers, rows, caveat, landscapeNote } = fm;
 const topMetrics = [
-  { value: '11,435', label: 'Single-env FPS' },
-  { value: '90M', label: 'env-steps/s' },
-  { value: '8192', label: 'parallel envs' },
+  { value: '17,427', label: 'env-steps/s (n=64)' },
+  { value: '10.5×', label: 'vs CPU baseline' },
+  { value: 'RTX 5090', label: 'CUDA 12.9' },
 ];
 ---
 <section id="benchmarks" class="relative overflow-hidden py-24 md:py-32" style="background:var(--color-surface)">
@@ -29,18 +29,18 @@ const topMetrics = [
       </div>
     </div>
 
-    <div class="relative overflow-x-auto border border-[var(--color-border)] bg-[var(--color-surface)]">
-      <table class="w-full text-left text-sm min-w-[760px] border-collapse">
+    <div class="relative overflow-x-auto border border-[var(--color-border)] bg-[var(--color-surface)] mobile-scroll-hint">
+      <table class="w-full text-left text-sm min-w-[640px] border-collapse">
         <thead>
           <tr class="bg-[var(--color-surface-raised)]">
             {headers.map((h: string, i: number) => (
               <th class:list={[
                 'px-5 py-5 font-mono uppercase tracking-[0.15em] text-[11px] align-bottom',
-                i === 0 ? 'text-[var(--color-text-muted)] w-[34%]' :
-                i === 1 ? 'text-[var(--color-bg)] bg-[var(--color-accent)] relative' :
+                i === 0 ? 'text-[var(--color-text-muted)] w-[28%]' :
+                i === 3 ? 'text-[var(--color-bg)] bg-[var(--color-accent)] relative' :
                 'text-[var(--color-text-muted)]'
               ]}>
-                {i === 1 ? (
+                {i === 3 ? (
                   <span class="flex items-center gap-2">
                     <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-bg)]"></span>
                     {h}
@@ -61,7 +61,7 @@ const topMetrics = [
                 <td class:list={[
                   'px-5 py-4 align-middle',
                   i === 0 ? 'text-[var(--color-text)] font-medium' :
-                  i === 1 ? 'text-[var(--color-accent)] font-mono font-semibold bg-[var(--color-accent)]/[0.06] border-l border-r border-[var(--color-accent)]/30 text-base' :
+                  i === 3 ? 'text-[var(--color-accent)] font-mono font-semibold bg-[var(--color-accent)]/[0.06] border-l border-r border-[var(--color-accent)]/30 text-base' :
                   'text-[var(--color-text-muted)] font-mono'
                 ]} set:html={cell.replace(/\*\*(.+?)\*\*/g, '<strong class="text-[var(--color-text)] text-base">$1</strong>')}>
                 </td>
@@ -71,8 +71,18 @@ const topMetrics = [
         </tbody>
       </table>
     </div>
-    {caveat && (
-      <p class="mt-6 text-xs text-[var(--color-text-muted)] max-w-2xl leading-relaxed border-l-2 border-[var(--color-border)] pl-4">{caveat}</p>
-    )}
+    <div class="mt-10 grid lg:grid-cols-2 gap-8 items-start">
+      <div class="border border-[var(--color-border)] overflow-hidden rounded-sm">
+        <img src="/images/bench-landscape.webp" alt="Underwater simulator competitive landscape — OceanScale fills the GPU speed + underwater fidelity gap" class="w-full" loading="lazy" />
+      </div>
+      <div>
+        {landscapeNote && (
+          <p class="text-sm text-[var(--color-text-muted)] mb-4 leading-relaxed">{landscapeNote}</p>
+        )}
+        {caveat && (
+          <p class="text-xs text-[var(--color-text-muted)] leading-relaxed border-l-2 border-[var(--color-border)] pl-4">{caveat}</p>
+        )}
+      </div>
+    </div>
   </div>
 </section>
