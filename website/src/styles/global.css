@@ -198,7 +198,7 @@
   }
 
   .os-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-3px) scale(1.02);
     border-color: var(--color-accent);
     box-shadow: 0 12px 40px -8px rgba(45, 212, 191, 0.12);
   }
@@ -389,6 +389,12 @@
   .os-btn--primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 30px rgba(45, 212, 191, 0.3);
+    animation: btn-glow 1.5s ease-in-out infinite alternate;
+  }
+
+  @keyframes btn-glow {
+    from { box-shadow: 0 8px 30px rgba(45, 212, 191, 0.25); }
+    to { box-shadow: 0 8px 40px rgba(45, 212, 191, 0.45); }
   }
 
   .os-btn--ghost {
@@ -465,6 +471,26 @@
 
 
   /* ── NAV ────────────────────────────────────────── */
+
+  .nav-desk-link {
+    position: relative;
+  }
+
+  .nav-desk-link::after {
+    content: "";
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    width: 0;
+    height: 1px;
+    background: var(--color-accent);
+    transition: width 0.25s ease, left 0.25s ease;
+  }
+
+  .nav-desk-link:hover::after {
+    width: 60%;
+    left: 20%;
+  }
 
   .nav-mobile-link {
     display: flex;
