@@ -604,6 +604,18 @@ class GridFluidSolver:
             ],
         )
 
+    def add_boundary_mesh(self, vertices, indices, velocities=None):
+        """Apply no-slip boundary using a triangle mesh (true geometry FSI)."""
+        from oceanscale.fluid.mesh_boundary import MeshBoundary
+
+        mb = MeshBoundary(vertices, indices, velocities, device=self.device)
+        mb.apply_boundary_grid(
+            self.u, self.v, self.w,
+            self.nx, self.ny, self.nz,
+            self.domain_size / float(self.nx),
+            max_dist=self.domain_size,
+        )
+
     def sample_velocity_at(self, positions: wp.array) -> wp.array:
         """Sample fluid velocity at arbitrary positions (for FSI coupling)."""
         n_pts = positions.shape[0]
