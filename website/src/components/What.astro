@@ -18,6 +18,9 @@ const caps = capabilities as Cap[];
       </div>
 
       <div class="architecture-panel min-w-0">
+        <div class="border border-[var(--color-border)] overflow-hidden rounded-sm mb-8">
+          <img src="/images/platform-desk.webp" alt="Developer workspace — OceanScale code editor with simulation viewport" class="w-full" loading="lazy" />
+        </div>
         {caps.map((c, i) => (
           <div class="architecture-row group">
             <div class="architecture-index">{String(i + 1).padStart(2, '0')}</div>

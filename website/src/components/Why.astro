@@ -8,16 +8,22 @@ const fm: any = lang === 'zh' ? zhData : enData;
 const { title, eyebrow, label, problems } = fm;
 ---
 <section id="why" class="relative overflow-hidden py-24 md:py-32 section-cool" style="background:var(--color-bg)">
-  <div class="relative max-w-[1320px] mx-auto px-5 md:px-8 w-full grid lg:grid-cols-[0.9fr_1.1fr] gap-10 lg:gap-16 items-end">
-    <div>
+  <div class="relative max-w-[1320px] mx-auto px-5 md:px-8 w-full">
+    <div class="mb-12">
       <div class="font-mono text-[var(--color-accent)] text-xs uppercase eyebrow-tracking mb-4">/01 · {eyebrow}</div>
       <h2 class="font-display text-4xl md:text-6xl lg:text-7xl font-black text-[var(--color-text)] tracking-tight max-w-3xl leading-[0.98]">{title}</h2>
-      <div class="mt-10 hidden lg:block font-mono text-[11px] uppercase eyebrow-tracking text-[var(--color-text-muted)]">
-        {label}
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-8 mb-12">
+      <div class="border border-[var(--color-border)] overflow-hidden rounded-sm">
+        <img src="/images/challenge-vessel.webp" alt="Research vessel alone in open ocean — the most expensive test environment on earth" class="w-full" loading="lazy" />
+      </div>
+      <div class="border border-[var(--color-border)] overflow-hidden rounded-sm">
+        <img src="/images/challenge-whiteboard.webp" alt="Field Campaign Q3 sparse timeline vs Sim Validation Matrix dense checkmarks" class="w-full" loading="lazy" />
       </div>
     </div>
 
-    <ol class="challenge-stack list-none">
+    <ol class="challenge-stack list-none grid lg:grid-cols-3 gap-6">
       {problems.map((p: { title: string; body: string }, i: number) => (
         <li class="challenge-row">
           <div class="font-mono text-[var(--color-accent)] text-sm">{String(i + 1).padStart(2, '0')}</div>
