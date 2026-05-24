@@ -41,7 +41,29 @@ const lang = getLangFromUrl(Astro.url);
       <slot />
     </main>
     <Footer />
-
-
+    <script is:inline>
+      document.addEventListener('DOMContentLoaded', function() {
+        var reveals = document.querySelectorAll('.reveal');
+        if (!reveals.length) return;
+        reveals.forEach(function(el) {
+          el.style.animation = 'none';
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(24px)';
+          el.style.transition = 'opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1)';
+          var delay = el.getAttribute('data-delay');
+          if (delay) el.style.transitionDelay = (parseInt(delay) * 0.1) + 's';
+        });
+        var observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              entry.target.style.opacity = '1';
+              entry.target.style.transform = 'translateY(0)';
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.08 });
+        reveals.forEach(function(el) { observer.observe(el); });
+      });
+    </script>
   </body>
 </html>
