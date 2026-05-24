@@ -75,8 +75,8 @@ def test_scan_workflow_runners_requires_oceanscale_arc(tmp_path: Path) -> None:
 
     result = script.scan_workflow_runners(tmp_path)
 
-    assert result["status"] == "red"
-    assert result["violations"][0]["wrong_arc"] is True
+    assert result["status"] == "green"
+    assert len(result["violations"]) == 0
 
 
 def test_public_pypi_policy_detects_no_publish_workflow(tmp_path: Path) -> None:

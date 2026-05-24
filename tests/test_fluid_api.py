@@ -22,20 +22,15 @@ def test_create_none_int():
     assert solver is None
 
 
-@pytest.mark.skipif(
-    not pytest.importorskip("warp", reason="warp not available"),
-    reason="requires warp",
-)
+wp = pytest.importorskip("warp", reason="warp not available")
+
+
 def test_create_grid():
     solver = create_fluid_solver(FluidLevel.GRID, grid_res=16)
     assert solver is not None
     assert hasattr(solver, "step")
 
 
-@pytest.mark.skipif(
-    not pytest.importorskip("warp", reason="warp not available"),
-    reason="requires warp",
-)
 def test_create_sph():
     solver = create_fluid_solver(FluidLevel.SPH, n_particles=100)
     assert solver is not None

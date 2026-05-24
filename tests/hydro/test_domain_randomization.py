@@ -106,13 +106,14 @@ def test_randomize_damping_and_added_mass(tier1_64) -> None:
     rng = np.random.default_rng(7)
     tier1_64.randomize_coeffs(rng=rng)
     ma_lin = tier1_64.M_A_lin.numpy()
-    tier1_64.M_A_ang.numpy()
+    ma_ang = tier1_64.M_A_ang.numpy()
     dll = tier1_64.d_lin_lin.numpy()
-    tier1_64.d_lin_ang.numpy()
-    # Each env should have non-uniform values across axes
+    dla = tier1_64.d_lin_ang.numpy()
     for i in range(tier1_64.n_envs):
         assert not np.allclose(ma_lin[i, 0], ma_lin[i, 1])
+        assert not np.allclose(ma_ang[i, 0], ma_ang[i, 1])
         assert not np.allclose(dll[i, 0], dll[i, 1])
+        assert not np.allclose(dla[i, 0], dla[i, 1])
 
 
 @pytest.mark.gpu
