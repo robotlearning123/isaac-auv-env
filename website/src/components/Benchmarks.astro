@@ -2,57 +2,39 @@
 import zhData from '../content/zh/benchmarks';
 import enData from '../content/en/benchmarks';
 import { getLangFromUrl } from '../i18n/utils';
-
 const lang = getLangFromUrl(Astro.url);
 const fm: any = lang === 'zh' ? zhData : enData;
 const strip = (s: string) => s.replace(/[.。]+$/u, '');
 const bold = (s: string) => s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 ---
-<section id="benchmarks" class="os-section os-section--surface">
-  <div class="os-container">
-    <div class="max-w-2xl mb-8">
-      <div class="os-kicker">/03 · {fm.eyebrow}</div>
-      <h2 class="os-h2">{strip(fm.title)}</h2>
-      <p class="os-body">{fm.caveat}</p>
-    </div>
-
-    <div class="grid gap-8 xl:grid-cols-[1.2fr_0.8fr] xl:items-start">
+<section id="benchmarks" class="os-section os-section--surface" style="min-height: 80vh; display: flex; align-items: center;">
+  <div class="os-container w-full">
+    <div class="os-kicker">/03 · {fm.eyebrow}</div>
+    <h2 class="os-h2 mt-4 mb-8" style="font-size: clamp(2rem, 5vw, 3.5rem);">
+      {strip(fm.title)}
+    </h2>
+    
+    <div class="grid gap-8 xl:grid-cols-[1.3fr_0.7fr] xl:items-start">
       <div class="os-table-wrap">
         <table>
-          <thead>
-            <tr>
-              {fm.headers.map((h: string) => (
-                <th>{h}</th>
-              ))}
-            </tr>
-          </thead>
+          <thead><tr>{fm.headers.map((h: string) => <th>{h}</th>)}</tr></thead>
           <tbody>
             {fm.rows.map((row: string[]) => (
               <tr>
                 {row.map((cell: string, i: number) => (
-                  i === 0
-                    ? <th scope="row" set:html={bold(cell)}></th>
-                    : <td set:html={bold(cell)}></td>
+                  i === 0 ? <th scope="row" set:html={bold(cell)}></th> : <td set:html={bold(cell)}></td>
                 ))}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
-      <div class="space-y-3">
+      <div>
         <figure class="os-frame">
-          <img
-            src="/images/bench-landscape.webp"
-            alt={lang === 'zh' ? '水下仿真竞争格局' : 'Underwater simulation competitive landscape'}
-            class="aspect-[4/3] object-cover"
-            loading="lazy"
-          />
+          <img src="/images/bench-landscape.webp" alt="Competitive landscape" class="aspect-[4/3] object-cover" loading="lazy" />
           <figcaption>{lang === 'zh' ? 'GPU 速度 × 水下保真度' : 'GPU speed × underwater fidelity'}</figcaption>
         </figure>
-        {fm.landscapeNote && (
-          <p style="color: var(--color-text-muted); font-size: 0.85rem; line-height: 1.6;">{fm.landscapeNote}</p>
-        )}
+        <p class="mt-4" style="color: var(--color-text-muted); font-size: 0.82rem; line-height: 1.6;">{fm.caveat}</p>
       </div>
     </div>
   </div>

@@ -2,38 +2,28 @@
 import zhData from '../content/zh/what';
 import enData from '../content/en/what';
 import { getLangFromUrl } from '../i18n/utils';
-
 const lang = getLangFromUrl(Astro.url);
 const fm = lang === 'zh' ? zhData : enData;
 const strip = (s: string) => s.replace(/[.。]+$/u, '');
 type Cap = { metricLabel: string; title: string; body: string };
 ---
-<section id="what" class="os-section os-section--dark">
-  <div class="os-container">
-    <div class="grid gap-6 lg:grid-cols-[1fr_1fr] lg:items-start">
-      <div>
-        <div class="os-kicker">/02 · {fm.eyebrow}</div>
-        <h2 class="os-h2">{strip(fm.title)}</h2>
-        <p class="os-body">
-          {lang === 'zh'
-            ? '一个面向 AUV 与 ROV 的 GPU-native 训练平台：物理、水动力、传感器与策略接口在同一循环中运行。'
-            : 'A GPU-native training platform for AUVs and ROVs: physics, hydrodynamics, sensors, and policy interfaces in one loop.'}
-        </p>
-      </div>
-      <figure class="os-frame">
-        <img
-          src="/images/platform-desk.webp"
-          alt={lang === 'zh' ? 'OceanScale 开发者工作台' : 'OceanScale developer workspace'}
-          class="aspect-[16/10] object-cover"
-          loading="lazy"
-        />
-        <figcaption>{lang === 'zh' ? '仿真 · 训练 · 基准' : 'Simulation · training · benchmarks'}</figcaption>
-      </figure>
-    </div>
+<section id="what" class="relative min-h-screen flex items-center" style="background: var(--color-bg);">
+  <img src="/images/platform-desk.webp" alt="" class="absolute inset-0 w-full h-full object-cover opacity-25" loading="lazy" />
+  <div class="absolute inset-0" style="background: linear-gradient(to top, var(--color-bg) 10%, rgba(6,11,18,0.75) 50%, rgba(6,11,18,0.5) 100%);"></div>
 
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-6">
-      {(fm.capabilities as Cap[]).map((c, i) => (
-        <div class={`os-card-delay-${i + 1}`}>
+  <div class="os-container relative z-10 py-16">
+    <div class="os-kicker">/02 · {fm.eyebrow}</div>
+    <h2 class="os-h2 mt-4" style="font-size: clamp(2.5rem, 6vw, 4.5rem); max-width: 14ch;">
+      {strip(fm.title)}
+    </h2>
+    <p class="mt-4 max-w-xl" style="color: var(--color-text-muted); font-size: 1.05rem; line-height: 1.7;">
+      {lang === 'zh'
+        ? '面向 AUV 与 ROV 的 GPU-native 训练平台。'
+        : 'A GPU-native training platform for AUVs and ROVs.'}
+    </p>
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-12">
+      {(fm.capabilities as Cap[]).map((c) => (
+        <div class="os-card">
           <span class="os-card__index">{c.metricLabel}</span>
           <h3>{strip(c.title)}</h3>
           <p>{c.body}</p>
