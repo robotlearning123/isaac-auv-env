@@ -196,7 +196,7 @@
   }
 
   .os-body--centered {
-    text-align: center;
+    text-align: left;
     margin-inline: auto;
   }
 
@@ -259,8 +259,17 @@
     max-width: 12ch;
   }
 
-  .os-hero__sub {
+  .os-hero__enemy {
     margin: 1.5rem 0 0;
+    max-width: 48ch;
+    color: var(--color-text-muted);
+    font-size: clamp(1rem, 1.3vw, 1.12rem);
+    line-height: 1.65;
+    text-align: center;
+  }
+
+  .os-hero__sub {
+    margin: 0.85rem 0 0;
     max-width: 48ch;
     color: var(--color-text-muted);
     font-size: clamp(1.05rem, 1.5vw, 1.25rem);
