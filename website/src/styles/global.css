@@ -159,15 +159,32 @@
     border-bottom: 1px solid var(--color-border);
     background: var(--color-bg);
     overflow-x: hidden;
+    isolation: isolate;
   }
 
   .os-hero::before {
     content: "";
     position: absolute;
     inset: 0;
+    z-index: 1;
     background:
       radial-gradient(circle at 78% 34%, rgba(45, 212, 191, 0.08), transparent 27rem),
       linear-gradient(90deg, rgba(5, 6, 8, 1), rgba(5, 6, 8, 0.88));
+    pointer-events: none;
+  }
+
+  .os-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image: url("/images/platform-desk.webp");
+    background-position: 86% 46%;
+    background-repeat: no-repeat;
+    background-size: min(56vw, 54rem) auto;
+    filter: grayscale(1) contrast(1.08);
+    mix-blend-mode: screen;
+    opacity: 0.16;
     pointer-events: none;
   }
 
@@ -229,6 +246,8 @@
     min-height: 38rem;
     display: grid;
     grid-template-rows: auto 1fr auto auto;
+    background: rgba(7, 9, 12, 0.9);
+    backdrop-filter: blur(10px);
   }
 
   .os-runtime__top,
@@ -820,12 +839,20 @@
     .os-section { padding: 4rem 0; }
     .os-focus-section { min-height: auto; }
     .os-hero { min-height: auto; }
+    .os-hero::after {
+      background-position: 70% 11rem;
+      background-size: 46rem auto;
+      opacity: 0.1;
+    }
     .os-hero__layout { padding: 4rem 0 2rem; gap: 2rem; }
     .os-h1 { font-size: clamp(2.7rem, 15vw, 4rem); line-height: 0.92; }
-    html[lang="zh"] .os-h1 { line-height: 1.04; }
+    html[lang="zh"] .os-h1 {
+      font-size: clamp(2.35rem, 11.2vw, 3.25rem);
+      line-height: 1.04;
+    }
     .os-h2 { font-size: clamp(2rem, 12vw, 3rem); }
-    .os-hero__title,
-    html[lang="zh"] .os-hero__title { max-width: 11ch; }
+    .os-hero__title { max-width: 11ch; }
+    html[lang="zh"] .os-hero__title { max-width: 100%; }
     .os-hero__actions { gap: 0.65rem; }
     .os-runtime__grid,
     .os-proof-strip__grid,
