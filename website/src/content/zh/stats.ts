@@ -1,7 +1,7 @@
 export default {
   items: [
-    { value: "17,427", suffix: "", label: "env-steps/s · BlueROV2 悬停 (n=64, RTX 5090)" },
-    { value: "10.5", suffix: "×", label: "对比 CPU 基线加速 (n=64)" },
-    { value: "64", suffix: "", label: "GPU 并行世界 · Newton + Warp" },
+    { value: "85,824", suffix: "", label: "env-steps/s · 标准化 n=64 基准 (RTX 5090)" },
+    { value: "10.5", suffix: "×", label: "n=64 悬停任务对比 PyBullet CPU 基线" },
+    { value: "4,096", suffix: "", label: "已验证并行环境 · Newton + Warp" },
   ],
 };

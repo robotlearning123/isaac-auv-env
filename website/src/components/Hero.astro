@@ -4,7 +4,7 @@ const lang = getLangFromUrl(Astro.url);
 const isZh = lang === 'zh';
 
 const tagline = isZh
-  ? '面向水下机器人的AI原生仿真基础设施'
+  ? '面向水下机器人的 AI 原生仿真基础设施'
   : 'AI-native simulation infrastructure for underwater robotics';
 ---
 <section class="relative min-h-screen flex items-center justify-center overflow-hidden" style="background: var(--color-bg);">
@@ -12,7 +12,7 @@ const tagline = isZh
     <source src="/videos/hero-storm.mp4" type="video/mp4" />
   </video>
 
-  <div class="absolute inset-0" style="background: linear-gradient(to top, var(--color-bg) 0%, rgba(6,11,18,0.4) 35%, rgba(6,11,18,0.15) 100%);"></div>
+  <div class="absolute inset-0" style="background: linear-gradient(to top, var(--color-bg) 0%, var(--color-bg) 15%, rgba(6,11,18,0.7) 40%, rgba(6,11,18,0.25) 100%);"></div>
 
   <div class="hero-glow"></div>
 
@@ -71,6 +71,13 @@ const tagline = isZh
     font-family: var(--font-body-zh);
     letter-spacing: 0.08em;
     text-transform: none;
+  }
+
+  @media (max-width: 480px) {
+    .hero-tagline {
+      font-size: 0.6rem;
+      letter-spacing: 0.06em;
+    }
   }
 
   .hero-scroll-hint {

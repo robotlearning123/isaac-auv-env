@@ -4,13 +4,13 @@ export default {
   items: [
     {
       title: "BlueROV2 RL 训练",
-      body: "RTX 5090 单卡实测:11,435 FPS 单环境。",
+      body: "RTX 5090 单卡实测:n=64 时 85,824 env-steps/s。",
       video: "/videos/bluerov2-demo.mp4",
       status: "Available",
     },
     {
       title: "多 AUV 编队",
-      body: "多智能体导航与避障。概念渲染,v0.3 计划。",
+      body: "多 AUV 导航与避障。概念渲染,v0.3 计划。",
       video: "/videos/auv-demo.mp4",
       status: "Preview · v0.3",
     },

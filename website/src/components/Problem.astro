@@ -4,8 +4,8 @@ const lang = getLangFromUrl(Astro.url);
 const isZh = lang === 'zh';
 
 const enemyLine = isZh
-  ? '真实海洋是最昂贵的测试场'
-  : 'The real ocean is the most expensive test bed';
+  ? '水下机器人，仍然在地球上最昂贵的测试环境中学习：真实海洋。'
+  : 'Underwater robots still learn in the most expensive test environment on earth: the real ocean.';
 
 const legacyLabel = isZh ? '传统' : 'LEGACY';
 const osLabel = 'OCEANSCALE';
@@ -17,6 +17,16 @@ const legacyNodes = isZh
 const newNodes = isZh
   ? ['设计', '仿真', '验证', '部署']
   : ['Design', 'Simulate', 'Validate', 'Deploy'];
+
+const metrics = isZh ? [
+  { legacy: '数周现场试验', arrow: '→', ours: '数小时仿真', label: '时间' },
+  { legacy: '一台机器人', arrow: '→', ours: '数千并行', label: '规模' },
+  { legacy: '每次下海 = 高成本', arrow: '→', ours: '每次仿真 ≈ GPU算力', label: '成本' },
+] : [
+  { legacy: 'Weeks of field trials', arrow: '→', ours: 'Hours of simulation', label: 'TIME' },
+  { legacy: 'One robot at a time', arrow: '→', ours: 'Thousands in parallel', label: 'SCALE' },
+  { legacy: 'Every deployment = high cost', arrow: '→', ours: 'Every sim run ≈ GPU compute', label: 'COST' },
+];
 ---
 <section id="problem" class="relative" style="background: var(--color-bg); border-top: 1px solid var(--color-border);">
   <div class="absolute inset-0" style="background: radial-gradient(ellipse at 50% 80%, rgba(45,212,191,0.03) 0%, transparent 60%);"></div>
@@ -25,27 +35,32 @@ const newNodes = isZh
     <h2 class="reveal problem-enemy">{enemyLine}</h2>
 
     <div class="reveal pipeline-section" data-delay="2">
-      <!-- Legacy pipeline -->
       <div class="pipeline-row">
         <span class="pipeline-label pipeline-label--muted">{legacyLabel}</span>
-        <div class="pipeline-nodes">
-          {legacyNodes.map((node, i) => (
-            <div class="pipeline-node-group">
-              <div class:list={['pipeline-node', { 'pipeline-node--bottleneck': i === 3 }]}>
-                {node}
-              </div>
-              {i < legacyNodes.length - 1 && (
-                <div class="pipeline-connector pipeline-connector--muted">
-                  <div class="connector-line"></div>
-                  <div class="connector-arrow"></div>
+        <div class="pipeline-wrap">
+          <div class="pipeline-nodes">
+            {legacyNodes.map((node, i) => (
+              <div class="pipeline-node-group">
+                <div class:list={['pipeline-node', { 'pipeline-node--bottleneck': i === 3 }]}>
+                  {node}
                 </div>
-              )}
-            </div>
-          ))}
+                {i < legacyNodes.length - 1 && (
+                  <div class="pipeline-connector pipeline-connector--muted">
+                    <div class="connector-line"></div>
+                    <div class="connector-arrow"></div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          <svg class="loop-back-svg" viewBox="0 0 800 50" fill="none" preserveAspectRatio="none">
+            <path d="M760 0 C760 35, 700 45, 400 45 C100 45, 40 35, 40 0" stroke="rgba(122,142,166,0.15)" stroke-width="1.5" stroke-dasharray="6 4" fill="none" />
+            <polygon points="36,4 44,4 40,0" fill="rgba(122,142,166,0.2)" />
+          </svg>
+          <span class="loop-back-label">{isZh ? '重复' : 'REPEAT'}</span>
         </div>
       </div>
 
-      <!-- OceanScale pipeline -->
       <div class="pipeline-row">
         <span class="pipeline-label pipeline-label--accent">{osLabel}</span>
         <div class="pipeline-nodes">
@@ -79,6 +94,19 @@ const newNodes = isZh
         </div>
       </div>
     </div>
+
+    <div class="reveal metrics-strip" data-delay="3">
+      {metrics.map((m) => (
+        <div class="metric-item">
+          <span class="metric-label">{m.label}</span>
+          <div class="metric-compare">
+            <span class="metric-legacy">{m.legacy}</span>
+            <span class="metric-arrow">{m.arrow}</span>
+            <span class="metric-ours">{m.ours}</span>
+          </div>
+        </div>
+      ))}
+    </div>
   </div>
 </section>
 
@@ -86,13 +114,13 @@ const newNodes = isZh
   .problem-enemy {
     text-align: center;
     font-family: var(--font-display);
-    font-size: clamp(2rem, 4.6vw, 4rem);
+    font-size: clamp(1.6rem, 3.5vw, 2.75rem);
     font-weight: 800;
     letter-spacing: -0.02em;
-    line-height: 1.05;
+    line-height: 1.15;
     color: var(--color-text);
     margin: 0 auto 5rem;
-    max-width: 22ch;
+    max-width: 32ch;
   }
 
   html[lang="zh"] .problem-enemy {
@@ -124,6 +152,8 @@ const newNodes = isZh
 
   .pipeline-label--muted { color: var(--color-text-muted); }
   .pipeline-label--accent { color: var(--color-accent); }
+
+  .pipeline-wrap { position: relative; }
 
   .pipeline-nodes {
     display: flex;
@@ -182,22 +212,32 @@ const newNodes = isZh
     padding: 0 0.35rem;
   }
 
-  .connector-line {
-    width: 24px;
-    height: 1px;
-  }
-
-  .connector-arrow {
-    width: 0;
-    height: 0;
-    border-top: 4px solid transparent;
-    border-bottom: 4px solid transparent;
-  }
+  .connector-line { width: 24px; height: 1px; }
+  .connector-arrow { width: 0; height: 0; border-top: 4px solid transparent; border-bottom: 4px solid transparent; }
 
   .pipeline-connector--muted .connector-line { background: rgba(122, 142, 166, 0.2); }
   .pipeline-connector--muted .connector-arrow { border-left: 6px solid rgba(122, 142, 166, 0.2); }
   .pipeline-connector--accent .connector-line { background: rgba(45, 212, 191, 0.3); }
   .pipeline-connector--accent .connector-arrow { border-left: 6px solid rgba(45, 212, 191, 0.3); }
+
+  .loop-back-svg {
+    width: 100%;
+    height: 40px;
+    margin-top: 4px;
+  }
+
+  .loop-back-label {
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(122, 142, 166, 0.3);
+  }
 
   .fanout-svg {
     position: absolute;
@@ -208,11 +248,70 @@ const newNodes = isZh
     pointer-events: none;
   }
 
+  /* Metrics strip */
+  .metrics-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    max-width: 960px;
+    margin: 4rem auto 0;
+    padding-top: 3rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .metric-item {
+    text-align: center;
+  }
+
+  .metric-label {
+    display: block;
+    margin-bottom: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .metric-compare {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .metric-legacy {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    opacity: 0.6;
+    text-decoration: line-through;
+    text-decoration-color: rgba(122, 142, 166, 0.3);
+  }
+
+  .metric-arrow {
+    color: var(--color-accent);
+    font-size: 0.85rem;
+    opacity: 0.6;
+  }
+
+  .metric-ours {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--color-accent);
+  }
+
   @media (max-width: 768px) {
     .pipeline-nodes { flex-wrap: wrap; gap: 0.5rem; }
     .pipeline-connector { display: none; }
     .pipeline-node { min-width: auto; padding: 0.5rem 0.75rem; font-size: 0.7rem; }
     .fanout-svg { display: none; }
+    .loop-back-svg { display: none; }
+    .loop-back-label { display: none; }
     .pipeline-section { gap: 3rem; }
+    .metrics-strip { grid-template-columns: 1fr; gap: 1.5rem; }
   }
 </style>

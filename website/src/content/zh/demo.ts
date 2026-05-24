@@ -13,6 +13,6 @@ export default {
     ["n=16", "5,076", "197 s", "3.1x"],
     ["n=64", "17,427", "57 s", "10.5x"],
   ],
-  benchNote: "实测于 RTX 5090, BlueROV2 悬停任务, 30K 步。详见 benchmarks/RESULTS.md。",
+  benchNote: "CPU 基线 sweep 实测于 RTX 5090、BlueROV2 悬停任务、30K 步。方法详见 benchmarks/RESULTS.md；当前标准化吞吐量见 benchmarks/competitive/results.json。",
   caveat: "v0.1 alpha — 策略可命中目标深度，但 33 秒回合内横向漂移约 0.41m。完整 station-keeping 留待 v0.2。",
 };

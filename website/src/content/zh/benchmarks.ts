@@ -7,8 +7,8 @@ export default {
     ["Fossen 水动力", "✓", "弱", "**✓ (GPU kernel)**"],
     ["DVL / IMU / 压力", "✓", "部分", "**✓ (stub + GPU)**"],
     ["RL 就绪 (Gymnasium)", "困难", "部分", "**原生**"],
-    ["吞吐量 (n=64)", "~800 FPS", "250K+", "**17,427 env-steps/s**"],
+    ["吞吐量 (n=64)", "~800 FPS", "250K+", "**85,824 env-steps/s**"],
   ],
   landscapeNote: "经典仿真: Stonefish, HoloOcean, DAVE。GPU 仿真: MarineGym, OceanSim。",
-  caveat: "OceanScale 数据来自 RTX 5090, CUDA 12.9, BlueROV2 悬停任务 (2026-05-22)。其他数据来自已发表论文与公开文档。",
+  caveat: "OceanScale 数据来自 RTX 5090、Torch CUDA 12.8、BlueROV2 悬停任务 (2026-05-24)。其他数据来自已发表论文与公开文档。",
 };
