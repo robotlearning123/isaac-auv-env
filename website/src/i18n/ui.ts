@@ -3,26 +3,24 @@ export const defaultLang = 'en';
 
 export const ui = {
   zh: {
-    'nav.what': '能力',
-    'nav.benchmarks': '基准',
+    'nav.vision': '愿景',
+    'nav.product': '产品',
+    'nav.usecases': '应用',
+    'nav.roadmap': '路线图',
     'nav.contact': '联系',
-    'cta.demos': '查看基准',
-    'cta.contact': '联系',
     'lang.other': 'EN',
     'footer.tagline': '面向水下机器人的海洋仿真基础设施。',
     'footer.copyright': '© 2026 OceanScale',
-    'hero.benchLabel': '基准 · RTX 5090',
   },
   en: {
-    'nav.what': 'Platform',
-    'nav.benchmarks': 'Benchmarks',
+    'nav.vision': 'Vision',
+    'nav.product': 'Product',
+    'nav.usecases': 'Use Cases',
+    'nav.roadmap': 'Roadmap',
     'nav.contact': 'Contact',
-    'cta.demos': 'Benchmarks',
-    'cta.contact': 'Contact',
     'lang.other': '中',
     'footer.tagline': 'The ocean simulator for underwater robotics.',
     'footer.copyright': '© 2026 OceanScale',
-    'hero.benchLabel': 'BENCHMARK · RTX 5090',
   },
 } as const;
 

@@ -1,0 +1,218 @@
+---
+import { getLangFromUrl } from '../i18n/utils';
+const lang = getLangFromUrl(Astro.url);
+const isZh = lang === 'zh';
+
+const enemyLine = isZh
+  ? '真实海洋是最昂贵的测试场'
+  : 'The real ocean is the most expensive test bed';
+
+const legacyLabel = isZh ? '传统' : 'LEGACY';
+const osLabel = 'OCEANSCALE';
+
+const legacyNodes = isZh
+  ? ['设计', '制造', '实验室', '海试', '迭代']
+  : ['Design', 'Build', 'Lab', 'Sea Trial', 'Iterate'];
+
+const newNodes = isZh
+  ? ['设计', '仿真', '验证', '部署']
+  : ['Design', 'Simulate', 'Validate', 'Deploy'];
+---
+<section id="problem" class="relative" style="background: var(--color-bg); border-top: 1px solid var(--color-border);">
+  <div class="absolute inset-0" style="background: radial-gradient(ellipse at 50% 80%, rgba(45,212,191,0.03) 0%, transparent 60%);"></div>
+
+  <div class="os-container relative z-10 py-28 lg:py-36">
+    <h2 class="reveal problem-enemy">{enemyLine}</h2>
+
+    <div class="reveal pipeline-section" data-delay="2">
+      <!-- Legacy pipeline -->
+      <div class="pipeline-row">
+        <span class="pipeline-label pipeline-label--muted">{legacyLabel}</span>
+        <div class="pipeline-nodes">
+          {legacyNodes.map((node, i) => (
+            <div class="pipeline-node-group">
+              <div class:list={['pipeline-node', { 'pipeline-node--bottleneck': i === 3 }]}>
+                {node}
+              </div>
+              {i < legacyNodes.length - 1 && (
+                <div class="pipeline-connector pipeline-connector--muted">
+                  <div class="connector-line"></div>
+                  <div class="connector-arrow"></div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- OceanScale pipeline -->
+      <div class="pipeline-row">
+        <span class="pipeline-label pipeline-label--accent">{osLabel}</span>
+        <div class="pipeline-nodes">
+          {newNodes.map((node, i) => (
+            <div class="pipeline-node-group">
+              <div class:list={['pipeline-node', 'pipeline-node--new', { 'pipeline-node--core': i === 1 }]}>
+                {node}
+                {i === 1 && (
+                  <svg class="fanout-svg" width="160" height="56" viewBox="0 0 160 56" fill="none">
+                    <line x1="80" y1="0" x2="20" y2="48" stroke="#2dd4bf" stroke-width="1" class="trace-line" style="animation-delay: 0s;" />
+                    <line x1="80" y1="0" x2="50" y2="48" stroke="#2dd4bf" stroke-width="1" class="trace-line" style="animation-delay: 0.15s;" />
+                    <line x1="80" y1="0" x2="80" y2="48" stroke="#2dd4bf" stroke-width="1" class="trace-line" style="animation-delay: 0.3s;" />
+                    <line x1="80" y1="0" x2="110" y2="48" stroke="#2dd4bf" stroke-width="1" class="trace-line" style="animation-delay: 0.45s;" />
+                    <line x1="80" y1="0" x2="140" y2="48" stroke="#2dd4bf" stroke-width="1" class="trace-line" style="animation-delay: 0.6s;" />
+                    <circle cx="20" cy="52" r="2.5" fill="#2dd4bf" opacity="0.6" />
+                    <circle cx="50" cy="52" r="2.5" fill="#2dd4bf" opacity="0.6" />
+                    <circle cx="80" cy="52" r="2.5" fill="#2dd4bf" opacity="0.6" />
+                    <circle cx="110" cy="52" r="2.5" fill="#2dd4bf" opacity="0.6" />
+                    <circle cx="140" cy="52" r="2.5" fill="#2dd4bf" opacity="0.6" />
+                  </svg>
+                )}
+              </div>
+              {i < newNodes.length - 1 && (
+                <div class="pipeline-connector pipeline-connector--accent">
+                  <div class="connector-line"></div>
+                  <div class="connector-arrow"></div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  .problem-enemy {
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4.6vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    color: var(--color-text);
+    margin: 0 auto 5rem;
+    max-width: 22ch;
+  }
+
+  html[lang="zh"] .problem-enemy {
+    font-family: var(--font-display-zh);
+    word-break: keep-all;
+  }
+
+  .pipeline-section {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .pipeline-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .pipeline-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.35em;
+  }
+
+  .pipeline-label--muted { color: var(--color-text-muted); }
+  .pipeline-label--accent { color: var(--color-accent); }
+
+  .pipeline-nodes {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0;
+  }
+
+  .pipeline-node-group {
+    display: flex;
+    align-items: center;
+  }
+
+  .pipeline-node {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.7rem 1.25rem;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: rgba(122, 142, 166, 0.06);
+    border: 1px solid rgba(122, 142, 166, 0.12);
+    color: var(--color-text-muted);
+    min-width: 100px;
+  }
+
+  .pipeline-node--bottleneck {
+    border-color: rgba(217, 119, 6, 0.5);
+    color: #fbbf24;
+    background: rgba(217, 119, 6, 0.08);
+    box-shadow: 0 0 24px rgba(217, 119, 6, 0.12);
+  }
+
+  .pipeline-node--new {
+    background: rgba(45, 212, 191, 0.06);
+    border: 1px solid rgba(45, 212, 191, 0.2);
+    color: var(--color-accent);
+  }
+
+  .pipeline-node--core {
+    background: rgba(45, 212, 191, 0.1);
+    border-color: rgba(45, 212, 191, 0.4);
+    box-shadow: 0 0 30px rgba(45, 212, 191, 0.08);
+    padding: 0.7rem 1.5rem;
+  }
+
+  .pipeline-connector {
+    display: flex;
+    align-items: center;
+    padding: 0 0.35rem;
+  }
+
+  .connector-line {
+    width: 24px;
+    height: 1px;
+  }
+
+  .connector-arrow {
+    width: 0;
+    height: 0;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+  }
+
+  .pipeline-connector--muted .connector-line { background: rgba(122, 142, 166, 0.2); }
+  .pipeline-connector--muted .connector-arrow { border-left: 6px solid rgba(122, 142, 166, 0.2); }
+  .pipeline-connector--accent .connector-line { background: rgba(45, 212, 191, 0.3); }
+  .pipeline-connector--accent .connector-arrow { border-left: 6px solid rgba(45, 212, 191, 0.3); }
+
+  .fanout-svg {
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    margin-top: 4px;
+    pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    .pipeline-nodes { flex-wrap: wrap; gap: 0.5rem; }
+    .pipeline-connector { display: none; }
+    .pipeline-node { min-width: auto; padding: 0.5rem 0.75rem; font-size: 0.7rem; }
+    .fanout-svg { display: none; }
+    .pipeline-section { gap: 3rem; }
+  }
+</style>

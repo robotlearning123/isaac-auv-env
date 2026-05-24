@@ -1,0 +1,121 @@
+---
+import { getLangFromUrl } from '../i18n/utils';
+const lang = getLangFromUrl(Astro.url);
+const isZh = lang === 'zh';
+
+const heading = isZh ? '路线图' : "What's next";
+
+const phases = isZh ? [
+  { label: '当前', title: 'Alpha SDK', items: ['BlueROV2 车辆模型', 'Gymnasium API', 'GPU 原生物理引擎', '5 类传感器仿真'] },
+  { label: '即将', title: '更多车辆与传感器', items: ['更多 AUV/ROV 平台', '相机与声纳渲染', '域随机化', '课程学习'] },
+  { label: '未来', title: 'Sim2Real 验证', items: ['真实机器人对比基准', '社区 benchmark 套件', '预训练策略库', '开源生态'] },
+] : [
+  { label: 'NOW', title: 'Alpha SDK', items: ['BlueROV2 vehicle model', 'Gymnasium API', 'GPU-native physics engine', '5 sensor modalities'] },
+  { label: 'NEXT', title: 'More vehicles & sensors', items: ['Additional AUV/ROV platforms', 'Camera & sonar rendering', 'Domain randomization', 'Curriculum learning'] },
+  { label: 'FUTURE', title: 'Sim2Real validation', items: ['Real-robot comparison benchmarks', 'Community benchmark suite', 'Pre-trained policy library', 'Open-source ecosystem'] },
+];
+---
+<section id="roadmap" class="relative py-24 lg:py-32" style="background: var(--color-bg); border-top: 1px solid var(--color-border);">
+  <div class="os-container relative z-10">
+    <p class="rm-kicker">{isZh ? '路线图' : 'ROADMAP'}</p>
+    <h2 class="os-h2 rm-heading">{heading}</h2>
+
+    <div class="rm-grid">
+      {phases.map((phase, i) => (
+        <div class="rm-phase">
+          <span class:list={['rm-label', { 'rm-label--active': i === 0 }]}>{phase.label}</span>
+          <h3>{phase.title}</h3>
+          <ul>
+            {phase.items.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  .rm-kicker {
+    margin: 0 0 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .rm-heading {
+    font-size: clamp(1.75rem, 3.5vw, 2.75rem) !important;
+    margin-bottom: 3rem !important;
+  }
+
+  .rm-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+
+  .rm-phase {
+    padding: 1.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: rgba(15, 24, 34, 0.5);
+  }
+
+  .rm-label {
+    display: inline-block;
+    margin-bottom: 0.75rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 100px;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+  }
+
+  .rm-label--active {
+    background: rgba(45, 212, 191, 0.12);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .rm-phase h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .rm-phase ul {
+    margin: 0.75rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .rm-phase li {
+    position: relative;
+    padding-left: 1rem;
+    margin-top: 0.4rem;
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+  }
+
+  .rm-phase li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    color: var(--color-border);
+    font-size: 0.7rem;
+  }
+
+  @media (max-width: 768px) {
+    .rm-grid { grid-template-columns: 1fr; }
+  }
+</style>

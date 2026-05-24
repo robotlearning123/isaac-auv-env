@@ -1,0 +1,231 @@
+---
+import { getLangFromUrl } from '../i18n/utils';
+const lang = getLangFromUrl(Astro.url);
+const isZh = lang === 'zh';
+
+const heading = isZh ? '面向水下机器人的虚拟海洋' : 'A virtual ocean for underwater robots';
+
+const cards = isZh ? [
+  { idx: '01', title: 'GPU 原生多体动力学', body: '刚体、流体、接触、水动力在 GPU 上统一求解' },
+  { idx: '02', title: '大规模并行', body: '成千上万个环境同时运行' },
+  { idx: '03', title: '传感器级精度', body: 'DVL、IMU、压力、声纳、相机' },
+  { idx: '04', title: 'Gymnasium 原生', body: '标准 API，支持任何 RL 算法' },
+] : [
+  { idx: '01', title: 'GPU-native multibody dynamics', body: 'Rigid bodies, fluids, contacts, hydrodynamics solved together on GPU' },
+  { idx: '02', title: 'Massively parallel', body: 'Thousands of environments running simultaneously' },
+  { idx: '03', title: 'Sensor-accurate', body: 'DVL, IMU, pressure, sonar, camera' },
+  { idx: '04', title: 'Gymnasium-native', body: 'Standard API, any RL algorithm' },
+];
+---
+<section id="product" class="relative py-28 lg:py-36 overflow-hidden" style="background: var(--color-bg); border-top: 1px solid var(--color-border);">
+  <div class="absolute inset-0 product-grid-bg"></div>
+
+  <div class="os-container relative z-10">
+    <h2 class="reveal os-h2" style="font-size: clamp(2rem, 4.4vw, 3.75rem);">
+      {heading}
+    </h2>
+
+    <div class="grid gap-5 sm:grid-cols-2 mt-16">
+      <div class="reveal product-card" data-delay="1">
+        <div class="product-card__visual">
+          <svg viewBox="0 0 320 180" class="absolute inset-0 w-full h-full">
+            <defs>
+              <radialGradient id="mb-glow" cx="50%" cy="50%">
+                <stop offset="0%" stop-color="#2dd4bf" stop-opacity="0.2" />
+                <stop offset="100%" stop-color="#2dd4bf" stop-opacity="0" />
+              </radialGradient>
+            </defs>
+            <rect width="320" height="180" fill="url(#mb-glow)" />
+            <g stroke="#2dd4bf" stroke-width="1" fill="none" opacity="0.7">
+              <circle cx="80" cy="40" r="8" /><line x1="80" y1="40" x2="110" y2="60" /><circle cx="110" cy="60" r="5" fill="#2dd4bf" fill-opacity="0.4" />
+              <circle cx="190" cy="40" r="8" /><line x1="190" y1="40" x2="220" y2="60" /><circle cx="220" cy="60" r="5" fill="#2dd4bf" fill-opacity="0.4" />
+              <circle cx="260" cy="50" r="6" /><line x1="220" y1="60" x2="260" y2="50" />
+              <circle cx="80" cy="100" r="8" /><line x1="80" y1="100" x2="110" y2="120" /><circle cx="110" cy="120" r="5" fill="#2dd4bf" fill-opacity="0.4" />
+              <circle cx="190" cy="100" r="8" /><line x1="190" y1="100" x2="160" y2="130" /><circle cx="160" cy="130" r="6" fill="#2dd4bf" fill-opacity="0.3" />
+              <circle cx="260" cy="110" r="7" /><line x1="260" y1="110" x2="240" y2="140" /><circle cx="240" cy="140" r="4" fill="#2dd4bf" fill-opacity="0.5" />
+              <line x1="110" y1="60" x2="190" y2="100" stroke-opacity="0.3" stroke-dasharray="3 4" />
+              <line x1="80" y1="40" x2="80" y2="100" stroke-opacity="0.2" stroke-dasharray="3 4" />
+              <line x1="190" y1="40" x2="260" y2="110" stroke-opacity="0.2" stroke-dasharray="3 4" />
+            </g>
+          </svg>
+        </div>
+        <div class="product-card__body">
+          <span class="product-card__idx">{cards[0].idx}</span>
+          <h3>{cards[0].title}</h3>
+          <p>{cards[0].body}</p>
+        </div>
+      </div>
+
+      <div class="reveal product-card" data-delay="2">
+        <div class="product-card__visual">
+          <div class="parallel-grid">
+            {Array.from({ length: 40 }).map((_, i) => (
+              <div class="parallel-cell" style={`background: rgba(45,212,191,${0.04 + ((i * 37) % 20) / 100}); animation-delay: ${(i * 0.05)}s;`}></div>
+            ))}
+          </div>
+        </div>
+        <div class="product-card__body">
+          <span class="product-card__idx">{cards[1].idx}</span>
+          <h3>{cards[1].title}</h3>
+          <p>{cards[1].body}</p>
+        </div>
+      </div>
+
+      <div class="reveal product-card" data-delay="3">
+        <div class="product-card__visual">
+          <svg viewBox="0 0 320 180" class="absolute inset-0 w-full h-full">
+            <circle cx="160" cy="90" r="16" fill="#2dd4bf" fill-opacity="0.15" stroke="#2dd4bf" stroke-width="1.5" />
+            <circle cx="160" cy="90" r="4" fill="#2dd4bf" fill-opacity="0.6" />
+            <circle cx="160" cy="90" r="40" fill="none" stroke="#2dd4bf" stroke-opacity="0.08" stroke-dasharray="4 4" />
+            <line x1="160" y1="90" x2="160" y2="25" stroke="#2dd4bf" stroke-opacity="0.35" stroke-dasharray="2 3" />
+            <circle cx="160" cy="25" r="3.5" fill="#2dd4bf" fill-opacity="0.7" />
+            <text x="160" y="15" text-anchor="middle" font-size="9" fill="#7a8ea6" font-family="JetBrains Mono, monospace" font-weight="600">DVL</text>
+            <line x1="160" y1="90" x2="227" y2="50" stroke="#2dd4bf" stroke-opacity="0.35" stroke-dasharray="2 3" />
+            <circle cx="227" cy="50" r="3.5" fill="#2dd4bf" fill-opacity="0.7" />
+            <text x="227" y="40" text-anchor="middle" font-size="9" fill="#7a8ea6" font-family="JetBrains Mono, monospace" font-weight="600">IMU</text>
+            <line x1="160" y1="90" x2="201" y2="147" stroke="#2dd4bf" stroke-opacity="0.35" stroke-dasharray="2 3" />
+            <circle cx="201" cy="147" r="3.5" fill="#2dd4bf" fill-opacity="0.7" />
+            <text x="201" y="162" text-anchor="middle" font-size="9" fill="#7a8ea6" font-family="JetBrains Mono, monospace" font-weight="600">PRES</text>
+            <line x1="160" y1="90" x2="119" y2="147" stroke="#2dd4bf" stroke-opacity="0.35" stroke-dasharray="2 3" />
+            <circle cx="119" cy="147" r="3.5" fill="#2dd4bf" fill-opacity="0.7" />
+            <text x="119" y="162" text-anchor="middle" font-size="9" fill="#7a8ea6" font-family="JetBrains Mono, monospace" font-weight="600">SONAR</text>
+            <line x1="160" y1="90" x2="93" y2="50" stroke="#2dd4bf" stroke-opacity="0.35" stroke-dasharray="2 3" />
+            <circle cx="93" cy="50" r="3.5" fill="#2dd4bf" fill-opacity="0.7" />
+            <text x="93" y="40" text-anchor="middle" font-size="9" fill="#7a8ea6" font-family="JetBrains Mono, monospace" font-weight="600">CAM</text>
+          </svg>
+        </div>
+        <div class="product-card__body">
+          <span class="product-card__idx">{cards[2].idx}</span>
+          <h3>{cards[2].title}</h3>
+          <p>{cards[2].body}</p>
+        </div>
+      </div>
+
+      <div class="reveal product-card" data-delay="4">
+        <div class="product-card__visual code-bg">
+          <pre class="code-visual"><code set:html={`<span class="ck">import</span> oceanscale
+<span class="ck">import</span> gymnasium <span class="ck">as</span> gym
+
+env = gym.make(<span class="cs">"OceanScale/BlueROV2-v0"</span>,
+               num_envs=<span class="cn">4096</span>)
+
+obs, _ = env.reset()
+<span class="ck">for</span> _ <span class="ck">in</span> range(<span class="cn">1000</span>):
+    action = policy(obs)
+    obs, r, done, trunc, info = env.step(action)`} /></pre>
+        </div>
+        <div class="product-card__body">
+          <span class="product-card__idx">{cards[3].idx}</span>
+          <h3>{cards[3].title}</h3>
+          <p>{cards[3].body}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  .product-grid-bg {
+    background-image:
+      linear-gradient(rgba(30, 45, 64, 0.12) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(30, 45, 64, 0.12) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse at 50% 50%, black 20%, transparent 70%);
+  }
+
+  .product-card {
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(15, 24, 34, 0.9), rgba(10, 16, 24, 0.95));
+    transition: border-color 0.35s, box-shadow 0.35s, transform 0.35s;
+  }
+
+  .product-card:hover {
+    border-color: rgba(45, 212, 191, 0.35);
+    box-shadow: 0 20px 60px -8px rgba(0, 0, 0, 0.5), 0 0 50px -10px rgba(45, 212, 191, 0.1);
+    transform: translateY(-4px);
+  }
+
+  .product-card__visual {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-bottom: 1px solid var(--color-border);
+    background: #050a10;
+  }
+
+  .product-card__body {
+    padding: 1.5rem;
+  }
+
+  .product-card__idx {
+    display: inline-block;
+    margin-bottom: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    letter-spacing: 0.1em;
+  }
+
+  .product-card__body h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: 1.3;
+  }
+
+  .product-card__body p {
+    margin: 0.45rem 0 0;
+    font-size: 0.88rem;
+    color: var(--color-text-muted);
+    line-height: 1.55;
+  }
+
+  .parallel-grid {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 2px;
+    padding: 12px;
+  }
+
+  .parallel-cell {
+    border: 1px solid rgba(45, 212, 191, 0.25);
+    border-radius: 2px;
+    animation: cell-pulse 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes cell-pulse {
+    0% { opacity: 0.6; }
+    100% { opacity: 1; }
+  }
+
+  .code-bg { background: #050a10; }
+
+  .code-visual {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 1.25rem 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    line-height: 1.9;
+    color: var(--color-text-muted);
+    overflow: hidden;
+  }
+
+  .code-visual code { white-space: pre; }
+  :global(.ck) { color: var(--color-accent); }
+  :global(.cs) { color: #fbbf24; }
+  :global(.cn) { color: #a78bfa; }
+
+  @media (max-width: 640px) {
+    .product-card__body { padding: 1.25rem; }
+    .code-visual { font-size: 0.65rem; padding: 1rem; }
+  }
+</style>

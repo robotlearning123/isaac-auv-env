@@ -1,10 +1,11 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/Hero.astro';
-import Why from '../../components/Why.astro';
-import What from '../../components/What.astro';
-import Benchmarks from '../../components/Benchmarks.astro';
-import Demos from '../../components/Demos.astro';
+import Problem from '../../components/Problem.astro';
+import Vision from '../../components/Vision.astro';
+import Product from '../../components/Product.astro';
+import UseCases from '../../components/UseCases.astro';
+import Roadmap from '../../components/Roadmap.astro';
 import Contact from '../../components/Contact.astro';
 ---
 <BaseLayout
@@ -12,14 +13,10 @@ import Contact from '../../components/Contact.astro';
   description="OceanScale 构建面向水下机器人的 GPU-native 仿真、并行训练与可复现实测基准。"
 >
   <Hero />
-  <div class="os-divider"></div>
-  <Why />
-  <div class="os-divider"></div>
-  <What />
-  <div class="os-divider"></div>
-  <Benchmarks />
-  <div class="os-divider"></div>
-  <Demos />
-  <div class="os-divider"></div>
+  <Problem />
+  <Vision />
+  <Product />
+  <UseCases />
+  <Roadmap />
   <Contact />
 </BaseLayout>

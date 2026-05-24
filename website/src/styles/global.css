@@ -27,7 +27,7 @@
     color: var(--color-text);
     background: var(--color-bg);
     font-family: var(--font-body);
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -436,10 +436,36 @@
 
   /* ── SCROLL REVEAL ──────────────────────────────── */
 
+  .reveal {
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .reveal.reveal--hidden {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+
+  .reveal.reveal--hidden[data-delay="1"] { transition-delay: 0.1s; }
+  .reveal.reveal--hidden[data-delay="2"] { transition-delay: 0.2s; }
+  .reveal.reveal--hidden[data-delay="3"] { transition-delay: 0.3s; }
+  .reveal.reveal--hidden[data-delay="4"] { transition-delay: 0.4s; }
 
   .reveal.visible {
-    opacity: 1;
-    transform: translateY(0);
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+
+  /* ── ANIMATED TRACES ───────────────────────────── */
+
+  @keyframes trace-flow {
+    0% { stroke-dashoffset: 80; opacity: 0.15; }
+    50% { opacity: 0.9; }
+    100% { stroke-dashoffset: 0; opacity: 0.15; }
+  }
+
+  .trace-line {
+    stroke-dasharray: 4 6;
+    animation: trace-flow 2.4s linear infinite;
   }
 
 

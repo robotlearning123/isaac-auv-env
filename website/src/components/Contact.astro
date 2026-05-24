@@ -1,25 +1,108 @@
 ---
-import zhData from '../content/zh/contact';
-import enData from '../content/en/contact';
 import { getLangFromUrl } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
-const fm: any = lang === 'zh' ? zhData : enData;
-const strip = (s: string) => s.replace(/[.。]+$/u, '');
+const isZh = lang === 'zh';
+
+const heading = isZh ? '在造水下机器人？' : 'Building underwater robots?';
+
+const labels = isZh
+  ? { name: '姓名', email: '邮箱', company: '公司', message: '留言', submit: '提交' }
+  : { name: 'Name', email: 'Email', company: 'Company', message: 'Message', submit: 'Submit' };
+
+const placeholders = isZh
+  ? { name: '你的名字', email: 'you@lab.org', company: '机构 / 实验室', message: '告诉我们你的机器人和仿真需求' }
+  : { name: 'Ada Lovelace', email: 'you@lab.org', company: 'Org / Lab', message: 'Tell us about your robot and what you want to simulate.' };
 ---
-<section id="contact" class="relative min-h-[70vh] flex items-center" style="background: var(--color-surface);">
-  <div class="os-container relative z-10 py-16" style="max-width: 640px;">
-    <div class="os-kicker">/05 · {fm.eyebrow}</div>
-    <h2 class="os-h2 mt-4" style="font-size: clamp(2rem, 5vw, 3.5rem);">
-      {strip(fm.title)}
+<section id="contact" class="relative py-28 lg:py-36" style="background: var(--color-surface-raised); border-top: 1px solid var(--color-border);">
+  <div class="os-container relative z-10" style="max-width: 640px;">
+    <h2 class="reveal os-h2 text-center" style="font-size: clamp(2rem, 4.2vw, 3.5rem);">
+      {heading}
     </h2>
-    <p class="mt-4" style="color: var(--color-text-muted); font-size: 1rem;">{fm.intro}</p>
-    <div class="grid gap-3 mt-8">
-      {fm.emails.map((e: { label: string; email: string }) => (
-        <a href={`mailto:${e.email}`} class="os-contact-link">
-          <span>{e.label}</span>
-          <strong>{e.email}</strong>
-        </a>
-      ))}
-    </div>
+
+    <form class="reveal contact-form" data-delay="2" action="https://formspree.io/f/placeholder" method="POST">
+      <div class="form-grid">
+        <div class="form-field">
+          <label class="form-label" for="contact-name">{labels.name}</label>
+          <input id="contact-name" type="text" name="name" required placeholder={placeholders.name} autocomplete="name" />
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="contact-email">{labels.email}</label>
+          <input id="contact-email" type="email" name="email" required placeholder={placeholders.email} autocomplete="email" />
+        </div>
+        <div class="form-field form-field--full">
+          <label class="form-label" for="contact-company">{labels.company}</label>
+          <input id="contact-company" type="text" name="company" placeholder={placeholders.company} autocomplete="organization" />
+        </div>
+        <div class="form-field form-field--full">
+          <label class="form-label" for="contact-message">{labels.message}</label>
+          <textarea id="contact-message" name="message" rows="5" placeholder={placeholders.message}></textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="os-btn os-btn--primary" style="width: 100%; justify-content: center; margin-top: 0.5rem;">
+        {labels.submit}
+      </button>
+    </form>
   </div>
 </section>
+
+<style is:global>
+  .contact-form {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .form-field--full { grid-column: 1 / -1; }
+
+  .form-label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--color-text-muted);
+    opacity: 0.7;
+  }
+
+  .form-field input,
+  .form-field textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-field input::placeholder,
+  .form-field textarea::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.45;
+  }
+
+  .form-field input:focus,
+  .form-field textarea:focus {
+    border-color: var(--color-accent);
+  }
+
+  .form-field textarea { resize: vertical; min-height: 120px; }
+
+  @media (max-width: 480px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-field--full { grid-column: auto; }
+  }
+</style>

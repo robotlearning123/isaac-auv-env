@@ -1,0 +1,99 @@
+---
+import { getLangFromUrl } from '../i18n/utils';
+const lang = getLangFromUrl(Astro.url);
+const isZh = lang === 'zh';
+
+const heading = isZh ? '为真实水下任务而建' : 'Built for real underwater missions';
+
+const cases = isZh ? [
+  { icon: '⎔', title: '自主对接', body: '训练机器人在洋流和低能见度条件下精确对接水下坞站。' },
+  { icon: '◎', title: '定点保持', body: '在动态海洋环境中保持位置和姿态，抵抗洋流和扰动。' },
+  { icon: '⇢', title: '巡检与测量', body: '沿复杂水下结构自主导航、避障和数据采集。' },
+] : [
+  { icon: '⎔', title: 'Autonomous Docking', body: 'Train robots to dock with underwater stations under currents and low visibility.' },
+  { icon: '◎', title: 'Station Keeping', body: 'Hold position and attitude in dynamic ocean environments against currents and disturbances.' },
+  { icon: '⇢', title: 'Inspection & Survey', body: 'Autonomous navigation, obstacle avoidance, and data collection along complex underwater structures.' },
+];
+---
+<section id="usecases" class="relative py-24 lg:py-32" style="background: var(--color-surface); border-top: 1px solid var(--color-border);">
+  <div class="os-container relative z-10">
+    <p class="uc-kicker">{isZh ? '应用场景' : 'USE CASES'}</p>
+    <h2 class="os-h2 uc-heading">{heading}</h2>
+
+    <div class="uc-grid">
+      {cases.map((c) => (
+        <div class="uc-card">
+          <span class="uc-icon">{c.icon}</span>
+          <h3>{c.title}</h3>
+          <p>{c.body}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  .uc-kicker {
+    margin: 0 0 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .uc-heading {
+    font-size: clamp(1.75rem, 3.5vw, 2.75rem) !important;
+    margin-bottom: 3rem !important;
+  }
+
+  html[lang="zh"] .uc-heading {
+    font-family: var(--font-display-zh);
+    word-break: keep-all;
+  }
+
+  .uc-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+
+  .uc-card {
+    padding: 1.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(10, 16, 24, 0.8), rgba(6, 11, 18, 0.9));
+    transition: border-color 0.3s;
+  }
+
+  .uc-card:hover {
+    border-color: rgba(45, 212, 191, 0.3);
+  }
+
+  .uc-icon {
+    display: inline-block;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    color: var(--color-accent);
+    line-height: 1;
+  }
+
+  .uc-card h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .uc-card p {
+    margin: 0.5rem 0 0;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 768px) {
+    .uc-grid { grid-template-columns: 1fr; }
+  }
+</style>
