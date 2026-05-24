@@ -17,28 +17,28 @@ const strip = (s: string) => s.replace(/[.。]+$/u, '');
 
   <div class="os-container relative grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center" style="padding-block: 1rem;">
     <div>
-      <div class="os-kicker reveal">{hero.eyebrow}</div>
+      <div class="os-kicker">{hero.eyebrow}</div>
 
-      <h1 class="os-h1 reveal reveal-delay-1" style="max-width: 14ch;">
+      <h1 class="os-h1" style="max-width: 14ch;">
         {strip(hero.h1)}
       </h1>
 
-      <p class="os-body reveal reveal-delay-2 italic" style="max-width: 48ch;">
+      <p class="os-body italic" style="max-width: 48ch;">
         {hero.enemyLine}
       </p>
 
-      <p class="reveal reveal-delay-2" style="margin-top: 0.75rem; color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.6;">
+      <p style="margin-top: 0.75rem; color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.6;">
         {hero.sub}
       </p>
 
-      <div class="flex flex-wrap gap-3 mt-8 reveal reveal-delay-3">
+      <div class="flex flex-wrap gap-3 mt-8">
         <a href="#benchmarks" class="os-btn os-btn--primary">
           {t('cta.demos')} <span aria-hidden="true">&rarr;</span>
         </a>
         <a href="#contact" class="os-btn os-btn--ghost">{t('cta.contact')}</a>
       </div>
 
-      <div class="grid grid-cols-3 gap-3 mt-10 reveal reveal-delay-4">
+      <div class="grid grid-cols-3 gap-3 mt-10">
         {stats.items.map((s: any) => (
           <div class="os-metric">
             <div class="os-metric__value">{s.value}<span>{s.suffix}</span></div>
@@ -48,7 +48,7 @@ const strip = (s: string) => s.replace(/[.。]+$/u, '');
       </div>
     </div>
 
-    <div class="space-y-4 reveal reveal-delay-3">
+    <div class="space-y-4">
       <figure class="os-frame">
         <video autoplay loop muted playsinline poster="/images/hero-impact.webp" class="aspect-[16/10] object-cover">
           <source src="/videos/hero-storm.mp4" type="video/mp4" />
