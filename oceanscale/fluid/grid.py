@@ -670,12 +670,12 @@ def _sph_compute_density(
     i = wp.hash_grid_point_id(grid, tid)
     pi = pos[i]
     h2 = h * h
-    rho = float(0.0)  # noqa: UP018
+    rho = float(0.0)  # noqa: UP018 - Warp needs dynamic variables in kernels.
     h9 = h * h * h * h * h * h * h * h * h
     coeff = 315.0 / (64.0 * 3.14159265 * h9)
 
     query = wp.hash_grid_query(grid, pi, h)
-    j = int(0)
+    j = int(0)  # noqa: RUF046,UP018 - Warp hash query mutates this index.
     while wp.hash_grid_query_next(query, j):
         d = pos[j] - pi
         dist2 = d[0] * d[0] + d[1] * d[1] + d[2] * d[2]
@@ -712,16 +712,16 @@ def _sph_compute_forces(
     p_i = stiffness * (rho_i - rest_density)
 
     h2 = h * h
-    fx = float(0.0)  # noqa: UP018
-    fy = float(0.0)  # noqa: UP018
-    fz = float(0.0)  # noqa: UP018
+    fx = float(0.0)  # noqa: UP018 - Warp needs dynamic variables in kernels.
+    fy = float(0.0)  # noqa: UP018 - Warp needs dynamic variables in kernels.
+    fz = float(0.0)  # noqa: UP018 - Warp needs dynamic variables in kernels.
 
     h6 = h * h * h * h * h * h
     spiky_coeff = -45.0 / (3.14159265 * h6)
     visc_coeff = 45.0 / (3.14159265 * h6)
 
     query = wp.hash_grid_query(grid, pi, h)
-    j = int(0)
+    j = int(0)  # noqa: RUF046,UP018 - Warp hash query mutates this index.
     while wp.hash_grid_query_next(query, j):
         if i == j:
             continue
@@ -849,7 +849,7 @@ class SPHSolver:
         self.density = wp.zeros(n_particles, dtype=wp.float32, device=device)
         self.force = wp.zeros(n_particles, dtype=wp.vec3, device=device)
 
-        grid_dim = max(int(math.ceil(max(domain) / smoothing_length)), 4)
+        grid_dim = max(math.ceil(max(domain) / smoothing_length), 4)
         self.grid = wp.HashGrid(grid_dim, grid_dim, grid_dim, device=device)
 
     def build_spatial_hash(self):

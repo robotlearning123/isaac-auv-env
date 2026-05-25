@@ -5,11 +5,11 @@ Compares with Warp and PyTorch.
 """
 
 import time
-import numpy as np
 
 import jax
 import jax.numpy as jnp
-from jax import lax, vmap, jit
+import numpy as np
+from jax import jit, lax, vmap
 
 print(f"JAX {jax.__version__}, devices: {jax.devices()}")
 
@@ -41,7 +41,8 @@ def bench_jax_scan():
     u = jnp.ones((N, N))
     vx, vy = jnp.float32(VX), jnp.float32(VY)
 
-    step_fn = lambda u, _: (advection_diffusion_step_jax(u, vx, vy, NU, DX, DT), None)
+    def step_fn(u, _):
+        return (advection_diffusion_step_jax(u, vx, vy, NU, DX, DT), None)
     compiled = jit(lambda u: lax.scan(step_fn, u, None, length=ITERS))
 
     # Warmup + compile
@@ -68,7 +69,8 @@ def bench_jax_vmap():
     batch_u = jax.random.uniform(rng, (BATCH, N, N))
     vx, vy = jnp.float32(VX), jnp.float32(VY)
 
-    single_step = lambda u: advection_diffusion_step_jax(u, vx, vy, NU, DX, DT)
+    def single_step(u):
+        return advection_diffusion_step_jax(u, vx, vy, NU, DX, DT)
     batched_step = jit(vmap(single_step))
 
     # Warmup
@@ -205,8 +207,8 @@ def main():
 
     print()
     print("=== Summary ===")
-    print(f"  Framework         | ms/iter")
-    print(f"  ------------------|--------")
+    print("  Framework         | ms/iter")
+    print("  ------------------|--------")
     print(f"  JAX lax.scan      | {jax_scan_ms:.3f}")
     print(f"  JAX vmap(b={BATCH})    | {jax_vmap_ms:.3f}")
     print(f"  JAX single step   | {jax_warm_ms:.3f}")

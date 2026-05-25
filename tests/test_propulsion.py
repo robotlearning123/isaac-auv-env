@@ -3,7 +3,6 @@
 import math
 
 import numpy as np
-import pytest
 import warp as wp
 
 from oceanscale.propulsion import BuoyancyEngine, FlappingFin, PropellerThruster

@@ -2,13 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, cast
-
-import numpy as np
-import pytest
-import warp as wp
-
 import newton
+import warp as wp
 from newton.solvers import SolverImplicitMPM
 
 from oceanscale.fluid.mpm_coupling import MPMRigidCoupling

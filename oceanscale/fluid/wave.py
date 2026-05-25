@@ -17,6 +17,7 @@ wp.init()
 
 _GRAVITY = 9.81
 _TWO_PI = 2.0 * math.pi
+_DEEP_WATER_KD = 20.0
 
 
 # ---------------------------------------------------------------------------
@@ -44,9 +45,9 @@ def _wave_velocity_kernel(
     y = p[1]
     z = p[2]
 
-    u = float(0.0)
-    v = float(0.0)
-    w = float(0.0)
+    u = float(0.0)  # noqa: UP018 - Warp needs dynamic variables in kernels.
+    v = float(0.0)  # noqa: UP018 - Warp needs dynamic variables in kernels.
+    w = float(0.0)  # noqa: UP018 - Warp needs dynamic variables in kernels.
 
     for c in range(n_components):
         a = amplitudes[c]
@@ -61,15 +62,20 @@ def _wave_velocity_kernel(
         kd = k * depth
         kz = k * (z + depth)
 
-        cosh_kd = wp.cosh(kd)
-        if cosh_kd < 1.0e-8:
-            cosh_kd = 1.0e-8
+        if kd > 20.0:
+            decay = wp.exp(wp.max(k * z, -80.0))
+            h_factor = decay
+            v_factor = decay
+        else:
+            cosh_kd = wp.cosh(kd)
+            if cosh_kd < 1.0e-8:
+                cosh_kd = 1.0e-8
 
-        cosh_kz = wp.cosh(kz)
-        sinh_kz = wp.sinh(kz)
+            cosh_kz = wp.cosh(kz)
+            sinh_kz = wp.sinh(kz)
 
-        h_factor = cosh_kz / cosh_kd
-        v_factor = sinh_kz / cosh_kd
+            h_factor = cosh_kz / cosh_kd
+            v_factor = sinh_kz / cosh_kd
 
         u_comp = a * omega * h_factor * wp.cos(theta)
         w_comp = a * omega * v_factor * wp.sin(theta)
@@ -103,7 +109,7 @@ def _wave_pressure_kernel(
     y = p[1]
     z = p[2]
 
-    dp = float(0.0)
+    dp = float(0.0)  # noqa: UP018 - Warp needs dynamic variables in kernels.
 
     for c in range(n_components):
         a = amplitudes[c]
@@ -118,12 +124,16 @@ def _wave_pressure_kernel(
         kd = k * depth
         kz = k * (z + depth)
 
-        cosh_kd = wp.cosh(kd)
-        if cosh_kd < 1.0e-8:
-            cosh_kd = 1.0e-8
+        if kd > 20.0:
+            pressure_factor = wp.exp(wp.max(k * z, -80.0))
+        else:
+            cosh_kd = wp.cosh(kd)
+            if cosh_kd < 1.0e-8:
+                cosh_kd = 1.0e-8
 
-        cosh_kz = wp.cosh(kz)
-        dp = dp + rho * g * a * (cosh_kz / cosh_kd) * wp.cos(theta)
+            cosh_kz = wp.cosh(kz)
+            pressure_factor = cosh_kz / cosh_kd
+        dp = dp + rho * g * a * pressure_factor * wp.cos(theta)
 
     out_pressure[tid] = dp
 
@@ -146,7 +156,7 @@ def _wave_surface_kernel(
     x = x_arr[tid]
     y = y_arr[tid]
 
-    eta = float(0.0)
+    eta = float(0.0)  # noqa: UP018 - Warp needs dynamic variables in kernels.
 
     for c in range(n_components):
         a = amplitudes[c]
@@ -171,8 +181,11 @@ def _solve_dispersion(omega: float, depth: float, tol: float = 1e-6, max_iter: i
     """Solve omega^2 = g*k*tanh(k*d) for k using Newton iteration."""
     k = omega * omega / _GRAVITY
     for _ in range(max_iter):
-        f = omega * omega - _GRAVITY * k * math.tanh(k * depth)
-        fp = -_GRAVITY * (math.tanh(k * depth) + k * depth / (math.cosh(k * depth) ** 2))
+        kd = k * depth
+        tanh_kd = math.tanh(kd)
+        f = omega * omega - _GRAVITY * k * tanh_kd
+        sech2_term = 0.0 if kd > _DEEP_WATER_KD else kd / (math.cosh(kd) ** 2)
+        fp = -_GRAVITY * (tanh_kd + sech2_term)
         if abs(fp) < 1e-15:
             break
         dk = f / fp

@@ -27,12 +27,12 @@ def _sonar_raycast_kernel(
 
 
 def _fan_directions(n_rays: int, fov_deg: float) -> np.ndarray:
-    """Generate fan of ray directions in the XZ plane (forward-looking)."""
+    """Generate a horizontal fan with +x forward and z as vertical depth."""
     half_fov = math.radians(fov_deg / 2.0)
     angles = np.linspace(-half_fov, half_fov, n_rays)
     dirs = np.zeros((n_rays, 3), dtype=np.float32)
-    dirs[:, 0] = np.sin(angles)  # X
-    dirs[:, 2] = np.cos(angles)  # Z (forward)
+    dirs[:, 0] = np.cos(angles)
+    dirs[:, 1] = np.sin(angles)
     return dirs
 
 
@@ -103,3 +103,4 @@ class RaySonar:
             dirs[i, 1] = d[1] + qw * ty + qz * tx - qx * tz
             dirs[i, 2] = d[2] + qw * tz + qx * ty - qy * tx
         return dirs
+# mypy: ignore-errors

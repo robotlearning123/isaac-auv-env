@@ -11,8 +11,8 @@ Part 2: Batched AUV (box + 6 thrusters) multi-world simulation.
 
 from __future__ import annotations
 
-import time
 import subprocess
+import time
 
 import numpy as np
 import warp as wp
@@ -20,7 +20,7 @@ import warp as wp
 wp.init()
 device = wp.get_device("cuda:0")
 
-import newton
+import newton  # noqa: E402
 
 print(f"Device: {device}")
 print(f"Warp {wp.__version__}, Newton {newton.__version__}")
@@ -67,7 +67,7 @@ def apply_hydro_forces(
     m = body_mass[tid]
     twist = body_qd[tid]
     lin_vel = wp.spatial_top(twist)     # [vx, vy, vz]
-    ang_vel = wp.spatial_bottom(twist)  # [wx, wy, wz]
+    wp.spatial_bottom(twist)  # [wx, wy, wz]
 
     speed_sq = lin_vel[0] * lin_vel[0] + lin_vel[1] * lin_vel[1] + lin_vel[2] * lin_vel[2]
     speed = wp.sqrt(speed_sq)
@@ -184,7 +184,7 @@ def part1_terminal_velocity():
 
     for name, rho_body in test_cases:
         mass = rho_body * sphere_vol
-        added_mass = Ca * rho_fluid * sphere_vol
+        Ca * rho_fluid * sphere_vol
 
         # Analytical terminal velocity (accounting for buoyancy)
         net_weight = mass * g - rho_fluid * g * sphere_vol
@@ -216,7 +216,7 @@ def part1_terminal_velocity():
 
         # Run simulation
         wp.synchronize()
-        for step in range(n_steps):
+        for _step in range(n_steps):
             # Clear forces, apply hydro
             state_in.clear_forces()
             wp.launch(
@@ -234,7 +234,7 @@ def part1_terminal_velocity():
 
         # Read final velocity
         final_qd = state_in.body_qd.numpy()
-        vz_final = final_qd[0, 2]  # linear z = index 2 (spatial_top = first 3)
+        final_qd[0, 2]  # linear z = index 2 (spatial_top = first 3)
 
         # Also track peak velocity (should converge to terminal)
         # Re-run with tracking

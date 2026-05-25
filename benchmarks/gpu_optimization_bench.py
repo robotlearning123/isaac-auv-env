@@ -15,7 +15,6 @@ import time
 from contextlib import contextmanager
 
 import numpy as np
-
 import warp as wp
 
 wp.init()
@@ -161,7 +160,7 @@ def bench_stream_overlap(Nx: int, Ny: int, Nz: int):
     # Streams help when overlapping compute with async memory copies.
     # Use Warp's CUDA-backed array for device-to-host copy via numpy.
     # We simulate the overlap pattern: compute Jacobi + copy slice D2H.
-    host_buf = np.zeros((Nx, Ny), dtype=np.float32)
+    np.zeros((Nx, Ny), dtype=np.float32)
     # Device staging buffer (1D flat) for copying a slice
     slice_dev = wp.array(np.zeros(Nx * Ny, dtype=np.float32), dtype=wp.float32, device="cuda")
 
@@ -197,7 +196,7 @@ def bench_stream_overlap(Nx: int, Ny: int, Nz: int):
 
     print(f"  A) Single stream:      {single_ms:.3f} ms/iter")
     print(f"  B) Multi-stream ({n_streams}):    {multi_ms:.3f} ms/iter  (speedup: {speedup:.3f}x)")
-    print(f"     Note: domain decompose is slower due to 4x launch overhead on compute-bound kernel")
+    print("     Note: domain decompose is slower due to 4x launch overhead on compute-bound kernel")
     print(f"  C) Compute+copy seq:   {seq_ms:.3f} ms/iter")
     print(f"  D) Compute+copy overlap: {overlap_ms:.3f} ms/iter  (speedup: {overlap_speedup:.3f}x)")
 
@@ -266,8 +265,7 @@ def stencil3d_tiled(
 
     # Load a (TILE_X+2) x (TILE_Y+2) x (TILE_Z+2) halo tile from global memory
     # For interior points only — simplified: load tile and compute where valid
-    sum_val = wp.float32(0.0)
-    count = 0
+    wp.float32(0.0)
 
     # Load the tile from global memory into shared memory via tile_load
     tile = wp.tile_load(u, shape=(TILE_X, TILE_Y, TILE_Z), offset=(gi, gj, gk))
@@ -314,7 +312,7 @@ def bench_shared_memory(N: int):
     for bd in block_sizes:
         # Verify block_dim is valid for 3D launch
         # Total threads = N^3, max blocks = ceil(N^3 / bd)
-        total = N * N * N
+        N * N * N
 
         for _ in range(WARMUP_ITERS):
             wp.launch(
@@ -762,7 +760,7 @@ def main():
     if results["cuda_graph"].get("graph_ms") is not None:
         print(f"  CUDA graph speedup:      {results['cuda_graph']['speedup']:.3f}x")
     else:
-        print(f"  CUDA graph: NOT AVAILABLE")
+        print("  CUDA graph: NOT AVAILABLE")
 
     return results
 

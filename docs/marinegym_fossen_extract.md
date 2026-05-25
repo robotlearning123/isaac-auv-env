@@ -136,7 +136,7 @@ Sources to investigate at T3.3 (R23 mitigation):
 1. **von Benzon 2022** [JMSE 10(12):1898](https://doi.org/10.3390/jmse10121898) — primary
 2. **BlueRobotics datasheet** — geometry
 3. **Wu 2018 Flinders MS thesis** — caveat-cite (no tank data)
-4. **clydemcqueen/bluerov2_gz** SDF — geometry only, license blocker
+4. **clydemcqueen/bluerov2_gz** SDF — optional high-fidelity visual geometry; `package.xml` declares MIT, but root LICENSE is still missing
 
 ---
 

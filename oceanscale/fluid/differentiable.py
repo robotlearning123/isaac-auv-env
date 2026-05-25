@@ -206,7 +206,6 @@ class DifferentiableFluidStep:
 
 def warp_fluid_to_torch(solver: DifferentiableFluidStep, fx_torch, fy_torch, dt: float = 0.01):
     """Bridge: torch tensors → Warp fluid step → loss with gradient support."""
-    import torch
 
     fx_wp = wp.from_torch(fx_torch.contiguous().flatten())
     fy_wp = wp.from_torch(fy_torch.contiguous().flatten())

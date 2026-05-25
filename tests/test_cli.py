@@ -25,10 +25,14 @@ def test_cli_parser_exposes_demo_and_train() -> None:
     parser = _build_parser()
 
     demo_args = parser.parse_args(["demo", "bluerov2-hover"])
+    mvp_args = parser.parse_args(["demo", "underwater-mvp", "--steps", "8"])
     train_args = parser.parse_args(["train", "bluerov2-hover", "--total", "8"])
 
     assert demo_args.command == "demo"
     assert demo_args.task == "bluerov2-hover"
+    assert mvp_args.command == "demo"
+    assert mvp_args.task == "underwater-mvp"
+    assert mvp_args.steps == 8
     assert train_args.command == "train"
     assert train_args.task == "bluerov2-hover"
     assert train_args.total == 8

@@ -1,15 +1,16 @@
 """XLB (Autodesk LBM) benchmark: D2Q9 on RTX 5090."""
-import warp as wp
 import time
+
 import numpy as np
+import warp as wp
 
 wp.init()
 
-from xlb.velocity_set import D2Q9
-from xlb.compute_backend import ComputeBackend
-from xlb.precision_policy import PrecisionPolicy
-from xlb.grid import grid_factory
-from xlb.operator.stepper import IncompressibleNavierStokesStepper
+from xlb.compute_backend import ComputeBackend  # noqa: E402
+from xlb.grid import grid_factory  # noqa: E402
+from xlb.operator.stepper import IncompressibleNavierStokesStepper  # noqa: E402
+from xlb.precision_policy import PrecisionPolicy  # noqa: E402
+from xlb.velocity_set import D2Q9  # noqa: E402
 
 N = 256
 vs = D2Q9(precision_policy=PrecisionPolicy.FP32FP32, compute_backend=ComputeBackend.WARP)
@@ -34,7 +35,7 @@ for _ in range(10):
 
 # Benchmark
 times = []
-for step in range(100):
+for _step in range(100):
     t0 = time.perf_counter()
     f_out = stepper(f_in)
     f_in, f_out = f_out, f_in

@@ -7,7 +7,6 @@ Grid sizes: 256x256, 512x512, 1024x1024, 2048x2048, 1000 Jacobi iterations.
 """
 
 import gc
-import sys
 import time
 import traceback
 
@@ -44,7 +43,7 @@ def bench_cupy(grid_sizes, n_iter=1000, n_warm=5):
     print(f"[CuPy] version={cp.__version__}")
 
     # Raw kernel: one Jacobi step
-    jacobi_kernel = cp.ElementwiseKernel(
+    cp.ElementwiseKernel(
         "raw float32 p, raw float32 rhs",
         "raw float32 p_new",
         """

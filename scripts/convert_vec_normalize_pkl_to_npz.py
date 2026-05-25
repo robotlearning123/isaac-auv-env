@@ -20,7 +20,7 @@ def main() -> None:
     npz_path = data_dir / "vec_normalize.npz"
 
     with open(pkl_path, "rb") as f:
-        vn = pickle.load(f)  # noqa: S301 — one-time conversion script only
+        vn = pickle.load(f)
 
     np.savez(
         npz_path,

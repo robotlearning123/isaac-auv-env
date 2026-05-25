@@ -18,8 +18,8 @@ Performance:
 
 from __future__ import annotations
 
-import time
 import subprocess
+import time
 
 import numpy as np
 import warp as wp
@@ -67,8 +67,8 @@ def biot_savart_velocity(
     px = tx[tid]
     py = ty[tid]
 
-    vx = float(0.0)
-    vy = float(0.0)
+    vx = 0.0
+    vy = 0.0
 
     for j in range(n_particles):
         if j == tid:
@@ -77,10 +77,10 @@ def biot_savart_velocity(
         dy = py - vp_y[j]
         r_sq = dx * dx + dy * dy
 
-        reg = float(1.0) - wp.exp(-r_sq / sigma_sq)
-        denom = r_sq + sigma_sq * float(0.01)
+        reg = 1.0 - wp.exp(-r_sq / sigma_sq)
+        denom = r_sq + sigma_sq * 0.01
         g = gamma[j]
-        factor = g / (float(6.283185307179586) * denom) * reg
+        factor = g / (6.283185307179586 * denom) * reg
 
         vx += -dy * factor
         vy += dx * factor
@@ -333,7 +333,7 @@ def bench_vortex_particles():
 
     Re = 100.0
     print(f"\nRe = {Re}, expected Strouhal: 0.16 - 0.20")
-    print(f"  Freestream U = 1.0 m/s, Cylinder D = 1.0 m")
+    print("  Freestream U = 1.0 m/s, Cylinder D = 1.0 m")
     print(f"  nu = {1.0 * 1.0 / Re:.4f} m^2/s")
     print()
 
@@ -375,9 +375,9 @@ def bench_vortex_particles():
         print(f"  Strouhal number  = {St:.4f}")
         if St > 0:
             if 0.16 <= St <= 0.20:
-                print(f"  Strouhal check   = PASS (within [0.16, 0.20])")
+                print("  Strouhal check   = PASS (within [0.16, 0.20])")
             else:
-                print(f"  Strouhal check   = OUTSIDE expected [0.16, 0.20]")
+                print("  Strouhal check   = OUTSIDE expected [0.16, 0.20]")
 
         results.append({
             "n_max": n_max,

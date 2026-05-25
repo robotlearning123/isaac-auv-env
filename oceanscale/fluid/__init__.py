@@ -88,10 +88,10 @@ def __getattr__(name: str) -> Any:
 
 __all__ = [
     "FluidLevel",
-    "OceanWaveField",
-    "create_fluid_solver",
     "GridFluidSolver",
-    "SPHSolver",
     "NewtonMPMFluid",
+    "OceanWaveField",
+    "SPHSolver",
     "VolumeFluidSolver",
+    "create_fluid_solver",
 ]

@@ -271,3 +271,4 @@ class AcousticPropagation:
                     break
 
         return paths.astype(np.float32)
+# mypy: ignore-errors

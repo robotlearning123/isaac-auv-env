@@ -26,22 +26,28 @@
 
 # %% tags=["colab"]
 # Verify GPU
-!nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
+import subprocess
+import sys
+
+subprocess.run(
+    ["nvidia-smi", "--query-gpu=name,memory.total", "--format=csv,noheader"],
+    check=False,
+)
 
 # %% [markdown]
 # ## 1. Install OceanScale
 
 # %% tags=["colab"]
-!pip install -q oceanscale[rl]
+subprocess.run([sys.executable, "-m", "pip", "install", "-q", "oceanscale[rl]"], check=True)
 
 # %% [markdown]
 # ## 2. Smoke Test
 
 # %%
 import oceanscale
-print(f"OceanScale version: {oceanscale.__version__}")
-
 from oceanscale.rov_env import ROVEnv
+
+print(f"OceanScale version: {oceanscale.__version__}")
 
 env = ROVEnv(n_envs=2, device="cuda")
 obs, info = env.reset()
@@ -55,11 +61,11 @@ env.close()
 # 50k steps takes ~3 min on T4 with 4 parallel envs.
 
 # %%
-from oceanscale.cli import main
 import sys
 
 # Train for 50k steps (quick demo)
 sys.argv = ["oceanscale", "train", "bluerov2-hover", "--total", "50000", "--n_envs", "4", "--seed", "42"]
+# from oceanscale.cli import main
 # main()  # uncomment to train
 
 # %% [markdown]
@@ -67,7 +73,6 @@ sys.argv = ["oceanscale", "train", "bluerov2-hover", "--total", "50000", "--n_en
 
 # %%
 import os
-from pathlib import Path
 
 mp4_path = "/tmp/bluerov2_demo.mp4"
 

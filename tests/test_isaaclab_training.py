@@ -6,16 +6,19 @@ Tests the full stack: GPU fluid → Newton physics → sensors → Isaac Lab env
 
 from __future__ import annotations
 
+import gymnasium as gym
 import numpy as np
 import pytest
 import torch
 
 from oceanscale.training.isaaclab_env import (
-    OBS_DIM,
     ACT_DIM,
+    HAS_ISAACLAB,
+    OBS_DIM,
+    OCEANSCALE_UNDERWATER_TASK_ID,
     OceanScaleDirectRLEnv,
     OceanScaleEnvCfg,
-    HAS_ISAACLAB,
+    register_oceanscale_isaaclab_tasks,
 )
 
 
@@ -44,6 +47,43 @@ class TestEnvCreation:
         assert env.is_vector_env is True
 
 
+class TestGymTaskRegistration:
+    def test_registers_oceanscale_underwater_task(self):
+        task_id = register_oceanscale_isaaclab_tasks()
+        spec = gym.spec(task_id)
+
+        assert task_id == OCEANSCALE_UNDERWATER_TASK_ID
+        assert spec.entry_point == "oceanscale.training.isaaclab_env:OceanScaleDirectRLEnv"
+        assert spec.kwargs["env_cfg_entry_point"] == (
+            "oceanscale.training.isaaclab_env:OceanScaleEnvCfg"
+        )
+
+    def test_registered_task_respects_isaaclab_cfg_fields(self):
+        task_id = register_oceanscale_isaaclab_tasks()
+        cfg = OceanScaleEnvCfg(num_envs=4, device="cpu")
+        cfg.sim.device = "cuda:0"
+        cfg.scene.num_envs = 1
+
+        env = gym.make(task_id, cfg=cfg)
+        try:
+            assert isinstance(env.unwrapped, OceanScaleDirectRLEnv)
+            assert env.unwrapped.num_envs == 1
+            assert str(env.unwrapped.device) == "cuda:0"
+
+            obs_dict, _ = env.reset()
+            action = torch.zeros(1, ACT_DIM, device=env.unwrapped.device)
+            obs_dict, rewards, terminated, truncated, _info = env.step(action)
+
+            assert obs_dict["policy"].shape == (1, OBS_DIM)
+            assert rewards.shape == (1,)
+            assert terminated.shape == (1,)
+            assert truncated.shape == (1,)
+            assert torch.all(torch.isfinite(obs_dict["policy"]))
+            assert torch.all(torch.isfinite(rewards))
+        finally:
+            env.close()
+
+
 class TestEnvReset:
     def test_reset_returns_tuple(self, env):
         result = env.reset()
@@ -51,7 +91,7 @@ class TestEnvReset:
         assert len(result) == 2
 
     def test_reset_obs_shape(self, env):
-        obs_dict, info = env.reset()
+        obs_dict, _info = env.reset()
         assert "policy" in obs_dict
         obs = obs_dict["policy"]
         assert obs.shape == (2, OBS_DIM)
@@ -75,7 +115,7 @@ class TestEnvStep:
     def test_step_obs_shape(self, env):
         env.reset()
         action = torch.zeros(2, ACT_DIM, device=env.device)
-        obs_dict, rewards, terminated, truncated, info = env.step(action)
+        obs_dict, rewards, terminated, truncated, _info = env.step(action)
         assert obs_dict["policy"].shape == (2, OBS_DIM)
         assert rewards.shape == (2,)
         assert terminated.shape == (2,)
@@ -98,7 +138,7 @@ class TestVectorizedEnvs:
     def test_batch_consistency(self, env):
         env.reset()
         action = torch.rand(2, ACT_DIM, device=env.device) * 2 - 1
-        obs_dict, rewards, terminated, truncated, info = env.step(action)
+        obs_dict, rewards, _terminated, _truncated, _info = env.step(action)
         assert obs_dict["policy"].shape[0] == 2
         assert rewards.shape[0] == 2
 
@@ -112,7 +152,7 @@ class TestVectorizedEnvs:
         assert r1.shape == (2,)
         assert torch.all(torch.isfinite(obs1["policy"]))
         e.reset(env_ids=[0])
-        obs2, r2, _, _, _ = e.step(action)
+        obs2, _r2, _, _, _ = e.step(action)
         assert torch.all(torch.isfinite(obs2["policy"]))
         e.close()
 

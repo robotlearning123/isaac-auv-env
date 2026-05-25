@@ -1,10 +1,7 @@
 """Tests for VolumeFluidSolver (wp.Volume NanoVDB sparse grid)."""
 
 import numpy as np
-import pytest
 import warp as wp
-
-wp = pytest.importorskip("warp", reason="warp not available")
 
 from oceanscale.fluid import FluidLevel, create_fluid_solver
 from oceanscale.fluid.volume_solver import VolumeFluidSolver

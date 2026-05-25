@@ -7,6 +7,7 @@ Usage: uv run python benchmarks/sb3_vs_skrl_ppo.py
 """
 
 import time
+
 import numpy as np
 import torch
 
@@ -39,6 +40,7 @@ def eval_reward(env_fn, predict_fn, n_episodes=200):
 def run_sb3():
     """Train SB3 PPO via BatchedVecEnv wrapper."""
     from stable_baselines3 import PPO
+
     from oceanscale.rov_env import ROVEnv
     from oceanscale.vec_env import BatchedVecEnv
 
@@ -57,7 +59,7 @@ def run_sb3():
 
     reward = eval_reward(
         lambda: ROVEnv(n_envs=N_ENVS, max_episode_steps=MAX_STEPS),
-        lambda obs: model.predict(obs, deterministic=True)[0],
+        lambda obs, _model=model: _model.predict(obs, deterministic=True)[0],
     )
 
     del model, train_env
@@ -67,8 +69,9 @@ def run_sb3():
 
 def run_skrl_manual():
     """Train skrl PPO with manual training loop (bypass skrl Trainer for env compat)."""
-    from oceanscale.rov_env import ROVEnv
     from skrl.models.torch import DeterministicMixin, GaussianMixin, Model
+
+    from oceanscale.rov_env import ROVEnv
 
     class Policy(GaussianMixin, Model):
         def __init__(self, obs_space, act_space, device):
@@ -108,20 +111,20 @@ def run_skrl_manual():
         list(policy.parameters()) + list(value.parameters()), lr=LR
     )
 
-    def get_value(obs_np):
+    def get_value(obs_np, value_model=value):
         t = torch.tensor(obs_np, dtype=torch.float32, device=device)
         with torch.no_grad():
-            v, _ = value.compute({"observations": t}, role="")
+            v, _ = value_model.compute({"observations": t}, role="")
         return v.squeeze(-1)
 
-    def get_action_and_logprob(obs_np, deterministic=False):
+    def get_action_and_logprob(obs_np, deterministic=False, policy_model=policy):
         t = torch.tensor(obs_np, dtype=torch.float32, device=device)
         with torch.no_grad():
             if deterministic:
-                mean, _ = policy({"observations": t}, "")
+                mean, _ = policy_model({"observations": t}, "")
                 return mean.cpu().numpy(), None, None
-            a, out = policy.act({"observations": t, "states": None}, role="")
-        log_std = policy.log_std
+            a, _out = policy_model.act({"observations": t, "states": None}, role="")
+        log_std = policy_model.log_std
         dist = torch.distributions.Normal(
             torch.clamp(a, -1 + 1e-6, 1 - 1e-6),
             torch.clamp(log_std.exp(), 1e-6, 10)
@@ -168,7 +171,7 @@ def run_skrl_manual():
         b_ret = torch.tensor(returns.reshape(-1), dtype=torch.float32, device=device)
         b_adv = (b_adv - b_adv.mean()) / (b_adv.std() + 1e-8)
 
-        n_batches = max(1, b_obs.shape[0] // BATCH_SIZE)
+        max(1, b_obs.shape[0] // BATCH_SIZE)
         for _ in range(EPOCHS):
             indices = torch.randperm(b_obs.shape[0], device=device)
             for start in range(0, b_obs.shape[0], BATCH_SIZE):
@@ -179,7 +182,7 @@ def run_skrl_manual():
                 mb_adv_batch = b_adv[idx]
                 mb_ret_batch = b_ret[idx]
 
-                mean, extras = policy.compute({"observations": mb_o}, role="")
+                mean, _extras = policy.compute({"observations": mb_o}, role="")
                 log_std = policy.log_std
                 dist = torch.distributions.Normal(mean, log_std.exp())
                 new_logp = dist.log_prob(mb_a).sum(-1, keepdim=True)
@@ -203,10 +206,10 @@ def run_skrl_manual():
     elapsed = time.perf_counter() - t0
 
     # Evaluate
-    def predict_fn(obs_np):
+    def predict_fn(obs_np, policy_model=policy):
         t = torch.tensor(obs_np, dtype=torch.float32, device=device)
         with torch.no_grad():
-            mean, _ = policy.compute({"observations": t}, role="")
+            mean, _ = policy_model.compute({"observations": t}, role="")
         return mean.cpu().numpy()
 
     reward = eval_reward(

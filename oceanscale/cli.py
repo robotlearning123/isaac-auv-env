@@ -4,12 +4,14 @@ Usage:
     oceanscale --version
     oceanscale demo bluerov2-hover [--render-mp4 PATH] [--device DEVICE] [--seed SEED]
     oceanscale demo bluerov2-dock [--timesteps N] [--n_envs N] [--eval-episodes N] [--device DEVICE]
+    oceanscale demo underwater-mvp [--steps N] [--render-mp4 PATH] [--device DEVICE]
     oceanscale train bluerov2-hover [--total N] [--n_envs N] [--device DEVICE] [--seed SEED]
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 from typing import Any, cast
@@ -251,6 +253,32 @@ def _demo_bluerov2_dock(args: argparse.Namespace) -> None:
     env.close()
 
 
+def _demo_underwater_mvp(args: argparse.Namespace) -> None:
+    from oceanscale.mvp import UnderwaterRobotMVPConfig, run_underwater_robot_mvp
+
+    result = run_underwater_robot_mvp(
+        UnderwaterRobotMVPConfig(
+            n_steps=args.steps,
+            device=args.device,
+            seed=args.seed,
+            render_mp4=args.render_mp4,
+        )
+    )
+
+    print("OceanScale underwater robot MVP")
+    print(f"Vehicle: {result['vehicle']['name']} ({result['vehicle']['thrusters']} thrusters)")
+    print(f"Mission: {result['mission']['type']}")
+    print(f"Completed: {result['mission']['completed']}")
+    print(f"Final distance: {result['metrics']['final_distance_to_target_m']:.3f} m")
+    print(f"Best distance: {result['metrics']['min_distance_to_target_m']:.3f} m")
+    print(f"Sonar detection rate: {result['metrics']['sonar_detection_rate']:.1%}")
+    print(f"Throughput: {result['metrics']['steps_per_sec']:.0f} steps/s")
+
+    if args.output_json:
+        Path(args.output_json).write_text(json.dumps(result, indent=2), encoding="utf-8")
+        print(f"Metrics JSON saved to {args.output_json}")
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="oceanscale",
@@ -264,7 +292,7 @@ def _build_parser() -> argparse.ArgumentParser:
     demo_parser = subparsers.add_parser("demo", help="Run a pretrained policy demo")
     demo_parser.add_argument(
         "task",
-        choices=["bluerov2-hover", "bluerov2-dock"],
+        choices=["bluerov2-hover", "bluerov2-dock", "underwater-mvp"],
         help="Demo task to run",
     )
     demo_parser.add_argument("--render-mp4", type=str, default=None, help="Output MP4 path")
@@ -281,6 +309,12 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     demo_parser.add_argument(
         "--eval-episodes", type=int, default=1000, help="Eval episodes (bluerov2-dock)"
+    )
+    demo_parser.add_argument(
+        "--steps", type=int, default=240, help="Simulation steps (underwater-mvp)"
+    )
+    demo_parser.add_argument(
+        "--output-json", type=str, default=None, help="Write demo metrics JSON"
     )
 
     # train subcommand
@@ -320,6 +354,8 @@ def main() -> None:
             _demo_bluerov2_hover(args)
         elif args.task == "bluerov2-dock":
             _demo_bluerov2_dock(args)
+        elif args.task == "underwater-mvp":
+            _demo_underwater_mvp(args)
     elif args.command == "train":
         if args.task == "bluerov2-hover":
             _train_bluerov2_hover(args)

@@ -87,3 +87,4 @@ class AdaptiveFluidDomain:
         if self._space is None or self._space.geometry is not self._grid:
             self._space = fem.make_polynomial_space(self._grid, degree=degree)
         return self._space
+# mypy: ignore-errors

@@ -13,7 +13,6 @@ import subprocess
 import time
 
 import numpy as np
-
 import warp as wp
 
 wp.init()
@@ -115,7 +114,7 @@ def jacobi_step(
         p_new[idx] = 0.0
         return
 
-    c = p[idx]
+    p[idx]
     l = p[idx - 1]
     r = p[idx + 1]
     d = p[idx - nx]

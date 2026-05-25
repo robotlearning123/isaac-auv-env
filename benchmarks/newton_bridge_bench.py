@@ -13,17 +13,17 @@ Usage:
   uv run python benchmarks/newton_bridge_bench.py
 """
 
-import time
 import sys
-import numpy as np
+import time
 
+import numpy as np
 import warp as wp
 
 wp.init()
 wp.set_device("cuda:0")
 
-import newton
-from newton import ModelBuilder, State
+import newton  # noqa: E402
+from newton import ModelBuilder  # noqa: E402
 
 # ---------- constants ----------
 RHO_WATER = 1000.0  # kg/m^3
@@ -56,15 +56,15 @@ def compute_hydro_forces_sphere(
     # Current state
     t = body_q[i]
     pos = wp.transform_get_translation(t)
-    vx = pos[0]
-    vy = pos[1]
+    pos[0]
+    pos[1]
     vz = pos[2]
 
     vel = body_qd[i]
     lin_vel = wp.vec3f(vel[0], vel[1], vel[2])
 
     vel_prev = body_qd_prev[i]
-    lin_vel_prev = wp.vec3f(vel_prev[0], vel_prev[1], vel_prev[2])
+    wp.vec3f(vel_prev[0], vel_prev[1], vel_prev[2])
 
     # Sphere volume and cross-section
     V_sphere = (4.0 / 3.0) * 3.14159265 * radius * radius * radius
@@ -142,10 +142,10 @@ def compute_hydro_forces_box(
 
     vel = body_qd[i]
     lin_vel = wp.vec3f(vel[0], vel[1], vel[2])
-    ang_vel = wp.vec3f(vel[3], vel[4], vel[5])
+    wp.vec3f(vel[3], vel[4], vel[5])
 
     vel_prev = body_qd_prev[i]
-    lin_vel_prev = wp.vec3f(vel_prev[0], vel_prev[1], vel_prev[2])
+    wp.vec3f(vel_prev[0], vel_prev[1], vel_prev[2])
 
     V_box = hx * hy * hz * 8.0  # half-extents * 8
     A_front = hy * hz * 4.0
@@ -473,9 +473,7 @@ def test2_batched_multiworld():
     print("TEST 2: Batched multi-world AUV simulation")
     print("=" * 70)
 
-    auv_builder, hx, hy, hz, mass = build_auv_model()
-    Cd = 1.2
-    Ca = 0.5
+    auv_builder, _hx, _hy, _hz, _mass = build_auv_model()
     dt = DT
     n_steps_bench = 100  # for timing
 
@@ -505,7 +503,7 @@ def test2_batched_multiworld():
         solver = newton.solvers.SolverSemiImplicit(model)
         contacts = newton.Contacts(rigid_contact_max=0, soft_contact_max=0)
 
-        qd_prev = wp.zeros(body_count, dtype=wp.spatial_vectorf)
+        wp.zeros(body_count, dtype=wp.spatial_vectorf)
 
         # Random currents per world (constant per world)
         rng = np.random.default_rng(42)
@@ -521,8 +519,8 @@ def test2_batched_multiworld():
             body_current_vx[b] = currents_vx[w]
             body_current_vy[b] = currents_vy[w]
 
-        body_cx_wp = wp.array(body_current_vx, dtype=wp.float32)
-        body_cy_wp = wp.array(body_current_vy, dtype=wp.float32)
+        wp.array(body_current_vx, dtype=wp.float32)
+        wp.array(body_current_vy, dtype=wp.float32)
 
         # Warmup
         for _ in range(5):
@@ -533,7 +531,7 @@ def test2_batched_multiworld():
 
         # Benchmark
         t_start = time.perf_counter()
-        for step in range(n_steps_bench):
+        for _step in range(n_steps_bench):
             state_0.clear_forces()
 
             # Apply hydro forces per-world (using per-body current arrays)
@@ -716,8 +714,8 @@ def test4_solver_comparison():
     qd_prev = wp.zeros(body_count, dtype=wp.spatial_vectorf)
 
     # Record initial energy
-    qd_init = state_0.body_qd.numpy().copy()
-    q_init = state_0.body_q.numpy().copy()
+    state_0.body_qd.numpy().copy()
+    state_0.body_q.numpy().copy()
 
     # Warmup
     for _ in range(10):
@@ -731,7 +729,7 @@ def test4_solver_comparison():
     state_1 = model.state()
 
     t_start = time.perf_counter()
-    for step in range(n_steps):
+    for _step in range(n_steps):
         state_0.clear_forces()
 
         wp.launch(
@@ -787,7 +785,7 @@ def test4_solver_comparison():
         state_1 = model.state()
 
         t_start = time.perf_counter()
-        for step in range(n_steps):
+        for _step in range(n_steps):
             state_0.clear_forces()
 
             wp.launch(
@@ -845,7 +843,7 @@ def test4_solver_comparison():
         state_1 = model.state()
 
         t_start = time.perf_counter()
-        for step in range(n_steps_mj):
+        for _step in range(n_steps_mj):
             state_0.clear_forces()
 
             wp.launch(
@@ -908,13 +906,13 @@ def main():
 
     t_total = time.perf_counter()
 
-    r1 = test1_single_body_underwater()
+    test1_single_body_underwater()
     print()
-    r2 = test2_batched_multiworld()
+    test2_batched_multiworld()
     print()
-    r3 = test3_fluid_structure_coupling()
+    test3_fluid_structure_coupling()
     print()
-    r4 = test4_solver_comparison()
+    test4_solver_comparison()
 
     total = time.perf_counter() - t_total
     print()

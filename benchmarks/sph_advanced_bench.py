@@ -13,7 +13,6 @@ from __future__ import annotations
 import time
 
 import numpy as np
-
 import warp as wp
 
 wp.init()
@@ -182,7 +181,7 @@ def bench_sph_neighbor_hashgrid(particle_counts: list[int], h: float = 0.1) -> l
 # Cubic spline kernel (2D)
 
 @wp.func
-def cubic_spline_W(r: wp.float32, h: wp.float32):
+def cubic_spline_W(r: wp.float32, h: wp.float32):  # noqa: N802
     """Cubic spline kernel value (2D). Normalization: 10/(7*pi*h^2)."""
     q = r / h
     coeff = 10.0 / (7.0 * 3.14159265 * h * h)
@@ -196,7 +195,7 @@ def cubic_spline_W(r: wp.float32, h: wp.float32):
 
 
 @wp.func
-def cubic_spline_dWdr(r: wp.float32, h: wp.float32):
+def cubic_spline_dWdr(r: wp.float32, h: wp.float32):  # noqa: N802
     """Derivative of cubic spline kernel dW/dr (2D)."""
     q = r / h
     coeff = 10.0 / (7.0 * 3.14159265 * h * h)
@@ -482,7 +481,7 @@ def bench_dambreak_sph(particle_counts: list[int], n_steps: int = 1000) -> list[
 # ---------------------------------------------------------------------------
 
 def bench_multiresolution_sph(n_particles: int = 50_000,
-                               smoothing_lengths: list[float] = None,
+                               smoothing_lengths: list[float] | None = None,
                                n_steps: int = 100) -> list[dict]:
     """Test how smoothing length h affects performance and accuracy.
 
@@ -516,7 +515,7 @@ def bench_multiresolution_sph(n_particles: int = 50_000,
     for h in smoothing_lengths:
         c_s = 20.0
         gamma = 7.0
-        dt = 0.1 * h / c_s
+        0.1 * h / c_s
 
         pos = wp.array(positions_np_all, dtype=wp.vec3, device="cuda")
         rho = wp.zeros(actual_n, dtype=wp.float32, device="cuda")

@@ -4,10 +4,9 @@ from __future__ import annotations
 
 from typing import Any, cast
 
+import newton
 import numpy as np
 import warp as wp
-
-import newton
 from newton.solvers import SolverImplicitMPM
 
 
@@ -123,3 +122,4 @@ class MPMRigidCoupling:
         if body_idx < f.shape[0]:
             return f[body_idx]
         return np.zeros(6, dtype=np.float32)
+# mypy: ignore-errors

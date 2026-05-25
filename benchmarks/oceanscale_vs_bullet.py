@@ -28,7 +28,6 @@ from pathlib import Path
 
 import numpy as np
 
-
 SWEEP_N_ENVS = [1, 4, 16, 64]
 
 
@@ -56,18 +55,18 @@ def benchmark_oceanscale(n_envs: int, n_steps: int) -> dict:
         init_pos_noise_std=0.0,
         init_yaw_noise_std=0.0,
     )
-    obs, info = env.reset()
+    _obs, _info = env.reset()
 
     zero_action = np.zeros((n_envs, 6), dtype=np.float32)
 
     for _ in range(10):
-        obs, reward, term, trunc, info = env.step(zero_action)
+        _obs, _reward, _term, _trunc, _info = env.step(zero_action)
 
     rss_before = _get_rss_mb()
     t0 = time.perf_counter()
 
     for _ in range(n_steps):
-        obs, reward, term, trunc, info = env.step(zero_action)
+        _obs, _reward, _term, _trunc, _info = env.step(zero_action)
 
     elapsed = time.perf_counter() - t0
     rss_after = _get_rss_mb()
@@ -77,7 +76,7 @@ def benchmark_oceanscale(n_envs: int, n_steps: int) -> dict:
     per_env_fps = throughput / n_envs
     time_1m = 1_000_000 / throughput
 
-    current, peak = tracemalloc.get_traced_memory()
+    _current, peak = tracemalloc.get_traced_memory()
     tracemalloc.stop()
 
     env.close()
@@ -107,18 +106,18 @@ def benchmark_pybullet(n_steps: int) -> dict:
     from bullet_bluerov_env import BulletBlueROV2Env
 
     env = BulletBlueROV2Env()
-    obs, info = env.reset()
+    _obs, _info = env.reset()
 
     zero_action = np.zeros(6, dtype=np.float32)
 
     for _ in range(10):
-        obs, reward, term, trunc, info = env.step(zero_action)
+        _obs, _reward, _term, _trunc, _info = env.step(zero_action)
 
     rss_before = _get_rss_mb()
     t0 = time.perf_counter()
 
     for _ in range(n_steps):
-        obs, reward, term, trunc, info = env.step(zero_action)
+        _obs, _reward, _term, _trunc, _info = env.step(zero_action)
 
     elapsed = time.perf_counter() - t0
     rss_after = _get_rss_mb()
@@ -126,7 +125,7 @@ def benchmark_pybullet(n_steps: int) -> dict:
     throughput = n_steps / elapsed
     time_1m = 1_000_000 / throughput
 
-    current, peak = tracemalloc.get_traced_memory()
+    _current, peak = tracemalloc.get_traced_memory()
     tracemalloc.stop()
 
     env.close()

@@ -5,7 +5,7 @@ Compares with PyTorch LBM.
 """
 
 import time
-import numpy as np
+
 import cupy as cp
 
 # D2Q9 lattice velocities and weights
@@ -134,7 +134,7 @@ def bench_pytorch_lbm(nx, ny):
     omega = 1.8
 
     # Initialize equilibrium
-    rho = torch.ones(ny, nx, device=device, dtype=torch.float32)
+    torch.ones(ny, nx, device=device, dtype=torch.float32)
     for q in range(9):
         f[q] = w_t[q]
 
@@ -187,11 +187,11 @@ def main():
 
     for n in sizes:
         print(f"--- Grid {n}x{n} ---")
-        print(f"  CuPy RawKernel ...", end=" ", flush=True)
+        print("  CuPy RawKernel ...", end=" ", flush=True)
         cupy_ms, cupy_mlups = bench_cupy_lbm(n, n)
         print(f"{cupy_ms:.3f} ms/iter, {cupy_mlups:.0f} MLUPS")
 
-        print(f"  PyTorch eager   ...", end=" ", flush=True)
+        print("  PyTorch eager   ...", end=" ", flush=True)
         torch_ms, torch_mlups = bench_pytorch_lbm(n, n)
         print(f"{torch_ms:.3f} ms/iter, {torch_mlups:.0f} MLUPS")
 

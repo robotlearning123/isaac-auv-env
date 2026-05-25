@@ -6,10 +6,10 @@ import warp as wp
 
 from oceanscale.worlds.ocean_world import (
     OceanWorld,
-    generate_seabed_mesh,
     generate_box_obstacle,
     generate_dock_structure,
     generate_rock,
+    generate_seabed_mesh,
 )
 
 wp.init()
@@ -171,7 +171,7 @@ class TestSensorCompatibility:
 
 class TestLongRun:
     def test_100_steps_stable(self, world):
-        for i in range(100):
+        for _ in range(100):
             world.step(dt=0.01)
         pos = np.array([[50, 50, -5]], dtype=np.float32)
         c = world.get_current_at(pos)

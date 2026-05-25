@@ -11,7 +11,7 @@ Used by benchmarks/oceanscale_vs_bullet.py for apples-to-apples throughput compa
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, ClassVar
 
 import gymnasium as gym
 import numpy as np
@@ -46,7 +46,7 @@ class BulletBlueROV2Env(gym.Env):
     Action (6-dim): [-1, +1] per DOF (surge, sway, heave, roll, pitch, yaw).
     """
 
-    metadata: dict[str, Any] = {"render_modes": []}
+    metadata: ClassVar[dict[str, Any]] = {"render_modes": []}
 
     def __init__(
         self,
@@ -122,7 +122,7 @@ class BulletBlueROV2Env(gym.Env):
         betas = [0.0, np.pi / 2, 3 * np.pi / 4, np.pi]
         gammas = [0.0, 4.15, 1.01, np.pi]
 
-        def Rz(a):
+        def rz(a):
             c, s = np.cos(a), np.sin(a)
             return np.array([[c, -s, 0], [s, c, 0], [0, 0, 1]])
 
@@ -133,12 +133,12 @@ class BulletBlueROV2Env(gym.Env):
 
         T = np.zeros((6, 8), dtype=np.float32)
         for i in range(4):
-            pos = Rz(alphas[i]) @ base_pos_h
-            dirn = Rz(betas[i]) @ base_dir_h
+            pos = rz(alphas[i]) @ base_pos_h
+            dirn = rz(betas[i]) @ base_dir_h
             T[:3, i] = dirn
             T[3:, i] = np.cross(pos, dirn)
         for j in range(4):
-            pos = Rz(gammas[j]) @ base_pos_v
+            pos = rz(gammas[j]) @ base_pos_v
             T[:3, 4 + j] = base_dir_v
             T[3:, 4 + j] = np.cross(pos, base_dir_v)
         return T
@@ -234,7 +234,7 @@ class BulletBlueROV2Env(gym.Env):
 
         pos = np.array(pos, dtype=np.float32)
         quat_xyzw = np.array([quat_wxyz[0], quat_wxyz[1], quat_wxyz[2], quat_wxyz[3]], dtype=np.float32)
-        quat_xyzw_wxyz = np.array(quat_wxyz, dtype=np.float32)  # wxyz for PyBullet
+        np.array(quat_wxyz, dtype=np.float32)  # wxyz for PyBullet
 
         # Body velocity via inverse rotation
         R = self._quat_to_rotmat(quat_xyzw)

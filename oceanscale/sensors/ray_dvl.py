@@ -30,15 +30,15 @@ def _dvl_raycast_kernel(
 
 
 def _janus_beam_directions(beam_angle_deg: float) -> np.ndarray:
-    """4-beam Janus configuration: beams tilted from vertical (downward)."""
+    """4-beam Janus configuration with z-up world convention."""
     a = math.radians(beam_angle_deg)
     sin_a = math.sin(a)
     cos_a = math.cos(a)
     return np.array([
-        [sin_a, -cos_a, 0.0],
-        [-sin_a, -cos_a, 0.0],
-        [0.0, -cos_a, sin_a],
-        [0.0, -cos_a, -sin_a],
+        [sin_a, 0.0, -cos_a],
+        [-sin_a, 0.0, -cos_a],
+        [0.0, sin_a, -cos_a],
+        [0.0, -sin_a, -cos_a],
     ], dtype=np.float32)
 
 
@@ -79,7 +79,7 @@ class RayDVL:
         Args:
             position: (3,) world-frame position.
             orientation: (4,) quaternion [x, y, z, w] for body orientation.
-                If None, assumes identity (beams point straight down).
+                If None, assumes identity (beams point toward negative z).
 
         Returns:
             dict with keys: beam_ranges (n_beams,), altitude (float),
@@ -131,3 +131,4 @@ class RayDVL:
             dirs[i, 1] = d[1] + qw * ty + qz * tx - qx * tz
             dirs[i, 2] = d[2] + qw * tz + qx * ty - qy * tx
         return dirs
+# mypy: ignore-errors

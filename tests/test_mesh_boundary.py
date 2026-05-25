@@ -1,7 +1,6 @@
 """Tests for wp.Mesh-based fluid boundary (FSI coupling)."""
 
 import numpy as np
-import pytest
 import warp as wp
 
 from oceanscale.fluid.mesh_boundary import MeshBoundary, make_box_mesh
@@ -114,7 +113,7 @@ class TestMovingBoundary:
 
 class TestGridSolverIntegration:
     def test_add_boundary_mesh(self):
-        from oceanscale.fluid import create_fluid_solver, FluidLevel
+        from oceanscale.fluid import FluidLevel, create_fluid_solver
 
         solver = create_fluid_solver(FluidLevel.GRID, grid_res=16)
         verts, indices = make_box_mesh(center=(0.5, 0.5, 0.5), half_extents=(0.1, 0.1, 0.1))
@@ -127,7 +126,7 @@ class TestGridSolverIntegration:
         assert u[idx] == 0.0, "Velocity inside mesh boundary should be zero"
 
     def test_grid_boundary_preserves_outside(self):
-        from oceanscale.fluid import create_fluid_solver, FluidLevel
+        from oceanscale.fluid import FluidLevel, create_fluid_solver
 
         solver = create_fluid_solver(FluidLevel.GRID, grid_res=16)
         solver.u.fill_(1.0)

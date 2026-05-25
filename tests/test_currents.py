@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 import warp as wp
 
-from oceanscale.currents import M2_PERIOD, S2_PERIOD, OceanCurrentField
+from oceanscale.currents import M2_PERIOD, OceanCurrentField
 
 wp.init()
 

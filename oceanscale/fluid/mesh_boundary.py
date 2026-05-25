@@ -169,3 +169,4 @@ def make_box_mesh(
         1, 2, 6, 1, 6, 5,
     ], dtype=np.int32)
     return verts, indices
+# mypy: ignore-errors

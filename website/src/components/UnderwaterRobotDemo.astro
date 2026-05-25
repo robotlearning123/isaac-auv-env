@@ -1,0 +1,284 @@
+---
+import { getLangFromUrl } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const isZh = lang === 'zh';
+
+const videoSrc = '/videos/oceanscale-underwater-robot-demo.mp4';
+const posterSrc = '/images/oceanscale-underwater-robot-demo.png';
+const manifestHref = '/demo/underwater_robot_demo_manifest.json';
+
+const copy = isZh
+  ? {
+      eyebrow: '已验证 Isaac demo',
+      title: 'BlueROV2 Heavy 水下对接运行',
+      body: 'Isaac Sim PathTracing 采集的 OceanScale 水下任务：外部 BlueROV2 Heavy 网格、64 spp RTX 画面、Newton + Warp 任务证据和 Isaac Lab DirectRLEnv smoke 写入同一份 manifest。',
+      videoAria: 'Isaac Sim PathTracing 生成的 BlueROV2 Heavy 水下对接视频',
+      status: 'Verification: PASS',
+      manifest: 'Manifest JSON',
+      mp4: 'MP4 artifact',
+      commandLabel: 'Fast verification',
+      command: 'python scripts/verify_isaacsim_underwater_demo.py',
+      metrics: [
+        ['Renderer', 'PathTracing'],
+        ['Samples', '64 spp'],
+        ['Frame', '1920x1080'],
+        ['Sequence', '24 frames / 12 fps'],
+        ['Final distance', '0.136 m'],
+        ['Robot mesh', '198,040 tris'],
+      ],
+    }
+  : {
+      eyebrow: 'Verified Isaac demo',
+      title: 'BlueROV2 Heavy underwater docking run',
+      body: 'An Isaac Sim PathTracing capture of the OceanScale underwater task: external BlueROV2 Heavy mesh, 64 spp RTX render, Newton + Warp mission evidence, and Isaac Lab DirectRLEnv smoke tied to one manifest.',
+      videoAria: 'Isaac Sim PathTracing video of the BlueROV2 Heavy underwater docking run',
+      status: 'Verification: PASS',
+      manifest: 'Manifest JSON',
+      mp4: 'MP4 artifact',
+      commandLabel: 'Fast verification',
+      command: 'python scripts/verify_isaacsim_underwater_demo.py',
+      metrics: [
+        ['Renderer', 'PathTracing'],
+        ['Samples', '64 spp'],
+        ['Frame', '1920x1080'],
+        ['Sequence', '24 frames / 12 fps'],
+        ['Final distance', '0.136 m'],
+        ['Robot mesh', '198,040 tris'],
+      ],
+    };
+---
+
+<section id="demo" class="robot-demo">
+  <div class="os-container">
+    <div class="robot-demo__header reveal">
+      <div class="os-kicker">/04 · {copy.eyebrow}</div>
+      <h2 class="robot-demo__title">{copy.title}</h2>
+      <p class="robot-demo__body">{copy.body}</p>
+    </div>
+
+    <div class="robot-demo__media reveal" data-delay="1">
+      <video
+        src={videoSrc}
+        poster={posterSrc}
+        aria-label={copy.videoAria}
+        muted
+        loop
+        autoplay
+        playsinline
+        controls
+        preload="metadata"
+      >
+        <source src={videoSrc} type="video/mp4" />
+      </video>
+    </div>
+
+    <div class="robot-demo__evidence reveal" data-delay="2">
+      <div class="robot-demo__status">{copy.status}</div>
+      <div class="robot-demo__links">
+        <a href={manifestHref}>{copy.manifest}</a>
+        <a href={videoSrc}>{copy.mp4}</a>
+      </div>
+    </div>
+
+    <div class="robot-demo__metrics reveal" data-delay="3" aria-label="Underwater robot demo metrics">
+      {copy.metrics.map(([label, value]) => (
+        <div class="robot-demo__metric">
+          <span>{label}</span>
+          <strong>{value}</strong>
+        </div>
+      ))}
+    </div>
+
+    <div class="os-terminal robot-demo__terminal reveal" data-delay="4">
+      <div class="os-terminal__bar">
+        <span class="os-terminal__dot os-terminal__dot--red"></span>
+        <span class="os-terminal__dot os-terminal__dot--yellow"></span>
+        <span class="os-terminal__dot os-terminal__dot--green"></span>
+        <span class="os-terminal__title">{copy.commandLabel}</span>
+      </div>
+      <pre><code><span class="prompt">$</span> {copy.command}</code></pre>
+    </div>
+  </div>
+</section>
+
+<style>
+  .robot-demo {
+    position: relative;
+    overflow: hidden;
+    scroll-margin-top: 92px;
+    padding: clamp(96px, 12vw, 156px) 0 clamp(72px, 10vw, 132px);
+    background: #071414;
+    color: var(--color-text);
+    border-top: 1px solid rgba(180, 216, 206, 0.14);
+    border-bottom: 1px solid rgba(180, 216, 206, 0.14);
+  }
+
+  .robot-demo__header {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(280px, 0.72fr);
+    gap: clamp(24px, 5vw, 72px);
+    align-items: end;
+    margin-bottom: clamp(28px, 5vw, 56px);
+  }
+
+  .robot-demo__title {
+    max-width: 16ch;
+    margin: 16px 0 0;
+    font-family: var(--font-display);
+    font-size: clamp(2.1rem, 5vw, 4.6rem);
+    font-weight: 500;
+    line-height: 0.96;
+    letter-spacing: 0;
+  }
+
+  .robot-demo__body {
+    margin: 0;
+    max-width: 62ch;
+    color: var(--color-text-muted);
+    font-size: clamp(0.95rem, 1.2vw, 1.08rem);
+    line-height: 1.75;
+  }
+
+  .robot-demo__media {
+    overflow: hidden;
+    border: 1px solid rgba(180, 216, 206, 0.20);
+    border-radius: 8px;
+    background: #020707;
+  }
+
+  .robot-demo__media video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  .robot-demo__evidence {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 18px 0 0;
+    color: var(--color-text-muted);
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .robot-demo__status {
+    color: var(--color-accent);
+  }
+
+  .robot-demo__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+
+  .robot-demo__links a {
+    color: var(--color-text);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(180, 216, 206, 0.42);
+  }
+
+  .robot-demo__links a:hover {
+    color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
+  }
+
+  .robot-demo__metrics {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    margin-top: clamp(24px, 4vw, 38px);
+    border-top: 1px solid rgba(180, 216, 206, 0.18);
+    border-bottom: 1px solid rgba(180, 216, 206, 0.18);
+  }
+
+  .robot-demo__metric {
+    min-width: 0;
+    padding: 18px 16px 20px;
+    border-right: 1px solid rgba(180, 216, 206, 0.14);
+  }
+
+  .robot-demo__metric:last-child {
+    border-right: 0;
+  }
+
+  .robot-demo__metric span {
+    display: block;
+    color: var(--color-text-muted);
+    font-size: 0.72rem;
+    line-height: 1.25;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .robot-demo__metric strong {
+    display: block;
+    margin-top: 10px;
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .robot-demo__terminal {
+    margin-top: clamp(22px, 4vw, 34px);
+  }
+
+  @media (max-width: 980px) {
+    .robot-demo__header {
+      grid-template-columns: 1fr;
+      align-items: start;
+    }
+
+    .robot-demo__metrics {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .robot-demo__metric:nth-child(3n) {
+      border-right: 0;
+    }
+
+    .robot-demo__metric:nth-child(n + 4) {
+      border-top: 1px solid rgba(180, 216, 206, 0.14);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .robot-demo {
+      scroll-margin-top: 84px;
+      padding: 96px 0 84px;
+    }
+
+    .robot-demo__title {
+      font-size: clamp(2rem, 10.5vw, 2.85rem);
+      line-height: 1.02;
+    }
+
+    .robot-demo__evidence {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .robot-demo__metrics {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .robot-demo__metric,
+    .robot-demo__metric:nth-child(3n) {
+      border-right: 1px solid rgba(180, 216, 206, 0.14);
+    }
+
+    .robot-demo__metric:nth-child(2n) {
+      border-right: 0;
+    }
+
+    .robot-demo__metric:nth-child(n + 3) {
+      border-top: 1px solid rgba(180, 216, 206, 0.14);
+    }
+  }
+</style>

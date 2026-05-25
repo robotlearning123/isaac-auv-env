@@ -26,7 +26,8 @@
 
 # %% tags=["colab"]
 # Hardware check: verify GPU and CUDA compatibility
-import subprocess, sys
+import subprocess
+import sys
 
 result = subprocess.run(
     ["nvidia-smi", "--query-gpu=name,memory.total,compute_cap", "--format=csv,noheader"],
@@ -46,7 +47,7 @@ else:
 # ## 1. Install OceanScale
 
 # %% tags=["colab"]
-!pip install -q oceanscale[rl]
+subprocess.run([sys.executable, "-m", "pip", "install", "-q", "oceanscale[rl]"], check=True)
 
 # %% [markdown]
 # ## 2. Create Docking Environment
@@ -92,8 +93,6 @@ env.close()
 # plotting. 50k steps with 4 parallel envs trains in ~2 min on T4.
 
 # %%
-from oceanscale.training.skrl_trainer import _Policy, _Value, train_skrl_ppo
-
 N_ENVS = 4
 TOTAL_STEPS = 50_000
 
@@ -107,6 +106,7 @@ env = ROVEnv(
 )
 
 # Train (uncomment the line below to actually train)
+# from oceanscale.training.skrl_trainer import train_skrl_ppo
 # policy, value = train_skrl_ppo(env, total_timesteps=TOTAL_STEPS, device="cuda")
 
 # For the draft: show what training looks like with a quick 1k-step run
@@ -165,7 +165,7 @@ def evaluate_docking(policy, env, n_episodes=100, device="cuda"):
         t = torch.as_tensor(obs, dtype=torch.float32, device=dev)
         with torch.no_grad():
             action, _ = policy.compute({"observations": t}, "")
-        obs, reward, terminated, truncated, info = env.step(action.cpu().numpy())
+        obs, _reward, terminated, truncated, _info = env.step(action.cpu().numpy())
         step += 1
 
         done = terminated | truncated
@@ -234,7 +234,7 @@ def rollout_trajectory(policy, env, device="cuda"):
         t = torch.as_tensor(obs, dtype=torch.float32, device=dev)
         with torch.no_grad():
             action, _ = policy.compute({"observations": t}, "")
-        obs, reward, terminated, truncated, info = env.step(action.cpu().numpy())
+        obs, _reward, terminated, truncated, _info = env.step(action.cpu().numpy())
 
         if terminated[0] or truncated[0]:
             positions.append(env.state_curr.body_q.numpy()[0, 0:3].copy())

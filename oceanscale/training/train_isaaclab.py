@@ -70,9 +70,9 @@ def train_docking_isaaclab(
 
     metrics = {"rewards": [], "losses": []}
 
-    for iteration in range(max_iterations):
+    for _iteration in range(max_iterations):
         actions = policy(obs)
-        obs_dict, rewards, terminated, truncated, extras = env.step(actions)
+        obs_dict, rewards, terminated, _truncated, _extras = env.step(actions)
         obs_next = obs_dict["policy"]
 
         with torch.no_grad():

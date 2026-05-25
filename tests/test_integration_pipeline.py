@@ -6,6 +6,7 @@ Each test verifies real data flow between layers, not mocks.
 
 from __future__ import annotations
 
+import newton
 import numpy as np
 import pytest
 import warp as wp
@@ -41,6 +42,10 @@ class TestFullPipeline:
         pipeline.reset()
         result = pipeline.step()
         assert "wave_velocity" in result
+        assert "current" in result
+        assert "water_density" in result
+        assert "sound_speed" in result
+        assert "acoustic_loss_db" in result
         assert "dvl" in result
         assert "sonar" in result
         assert "rov_position" in result
@@ -48,6 +53,19 @@ class TestFullPipeline:
         assert "tether_tension" in result
         assert "reward" in result
         assert "time" in result
+
+    def test_action_changes_rov_state(self):
+        baseline = IntegratedPipeline(device=DEVICE)
+        driven = IntegratedPipeline(device=DEVICE)
+        baseline.reset()
+        driven.reset()
+
+        for _ in range(20):
+            zero = baseline.step(np.zeros(6, dtype=np.float32))
+            actuated = driven.step(np.array([1.0, 0.0, 0.0, 0.0, 0.0, 0.0], dtype=np.float32))
+
+        assert not np.allclose(zero["rov_position"], actuated["rov_position"], atol=1e-5)
+        assert not np.allclose(zero["rov_velocity"], actuated["rov_velocity"], atol=1e-5)
 
     def test_multi_step_stable(self, pipeline):
         pipeline.reset()
@@ -205,6 +223,3 @@ class TestPerformancePipeline:
 
         speedup = direct_time / max(graph_time, 1e-9)
         assert speedup > 1.0, f"Graph capture should be faster: {speedup:.2f}x"
-
-
-import newton

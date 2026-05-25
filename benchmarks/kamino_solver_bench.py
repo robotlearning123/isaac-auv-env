@@ -18,10 +18,9 @@ NOTE: Kamino's dense LLT solver fails to JIT-compile on sm_120 (RTX 5090).
 Results are REAL measurements — no interpolation, no fabrication.
 """
 
-import time
 import gc
+import time
 import traceback
-import sys
 
 import numpy as np
 import warp as wp
@@ -31,7 +30,7 @@ device = wp.get_device("cuda:0")
 print(f"Device: {device}")
 print(f"Warp {wp.__version__}, CUDA available: {wp.is_cuda_available()}")
 
-import newton
+import newton  # noqa: E402
 
 print(f"Newton {newton.__version__}")
 print("=" * 80)
@@ -69,7 +68,7 @@ print("\n" + "=" * 80)
 print("PART 1: SolverKamino API Discovery")
 print("=" * 80)
 
-import inspect
+import inspect  # noqa: E402
 
 print("\nSolverKamino.__init__ signature:")
 print(f"  {inspect.signature(newton.solvers.SolverKamino.__init__)}")
@@ -261,7 +260,7 @@ for num_worlds in [1, 64, 256]:
         skip_all_validations=True,
     )
 
-    def bench_kamino(model):
+    def bench_kamino(model, world_count=num_worlds):
         solver = make_kamino_solver(model)
         state_in = model.state()
         state_out = model.state()
@@ -293,7 +292,7 @@ for num_worlds in [1, 64, 256]:
 
         return {
             "label": "Kamino(sparse)",
-            "worlds": num_worlds,
+            "worlds": world_count,
             "steps_per_sec": sps,
             "elapsed_s": elapsed,
             "z_final": float(pos[2]),
@@ -392,7 +391,7 @@ print("\n" + "=" * 80)
 print("PART 3: Kinematic Loop — Four-bar Linkage")
 print("=" * 80)
 
-from newton.tests.utils import basics
+from newton.tests.utils import basics  # noqa: E402
 
 
 def build_fourbar_multiworld(num_worlds):
@@ -454,7 +453,7 @@ for num_worlds in [1, 16, 64]:
 
         # Check constraint violation: joints should maintain their constraints
         pos = state_in.body_q.numpy()
-        print(f"  Body positions (world 0):")
+        print("  Body positions (world 0):")
         for b in range(min(4, model_4bar.body_count)):
             print(f"    Body {b}: {pos[b, :3]}")
 

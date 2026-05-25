@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import numpy as np
-import pytest
 import warp as wp
 
 from oceanscale.fluid.surface_extractor import SurfaceExtractor
@@ -56,7 +55,7 @@ class TestSphereSDF:
 
         field_wp = wp.array(field, dtype=wp.float32, device=DEVICE)
         se = SurfaceExtractor(nx=nx, ny=ny, nz=nz, device=DEVICE)
-        verts, indices = se.extract(field_wp, threshold=0.0)
+        verts, _indices = se.extract(field_wp, threshold=0.0)
         assert verts.shape[0] > 50, "Sphere at 32³ should produce many vertices"
 
 
@@ -66,7 +65,7 @@ class TestEmptyField:
             shape=(16, 16, 16), value=1.0, dtype=wp.float32, device=DEVICE
         )
         se = SurfaceExtractor(nx=16, ny=16, nz=16, device=DEVICE)
-        verts, indices = se.extract(field, threshold=0.0)
+        verts, _indices = se.extract(field, threshold=0.0)
         assert verts.shape[0] == 0
 
     def test_all_negative_no_surface(self):
@@ -74,7 +73,7 @@ class TestEmptyField:
             shape=(16, 16, 16), value=-1.0, dtype=wp.float32, device=DEVICE
         )
         se = SurfaceExtractor(nx=16, ny=16, nz=16, device=DEVICE)
-        verts, indices = se.extract(field, threshold=0.0)
+        verts, _indices = se.extract(field, threshold=0.0)
         assert verts.shape[0] == 0
 
 
@@ -86,7 +85,7 @@ class TestParticleToSurface:
         positions = wp.array(pts, dtype=wp.vec3, device=DEVICE)
 
         se = SurfaceExtractor(nx=32, ny=32, nz=32, device=DEVICE)
-        verts, indices = se.extract_from_particles(
+        verts, _indices = se.extract_from_particles(
             positions, radius=0.05,
             domain_min=(0.0, 0.0, 0.0), domain_max=(1.0, 1.0, 1.0),
         )
@@ -95,7 +94,7 @@ class TestParticleToSurface:
     def test_no_particles_no_surface(self):
         positions = wp.zeros(0, dtype=wp.vec3, device=DEVICE)
         se = SurfaceExtractor(nx=16, ny=16, nz=16, device=DEVICE)
-        verts, indices = se.extract_from_particles(
+        verts, _indices = se.extract_from_particles(
             positions, radius=0.05,
             domain_min=(0.0, 0.0, 0.0), domain_max=(1.0, 1.0, 1.0),
         )
