@@ -10,9 +10,9 @@ const manifestHref = '/demo/underwater_robot_demo_manifest.json';
 
 const copy = isZh
   ? {
-      eyebrow: '已验证 Isaac demo',
-      title: 'BlueROV2 Heavy 水下对接运行',
-      body: 'Isaac Sim PathTracing 采集的 OceanScale 水下任务：外部 BlueROV2 Heavy 网格、64 spp RTX 画面、Newton + Warp 任务证据和 Isaac Lab DirectRLEnv smoke 写入同一份 manifest。',
+      eyebrow: 'Verified Demo',
+      titleLines: ['仿真水下对接，', '生成可验证证据。'],
+      body: '视频来自 Isaac Sim PathTracing，使用 BlueROV2 Heavy 网格；任务轨迹、Isaac Lab smoke 和 manifest 证据保存在同一次输出中。',
       videoAria: 'Isaac Sim PathTracing 生成的 BlueROV2 Heavy 水下对接视频',
       status: 'Verification: PASS',
       manifest: 'Manifest JSON',
@@ -30,8 +30,8 @@ const copy = isZh
     }
   : {
       eyebrow: 'Verified Isaac demo',
-      title: 'BlueROV2 Heavy underwater docking run',
-      body: 'An Isaac Sim PathTracing capture of the OceanScale underwater task: external BlueROV2 Heavy mesh, 64 spp RTX render, Newton + Warp mission evidence, and Isaac Lab DirectRLEnv smoke tied to one manifest.',
+      titleLines: ['A verified docking run', 'in simulation.'],
+      body: 'Captured in Isaac Sim PathTracing with a BlueROV2 Heavy mesh; mission trajectory, Isaac Lab smoke, and manifest evidence are saved from one demo output.',
       videoAria: 'Isaac Sim PathTracing video of the BlueROV2 Heavy underwater docking run',
       status: 'Verification: PASS',
       manifest: 'Manifest JSON',
@@ -52,8 +52,12 @@ const copy = isZh
 <section id="demo" class="robot-demo">
   <div class="os-container">
     <div class="robot-demo__header reveal">
-      <div class="os-kicker">/04 · {copy.eyebrow}</div>
-      <h2 class="robot-demo__title">{copy.title}</h2>
+      <div class="robot-demo__title-block">
+        <p class="section-label">{copy.eyebrow}</p>
+        <h2 class="robot-demo__title">
+          {copy.titleLines.map((line) => <span>{line}</span>)}
+        </h2>
+      </div>
       <p class="robot-demo__body">{copy.body}</p>
     </div>
 
@@ -116,28 +120,46 @@ const copy = isZh
 
   .robot-demo__header {
     display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(280px, 0.72fr);
+    grid-template-columns: minmax(0, 0.86fr) minmax(320px, 0.74fr);
     gap: clamp(24px, 5vw, 72px);
     align-items: end;
     margin-bottom: clamp(28px, 5vw, 56px);
   }
 
+  .robot-demo__title-block {
+    min-width: 0;
+  }
+
   .robot-demo__title {
-    max-width: 16ch;
-    margin: 16px 0 0;
+    max-width: 13ch;
+    margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(2.1rem, 5vw, 4.6rem);
-    font-weight: 500;
-    line-height: 0.96;
+    font-size: clamp(2.7rem, 4.4vw, 4.35rem);
+    font-weight: 850;
+    line-height: 1.03;
     letter-spacing: 0;
+    text-wrap: balance;
+  }
+
+  .robot-demo__title span {
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    white-space: nowrap;
+  }
+
+  html[lang="zh"] .robot-demo__title {
+    max-width: 12ch;
+    font-family: var(--font-display-zh);
+    line-height: 1.08;
   }
 
   .robot-demo__body {
-    margin: 0;
-    max-width: 62ch;
-    color: var(--color-text-muted);
-    font-size: clamp(0.95rem, 1.2vw, 1.08rem);
-    line-height: 1.75;
+    margin: 0 0 0.35rem;
+    max-width: 560px;
+    color: rgba(232, 237, 243, 0.74);
+    font-size: 1.03rem;
+    line-height: 1.68;
   }
 
   .robot-demo__media {
@@ -233,6 +255,7 @@ const copy = isZh
     .robot-demo__header {
       grid-template-columns: 1fr;
       align-items: start;
+      gap: 18px;
     }
 
     .robot-demo__metrics {
@@ -255,8 +278,14 @@ const copy = isZh
     }
 
     .robot-demo__title {
-      font-size: clamp(2rem, 10.5vw, 2.85rem);
-      line-height: 1.02;
+      max-width: 100%;
+      font-size: 2.05rem;
+      line-height: 1.08;
+    }
+
+    .robot-demo__body {
+      font-size: 0.98rem;
+      line-height: 1.58;
     }
 
     .robot-demo__evidence {

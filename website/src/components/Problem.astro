@@ -7,20 +7,21 @@ const content = isZh ? {
   label: 'Challenge',
   title: '海试很难，又慢又贵。',
   titleLines: ['海试很难，', '又慢又贵。'],
-  body: '每一次下海都要等天气窗口、船期、人员和海况。一次失败可能意味着重新出船、重新布放、重新排期；成本按天消耗，数据还很难复现。',
+  body: '每一次下海都要等天气窗口、船期、人员、海况、布放装备和硬件状态同时满足。一次失败，往往意味着重新出船、重新布放，再等下一轮有效数据。',
   stats: [
-    ['天气窗口', '等海况'],
+    ['天气窗口', '窗口很窄'],
     ['船和人员', '按天计费'],
     ['迭代时间', '一次失败拖数周'],
   ],
 } : {
   label: 'Challenge',
   title: 'Sea trials are hard, slow, and expensive.',
-  body: 'Every test depends on weather windows, vessel availability, crew, currents, deployment gear, and hardware risk. One failed run can mean rebooking a boat, redeploying equipment, and losing weeks before the next useful dataset.',
+  titleLines: ['Sea trials are hard,', 'slow, and expensive.'],
+  body: 'Field tests are gated by weather, boats, crew, currents, gear, and hardware risk. A failed run can mean rebooking, redeploying, and waiting weeks for the next useful dataset.',
   stats: [
-    ['Weather', 'wait for a window'],
-    ['Vessels + crew', 'paid by the day'],
-    ['Iteration time', 'weeks per failure'],
+    ['Weather', 'narrow windows'],
+    ['Vessels + crew', 'day-rate cost'],
+    ['Iteration time', 'weeks lost'],
   ],
 };
 ---
@@ -39,20 +40,22 @@ const content = isZh ? {
   <div class="cinematic-section__shade"></div>
 
   <div class="cinematic-section__inner reveal">
-    <p class="section-label">{content.label}</p>
-    <h2>
-      {'titleLines' in content
-        ? content.titleLines.map((line) => <span>{line}</span>)
-        : content.title}
-    </h2>
-    <p class="section-body">{content.body}</p>
-    <div class="section-stats" aria-label={isZh ? '挑战指标' : 'Challenge metrics'}>
-      {content.stats.map(([label, value]) => (
-        <div>
-          <span>{label}</span>
-          <strong>{value}</strong>
-        </div>
-      ))}
+    <div class="cinematic-section__copy">
+      <p class="section-label">{content.label}</p>
+      <h2>
+        {'titleLines' in content
+          ? content.titleLines.map((line) => <span>{line}</span>)
+          : content.title}
+      </h2>
+      <p class="section-body">{content.body}</p>
+      <div class="section-stats" aria-label={isZh ? '挑战指标' : 'Challenge metrics'}>
+        {content.stats.map(([label, value]) => (
+          <div>
+            <span>{label}</span>
+            <strong>{value}</strong>
+          </div>
+        ))}
+      </div>
     </div>
   </div>
 </section>
@@ -105,42 +108,53 @@ const content = isZh ? {
 
   .cinematic-section--right .cinematic-section__inner {
     display: grid;
-    justify-items: end;
   }
 
-  .cinematic-section--right .cinematic-section__inner > * {
-    width: min(100%, 700px);
+  .cinematic-section__copy {
+    width: min(100%, 720px);
+  }
+
+  .cinematic-section--right .cinematic-section__copy {
+    justify-self: end;
   }
 
   .section-label {
-    margin: 0 0 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin: 0 0 1.15rem;
     color: rgba(45, 212, 191, 0.95);
     font-family: var(--font-mono);
     font-size: 0.78rem;
     font-weight: 700;
-    letter-spacing: 0.22em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
+  }
+
+  .section-label::before {
+    content: "";
+    width: 2.1rem;
+    height: 1px;
+    background: rgba(45, 212, 191, 0.75);
   }
 
   .cinematic-section h2 {
     margin: 0;
-    max-width: 11ch;
     color: #fff;
     font-family: var(--font-display);
-    font-size: 5.25rem;
+    font-size: clamp(3rem, 4.6vw, 4.55rem);
     font-weight: 900;
-    line-height: 0.98;
+    line-height: 1.04;
     letter-spacing: 0;
     text-wrap: balance;
     text-shadow: 0 18px 70px rgba(0, 0, 0, 0.55);
   }
 
   html[lang="zh"] .cinematic-section h2 {
-    max-width: 12ch;
     font-family: var(--font-display-zh);
-    line-height: 1.04;
+    line-height: 1.08;
     word-break: normal;
-    overflow-wrap: anywhere;
+    overflow-wrap: normal;
   }
 
   .cinematic-section h2 span {
@@ -151,26 +165,27 @@ const content = isZh ? {
   }
 
   .section-body {
-    margin: 1.35rem 0 0;
-    max-width: 640px;
+    margin: 1.45rem 0 0;
+    max-width: 590px;
     color: rgba(232, 237, 243, 0.82);
-    font-size: 1.08rem;
-    line-height: 1.62;
+    font-size: 1.02rem;
+    line-height: 1.68;
   }
 
   .section-stats {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1px;
-    width: min(100%, 720px);
-    margin-top: 2.4rem;
+    width: min(100%, 600px);
+    margin-top: 1.8rem;
     border: 1px solid rgba(255, 255, 255, 0.12);
     background: rgba(255, 255, 255, 0.12);
   }
 
   .section-stats div {
-    padding: 1.15rem;
-    background: rgba(3, 7, 12, 0.62);
+    min-height: 5.55rem;
+    padding: 0.9rem 1rem;
+    background: rgba(3, 7, 12, 0.68);
     backdrop-filter: blur(12px);
   }
 
@@ -183,15 +198,16 @@ const content = isZh ? {
 
   .section-stats span {
     color: rgba(232, 237, 243, 0.52);
-    font-size: 0.68rem;
-    letter-spacing: 0.12em;
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
   }
 
   .section-stats strong {
-    margin-top: 0.55rem;
+    margin-top: 0.62rem;
     color: #fff;
-    font-size: 0.95rem;
+    font-size: 0.88rem;
+    letter-spacing: 0;
   }
 
   @media (max-width: 760px) {
@@ -222,19 +238,28 @@ const content = isZh ? {
 
     .cinematic-section--right .cinematic-section__inner {
       display: block;
-      justify-items: stretch;
     }
 
-    .cinematic-section--right .cinematic-section__inner > * {
+    .cinematic-section__copy,
+    .cinematic-section--right .cinematic-section__copy {
       width: 100%;
-      justify-self: auto;
     }
 
     .cinematic-section h2 {
       max-width: 100%;
-      font-size: 2.65rem;
-      line-height: 1.04;
+      font-size: 2.28rem;
+      line-height: 1.08;
       text-wrap: auto;
+    }
+
+    .cinematic-section h2 span {
+      width: auto;
+      white-space: normal;
+    }
+
+    html:not([lang="zh"]) .cinematic-section h2 {
+      font-size: 2.06rem;
+      line-height: 1.06;
     }
 
     html[lang="zh"] .cinematic-section h2 {
@@ -244,12 +269,17 @@ const content = isZh ? {
     .section-label {
       margin-bottom: 0.85rem;
       font-size: 0.72rem;
+      letter-spacing: 0.16em;
+    }
+
+    .section-label::before {
+      width: 1.55rem;
     }
 
     .section-body {
       margin-top: 1.1rem;
-      font-size: 1rem;
-      line-height: 1.58;
+      font-size: 0.97rem;
+      line-height: 1.56;
     }
 
     .section-stats {
@@ -259,23 +289,29 @@ const content = isZh ? {
     }
 
     .section-stats div {
-      padding: 1rem;
+      min-height: 0;
+      padding: 0.82rem 1rem;
+    }
+
+    .section-stats strong {
+      margin-top: 0.42rem;
+      font-size: 0.86rem;
     }
   }
 
   @media (min-width: 1440px) {
     .cinematic-section h2 {
-      font-size: 5.8rem;
+      font-size: 4.7rem;
     }
 
     .section-body {
-      font-size: 1.16rem;
+      font-size: 1.06rem;
     }
   }
 
   @media (max-width: 1120px) and (min-width: 761px) {
     .cinematic-section h2 {
-      font-size: 4.2rem;
+      font-size: 3.4rem;
     }
   }
 </style>

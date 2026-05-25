@@ -16,6 +16,7 @@ const content = isZh ? {
 } : {
   label: 'Solution',
   title: 'Train first in a virtual ocean.',
+  titleLines: ['Train first', 'in a virtual ocean.'],
   body: 'OceanScale brings currents, terrain, sensors, actuators, and task constraints into one GPU-native simulator, so underwater robots can train at scale before touching the ocean.',
   stats: [
     ['Scale', 'thousands of rollouts'],
@@ -39,20 +40,22 @@ const content = isZh ? {
   <div class="cinematic-section__shade"></div>
 
   <div class="cinematic-section__inner reveal">
-    <p class="section-label">{content.label}</p>
-    <h2>
-      {'titleLines' in content
-        ? content.titleLines.map((line) => <span>{line}</span>)
-        : content.title}
-    </h2>
-    <p class="section-body">{content.body}</p>
-    <div class="section-stats" aria-label={isZh ? '解决方案指标' : 'Solution metrics'}>
-      {content.stats.map(([label, value]) => (
-        <div>
-          <span>{label}</span>
-          <strong>{value}</strong>
-        </div>
-      ))}
+    <div class="cinematic-section__copy">
+      <p class="section-label">{content.label}</p>
+      <h2>
+        {'titleLines' in content
+          ? content.titleLines.map((line) => <span>{line}</span>)
+          : content.title}
+      </h2>
+      <p class="section-body">{content.body}</p>
+      <div class="section-stats" aria-label={isZh ? '解决方案指标' : 'Solution metrics'}>
+        {content.stats.map(([label, value]) => (
+          <div>
+            <span>{label}</span>
+            <strong>{value}</strong>
+          </div>
+        ))}
+      </div>
     </div>
   </div>
 </section>

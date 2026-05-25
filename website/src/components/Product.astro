@@ -3,16 +3,13 @@ import { getLangFromUrl } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const isZh = lang === 'zh';
 
-const heading = isZh
-  ? '一套训练系统，贯通海洋物理与机器人策略。'
-  : 'One system for ocean physics and robot policy.';
 const headingLines = isZh
-  ? ['一套训练系统，', '贯通海洋物理', '与机器人策略。']
-  : null;
+  ? ['一套训练系统，', '连接海洋物理', '与机器人策略。']
+  : ['One system for', 'ocean physics', 'and robot policy.'];
 
 const body = isZh
-  ? '不是单个演示场景，而是面向水下机器人研发的仿真基础设施：物理、传感器、任务、并行 rollout 和验证基准一起运行。'
-  : 'Not a one-off demo scene, but simulation infrastructure for underwater robotics: physics, sensors, tasks, parallel rollouts, and validation benchmarks running together.';
+  ? '不是单个演示场景，而是面向水下机器人研发的仿真基础设施：物理、传感器、任务、并行 rollout 和验证基准在同一套系统中运行。'
+  : 'Not a one-off demo scene, but simulation infrastructure for underwater robotics: physics, sensors, tasks, parallel rollouts, and validation benchmarks running in one system.';
 
 const cards = isZh ? [
   { title: 'GPU 原生仿真', body: '水动力、浮力、接触、推进器和执行器统一在并行环境中求解。' },
@@ -29,12 +26,12 @@ const cards = isZh ? [
 <section id="product" class="product-system">
   <div class="os-container product-system__inner">
     <div class="product-system__copy reveal">
-      <p class="section-label">Product</p>
-      <h2>
-        {headingLines
-          ? headingLines.map((line) => <span>{line}</span>)
-          : heading}
-      </h2>
+      <div class="product-system__title">
+        <p class="section-label">Product</p>
+        <h2>
+          {headingLines.map((line) => <span>{line}</span>)}
+        </h2>
+      </div>
       <p>{body}</p>
     </div>
 
@@ -109,16 +106,19 @@ const cards = isZh ? [
   }
 
   .product-system__copy {
-    max-width: 860px;
+    display: grid;
+    grid-template-columns: minmax(0, 0.82fr) minmax(320px, 0.78fr);
+    gap: clamp(1.5rem, 5vw, 5rem);
+    align-items: end;
   }
 
   .product-system__copy h2 {
     margin: 0;
     color: #fff;
     font-family: var(--font-display);
-    font-size: 3.8rem;
+    font-size: clamp(2.8rem, 4vw, 4.05rem);
     font-weight: 900;
-    line-height: 0.98;
+    line-height: 1.01;
     letter-spacing: 0;
     text-wrap: balance;
   }
@@ -132,24 +132,22 @@ const cards = isZh ? [
 
   .product-system__copy h2 span {
     display: block;
-    width: fit-content;
     max-width: 100%;
-    white-space: nowrap;
   }
 
   .product-system__copy > p:last-child {
-    margin: 1.35rem 0 0;
-    max-width: 700px;
-    color: rgba(232, 237, 243, 0.74);
+    margin: 0 0 0.35rem;
+    max-width: 540px;
+    color: rgba(232, 237, 243, 0.76);
     font-size: 1.08rem;
     line-height: 1.66;
   }
 
   .product-system__grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.16fr) minmax(320px, 0.84fr);
+    grid-template-columns: minmax(0, 1.08fr) minmax(420px, 0.92fr);
     gap: clamp(1.2rem, 3vw, 2.5rem);
-    align-items: stretch;
+    align-items: start;
     margin-top: clamp(2.5rem, 5vw, 4.5rem);
   }
 
@@ -169,7 +167,7 @@ const cards = isZh ? [
   }
 
   .training-panel {
-    min-height: 520px;
+    min-height: 460px;
     display: grid;
     grid-template-rows: auto 1fr auto;
     padding: clamp(1rem, 2vw, 1.4rem);
@@ -205,7 +203,7 @@ const cards = isZh ? [
     grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 0.55rem;
     align-content: center;
-    min-height: 320px;
+    min-height: 270px;
     padding: clamp(1.3rem, 3vw, 2.2rem) 0;
   }
 
@@ -255,11 +253,12 @@ const cards = isZh ? [
 
   .product-system__cards {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
   }
 
   .product-system__card {
+    min-height: 188px;
     padding: clamp(1.1rem, 2vw, 1.45rem);
     border-radius: 8px;
   }
@@ -289,18 +288,32 @@ const cards = isZh ? [
   }
 
   @media (max-width: 900px) {
+    .product-system__copy {
+      grid-template-columns: 1fr;
+      gap: 1.05rem;
+    }
+
     .product-system__copy h2 {
-      font-size: 2.35rem;
+      font-size: 2.18rem;
       line-height: 1.08;
     }
 
     .product-system__copy > p:last-child {
-      font-size: 1rem;
-      line-height: 1.6;
+      margin: 0;
+      font-size: 0.98rem;
+      line-height: 1.58;
     }
 
     .product-system__grid {
       grid-template-columns: 1fr;
+    }
+
+    .product-system__cards {
+      grid-template-columns: 1fr;
+    }
+
+    .product-system__card {
+      min-height: auto;
     }
 
     .training-panel {
@@ -319,7 +332,7 @@ const cards = isZh ? [
 
   @media (min-width: 1440px) {
     .product-system__copy h2 {
-      font-size: 4.2rem;
+      font-size: 4.15rem;
     }
   }
 </style>
