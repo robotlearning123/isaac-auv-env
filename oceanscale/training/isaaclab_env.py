@@ -15,23 +15,44 @@ Architecture:
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Any, Sequence, cast
+import importlib
+import importlib.util
+from collections.abc import Sequence
+from dataclasses import dataclass, field
+from typing import Any, ClassVar
 
 import gymnasium as gym
 import numpy as np
 import torch
 
-try:
-    from isaaclab.envs import DirectRLEnv, DirectRLEnvCfg
 
-    HAS_ISAACLAB = True
-except ImportError:
-    HAS_ISAACLAB = False
+def _has_isaaclab() -> bool:
+    if importlib.util.find_spec("isaaclab") is None:
+        return False
+    return importlib.util.find_spec("isaaclab.envs") is not None
+
+
+HAS_ISAACLAB = _has_isaaclab()
 
 
 OBS_DIM = 33
 ACT_DIM = 6
+OCEANSCALE_UNDERWATER_TASK_ID = "OceanScale-UnderwaterRobot-Direct-v0"
+
+
+@dataclass
+class OceanScaleSimCfg:
+    """Minimal simulation config fields used by Isaac Lab task parsers."""
+
+    device: str = "cuda:0"
+    use_fabric: bool = False
+
+
+@dataclass
+class OceanScaleSceneCfg:
+    """Minimal scene config fields used by Isaac Lab task parsers."""
+
+    num_envs: int = 64
 
 
 @dataclass
@@ -49,6 +70,48 @@ class OceanScaleEnvCfg:
     seabed_depth: float = -50.0
     tether_length: float = 20.0
     drag_coeff: float = 5.0
+    sim: OceanScaleSimCfg = field(default_factory=OceanScaleSimCfg)
+    scene: OceanScaleSceneCfg = field(default_factory=OceanScaleSceneCfg)
+
+    def __post_init__(self) -> None:
+        self.sim.device = self.device
+        self.scene.num_envs = self.num_envs
+
+
+def _load_cfg_entry_point(entry_point: Any) -> OceanScaleEnvCfg:
+    if entry_point is None:
+        return OceanScaleEnvCfg()
+    if isinstance(entry_point, str):
+        module_name, attr_name = entry_point.split(":")
+        module = importlib.import_module(module_name)
+        cfg_cls = getattr(module, attr_name)
+    else:
+        cfg_cls = entry_point
+    cfg = cfg_cls() if callable(cfg_cls) else cfg_cls
+    if not isinstance(cfg, OceanScaleEnvCfg):
+        raise TypeError(f"Expected OceanScaleEnvCfg, got {type(cfg).__name__}")
+    return cfg
+
+
+def _sync_isaaclab_cfg_fields(cfg: OceanScaleEnvCfg) -> OceanScaleEnvCfg:
+    cfg.device = str(cfg.sim.device)
+    cfg.num_envs = int(cfg.scene.num_envs)
+    return cfg
+
+
+def register_oceanscale_isaaclab_tasks() -> str:
+    """Register the OceanScale underwater DirectRL task with Gymnasium."""
+
+    if OCEANSCALE_UNDERWATER_TASK_ID not in gym.envs.registration.registry:
+        gym.register(
+            id=OCEANSCALE_UNDERWATER_TASK_ID,
+            entry_point="oceanscale.training.isaaclab_env:OceanScaleDirectRLEnv",
+            disable_env_checker=True,
+            kwargs={
+                "env_cfg_entry_point": "oceanscale.training.isaaclab_env:OceanScaleEnvCfg",
+            },
+        )
+    return OCEANSCALE_UNDERWATER_TASK_ID
 
 
 def _build_obs(step_result: dict) -> np.ndarray:
@@ -65,7 +128,7 @@ def _build_obs(step_result: dict) -> np.ndarray:
     return obs[:OBS_DIM].astype(np.float32)
 
 
-class OceanScaleDirectRLEnv:
+class OceanScaleDirectRLEnv(gym.Env):
     """Isaac Lab DirectRLEnv-compatible wrapper for OceanScale.
 
     Follows the DirectRLEnv protocol:
@@ -79,12 +142,19 @@ class OceanScaleDirectRLEnv:
     """
 
     is_vector_env = True
-    metadata = {"render_modes": [None]}
+    metadata: ClassVar[dict[str, list[None]]] = {"render_modes": [None]}
 
-    def __init__(self, cfg: OceanScaleEnvCfg | None = None) -> None:
+    def __init__(
+        self,
+        cfg: OceanScaleEnvCfg | None = None,
+        render_mode: str | None = None,
+        **kwargs: Any,
+    ) -> None:
         if cfg is None:
-            cfg = OceanScaleEnvCfg()
+            cfg = _load_cfg_entry_point(kwargs.get("env_cfg_entry_point"))
+        cfg = _sync_isaaclab_cfg_fields(cfg)
         self.cfg = cfg
+        self.render_mode = render_mode
         self.num_envs = cfg.num_envs
         self.device = torch.device(cfg.device)
         self.physics_dt = cfg.physics_dt
