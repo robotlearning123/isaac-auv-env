@@ -75,6 +75,21 @@ def test_velocity_depth_decay():
     )
 
 
+def test_short_period_deep_water_stays_finite():
+    wf = OceanWaveField(wave_height=1.0, wave_period=4.0, water_depth=50.0, device=DEVICE)
+    pts = wp.array(
+        np.array([[0.0, 0.0, 0.0], [0.0, 0.0, -25.0]], dtype=np.float32),
+        dtype=wp.vec3,
+        device=DEVICE,
+    )
+
+    vel = wf.get_velocity_at(pts, time=0.0).numpy()
+    pressure = wf.get_pressure_at(pts, time=0.0).numpy()
+
+    assert np.all(np.isfinite(vel))
+    assert np.all(np.isfinite(pressure))
+
+
 def test_pressure_depth_decay():
     """Dynamic pressure from waves should also decay with depth."""
     wf = OceanWaveField(wave_height=2.0, wave_period=8.0, water_depth=50.0, device=DEVICE)

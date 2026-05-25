@@ -1,13 +1,12 @@
 """Tests for AdaptiveFluidDomain (warp.fem Nanogrid / AdaptiveNanogrid)."""
 
 import numpy as np
-import pytest
 import warp as wp
 import warp.fem as fem
 
-wp.init()
-
 from oceanscale.fluid.adaptive_grid import AdaptiveFluidDomain
+
+wp.init()
 
 
 class TestNanogridBasics:
@@ -78,7 +77,6 @@ class TestAdaptiveFluidDomain:
             domain_size=64.0, fine_res=2.0, coarse_res=8.0, fine_radius=8.0,
             focus=(0.0, 0.0, 0.0),
         )
-        old_count = domain.cell_count
         domain.update_focus(np.array([20.0, 0.0, 20.0]))
         np.testing.assert_array_almost_equal(domain.focus, [20.0, 0.0, 20.0])
         assert domain.cell_count > 0

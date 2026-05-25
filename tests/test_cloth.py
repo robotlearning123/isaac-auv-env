@@ -52,6 +52,11 @@ class TestClothCreation:
         pos = cloth.get_positions(state)
         assert np.all(np.isfinite(pos))
 
+    def test_large_vbd_grid_requires_explicit_experimental_opt_in(self):
+        builder = newton.ModelBuilder()
+        with pytest.raises(ValueError, match="experimental_large_grid"):
+            UnderwaterCloth(builder, dim_x=15, dim_y=15)
+
 
 class TestClothVBD:
     def test_vbd_step_no_crash(self, cloth_model_fixed):

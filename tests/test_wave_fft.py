@@ -4,9 +4,9 @@ import numpy as np
 import pytest
 import warp as wp
 
-wp.init()
+from oceanscale.fluid.wave_fft import FFT_GRID, FFTWaveField
 
-from oceanscale.fluid.wave_fft import FFTWaveField, FFT_GRID
+wp.init()
 
 
 @pytest.fixture

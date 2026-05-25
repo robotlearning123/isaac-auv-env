@@ -4,9 +4,9 @@ import numpy as np
 import pytest
 import warp as wp
 
-wp.init()
-
 from oceanscale.fluid.differentiable import DifferentiableFluidStep, warp_fluid_to_torch
+
+wp.init()
 
 
 @pytest.fixture
@@ -117,7 +117,7 @@ class TestTorchBridge:
         assert tape is not None
 
     def test_torch_from_warp_zero_copy(self):
-        torch = pytest.importorskip("torch")
+        pytest.importorskip("torch")
         a = wp.array([1.0, 2.0, 3.0], dtype=wp.float32, device="cuda:0")
         t = wp.to_torch(a)
         assert t.shape == (3,)

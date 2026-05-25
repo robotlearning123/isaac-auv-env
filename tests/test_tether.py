@@ -2,10 +2,9 @@
 
 import numpy as np
 import pytest
-import warp as wp
 
 newton = pytest.importorskip("newton", reason="newton not installed")
-import newton.solvers  # noqa: E402
+pytest.importorskip("newton.solvers", reason="newton solvers not installed")
 
 from oceanscale.tether import Tether  # noqa: E402
 

@@ -44,6 +44,13 @@ class TestDemoCreation:
     def test_has_surface_extractor(self, demo):
         assert demo.surface_extractor is not None
 
+    def test_has_ocean_physics_models(self, demo):
+        assert demo.water_column is not None
+        assert demo.current_field is not None
+        assert demo.acoustics is not None
+        assert demo.propeller is not None
+        assert demo.buoyancy is not None
+
 
 class TestDemoReset:
     def test_reset_returns_dict(self, demo):
@@ -72,7 +79,8 @@ class TestDemoStep:
         obs = demo.step(np.zeros(6, dtype=np.float32))
         expected = [
             "rov_position", "rov_velocity", "wave_velocity",
-            "current", "dvl", "sonar_ranges", "tether_tension",
+            "current", "water_density", "sound_speed", "acoustic_loss_db",
+            "dvl", "sonar_ranges", "tether_tension",
             "tether_positions", "cloth_deformation", "dist_to_dock",
             "reward", "time", "step",
         ]
@@ -111,6 +119,16 @@ class TestDemoMultiStep:
             assert np.all(np.isfinite(obs["rov_velocity"])), f"NaN vel at step {i}"
             assert np.isfinite(obs["reward"]), f"NaN reward at step {i}"
 
+    def test_zero_action_100_steps_remains_bounded(self):
+        d = UnifiedDemo()
+        start = d.reset()["rov_position"].copy()
+        for _ in range(100):
+            obs = d.step(np.zeros(6, dtype=np.float32))
+
+        drift = float(np.linalg.norm(obs["rov_position"] - start))
+        assert drift < 20.0
+        assert obs["rov_position"][2] > -d.depth
+
 
 class TestAllFeaturesActive:
     def test_wave_velocity_nonzero(self, demo):
@@ -147,7 +165,7 @@ class TestAllFeaturesActive:
     def test_surface_extractor_works(self, demo):
         import warp as wp
         sdf = wp.full((32, 32, 32), value=1.0, dtype=wp.float32, device=demo.device)
-        v, idx = demo.surface_extractor.extract(sdf, threshold=0.5)
+        v, _idx = demo.surface_extractor.extract(sdf, threshold=0.5)
         assert isinstance(v, np.ndarray)
 
     def test_current_nonzero(self, demo):
