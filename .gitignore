@@ -73,6 +73,13 @@ node_modules/
 website/dist/
 website/.wrangler/
 
+# Generated website design previews and superseded media candidates
+website/public/design-previews/
+website/public/images/oceanscale-bg-challenge-field-test.png
+website/public/images/oceanscale-challenge-seatrial-poster.jpg
+website/public/videos/oceanscale-challenge-seatrial.mp4
+website/public/videos/oceanscale-challenge-training-motion.mp4
+
 # Newton/Warp example USD outputs (large binaries, root-level only)
 /example_*.usd
 
