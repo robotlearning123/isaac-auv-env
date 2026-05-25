@@ -1,67 +1,54 @@
-# Session Handoff — 2026-05-24 (session 3)
+# Session Handoff — 2026-05-24 (session 4)
 
-## What happened
+## What shipped
 
-Website v2 redesign: expanded from 4 bare sections to 7 polished sections with SVG visuals, scroll-triggered animations, workflow comparison diagrams, and metrics strip. Deployed v0.0.26 → v0.0.29 via 4 PRs (#43-#46). Cross-model review passed (0 BLOCK, 0 WARN after fixes).
+7 PRs merged (#47-53), 693 tests, ~14,000 LOC. Zero uncommitted changes.
 
-## Live site
+| PR | Content | Tests |
+|----|---------|-------|
+| 47 | Fluid upgrades (HashGrid SPH, wave, fidelity API) + sim/website/CI | 391 |
+| 48 | wp.Volume solver, CUDA Graph, Newton tether | 423 |
+| 49 | All NVIDIA features: Mesh FSI, ray sensors, diff NS, FFT, MPM, MarchingCubes, cloth, adaptive grid | 505 |
+| 50 | End-to-end integration pipeline (fluid→sensor→training) | 516 |
+| 51 | Isaac Lab DirectRLEnv training layer | 534 |
+| 52 | OceanWorld + UnifiedDemo | 592 |
+| 53 | Ocean physics: water column, propulsion, currents, acoustics | 693 |
 
-v0.0.29 on https://oceanscale-web.pages.dev
+## 12 NVIDIA features integrated
 
-## Deployed changes (this session)
+wp.Volume, CUDA Graph, Newton rod, wp.Mesh FSI, mesh_query_ray sensors, differentiable NS (wp.Tape), Tile FFT, MPM coupling, MarchingCubes, Newton cloth, AdaptiveNanogrid, Isaac Lab DirectRLEnv.
 
-| Version | PR | Summary |
-|---------|-----|---------|
-| v0.0.26 | #43 | 7 sections + SVG card visuals + pipeline diagram |
-| v0.0.27 | #44 | Hero gradient fix + CSS scroll animations + mobile tagline |
-| v0.0.28 | #45 | Cross-model WARN fixes (enemy verbatim, SVG a11y, form mailto, ZH spacing) |
-| v0.0.29 | #46 | Workflow loop comparison + metrics strip + IntersectionObserver scroll reveal + hover effects |
+## 4 self-developed ocean physics modules
 
-## Current site structure (7 sections)
+WaterColumn (UNESCO EOS-80), PropellerThruster/FlappingFin/BuoyancyEngine, OceanCurrentField (M2 tides + Ekman), AcousticPropagation (Snell + Thorp + Wenz).
 
-1. **Hero** — "OceanScale" + tagline + video background + scroll hint
-2. **Problem** — Verbatim enemy line (§5) + LEGACY loop (5 nodes + REPEAT arc) vs OCEANSCALE linear (4 nodes + fanout) + metrics strip (TIME/SCALE/COST)
-3. **Vision** — "Train in simulation. Deploy in the ocean." + 3 cards
-4. **Product** — "A virtual ocean for underwater robots" + 4 SVG cards (physics/parallel/sensors/code)
-5. **Use Cases** — Docking / Station Keeping / Inspection
-6. **Roadmap** — NOW (Alpha SDK) / NEXT (more vehicles) / FUTURE (Sim2Real)
-7. **Contact** — Simple form (mailto:business@oceanscale.cn)
+## Performance baselines (RTX 5090)
 
-## Dynamic effects
+FFT Wave: 4,983 steps/s · CUDA Graph: 5.5x · RayDVL: 8,765 Hz · Pipeline: 194 steps/s · Isaac Lab 16 envs: 80 env-steps/s · GPU: 3%.
 
-- IntersectionObserver scroll-triggered reveal (fade-up on scroll)
-- SVG fanout trace animation under SIMULATE node
-- Legacy pipeline loop-back dashed arc
-- Card hover: scale(1.02) + border glow
-- Nav link: underline on hover (::after pseudo-element)
-- Button: pulsing glow on hover
-- Noise grain texture overlay
+## Key decisions
 
-## Cross-model review status
+1. Official features first — max NVIDIA, then custom ocean physics
+2. No official ocean sim = our market window
+3. Fossen = baseline; real fidelity = Warp CFD + Newton
+4. OpenUSD = scene format (Newton `builder.add_usd()` ready)
+5. Ocean core, NVIDIA decides robot scope
+6. 12 ocean robot types mapped to Newton solvers
 
-Passed. Remaining NOTEs (low priority):
-- ~150 lines unused CSS in global.css (os-card, os-metric, os-terminal families)
-- All component styles use `is:global` (workaround for Astro scoping)
-- Hero video is cinematic ocean — planned replacement with Seedance "parallel sim" video
-- Form uses mailto fallback — needs real Formspree endpoint
+## Known issues
 
-## Uncommitted changes
-
-~90 non-website files on main worktree (Python sim, tests, artifacts from prior sessions). Not related to website work.
-
-## Lovable project
-
-`c6b331fd-d2fd-4673-9fce-d11adab360cd` — has a React implementation of the same spec. Can be used for visual design iteration. MCP connected.
+1. `cosh` overflow wave.py T<5s deep water → deep-water approx k*d>20
+2. VBD cloth ≥15×15 NaN → increase iterations or reduce dt
+3. DVL beam direction on complex terrain → check orientation
+4. Pipeline ROV not advancing → force coupling chain
+5. UnifiedDemo ROV falls → gravity/buoyancy tuning
 
 ## Next priorities
 
-1. **Hero video** — Seedance 2.0 "massive parallel simulation" video to replace storm footage
-2. **Formspree** — real endpoint for contact form
-3. **Unused CSS cleanup** — remove ~150 lines of dead styles
-4. **Scroll animation polish** — add stagger to card grids
-5. **Mobile QA** — full device testing
-6. **ZH page verification** — browse /zh/ and verify all content
-
-## Git
-
-Branch: main. Latest: 639add5. All work merged via PRs.
+1. Fix 5 known issues
+2. Wire ocean physics into UnifiedDemo (WaterColumn + currents + acoustics + propellers)
+3. USD scene import (`builder.add_usd()` for BlueROV2)
+4. AUV vehicle model (torpedo hydro + rudder joints)
+5. ROV + manipulator arm (Featherstone + URDF)
+6. Build the virtual ocean — all modules as one realistic system
+7. Soft robot PoC (XPBD + FSI for bio-inspired)

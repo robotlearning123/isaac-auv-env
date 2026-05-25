@@ -50,7 +50,7 @@ Anything failing 1-3 → §5 Anti-references.
 | `REF-MARINEGYM` | Marine-RL/MarineGym | MIT ✓ | Vendor + Port | A (Jan 2026 last commit) | G3, G4 | Single-lab, may stall |
 | `REF-OCEANSIM` | umfieldrobotics/OceanSim | BSD-3-Clause ✓ | Vendor + Port | A (Sept 2025 last commit) | v0.2 sensors | Replicator-coupled; needs rewrite |
 | `REF-ISAACAUV` | warplab/isaac-auv-env | BSD-3-Clause ✓ (inherited Isaac Lab) | Port + Study | A (Aug 2025 last commit) | G5 | Tied to Isaac Lab; design transfers, plumbing doesn't |
-| `REF-BLUEROV2GZ` | clydemcqueen/bluerov2_gz | **NO LICENSE** ❌ | **Study only** (cannot vendor) | S (Dec 2025 last commit) | G4 | **License blocker — code unredistributable** |
+| `REF-BLUEROV2GZ` | clydemcqueen/bluerov2_gz | MIT in `package.xml` ✓ | Optional generated visual asset + study | S (Dec 2025 last commit) | G4 | No root LICENSE file; preserve package metadata and pin commit |
 | `REF-BLUEROV2GYM` | gokulp01/bluerov2_gym | **NO LICENSE** ❌ | **Study only** | A (Apr 2025) | G4 | License blocker |
 | `REF-FOSSEN21` | Fossen 2021 Handbook | Textbook (citation only) | Cite (math equations) | n/a | G3, T1.3 | Equations not copyrightable; numerical examples are |
 | `REF-MSS` | cybergalactic/MSS | MIT (verify) | Study (MATLAB reference impl) | A | G3 | Different language; numerical cross-check only |
@@ -241,16 +241,21 @@ Anything failing 1-3 → §5 Anti-references.
 
 ### Decision: BlueROV2 Heavy primary source
 
-**Picked**: **MarineGym USD** (MIT, vendorable) for both geometry and dynamics.
+**Picked**:
+- **Dynamics/validation**: von Benzon 2022 for BlueROV2 Heavy parameters.
+- **Default packaged MVP visual**: scratch OpenUSD proxy in `oceanscale/assets/bluerov2_heavy.usda`, not CAD-derived.
+- **Optional high-fidelity visual**: generated OpenUSD from `clydemcqueen/bluerov2_gz/models/bluerov2_heavy` SDF/Collada, pinned to commit `661264b719ffd2dcdd0d0990de80547d6029cc16`.
 
-**Why not** clydemcqueen/bluerov2_gz: **No LICENSE file** in repo + README has no licensing statement. Without explicit license, default copyright applies → we cannot legally vendor or modify. Best we can do is read the source for design ideas (allowed under fair-use scholarship).
+**MarineGym correction**: MarineGym ships a basic BlueROV USD (6 rotors), not a BlueROV2 Heavy USD, so it is no longer the Heavy geometry source.
+
+**bluerov2_gz license note**: the repo has no root `LICENSE` file, but `package.xml` declares `MIT`. Treat this as acceptable for generated local demo assets only when package metadata and source commit are preserved. Re-check before vendoring raw source files.
 
 **Plan B** if MarineGym USD asset proves inadequate:
 1. Write our own URDF from scratch using BlueRobotics public datasheet specs (specs are factual, not copyrightable)
 2. Use [orca4/orca_description](https://github.com/clydemcqueen/orca4) — sibling repo, **need to verify its LICENSE first** (may also be missing)
-3. Issue PR to clydemcqueen/bluerov2_gz asking to add a LICENSE file (community good)
+3. Issue PR to clydemcqueen/bluerov2_gz asking to add a root LICENSE file (community good)
 
-**Validation source**: cross-check geometry/inertia against Wu 2018 published tank-test parameters (§6).
+**Validation source**: cross-check geometry/inertia against von Benzon 2022 tank-validated parameters (§6).
 
 ---
 
@@ -278,7 +283,6 @@ Anything failing 1-3 → §5 Anti-references.
 |---|---|---|
 | **patrykcieslak/stonefish** | **GPL-3.0** — incompatible with Apache-2.0 outbound; viral license would force us to GPL the entire OceanScale | Validated C++ Fossen + sonar reference. We can **cite the paper** [Cieślak 2019 ICRA, arXiv 2502.11887] but not touch the code. |
 | **uuvsimulator/uuv_simulator** | NOASSERTION + stale (Aug 2023 last push) + ROS 1 only | Historical Fossen Gazebo plugin reference; superseded by MarineGym |
-| **clydemcqueen/bluerov2_gz** | **NO LICENSE FILE** — default copyright, unvendorable | Cleanest BlueROV2 Heavy SDF geometry. We can **read for design** (fair use); cannot copy/modify. |
 | **gokulp01/bluerov2_gym** | **NO LICENSE** | Single-env gymnasium baseline; small loss |
 | **patrickelectric/bluerov_ros_playground** | License unspecified | Incomplete BlueROV2 (no Heavy variant) |
 | **Genesis-Embodied-AI/genesis-world** | Apache-2.0 compatible, but **NOT in main stack** per STACK.md §17 lock — single-vendor, marine not built-in (issue #682). Watchlist only. | Universal solvers; defer to post-v1.0 |
@@ -352,9 +356,9 @@ git clone --depth 1 https://github.com/warplab/isaac-auv-env                # BS
 git clone --depth 1 https://github.com/newton-physics/newton                # Apache-2.0
 git clone --depth 1 https://github.com/NVIDIA/warp                          # Apache-2.0
 git clone --depth 1 https://github.com/cybergalactic/MSS                    # MATLAB ref
+git clone --depth 1 https://github.com/clydemcqueen/bluerov2_gz             # MIT in package.xml; pin commit before generated visual use
 
 # Read-only / study (no vendor allowed)
-git clone --depth 1 https://github.com/clydemcqueen/bluerov2_gz             # NO LICENSE — DO NOT COPY
 git clone --depth 1 https://github.com/clydemcqueen/orca4                   # license unverified
 git clone --depth 1 https://github.com/gokulp01/bluerov2_gym                # NO LICENSE — DO NOT COPY
 
@@ -462,17 +466,18 @@ done
 
 | Date | Decision | Rationale |
 |---|---|---|
-| 2026-05-15 | BlueROV2 source = **MarineGym USD** (not bluerov2_gz) | License-compatible (MIT vs none) |
+| 2026-05-15 | BlueROV2 source = **MarineGym USD** (not bluerov2_gz) | Superseded 2026-05-25: MarineGym is basic BlueROV, not Heavy |
 | 2026-05-15 | Tier-1 math source = **MarineGym `underwaterVehicle.py`** | MIT, IROS 2025 paper-backed, matches our regime |
 | 2026-05-15 | Sonar reference = **OceanSim** BSD-3 (defer to v0.2) | Compatible license, BVH replace needed |
 | 2026-05-15 | Camera model = **Akkaynak-Treibitz** (NOT Jaffe-McGlamery) | OceanSim uses AK-T; STACK.md §5.2 needs patch |
 | 2026-05-15 | RL framework v0.1 = **stable-baselines3** | rl_games has psutil<6 vs warp>=7.1 conflict |
 | 2026-05-15 | Station-keep design = **REF-ISAACAUV** (17-D obs, 6-D action) | Closest stack match + real-hardware-validated |
 | 2026-05-15 | Anti-reference Stonefish (GPL-3) | License taint risk |
-| 2026-05-15 | Anti-reference bluerov2_gz | No LICENSE = cannot vendor; study-only |
+| 2026-05-15 | Anti-reference bluerov2_gz | Superseded 2026-05-25: `package.xml` declares MIT, but root LICENSE is still missing |
 | 2026-05-15 (DR-F2) | **Gold validation = von Benzon 2022** (DOI 10.3390/jmse10121898); Wu 2018 demoted | Wu 2018 is Flinders MS thesis; author never received hardware; von Benzon is tank-validated + CC-BY |
 | 2026-05-15 (DR-F3) | Newton pin tightened to `>=1.2.0,<1.3` | 3 minors in 30 days; sub-minor breaking changes documented; hydroelastic 30× regression in 1.2 |
 | 2026-05-15 (DR-F6) | Added 6 refs: Sim2Swim, Learning-to-Dock, diffSPH, CentraleNantesROV, OsloMet-OceanLab, PrivilegedDreamer | Closes gaps surfaced by DR review |
+| 2026-05-25 | Optional high-fidelity BlueROV2 Heavy visual = generated USD from `clydemcqueen/bluerov2_gz` | `package.xml` MIT; source commit `661264b719ffd2dcdd0d0990de80547d6029cc16`; generated asset preserves provenance |
 
 ---
 
