@@ -17,7 +17,7 @@ from pathlib import Path
 
 def train(args: argparse.Namespace) -> None:
     from stable_baselines3 import PPO
-    from stable_baselines3.common.callbacks import CheckpointCallback, CallbackList
+    from stable_baselines3.common.callbacks import CallbackList, CheckpointCallback
     from stable_baselines3.common.vec_env import VecNormalize
 
     from oceanscale.rov_env import ROVEnv
@@ -123,7 +123,7 @@ def _render_eval(args: argparse.Namespace) -> None:
         )
 
         action, _ = model.predict(obs, deterministic=True)
-        obs, reward, done, info = vec_env.step(action)
+        obs, _reward, done, _info = vec_env.step(action)
 
         if done[0]:
             break

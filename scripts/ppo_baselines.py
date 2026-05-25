@@ -4,9 +4,9 @@ Trains PPO for 50k env steps each, logs reward at ~5k intervals.
 Uses BatchedVecEnv wrapper for GPU-batched envs.
 """
 
-import time
-import json
 import importlib
+import json
+import time
 
 import numpy as np
 from stable_baselines3 import PPO
@@ -136,7 +136,7 @@ def main():
 
     with open("install_log/ppo_baselines.json", "w") as f:
         json.dump(results, f, indent=2, default=str)
-    print(f"\nResults saved to install_log/ppo_baselines.json")
+    print("\nResults saved to install_log/ppo_baselines.json")
 
 
 if __name__ == "__main__":
