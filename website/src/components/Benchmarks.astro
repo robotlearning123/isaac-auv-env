@@ -1,41 +1,58 @@
 ---
-import zhData from '../content/zh/benchmarks';
-import enData from '../content/en/benchmarks';
 import { getLangFromUrl } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
-const fm: any = lang === 'zh' ? zhData : enData;
-const strip = (s: string) => s.replace(/[.。]+$/u, '');
-const bold = (s: string) => s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+const isZh = lang === 'zh';
+
+const content = isZh ? {
+  label: 'Benchmarks',
+  title: '把训练结果变成可复现证据。',
+  titleLines: ['把训练结果', '变成可复现证据。'],
+  body: '每个策略都需要在任务、传感器、扰动和失败边界上重复验证。OceanScale 的基准环境把仿真吞吐转化为可以比较的工程证据。',
+  stats: [
+    ['Tasks', '对接、悬停、巡检'],
+    ['Worlds', '洋流、能见度、地形'],
+    ['Reports', '轨迹和失败回放'],
+  ],
+} : {
+  label: 'Benchmarks',
+  title: 'Turn training into repeatable evidence.',
+  body: 'Every policy needs repeatable evidence across tasks, sensors, disturbances, and failure boundaries. OceanScale turns simulation throughput into comparable engineering proof.',
+  stats: [
+    ['Tasks', 'docking, hover, survey'],
+    ['Worlds', 'currents, visibility, terrain'],
+    ['Reports', 'trajectories and failure replay'],
+  ],
+};
 ---
-<section id="benchmarks" class="os-section os-section--surface" style="min-height: 80vh; display: flex; align-items: center;">
-  <div class="os-container w-full">
-    <div class="os-kicker">/03 · {fm.eyebrow}</div>
-    <h2 class="os-h2 mt-4 mb-8" style="font-size: clamp(2rem, 5vw, 3.5rem);">
-      {strip(fm.title)}
+<section id="benchmarks" class="cinematic-section cinematic-section--left">
+  <video
+    class="cinematic-section__media"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+    poster="/images/oceanscale-bg-evidence-validation.png"
+  >
+    <source src="/videos/oceanscale-evidence-training-motion.mp4" type="video/mp4" />
+  </video>
+  <div class="cinematic-section__shade"></div>
+
+  <div class="cinematic-section__inner reveal">
+    <p class="section-label">{content.label}</p>
+    <h2>
+      {'titleLines' in content
+        ? content.titleLines.map((line) => <span>{line}</span>)
+        : content.title}
     </h2>
-    
-    <div class="grid gap-8 xl:grid-cols-[1.3fr_0.7fr] xl:items-start">
-      <div class="os-table-wrap">
-        <table>
-          <thead><tr>{fm.headers.map((h: string) => <th>{h}</th>)}</tr></thead>
-          <tbody>
-            {fm.rows.map((row: string[]) => (
-              <tr>
-                {row.map((cell: string, i: number) => (
-                  i === 0 ? <th scope="row" set:html={bold(cell)}></th> : <td set:html={bold(cell)}></td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <div>
-        <figure class="os-frame">
-          <img src="/images/bench-landscape.webp" alt="Competitive landscape" class="aspect-[4/3] object-cover" loading="lazy" />
-          <figcaption>{lang === 'zh' ? 'GPU 速度 × 水下保真度' : 'GPU speed × underwater fidelity'}</figcaption>
-        </figure>
-        <p class="mt-4" style="color: var(--color-text-muted); font-size: 0.82rem; line-height: 1.6;">{fm.caveat}</p>
-      </div>
+    <p class="section-body">{content.body}</p>
+    <div class="section-stats" aria-label={isZh ? '基准指标' : 'Benchmark metrics'}>
+      {content.stats.map(([label, value]) => (
+        <div>
+          <span>{label}</span>
+          <strong>{value}</strong>
+        </div>
+      ))}
     </div>
   </div>
 </section>

@@ -3,119 +3,148 @@ import { getLangFromUrl } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const isZh = lang === 'zh';
 
-const heading = isZh ? '路线图' : "What's next";
+const heading = isZh ? '从 Alpha 到海上验证。' : 'From alpha to ocean validation.';
 
 const phases = isZh ? [
-  { label: '当前', title: 'Alpha SDK', items: ['BlueROV2 车辆模型', 'Gymnasium API', 'GPU 原生物理引擎', '5 类传感器仿真'] },
-  { label: '即将', title: '更多车辆与传感器', items: ['更多 AUV/ROV 平台', '相机与声纳渲染', '域随机化', '课程学习'] },
-  { label: '未来', title: 'Sim2Real 验证', items: ['真实机器人对比基准', '社区 benchmark 套件', '预训练策略库', '开源生态'] },
+  { label: 'Now', title: '核心仿真内核', items: ['GPU 原生动力学', '多机器人并行 rollout', '基础传感器与任务 API'] },
+  { label: 'Next', title: '机器人和任务扩展', items: ['更多形态的水下机器人', '机械臂和工具交互', '复杂地形和海况随机化'] },
+  { label: 'Later', title: 'Sim2Real 基准', items: ['真实海试数据对齐', '策略回放和失败分析', '团队协作和报告管线'] },
 ] : [
-  { label: 'NOW', title: 'Alpha SDK', items: ['BlueROV2 vehicle model', 'Gymnasium API', 'GPU-native physics engine', '5 sensor modalities'] },
-  { label: 'NEXT', title: 'More vehicles & sensors', items: ['Additional AUV/ROV platforms', 'Camera & sonar rendering', 'Domain randomization', 'Curriculum learning'] },
-  { label: 'FUTURE', title: 'Sim2Real validation', items: ['Real-robot comparison benchmarks', 'Community benchmark suite', 'Pre-trained policy library', 'Open-source ecosystem'] },
+  { label: 'Now', title: 'Core simulator', items: ['GPU-native dynamics', 'Parallel multi-robot rollouts', 'Sensor and task APIs'] },
+  { label: 'Next', title: 'Robots and tasks', items: ['More underwater robot morphologies', 'Manipulator and tool interaction', 'Complex terrain and ocean randomization'] },
+  { label: 'Later', title: 'Sim2Real benchmarks', items: ['Field-data alignment', 'Policy replay and failure analysis', 'Team reporting pipeline'] },
 ];
 ---
-<section id="roadmap" class="relative py-24 lg:py-32" style="background: var(--color-bg); border-top: 1px solid var(--color-border);">
-  <div class="os-container relative z-10">
-    <p class="rm-kicker">{isZh ? '路线图' : 'ROADMAP'}</p>
-    <h2 class="os-h2 rm-heading">{heading}</h2>
+<section id="roadmap" class="roadmap-section">
+  <div class="os-container">
+    <div class="roadmap-section__head reveal">
+      <p class="section-label">Roadmap</p>
+      <h2>{heading}</h2>
+    </div>
 
-    <div class="rm-grid">
-      {phases.map((phase, i) => (
-        <div class="rm-phase">
-          <span class:list={['rm-label', { 'rm-label--active': i === 0 }]}>{phase.label}</span>
+    <div class="roadmap-section__grid">
+      {phases.map((phase, index) => (
+        <article class="roadmap-card reveal" data-delay={String(index + 1)}>
+          <span>{phase.label}</span>
           <h3>{phase.title}</h3>
           <ul>
-            {phase.items.map((item) => (
-              <li>{item}</li>
-            ))}
+            {phase.items.map((item) => <li>{item}</li>)}
           </ul>
-        </div>
+        </article>
       ))}
     </div>
   </div>
 </section>
 
 <style is:global>
-  .rm-kicker {
-    margin: 0 0 1rem;
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--color-accent);
+  .roadmap-section {
+    padding: clamp(5rem, 9vw, 8rem) 0;
+    background:
+      linear-gradient(180deg, #060b12 0%, #08111a 44%, #060b12 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    scroll-margin-top: 84px;
   }
 
-  .rm-heading {
-    font-size: clamp(1.75rem, 3.5vw, 2.75rem) !important;
-    margin-bottom: 3rem !important;
+  .roadmap-section__head {
+    max-width: 760px;
   }
 
-  .rm-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
-  }
-
-  .rm-phase {
-    padding: 1.75rem;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    background: rgba(15, 24, 34, 0.5);
-  }
-
-  .rm-label {
-    display: inline-block;
-    margin-bottom: 0.75rem;
-    padding: 0.3rem 0.75rem;
-    border-radius: 100px;
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    border: 1px solid var(--color-border);
-    color: var(--color-text-muted);
-  }
-
-  .rm-label--active {
-    background: rgba(45, 212, 191, 0.12);
-    border-color: var(--color-accent);
-    color: var(--color-accent);
-  }
-
-  .rm-phase h3 {
+  .roadmap-section__head h2 {
     margin: 0;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--color-text);
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 4.2rem;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: 0;
+    text-wrap: balance;
   }
 
-  .rm-phase ul {
-    margin: 0.75rem 0 0;
+  html[lang="zh"] .roadmap-section__head h2 {
+    font-family: var(--font-display-zh);
+    line-height: 1.08;
+    word-break: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .roadmap-section__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .roadmap-card {
+    min-height: 320px;
+    padding: clamp(1.3rem, 2.5vw, 2rem);
+    background: rgba(6, 11, 18, 0.78);
+  }
+
+  .roadmap-card span {
+    display: inline-flex;
+    color: rgba(45, 212, 191, 0.94);
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .roadmap-card h3 {
+    margin: 1.15rem 0 0;
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: 850;
+    line-height: 1.2;
+  }
+
+  .roadmap-card ul {
+    display: grid;
+    gap: 0.85rem;
+    margin: 1.6rem 0 0;
     padding: 0;
     list-style: none;
   }
 
-  .rm-phase li {
+  .roadmap-card li {
     position: relative;
-    padding-left: 1rem;
-    margin-top: 0.4rem;
-    font-size: 0.82rem;
-    color: var(--color-text-muted);
+    padding-left: 1.05rem;
+    color: rgba(232, 237, 243, 0.68);
+    font-size: 0.95rem;
     line-height: 1.5;
   }
 
-  .rm-phase li::before {
-    content: "—";
+  .roadmap-card li::before {
+    content: "";
     position: absolute;
     left: 0;
-    color: var(--color-border);
-    font-size: 0.7rem;
+    top: 0.68em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(45, 212, 191, 0.8);
   }
 
-  @media (max-width: 768px) {
-    .rm-grid { grid-template-columns: 1fr; }
+  @media (max-width: 820px) {
+    .roadmap-section__head h2 {
+      font-size: 2.65rem;
+      line-height: 1.08;
+    }
+
+    .roadmap-section__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .roadmap-card {
+      min-height: auto;
+    }
+  }
+
+  @media (min-width: 1440px) {
+    .roadmap-section__head h2 {
+      font-size: 4.4rem;
+    }
   }
 </style>

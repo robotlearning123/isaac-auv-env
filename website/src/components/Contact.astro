@@ -3,106 +3,121 @@ import { getLangFromUrl } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const isZh = lang === 'zh';
 
-const heading = isZh ? '在造水下机器人？' : 'Building underwater robots?';
-
-const labels = isZh
-  ? { name: '姓名', email: '邮箱', company: '公司', message: '留言', submit: '提交' }
-  : { name: 'Name', email: 'Email', company: 'Company', message: 'Message', submit: 'Submit' };
-
-const placeholders = isZh
-  ? { name: '你的名字', email: 'you@lab.org', company: '机构 / 实验室', message: '告诉我们你的机器人和仿真需求' }
-  : { name: 'Ada Lovelace', email: 'you@lab.org', company: 'Org / Lab', message: 'Tell us about your robot and what you want to simulate.' };
+const heading = isZh ? '先在仿真中训练，再进入海洋。' : 'Train in simulation. Then enter the ocean.';
+const body = isZh
+  ? '如果你正在研发水下机器人、海洋任务策略或仿真基础设施，可以把机器人形态、任务和验证目标发给我们。'
+  : 'If you are building underwater robots, ocean mission policies, or simulation infrastructure, send us the robot form factor, task, and validation target.';
+const emailLabel = isZh ? '联系 OceanScale' : 'Contact OceanScale';
 ---
-<section id="contact" class="relative py-28 lg:py-36" style="background: var(--color-surface-raised); border-top: 1px solid var(--color-border);">
-  <div class="os-container relative z-10" style="max-width: 640px;">
-    <h2 class="reveal os-h2 text-center" style="font-size: clamp(2rem, 4.2vw, 3.5rem);">
-      {heading}
-    </h2>
-
-    <form class="reveal contact-form" data-delay="2" action="mailto:business@oceanscale.cn" method="POST" enctype="text/plain">
-      <div class="form-grid">
-        <div class="form-field">
-          <label class="form-label" for="contact-name">{labels.name}</label>
-          <input id="contact-name" type="text" name="name" required placeholder={placeholders.name} autocomplete="name" />
-        </div>
-        <div class="form-field">
-          <label class="form-label" for="contact-email">{labels.email}</label>
-          <input id="contact-email" type="email" name="email" required placeholder={placeholders.email} autocomplete="email" />
-        </div>
-        <div class="form-field form-field--full">
-          <label class="form-label" for="contact-company">{labels.company}</label>
-          <input id="contact-company" type="text" name="company" placeholder={placeholders.company} autocomplete="organization" />
-        </div>
-        <div class="form-field form-field--full">
-          <label class="form-label" for="contact-message">{labels.message}</label>
-          <textarea id="contact-message" name="message" rows="5" placeholder={placeholders.message}></textarea>
-        </div>
-      </div>
-
-      <button type="submit" class="os-btn os-btn--primary" style="width: 100%; justify-content: center; margin-top: 0.5rem;">
-        {labels.submit}
-      </button>
-    </form>
+<section id="contact" class="contact-section">
+  <div class="contact-section__bg"></div>
+  <div class="os-container contact-section__inner reveal">
+    <p class="section-label">Contact</p>
+    <h2>{heading}</h2>
+    <p>{body}</p>
+    <a href="mailto:business@oceanscale.cn" class="contact-link">{emailLabel}</a>
   </div>
 </section>
 
 <style is:global>
-  .contact-form {
-    margin-top: 3rem;
+  .contact-section {
+    position: relative;
+    overflow: hidden;
+    min-height: 72vh;
     display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-
-  .form-field--full { grid-column: 1 / -1; }
-
-  .form-label {
-    display: block;
-    margin-bottom: 0.4rem;
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: var(--color-text-muted);
-    opacity: 0.7;
-  }
-
-  .form-field input,
-  .form-field textarea {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
+    align-items: center;
     background: var(--color-bg);
-    color: var(--color-text);
-    font-family: var(--font-body);
-    font-size: 0.9rem;
-    outline: none;
-    transition: border-color 0.2s;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    scroll-margin-top: 84px;
   }
 
-  .form-field input::placeholder,
-  .form-field textarea::placeholder {
-    color: var(--color-text-muted);
-    opacity: 0.45;
+  .contact-section__bg {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(3, 7, 12, 0.92), rgba(3, 7, 12, 0.52), rgba(3, 7, 12, 0.9)),
+      url("/images/oceanscale-bg-evidence-validation.png") center / cover no-repeat;
+    opacity: 0.9;
   }
 
-  .form-field input:focus,
-  .form-field textarea:focus {
-    border-color: var(--color-accent);
+  .contact-section__inner {
+    position: relative;
+    z-index: 1;
+    max-width: 780px;
+    padding: clamp(5rem, 10vw, 8rem) 0;
   }
 
-  .form-field textarea { resize: vertical; min-height: 120px; }
+  .contact-section__inner h2 {
+    margin: 0;
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 4.4rem;
+    font-weight: 900;
+    line-height: 0.98;
+    letter-spacing: 0;
+    text-wrap: balance;
+  }
 
-  @media (max-width: 480px) {
-    .form-grid { grid-template-columns: 1fr; }
-    .form-field--full { grid-column: auto; }
+  html[lang="zh"] .contact-section__inner h2 {
+    font-family: var(--font-display-zh);
+    line-height: 1.08;
+    word-break: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .contact-section__inner > p:last-of-type {
+    margin: 1.4rem 0 0;
+    max-width: 620px;
+    color: rgba(232, 237, 243, 0.75);
+    font-size: 1.08rem;
+    line-height: 1.66;
+  }
+
+  .contact-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    margin-top: 2.3rem;
+    padding: 0 1.35rem;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 4px;
+    color: #fff;
+    font-size: 0.88rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .contact-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.75);
+  }
+
+  @media (max-width: 760px) {
+    .contact-section {
+      min-height: auto;
+    }
+
+    .contact-section__inner {
+      padding: 6rem 0 5rem;
+    }
+
+    .contact-section__inner h2 {
+      font-size: 2.75rem;
+      line-height: 1.08;
+    }
+
+    .contact-section__inner > p:last-of-type {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+  }
+
+  @media (min-width: 1440px) {
+    .contact-section__inner h2 {
+      font-size: 4.9rem;
+    }
   }
 </style>

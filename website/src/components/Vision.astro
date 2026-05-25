@@ -3,89 +3,56 @@ import { getLangFromUrl } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const isZh = lang === 'zh';
 
-const heading = isZh
-  ? '在仿真中训练，在真实海洋中部署'
-  : 'Train in simulation. Deploy in the ocean.';
-
-const points = isZh ? [
-  { title: '数千小时，几分钟完成', body: '一台 GPU 可以同时运行数千个水下环境，将数周的现场试验压缩到几小时的仿真。' },
-  { title: '每个场景，每种故障', body: '洋流、能见度、传感器噪声、执行器故障 — 在仿真中穷举所有边界条件，而非在海里碰运气。' },
-  { title: '从仿真到部署', body: '高保真物理 + 传感器级精度，让策略直接从仿真迁移到真实机器人，减少现场调试。' },
-] : [
-  { title: 'Thousands of hours in minutes', body: 'A single GPU runs thousands of underwater environments simultaneously, compressing weeks of field trials into hours of simulation.' },
-  { title: 'Every scenario, every failure', body: 'Currents, visibility, sensor noise, actuator faults — exhaust edge cases in simulation instead of discovering them at sea.' },
-  { title: 'Simulation to deployment', body: 'High-fidelity physics and sensor-accurate simulation enable policies to transfer from sim to real robots with minimal field tuning.' },
-];
+const content = isZh ? {
+  label: 'Solution',
+  title: '先在虚拟海洋中训练。',
+  titleLines: ['先在虚拟海洋中', '训练。'],
+  body: 'OceanScale 把海流、地形、传感器、执行器和任务约束放进同一个 GPU 原生仿真环境，让机器人在进入真实海洋前完成大规模并行训练。',
+  stats: [
+    ['Scale', '数千并行环境'],
+    ['Physics', '水动力和接触'],
+    ['Transfer', '面向实机验证'],
+  ],
+} : {
+  label: 'Solution',
+  title: 'Train first in a virtual ocean.',
+  body: 'OceanScale brings currents, terrain, sensors, actuators, and task constraints into one GPU-native simulator, so underwater robots can train at scale before touching the ocean.',
+  stats: [
+    ['Scale', 'thousands of rollouts'],
+    ['Physics', 'hydrodynamics and contact'],
+    ['Transfer', 'built for real validation'],
+  ],
+};
 ---
-<section id="vision" class="relative py-24 lg:py-32" style="background: var(--color-bg); border-top: 1px solid var(--color-border);">
-  <div class="absolute inset-0" style="background: radial-gradient(ellipse at 30% 50%, rgba(45,212,191,0.02) 0%, transparent 50%);"></div>
+<section id="solution" class="cinematic-section cinematic-section--right">
+  <video
+    class="cinematic-section__media"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+    poster="/images/oceanscale-bg-solution-virtual-ocean.png"
+  >
+    <source src="/videos/oceanscale-solution-training-motion.mp4" type="video/mp4" />
+  </video>
+  <div class="cinematic-section__shade"></div>
 
-  <div class="os-container relative z-10">
-    <p class="vision-kicker">{isZh ? '愿景' : 'VISION'}</p>
-    <h2 class="os-h2 vision-heading">{heading}</h2>
-
-    <div class="vision-grid">
-      {points.map((p) => (
-        <div class="vision-item">
-          <h3>{p.title}</h3>
-          <p>{p.body}</p>
+  <div class="cinematic-section__inner reveal">
+    <p class="section-label">{content.label}</p>
+    <h2>
+      {'titleLines' in content
+        ? content.titleLines.map((line) => <span>{line}</span>)
+        : content.title}
+    </h2>
+    <p class="section-body">{content.body}</p>
+    <div class="section-stats" aria-label={isZh ? '解决方案指标' : 'Solution metrics'}>
+      {content.stats.map(([label, value]) => (
+        <div>
+          <span>{label}</span>
+          <strong>{value}</strong>
         </div>
       ))}
     </div>
   </div>
 </section>
-
-<style is:global>
-  .vision-kicker {
-    margin: 0 0 1rem;
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--color-accent);
-  }
-
-  .vision-heading {
-    font-size: clamp(1.75rem, 3.5vw, 2.75rem) !important;
-    max-width: 24ch;
-    margin-bottom: 3.5rem !important;
-  }
-
-  html[lang="zh"] .vision-heading {
-    font-family: var(--font-display-zh);
-    word-break: keep-all;
-  }
-
-  .vision-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-  }
-
-  .vision-item {
-    padding: 1.5rem;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    background: rgba(15, 24, 34, 0.5);
-  }
-
-  .vision-item h3 {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--color-text);
-    line-height: 1.3;
-  }
-
-  .vision-item p {
-    margin: 0.6rem 0 0;
-    font-size: 0.85rem;
-    color: var(--color-text-muted);
-    line-height: 1.65;
-  }
-
-  @media (max-width: 768px) {
-    .vision-grid { grid-template-columns: 1fr; gap: 1rem; }
-  }
-</style>

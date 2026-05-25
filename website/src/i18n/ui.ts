@@ -5,6 +5,7 @@ export const ui = {
   zh: {
     'nav.vision': '愿景',
     'nav.product': '产品',
+    'nav.benchmarks': '基准',
     'nav.usecases': '应用',
     'nav.roadmap': '路线图',
     'nav.contact': '联系',
@@ -15,6 +16,7 @@ export const ui = {
   en: {
     'nav.vision': 'Vision',
     'nav.product': 'Product',
+    'nav.benchmarks': 'Benchmarks',
     'nav.usecases': 'Use Cases',
     'nav.roadmap': 'Roadmap',
     'nav.contact': 'Contact',
