@@ -3,107 +3,54 @@ import { getLangFromUrl } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const isZh = lang === 'zh';
 
-const enemyLine = isZh
-  ? '水下机器人，仍然在地球上最昂贵的测试环境中学习：真实海洋。'
-  : 'Underwater robots still learn in the most expensive test environment on earth: the real ocean.';
-
-const legacyLabel = isZh ? '传统' : 'LEGACY';
-const osLabel = 'OCEANSCALE';
-
-const legacyNodes = isZh
-  ? ['设计', '制造', '实验室', '海试', '迭代']
-  : ['Design', 'Build', 'Lab', 'Sea Trial', 'Iterate'];
-
-const newNodes = isZh
-  ? ['设计', '仿真', '验证', '部署']
-  : ['Design', 'Simulate', 'Validate', 'Deploy'];
-
-const metrics = isZh ? [
-  { legacy: '数周现场试验', arrow: '→', ours: '数小时仿真', label: '时间' },
-  { legacy: '一台机器人', arrow: '→', ours: '数千并行', label: '规模' },
-  { legacy: '每次下海 = 高成本', arrow: '→', ours: '每次仿真 ≈ GPU算力', label: '成本' },
-] : [
-  { legacy: 'Weeks of field trials', arrow: '→', ours: 'Hours of simulation', label: 'TIME' },
-  { legacy: 'One robot at a time', arrow: '→', ours: 'Thousands in parallel', label: 'SCALE' },
-  { legacy: 'Every deployment = high cost', arrow: '→', ours: 'Every sim run ≈ GPU compute', label: 'COST' },
-];
+const content = isZh ? {
+  label: 'Challenge',
+  title: '海试很难，又慢又贵。',
+  titleLines: ['海试很难，', '又慢又贵。'],
+  body: '每一次下海都要等天气窗口、船期、人员和海况。一次失败可能意味着重新出船、重新布放、重新排期；成本按天消耗，数据还很难复现。',
+  stats: [
+    ['天气窗口', '等海况'],
+    ['船和人员', '按天计费'],
+    ['迭代时间', '一次失败拖数周'],
+  ],
+} : {
+  label: 'Challenge',
+  title: 'Sea trials are hard, slow, and expensive.',
+  body: 'Every test depends on weather windows, vessel availability, crew, currents, deployment gear, and hardware risk. One failed run can mean rebooking a boat, redeploying equipment, and losing weeks before the next useful dataset.',
+  stats: [
+    ['Weather', 'wait for a window'],
+    ['Vessels + crew', 'paid by the day'],
+    ['Iteration time', 'weeks per failure'],
+  ],
+};
 ---
-<section id="problem" class="relative" style="background: var(--color-bg); border-top: 1px solid var(--color-border);">
-  <div class="absolute inset-0" style="background: radial-gradient(ellipse at 50% 80%, rgba(45,212,191,0.03) 0%, transparent 60%);"></div>
+<section id="vision" class="cinematic-section cinematic-section--left">
+  <video
+    class="cinematic-section__media"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+    poster="/images/oceanscale-challenge-storm-seatrial-poster.jpg"
+  >
+    <source src="/videos/oceanscale-challenge-storm-seatrial.mp4" type="video/mp4" />
+  </video>
+  <div class="cinematic-section__shade"></div>
 
-  <div class="os-container relative z-10 py-28 lg:py-36">
-    <h2 class="reveal problem-enemy">{enemyLine}</h2>
-
-    <div class="reveal pipeline-section" data-delay="2">
-      <div class="pipeline-row">
-        <span class="pipeline-label pipeline-label--muted">{legacyLabel}</span>
-        <div class="pipeline-wrap">
-          <div class="pipeline-nodes">
-            {legacyNodes.map((node, i) => (
-              <div class="pipeline-node-group">
-                <div class:list={['pipeline-node', { 'pipeline-node--bottleneck': i === 3 }]}>
-                  {node}
-                </div>
-                {i < legacyNodes.length - 1 && (
-                  <div class="pipeline-connector pipeline-connector--muted">
-                    <div class="connector-line"></div>
-                    <div class="connector-arrow"></div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-          <svg class="loop-back-svg" viewBox="0 0 800 50" fill="none" preserveAspectRatio="none">
-            <path d="M760 0 C760 35, 700 45, 400 45 C100 45, 40 35, 40 0" stroke="rgba(122,142,166,0.15)" stroke-width="1.5" stroke-dasharray="6 4" fill="none" />
-            <polygon points="36,4 44,4 40,0" fill="rgba(122,142,166,0.2)" />
-          </svg>
-          <span class="loop-back-label">{isZh ? '重复' : 'REPEAT'}</span>
-        </div>
-      </div>
-
-      <div class="pipeline-row">
-        <span class="pipeline-label pipeline-label--accent">{osLabel}</span>
-        <div class="pipeline-nodes">
-          {newNodes.map((node, i) => (
-            <div class="pipeline-node-group">
-              <div class:list={['pipeline-node', 'pipeline-node--new', { 'pipeline-node--core': i === 1 }]}>
-                {node}
-                {i === 1 && (
-                  <svg class="fanout-svg" width="160" height="56" viewBox="0 0 160 56" fill="none">
-                    <line x1="80" y1="0" x2="20" y2="48" stroke="#2dd4bf" stroke-width="1" class="trace-line" style="animation-delay: 0s;" />
-                    <line x1="80" y1="0" x2="50" y2="48" stroke="#2dd4bf" stroke-width="1" class="trace-line" style="animation-delay: 0.15s;" />
-                    <line x1="80" y1="0" x2="80" y2="48" stroke="#2dd4bf" stroke-width="1" class="trace-line" style="animation-delay: 0.3s;" />
-                    <line x1="80" y1="0" x2="110" y2="48" stroke="#2dd4bf" stroke-width="1" class="trace-line" style="animation-delay: 0.45s;" />
-                    <line x1="80" y1="0" x2="140" y2="48" stroke="#2dd4bf" stroke-width="1" class="trace-line" style="animation-delay: 0.6s;" />
-                    <circle cx="20" cy="52" r="2.5" fill="#2dd4bf" opacity="0.6" />
-                    <circle cx="50" cy="52" r="2.5" fill="#2dd4bf" opacity="0.6" />
-                    <circle cx="80" cy="52" r="2.5" fill="#2dd4bf" opacity="0.6" />
-                    <circle cx="110" cy="52" r="2.5" fill="#2dd4bf" opacity="0.6" />
-                    <circle cx="140" cy="52" r="2.5" fill="#2dd4bf" opacity="0.6" />
-                  </svg>
-                )}
-              </div>
-              {i < newNodes.length - 1 && (
-                <div class="pipeline-connector pipeline-connector--accent">
-                  <div class="connector-line"></div>
-                  <div class="connector-arrow"></div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-
-    <div class="reveal metrics-strip" data-delay="3">
-      {metrics.map((m) => (
-        <div class="metric-item">
-          <span class="metric-label">{m.label}</span>
-          <div class="metric-compare">
-            <span class="metric-legacy">{m.legacy}</span>
-            <span class="metric-arrow">{m.arrow}</span>
-            <span class="metric-ours">{m.ours}</span>
-          </div>
+  <div class="cinematic-section__inner reveal">
+    <p class="section-label">{content.label}</p>
+    <h2>
+      {'titleLines' in content
+        ? content.titleLines.map((line) => <span>{line}</span>)
+        : content.title}
+    </h2>
+    <p class="section-body">{content.body}</p>
+    <div class="section-stats" aria-label={isZh ? '挑战指标' : 'Challenge metrics'}>
+      {content.stats.map(([label, value]) => (
+        <div>
+          <span>{label}</span>
+          <strong>{value}</strong>
         </div>
       ))}
     </div>
@@ -111,207 +58,224 @@ const metrics = isZh ? [
 </section>
 
 <style is:global>
-  .problem-enemy {
-    text-align: center;
-    font-family: var(--font-display);
-    font-size: clamp(1.6rem, 3.5vw, 2.75rem);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
-    color: var(--color-text);
-    margin: 0 auto 5rem;
-    max-width: 32ch;
-  }
-
-  html[lang="zh"] .problem-enemy {
-    font-family: var(--font-display-zh);
-    word-break: keep-all;
-  }
-
-  .pipeline-section {
-    display: flex;
-    flex-direction: column;
-    gap: 4rem;
-    max-width: 960px;
-    margin: 0 auto;
-  }
-
-  .pipeline-row {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .pipeline-label {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.35em;
-  }
-
-  .pipeline-label--muted { color: var(--color-text-muted); }
-  .pipeline-label--accent { color: var(--color-accent); }
-
-  .pipeline-wrap { position: relative; }
-
-  .pipeline-nodes {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0;
-  }
-
-  .pipeline-node-group {
-    display: flex;
-    align-items: center;
-  }
-
-  .pipeline-node {
+  .cinematic-section {
     position: relative;
+    min-height: 92vh;
+    overflow: hidden;
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 0.7rem 1.25rem;
-    border-radius: 6px;
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    font-weight: 600;
-    white-space: nowrap;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    background: rgba(122, 142, 166, 0.06);
-    border: 1px solid rgba(122, 142, 166, 0.12);
-    color: var(--color-text-muted);
-    min-width: 100px;
+    background: var(--color-bg);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    scroll-margin-top: 84px;
   }
 
-  .pipeline-node--bottleneck {
-    border-color: rgba(217, 119, 6, 0.5);
-    color: #fbbf24;
-    background: rgba(217, 119, 6, 0.08);
-    box-shadow: 0 0 24px rgba(217, 119, 6, 0.12);
-  }
-
-  .pipeline-node--new {
-    background: rgba(45, 212, 191, 0.06);
-    border: 1px solid rgba(45, 212, 191, 0.2);
-    color: var(--color-accent);
-  }
-
-  .pipeline-node--core {
-    background: rgba(45, 212, 191, 0.1);
-    border-color: rgba(45, 212, 191, 0.4);
-    box-shadow: 0 0 30px rgba(45, 212, 191, 0.08);
-    padding: 0.7rem 1.5rem;
-  }
-
-  .pipeline-connector {
-    display: flex;
-    align-items: center;
-    padding: 0 0.35rem;
-  }
-
-  .connector-line { width: 24px; height: 1px; }
-  .connector-arrow { width: 0; height: 0; border-top: 4px solid transparent; border-bottom: 4px solid transparent; }
-
-  .pipeline-connector--muted .connector-line { background: rgba(122, 142, 166, 0.2); }
-  .pipeline-connector--muted .connector-arrow { border-left: 6px solid rgba(122, 142, 166, 0.2); }
-  .pipeline-connector--accent .connector-line { background: rgba(45, 212, 191, 0.3); }
-  .pipeline-connector--accent .connector-arrow { border-left: 6px solid rgba(45, 212, 191, 0.3); }
-
-  .loop-back-svg {
+  .cinematic-section__media {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    height: 40px;
-    margin-top: 4px;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
   }
 
-  .loop-back-label {
+  .cinematic-section__shade {
     position: absolute;
-    bottom: 2px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-family: var(--font-mono);
-    font-size: 0.55rem;
-    font-weight: 700;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: rgba(122, 142, 166, 0.3);
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(3, 7, 12, 0.92) 0%, rgba(3, 7, 12, 0.62) 42%, rgba(3, 7, 12, 0.12) 100%),
+      linear-gradient(0deg, var(--color-bg) 0%, rgba(6, 11, 18, 0) 22%),
+      linear-gradient(180deg, var(--color-bg) 0%, rgba(6, 11, 18, 0) 18%);
   }
 
-  .fanout-svg {
-    position: absolute;
-    left: 50%;
-    top: 100%;
-    transform: translateX(-50%);
-    margin-top: 4px;
-    pointer-events: none;
+  .cinematic-section--right .cinematic-section__shade {
+    background:
+      linear-gradient(270deg, rgba(3, 7, 12, 0.92) 0%, rgba(3, 7, 12, 0.6) 42%, rgba(3, 7, 12, 0.1) 100%),
+      linear-gradient(0deg, var(--color-bg) 0%, rgba(6, 11, 18, 0) 22%),
+      linear-gradient(180deg, var(--color-bg) 0%, rgba(6, 11, 18, 0) 18%);
   }
 
-  /* Metrics strip */
-  .metrics-strip {
+  .cinematic-section__inner {
+    position: relative;
+    z-index: 2;
+    width: min(100% - 2.5rem, 1280px);
+    margin-inline: auto;
+    padding: 7rem 0;
+    max-width: 1280px;
+  }
+
+  .cinematic-section--right .cinematic-section__inner {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
-    max-width: 960px;
-    margin: 4rem auto 0;
-    padding-top: 3rem;
-    border-top: 1px solid var(--color-border);
+    justify-items: end;
   }
 
-  .metric-item {
-    text-align: center;
+  .cinematic-section--right .cinematic-section__inner > * {
+    width: min(100%, 700px);
   }
 
-  .metric-label {
-    display: block;
-    margin-bottom: 0.6rem;
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    font-weight: 700;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--color-accent);
-  }
-
-  .metric-compare {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-
-  .metric-legacy {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: var(--color-text-muted);
-    opacity: 0.6;
-    text-decoration: line-through;
-    text-decoration-color: rgba(122, 142, 166, 0.3);
-  }
-
-  .metric-arrow {
-    color: var(--color-accent);
-    font-size: 0.85rem;
-    opacity: 0.6;
-  }
-
-  .metric-ours {
+  .section-label {
+    margin: 0 0 1.1rem;
+    color: rgba(45, 212, 191, 0.95);
     font-family: var(--font-mono);
     font-size: 0.78rem;
     font-weight: 700;
-    color: var(--color-accent);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
   }
 
-  @media (max-width: 768px) {
-    .pipeline-nodes { flex-wrap: wrap; gap: 0.5rem; }
-    .pipeline-connector { display: none; }
-    .pipeline-node { min-width: auto; padding: 0.5rem 0.75rem; font-size: 0.7rem; }
-    .fanout-svg { display: none; }
-    .loop-back-svg { display: none; }
-    .loop-back-label { display: none; }
-    .pipeline-section { gap: 3rem; }
-    .metrics-strip { grid-template-columns: 1fr; gap: 1.5rem; }
+  .cinematic-section h2 {
+    margin: 0;
+    max-width: 11ch;
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 5.25rem;
+    font-weight: 900;
+    line-height: 0.98;
+    letter-spacing: 0;
+    text-wrap: balance;
+    text-shadow: 0 18px 70px rgba(0, 0, 0, 0.55);
+  }
+
+  html[lang="zh"] .cinematic-section h2 {
+    max-width: 12ch;
+    font-family: var(--font-display-zh);
+    line-height: 1.04;
+    word-break: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .cinematic-section h2 span {
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    white-space: nowrap;
+  }
+
+  .section-body {
+    margin: 1.35rem 0 0;
+    max-width: 640px;
+    color: rgba(232, 237, 243, 0.82);
+    font-size: 1.08rem;
+    line-height: 1.62;
+  }
+
+  .section-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    width: min(100%, 720px);
+    margin-top: 2.4rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .section-stats div {
+    padding: 1.15rem;
+    background: rgba(3, 7, 12, 0.62);
+    backdrop-filter: blur(12px);
+  }
+
+  .section-stats span,
+  .section-stats strong {
+    display: block;
+    font-family: var(--font-mono);
+    line-height: 1.3;
+  }
+
+  .section-stats span {
+    color: rgba(232, 237, 243, 0.52);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .section-stats strong {
+    margin-top: 0.55rem;
+    color: #fff;
+    font-size: 0.95rem;
+  }
+
+  @media (max-width: 760px) {
+    .cinematic-section {
+      min-height: auto;
+      display: block;
+      padding-top: 56.25vw;
+    }
+
+    .cinematic-section__media {
+      height: auto;
+      aspect-ratio: 16 / 9;
+      object-fit: contain;
+      object-position: top center;
+    }
+
+    .cinematic-section__shade,
+    .cinematic-section--right .cinematic-section__shade {
+      background:
+        linear-gradient(180deg, rgba(3, 7, 12, 0) 0%, rgba(3, 7, 12, 0.34) 34%, var(--color-bg) 68%),
+        linear-gradient(0deg, var(--color-bg) 0%, rgba(6, 11, 18, 0) 34%);
+    }
+
+    .cinematic-section__inner {
+      width: min(100% - 2rem, 1280px);
+      padding: 2rem 0 4rem;
+    }
+
+    .cinematic-section--right .cinematic-section__inner {
+      display: block;
+      justify-items: stretch;
+    }
+
+    .cinematic-section--right .cinematic-section__inner > * {
+      width: 100%;
+      justify-self: auto;
+    }
+
+    .cinematic-section h2 {
+      max-width: 100%;
+      font-size: 2.65rem;
+      line-height: 1.04;
+      text-wrap: auto;
+    }
+
+    html[lang="zh"] .cinematic-section h2 {
+      max-width: 100%;
+    }
+
+    .section-label {
+      margin-bottom: 0.85rem;
+      font-size: 0.72rem;
+    }
+
+    .section-body {
+      margin-top: 1.1rem;
+      font-size: 1rem;
+      line-height: 1.58;
+    }
+
+    .section-stats {
+      grid-template-columns: 1fr;
+      width: 100%;
+      margin-top: 1.75rem;
+    }
+
+    .section-stats div {
+      padding: 1rem;
+    }
+  }
+
+  @media (min-width: 1440px) {
+    .cinematic-section h2 {
+      font-size: 5.8rem;
+    }
+
+    .section-body {
+      font-size: 1.16rem;
+    }
+  }
+
+  @media (max-width: 1120px) and (min-width: 761px) {
+    .cinematic-section h2 {
+      font-size: 4.2rem;
+    }
   }
 </style>

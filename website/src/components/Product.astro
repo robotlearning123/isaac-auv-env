@@ -3,229 +3,323 @@ import { getLangFromUrl } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const isZh = lang === 'zh';
 
-const heading = isZh ? '面向水下机器人的虚拟海洋' : 'A virtual ocean for underwater robots';
+const heading = isZh
+  ? '一套训练系统，贯通海洋物理与机器人策略。'
+  : 'One system for ocean physics and robot policy.';
+const headingLines = isZh
+  ? ['一套训练系统，', '贯通海洋物理', '与机器人策略。']
+  : null;
+
+const body = isZh
+  ? '不是单个演示场景，而是面向水下机器人研发的仿真基础设施：物理、传感器、任务、并行 rollout 和验证基准一起运行。'
+  : 'Not a one-off demo scene, but simulation infrastructure for underwater robotics: physics, sensors, tasks, parallel rollouts, and validation benchmarks running together.';
 
 const cards = isZh ? [
-  { idx: '01', title: 'GPU 原生多体动力学', body: '刚体、流体、接触、水动力在 GPU 上统一求解' },
-  { idx: '02', title: '大规模并行', body: '成千上万个环境同时运行' },
-  { idx: '03', title: '传感器级精度', body: 'DVL、IMU、压力、声纳、相机' },
-  { idx: '04', title: 'Gymnasium 原生', body: '标准 API，支持任何 RL 算法' },
+  { title: 'GPU 原生仿真', body: '水动力、浮力、接触、推进器和执行器统一在并行环境中求解。' },
+  { title: '传感器闭环', body: '相机、声纳、DVL、IMU 和压力传感器可用于策略训练与验证。' },
+  { title: '训练吞吐', body: '用数千个场景同时生成经验，而不是等待下一次海试窗口。' },
+  { title: '标准接口', body: '面向 Gymnasium 和常见 RL 工作流，方便研究与工程团队接入。' },
 ] : [
-  { idx: '01', title: 'GPU-native multibody dynamics', body: 'Rigid bodies, fluids, contacts, hydrodynamics solved together on GPU' },
-  { idx: '02', title: 'Massively parallel', body: 'Thousands of environments running simultaneously' },
-  { idx: '03', title: 'Sensor-accurate', body: 'DVL, IMU, pressure, sonar, camera' },
-  { idx: '04', title: 'Gymnasium-native', body: 'Standard API, any RL algorithm' },
+  { title: 'GPU-native simulation', body: 'Hydrodynamics, buoyancy, contact, thrusters, and actuators solved across parallel environments.' },
+  { title: 'Sensor-in-the-loop', body: 'Camera, sonar, DVL, IMU, and pressure signals for policy training and validation.' },
+  { title: 'Training throughput', body: 'Generate experience from thousands of scenarios instead of waiting for the next sea-trial window.' },
+  { title: 'Standard interfaces', body: 'Designed around Gymnasium and common RL workflows for research and engineering teams.' },
 ];
 ---
-<section id="product" class="relative py-28 lg:py-36 overflow-hidden" style="background: var(--color-bg); border-top: 1px solid var(--color-border);">
-  <div class="absolute inset-0 product-grid-bg"></div>
+<section id="product" class="product-system">
+  <div class="os-container product-system__inner">
+    <div class="product-system__copy reveal">
+      <p class="section-label">Product</p>
+      <h2>
+        {headingLines
+          ? headingLines.map((line) => <span>{line}</span>)
+          : heading}
+      </h2>
+      <p>{body}</p>
+    </div>
 
-  <div class="os-container relative z-10">
-    <h2 class="reveal os-h2" style="font-size: clamp(2rem, 4.4vw, 3.75rem);">
-      {heading}
-    </h2>
-
-    <div class="grid gap-5 sm:grid-cols-2 mt-16">
-      <div class="reveal product-card" data-delay="1">
-        <div class="product-card__visual">
-          <svg viewBox="0 0 320 180" class="absolute inset-0 w-full h-full" role="img" aria-label="GPU multibody physics simulation visualization">
-            <defs>
-              <radialGradient id="mb-glow" cx="50%" cy="50%">
-                <stop offset="0%" stop-color="#2dd4bf" stop-opacity="0.2" />
-                <stop offset="100%" stop-color="#2dd4bf" stop-opacity="0" />
-              </radialGradient>
-            </defs>
-            <rect width="320" height="180" fill="url(#mb-glow)" />
-            <g stroke="#2dd4bf" stroke-width="1" fill="none" opacity="0.7">
-              <circle cx="80" cy="40" r="8" /><line x1="80" y1="40" x2="110" y2="60" /><circle cx="110" cy="60" r="5" fill="#2dd4bf" fill-opacity="0.4" />
-              <circle cx="190" cy="40" r="8" /><line x1="190" y1="40" x2="220" y2="60" /><circle cx="220" cy="60" r="5" fill="#2dd4bf" fill-opacity="0.4" />
-              <circle cx="260" cy="50" r="6" /><line x1="220" y1="60" x2="260" y2="50" />
-              <circle cx="80" cy="100" r="8" /><line x1="80" y1="100" x2="110" y2="120" /><circle cx="110" cy="120" r="5" fill="#2dd4bf" fill-opacity="0.4" />
-              <circle cx="190" cy="100" r="8" /><line x1="190" y1="100" x2="160" y2="130" /><circle cx="160" cy="130" r="6" fill="#2dd4bf" fill-opacity="0.3" />
-              <circle cx="260" cy="110" r="7" /><line x1="260" y1="110" x2="240" y2="140" /><circle cx="240" cy="140" r="4" fill="#2dd4bf" fill-opacity="0.5" />
-              <line x1="110" y1="60" x2="190" y2="100" stroke-opacity="0.3" stroke-dasharray="3 4" />
-              <line x1="80" y1="40" x2="80" y2="100" stroke-opacity="0.2" stroke-dasharray="3 4" />
-              <line x1="190" y1="40" x2="260" y2="110" stroke-opacity="0.2" stroke-dasharray="3 4" />
-            </g>
-          </svg>
-        </div>
-        <div class="product-card__body">
-          <span class="product-card__idx">{cards[0].idx}</span>
-          <h3>{cards[0].title}</h3>
-          <p>{cards[0].body}</p>
-        </div>
-      </div>
-
-      <div class="reveal product-card" data-delay="2">
-        <div class="product-card__visual">
-          <div class="parallel-grid">
-            {Array.from({ length: 40 }).map((_, i) => (
-              <div class="parallel-cell" style={`background: rgba(45,212,191,${0.04 + ((i * 37) % 20) / 100}); animation-delay: ${(i * 0.05)}s;`}></div>
+    <div class="product-system__grid">
+      <figure class="product-system__media reveal" data-delay="1">
+        <div class="training-panel" aria-label={isZh ? 'OceanScale 训练系统面板' : 'OceanScale training system panel'}>
+          <div class="training-panel__top">
+            <span>OceanScale Runtime</span>
+            <strong>4096 envs</strong>
+          </div>
+          <div class="training-panel__map">
+            {Array.from({ length: 42 }).map((_, index) => (
+              <i style={`--delay:${index * 0.045}s; --alpha:${0.16 + ((index * 17) % 42) / 100};`}></i>
+            ))}
+          </div>
+          <div class="training-panel__rows">
+            {[
+              ['hydrodynamics', 'stable'],
+              ['sonar + camera', 'streaming'],
+              ['reward shaping', 'active'],
+              ['failure replay', 'recording'],
+            ].map(([label, value]) => (
+              <div>
+                <span>{label}</span>
+                <strong>{value}</strong>
+              </div>
             ))}
           </div>
         </div>
-        <div class="product-card__body">
-          <span class="product-card__idx">{cards[1].idx}</span>
-          <h3>{cards[1].title}</h3>
-          <p>{cards[1].body}</p>
-        </div>
-      </div>
+      </figure>
 
-      <div class="reveal product-card" data-delay="3">
-        <div class="product-card__visual">
-          <svg viewBox="0 0 320 180" class="absolute inset-0 w-full h-full" role="img" aria-label="Sensor radial diagram showing DVL, IMU, pressure, sonar, and camera">
-            <circle cx="160" cy="90" r="16" fill="#2dd4bf" fill-opacity="0.15" stroke="#2dd4bf" stroke-width="1.5" />
-            <circle cx="160" cy="90" r="4" fill="#2dd4bf" fill-opacity="0.6" />
-            <circle cx="160" cy="90" r="40" fill="none" stroke="#2dd4bf" stroke-opacity="0.08" stroke-dasharray="4 4" />
-            <line x1="160" y1="90" x2="160" y2="25" stroke="#2dd4bf" stroke-opacity="0.35" stroke-dasharray="2 3" />
-            <circle cx="160" cy="25" r="3.5" fill="#2dd4bf" fill-opacity="0.7" />
-            <text x="160" y="15" text-anchor="middle" font-size="9" fill="#7a8ea6" font-family="JetBrains Mono, monospace" font-weight="600">DVL</text>
-            <line x1="160" y1="90" x2="227" y2="50" stroke="#2dd4bf" stroke-opacity="0.35" stroke-dasharray="2 3" />
-            <circle cx="227" cy="50" r="3.5" fill="#2dd4bf" fill-opacity="0.7" />
-            <text x="227" y="40" text-anchor="middle" font-size="9" fill="#7a8ea6" font-family="JetBrains Mono, monospace" font-weight="600">IMU</text>
-            <line x1="160" y1="90" x2="201" y2="147" stroke="#2dd4bf" stroke-opacity="0.35" stroke-dasharray="2 3" />
-            <circle cx="201" cy="147" r="3.5" fill="#2dd4bf" fill-opacity="0.7" />
-            <text x="201" y="162" text-anchor="middle" font-size="9" fill="#7a8ea6" font-family="JetBrains Mono, monospace" font-weight="600">PRES</text>
-            <line x1="160" y1="90" x2="119" y2="147" stroke="#2dd4bf" stroke-opacity="0.35" stroke-dasharray="2 3" />
-            <circle cx="119" cy="147" r="3.5" fill="#2dd4bf" fill-opacity="0.7" />
-            <text x="119" y="162" text-anchor="middle" font-size="9" fill="#7a8ea6" font-family="JetBrains Mono, monospace" font-weight="600">SONAR</text>
-            <line x1="160" y1="90" x2="93" y2="50" stroke="#2dd4bf" stroke-opacity="0.35" stroke-dasharray="2 3" />
-            <circle cx="93" cy="50" r="3.5" fill="#2dd4bf" fill-opacity="0.7" />
-            <text x="93" y="40" text-anchor="middle" font-size="9" fill="#7a8ea6" font-family="JetBrains Mono, monospace" font-weight="600">CAM</text>
-          </svg>
-        </div>
-        <div class="product-card__body">
-          <span class="product-card__idx">{cards[2].idx}</span>
-          <h3>{cards[2].title}</h3>
-          <p>{cards[2].body}</p>
-        </div>
-      </div>
-
-      <div class="reveal product-card" data-delay="4">
-        <div class="product-card__visual code-bg">
-          <pre class="code-visual"><code set:html={`<span class="ck">import</span> oceanscale
-<span class="ck">import</span> gymnasium <span class="ck">as</span> gym
-
-env = gym.make(<span class="cs">"OceanScale/BlueROV2-v0"</span>,
-               num_envs=<span class="cn">4096</span>)
-
-obs, _ = env.reset()
-<span class="ck">for</span> _ <span class="ck">in</span> range(<span class="cn">1000</span>):
-    action = policy(obs)
-    obs, r, done, trunc, info = env.step(action)`} /></pre>
-        </div>
-        <div class="product-card__body">
-          <span class="product-card__idx">{cards[3].idx}</span>
-          <h3>{cards[3].title}</h3>
-          <p>{cards[3].body}</p>
-        </div>
+      <div class="product-system__cards">
+        {cards.map((card, index) => (
+          <article class="product-system__card reveal" data-delay={String(index + 2)}>
+            <span>{String(index + 1).padStart(2, '0')}</span>
+            <h3>{card.title}</h3>
+            <p>{card.body}</p>
+          </article>
+        ))}
       </div>
     </div>
   </div>
 </section>
 
 <style is:global>
-  .product-grid-bg {
-    background-image:
-      linear-gradient(rgba(30, 45, 64, 0.12) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(30, 45, 64, 0.12) 1px, transparent 1px);
-    background-size: 56px 56px;
-    mask-image: radial-gradient(ellipse at 50% 50%, black 20%, transparent 70%);
-  }
-
-  .product-card {
-    overflow: hidden;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    background: linear-gradient(135deg, rgba(15, 24, 34, 0.9), rgba(10, 16, 24, 0.95));
-    transition: border-color 0.35s, box-shadow 0.35s, transform 0.35s;
-  }
-
-  .product-card:hover {
-    border-color: rgba(45, 212, 191, 0.35);
-    box-shadow: 0 20px 60px -8px rgba(0, 0, 0, 0.5), 0 0 50px -10px rgba(45, 212, 191, 0.1);
-    transform: translateY(-4px);
-  }
-
-  .product-card__visual {
+  .product-system {
     position: relative;
-    aspect-ratio: 16 / 9;
     overflow: hidden;
-    border-bottom: 1px solid var(--color-border);
-    background: #050a10;
+    padding: clamp(5rem, 9vw, 8rem) 0;
+    background:
+      radial-gradient(circle at 78% 18%, rgba(45, 212, 191, 0.1), transparent 28rem),
+      linear-gradient(180deg, #060b12 0%, #08111a 52%, #060b12 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    scroll-margin-top: 84px;
   }
 
-  .product-card__body {
-    padding: 1.5rem;
-  }
-
-  .product-card__idx {
-    display: inline-block;
-    margin-bottom: 0.6rem;
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: var(--color-accent);
-    letter-spacing: 0.1em;
-  }
-
-  .product-card__body h3 {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--color-text);
-    line-height: 1.3;
-  }
-
-  .product-card__body p {
-    margin: 0.45rem 0 0;
-    font-size: 0.88rem;
-    color: var(--color-text-muted);
-    line-height: 1.55;
-  }
-
-  .parallel-grid {
+  .product-system::before {
+    content: "";
     position: absolute;
     inset: 0;
+    opacity: 0.18;
+    background-image:
+      linear-gradient(rgba(45, 212, 191, 0.12) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(45, 212, 191, 0.08) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse at 50% 30%, black 0%, transparent 70%);
+  }
+
+  .product-system__inner {
+    position: relative;
+    z-index: 1;
+  }
+
+  .product-system__copy {
+    max-width: 860px;
+  }
+
+  .product-system__copy h2 {
+    margin: 0;
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 3.8rem;
+    font-weight: 900;
+    line-height: 0.98;
+    letter-spacing: 0;
+    text-wrap: balance;
+  }
+
+  html[lang="zh"] .product-system__copy h2 {
+    font-family: var(--font-display-zh);
+    line-height: 1.08;
+    word-break: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .product-system__copy h2 span {
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    white-space: nowrap;
+  }
+
+  .product-system__copy > p:last-child {
+    margin: 1.35rem 0 0;
+    max-width: 700px;
+    color: rgba(232, 237, 243, 0.74);
+    font-size: 1.08rem;
+    line-height: 1.66;
+  }
+
+  .product-system__grid {
     display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    grid-template-rows: repeat(5, 1fr);
-    gap: 2px;
-    padding: 12px;
+    grid-template-columns: minmax(0, 1.16fr) minmax(320px, 0.84fr);
+    gap: clamp(1.2rem, 3vw, 2.5rem);
+    align-items: stretch;
+    margin-top: clamp(2.5rem, 5vw, 4.5rem);
   }
 
-  .parallel-cell {
-    border: 1px solid rgba(45, 212, 191, 0.25);
-    border-radius: 2px;
-    animation: cell-pulse 3s ease-in-out infinite alternate;
+  .product-system__media,
+  .product-system__card {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(6, 11, 18, 0.62);
+    box-shadow: 0 22px 80px rgba(0, 0, 0, 0.34);
+    backdrop-filter: blur(14px);
   }
 
-  @keyframes cell-pulse {
-    0% { opacity: 0.6; }
-    100% { opacity: 1; }
-  }
-
-  .code-bg { background: #050a10; }
-
-  .code-visual {
-    position: absolute;
-    inset: 0;
+  .product-system__media {
+    overflow: hidden;
     margin: 0;
-    padding: 1.25rem 1.5rem;
+    min-height: 100%;
+    border-radius: 8px;
+  }
+
+  .training-panel {
+    min-height: 520px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: clamp(1rem, 2vw, 1.4rem);
+    background:
+      radial-gradient(circle at 68% 22%, rgba(45, 212, 191, 0.16), transparent 22rem),
+      linear-gradient(135deg, rgba(5, 10, 16, 0.96), rgba(9, 18, 28, 0.94));
+  }
+
+  .training-panel__top,
+  .training-panel__rows div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    font-family: var(--font-mono);
+  }
+
+  .training-panel__top {
+    min-height: 48px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(232, 237, 243, 0.62);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .training-panel__top strong {
+    color: rgba(45, 212, 191, 0.96);
+  }
+
+  .training-panel__map {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.55rem;
+    align-content: center;
+    min-height: 320px;
+    padding: clamp(1.3rem, 3vw, 2.2rem) 0;
+  }
+
+  .training-panel__map i {
+    display: block;
+    aspect-ratio: 1;
+    border: 1px solid rgba(45, 212, 191, 0.4);
+    border-radius: 4px;
+    background:
+      radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.22), transparent 18%),
+      linear-gradient(135deg, rgba(45, 212, 191, calc(var(--alpha) + 0.22)), rgba(45, 212, 191, 0.04));
+    box-shadow:
+      inset 0 0 18px rgba(45, 212, 191, 0.2),
+      0 0 18px rgba(45, 212, 191, 0.08);
+    animation: training-cell 1.4s ease-in-out infinite alternate;
+    animation-delay: var(--delay);
+  }
+
+  .training-panel__rows {
+    display: grid;
+    gap: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .training-panel__rows div {
+    padding: 0.85rem 1rem;
+    background: rgba(3, 7, 12, 0.66);
+  }
+
+  .training-panel__rows span {
+    color: rgba(232, 237, 243, 0.58);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .training-panel__rows strong {
+    color: rgba(232, 237, 243, 0.92);
+    font-size: 0.76rem;
+  }
+
+  @keyframes training-cell {
+    0% { opacity: 0.45; transform: translateY(0); }
+    100% { opacity: 1; transform: translateY(-2px); }
+  }
+
+  .product-system__cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .product-system__card {
+    padding: clamp(1.1rem, 2vw, 1.45rem);
+    border-radius: 8px;
+  }
+
+  .product-system__card span {
+    display: block;
+    color: rgba(45, 212, 191, 0.94);
     font-family: var(--font-mono);
     font-size: 0.72rem;
-    line-height: 1.9;
-    color: var(--color-text-muted);
-    overflow: hidden;
+    font-weight: 700;
+    letter-spacing: 0.16em;
   }
 
-  .code-visual code { white-space: pre; }
-  :global(.ck) { color: var(--color-accent); }
-  :global(.cs) { color: #fbbf24; }
-  :global(.cn) { color: #a78bfa; }
+  .product-system__card h3 {
+    margin: 0.7rem 0 0;
+    color: #fff;
+    font-size: 1.08rem;
+    font-weight: 800;
+    line-height: 1.25;
+  }
 
-  @media (max-width: 640px) {
-    .product-card__body { padding: 1.25rem; }
-    .code-visual { font-size: 0.65rem; padding: 1rem; }
+  .product-system__card p {
+    margin: 0.5rem 0 0;
+    color: rgba(232, 237, 243, 0.68);
+    font-size: 0.92rem;
+    line-height: 1.58;
+  }
+
+  @media (max-width: 900px) {
+    .product-system__copy h2 {
+      font-size: 2.35rem;
+      line-height: 1.08;
+    }
+
+    .product-system__copy > p:last-child {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .product-system__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .training-panel {
+      min-height: 0;
+      aspect-ratio: 16 / 9;
+    }
+
+    .training-panel__rows {
+      display: none;
+    }
+
+    .training-panel__map {
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1440px) {
+    .product-system__copy h2 {
+      font-size: 4.2rem;
+    }
   }
 </style>
