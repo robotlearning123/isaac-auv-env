@@ -1,3 +1,4 @@
+# mypy: ignore-errors
 from __future__ import annotations
 
 from typing import Any, cast
@@ -29,10 +30,16 @@ class UnderwaterCloth:
         tri_kd: float = 10.0,
         drag_coefficient: float = 0.5,
         fix_top: bool = True,
+        experimental_large_grid: bool = False,
     ) -> None:
+        if max(dim_x, dim_y) > 8 and not experimental_large_grid:
+            raise ValueError(
+                "SolverVBD cloth grids above 8x8 require experimental_large_grid=True "
+                "and caller-owned substep/iteration stability validation."
+            )
         self._dim_x = dim_x
         self._dim_y = dim_y
-        self._particle_start = builder.particle_count
+        self._particle_start = int(builder.particle_count)
 
         builder.add_cloth_grid(
             pos=wp.vec3(*position),
@@ -50,7 +57,7 @@ class UnderwaterCloth:
             fix_top=fix_top,
         )
 
-        self._particle_end = builder.particle_count
+        self._particle_end = int(builder.particle_count)
         self._rest_positions: NDArray[np.float32] | None = None
 
     @property

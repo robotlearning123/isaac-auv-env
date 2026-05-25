@@ -298,8 +298,6 @@ class OceanWorld:
         return float(self._heightfield[j0, i0])
 
     def get_surface_elevation(self, x: float, y: float, time: float | None = None) -> float:
-        t = time if time is not None else self.time
-        pt = wp.array(np.array([[x, y, 0.0]], dtype=np.float32), dtype=wp.vec3, device=self.device)
         grid = self.wave_field.get_surface_grid().numpy()
         dx = self.domain_size / self.wave_field.grid_size
         gi = int(x / dx) % self.wave_field.grid_size

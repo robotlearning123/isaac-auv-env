@@ -11,7 +11,6 @@ from typing import Any, cast
 
 import newton
 import numpy as np
-import warp as wp
 from numpy.typing import NDArray
 
 
@@ -41,8 +40,8 @@ class Tether:
         anchor = np.array(anchor_pos, dtype=np.float64)
         attach = np.array(attach_pos, dtype=np.float64)
         direction = attach - anchor
-        positions = [
-            tuple(anchor + (i / n_segments) * direction)
+        positions: list[list[float] | tuple[float, float, float]] = [
+            [float(v) for v in anchor + (i / n_segments) * direction]
             for i in range(n_segments + 1)
         ]
         self._length = float(np.linalg.norm(direction))

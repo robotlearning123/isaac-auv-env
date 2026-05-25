@@ -31,7 +31,7 @@ class GraphCapture:
 
         for _ in range(warmup_steps):
             step_fn(*args)
-        wp.synchronize()
+        wp.synchronize()  # type: ignore[no-untyped-call]
 
         with wp.ScopedCapture(device=self._device) as capture:
             step_fn(*args)

@@ -1,5 +1,5 @@
-from oceanscale.propulsion.propeller import PropellerThruster
-from oceanscale.propulsion.flapping import FlappingFin
 from oceanscale.propulsion.buoyancy_engine import BuoyancyEngine
+from oceanscale.propulsion.flapping import FlappingFin
+from oceanscale.propulsion.propeller import PropellerThruster
 
-__all__ = ["PropellerThruster", "FlappingFin", "BuoyancyEngine"]
+__all__ = ["BuoyancyEngine", "FlappingFin", "PropellerThruster"]

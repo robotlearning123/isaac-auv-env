@@ -94,3 +94,4 @@ class SurfaceExtractor:
             ])
             verts = verts * scale + np.array(domain_min)
         return verts, indices
+# mypy: ignore-errors

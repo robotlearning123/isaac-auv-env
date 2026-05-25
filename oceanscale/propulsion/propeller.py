@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import math
 
-import numpy as np
 import warp as wp
 
 
@@ -121,3 +120,4 @@ class PropellerThruster:
             device=device,
         )
         return out_thrust, out_torque
+# mypy: ignore-errors

@@ -1,17 +1,19 @@
 """OceanScale — AI-native simulation infrastructure for underwater robotics."""
 
+from typing import Any
+
 __version__ = "0.1.0a0"
 
-from oceanscale.fluid import FluidLevel, create_fluid_solver  # noqa: F401
+from oceanscale.fluid import FluidLevel, create_fluid_solver
 
 __all__ = [
-    "__version__",
     "FluidLevel",
+    "__version__",
     "create_fluid_solver",
 ]
 
 
-def __getattr__(name: str):
+def __getattr__(name: str) -> Any:
     """Lazy imports for GPU-heavy classes to avoid eager Warp/Newton init."""
     _lazy = {
         "GridFluidSolver": "oceanscale.fluid.grid",

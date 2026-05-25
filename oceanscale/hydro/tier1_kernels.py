@@ -165,12 +165,12 @@ def tier1_thruster_alloc(
     n_thrusters = u_cmd.shape[1]
     # First-order lag + deadband + saturation per thruster
     alpha = dt / (tau_lag + dt)  # discrete-time approx of dt/τ
-    fx = float(0.0)  # noqa: UP018
-    fy = float(0.0)  # noqa: UP018
-    fz = float(0.0)  # noqa: UP018
-    mx = float(0.0)  # noqa: UP018
-    my = float(0.0)  # noqa: UP018
-    mz = float(0.0)  # noqa: UP018
+    fx = float(0.0)  # noqa: UP018 - Warp needs dynamic variables in kernels.
+    fy = float(0.0)  # noqa: UP018 - Warp needs dynamic variables in kernels.
+    fz = float(0.0)  # noqa: UP018 - Warp needs dynamic variables in kernels.
+    mx = float(0.0)  # noqa: UP018 - Warp needs dynamic variables in kernels.
+    my = float(0.0)  # noqa: UP018 - Warp needs dynamic variables in kernels.
+    mz = float(0.0)  # noqa: UP018 - Warp needs dynamic variables in kernels.
     for k in range(n_thrusters):
         u_raw = u_cmd[i, k]
         # saturation in [-1, +1]
