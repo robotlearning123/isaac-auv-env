@@ -1,7 +1,8 @@
 """Taichi SPH 3D benchmark on RTX 5090."""
-import taichi as ti
 import time
+
 import numpy as np
+import taichi as ti
 
 ti.init(arch=ti.cuda)
 
@@ -96,7 +97,7 @@ for _ in range(N_WARMUP):
 # Benchmark
 times = []
 N_STEPS = 10
-for step in range(N_STEPS):
+for _step in range(N_STEPS):
     t0 = time.perf_counter()
     compute_density()
     compute_force()
@@ -108,4 +109,4 @@ for step in range(N_STEPS):
 avg = np.mean(times[2:])
 print(f"Taichi SPH 3D: particles={N_PARTICLES}, avg step time={avg*1000:.2f} ms ({1.0/avg:.1f} FPS)")
 print(f"  min={np.min(times[2:])*1000:.2f} ms, max={np.max(times[2:])*1000:.2f} ms")
-print(f"  NOTE: O(N^2) brute-force neighbor search; spatial hash would be ~100x faster")
+print("  NOTE: O(N^2) brute-force neighbor search; spatial hash would be ~100x faster")

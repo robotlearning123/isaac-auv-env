@@ -187,9 +187,11 @@ def test_cpu_vs_gpu():
 
         # --- CPU ---
         if ctrl_np_val is not None:
-            ctrl_fn_cpu = lambda d: d.ctrl.__setitem__(slice(None), ctrl_np_val)
+            def ctrl_fn_cpu(d, ctrl=ctrl_np_val):
+                return d.ctrl.__setitem__(slice(None), ctrl)
         else:
-            ctrl_fn_cpu = lambda d: None
+            def ctrl_fn_cpu(d):
+                return None
 
         for _ in range(WARMUP):
             ctrl_fn_cpu(mjd)
@@ -323,7 +325,7 @@ def test_hydro():
     # 4a. Built-in density/viscosity (MuJoCo native)
     mjm = mujoco.MjModel.from_xml_string(UNDERWATER_XML)
     mjd = mujoco.MjData(mjm)
-    print(f"\n  4a. Built-in MuJoCo fluid (density/viscosity)")
+    print("\n  4a. Built-in MuJoCo fluid (density/viscosity)")
     print(f"    density={mjm.opt.density}  viscosity={mjm.opt.viscosity}")
     print(f"    gravity: {mjm.opt.gravity}")
 
@@ -356,7 +358,7 @@ def test_hydro():
     print(f"    GPU time: {gpu_ms:.2f} ms ({N_STEPS/gpu_ms*1000:.0f} steps/s)")
 
     # 4b. Manual drag via qfrc_applied
-    print(f"\n  4b. Manual drag via qfrc_applied (F = -c * v)")
+    print("\n  4b. Manual drag via qfrc_applied (F = -c * v)")
 
     drag_xml = """
     <mujoco model="drag_test">
@@ -424,7 +426,7 @@ def test_hydro():
     print(f"    GPU time: {gpu_single_ms:.2f} ms ({N_STEPS/gpu_single_ms*1000:.0f} steps/s)")
 
     # GPU batched drag
-    print(f"\n  4c. Batched drag force (GPU):")
+    print("\n  4c. Batched drag force (GPU):")
     print(f"  {'N':>6}  {'total_ms':>10}  {'env-steps/s':>14}")
     print(f"  {'-'*6}  {'-'*10}  {'-'*14}")
 
@@ -480,7 +482,7 @@ def test_api_survey():
     funcs = ['step', 'forward', 'put_model', 'put_data', 'make_data',
              'get_data_into', 'get_state', 'set_state', 'reset_data',
              'xfrc_accumulate', 'step1', 'step2']
-    print(f"\n  Key function signatures:")
+    print("\n  Key function signatures:")
     for fn_name in funcs:
         fn = getattr(mjw, fn_name, None)
         if fn:

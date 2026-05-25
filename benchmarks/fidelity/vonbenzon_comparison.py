@@ -35,7 +35,9 @@ import time
 from pathlib import Path
 
 import numpy as np
+import warp as wp
 
+from oceanscale.hydro.tier1 import Tier1
 from oceanscale.validation.vonbenzon_reference import (
     VonBenzonParams,
     VonBenzonReferenceModel,
@@ -43,9 +45,6 @@ from oceanscale.validation.vonbenzon_reference import (
     _quat_mul,
     _quat_to_rotmat,
 )
-
-import warp as wp
-from oceanscale.hydro.tier1 import Tier1
 
 # ---------------------------------------------------------------------------
 # Constants

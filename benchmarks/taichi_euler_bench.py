@@ -1,7 +1,8 @@
 """Taichi 2D Euler fluid (stable fluids) benchmark on RTX 5090."""
-import taichi as ti
 import time
+
 import numpy as np
+import taichi as ti
 
 ti.init(arch=ti.cuda)
 
@@ -89,7 +90,7 @@ for _ in range(5):
 
 # Benchmark
 times = []
-for step in range(100):
+for _step in range(100):
     t0 = time.perf_counter()
     advect()
     compute_div()

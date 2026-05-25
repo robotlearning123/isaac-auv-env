@@ -36,7 +36,9 @@ import time
 from pathlib import Path
 
 import numpy as np
+import warp as wp
 
+from oceanscale.hydro.tier1 import Tier1
 from oceanscale.validation.vonbenzon_reference import (
     VonBenzonParams,
     VonBenzonReferenceModel,
@@ -44,9 +46,6 @@ from oceanscale.validation.vonbenzon_reference import (
     _quat_mul,
     _quat_to_rotmat,
 )
-
-import warp as wp
-from oceanscale.hydro.tier1 import Tier1
 
 DT = 0.01  # s per step
 OUTPUT_PATH = Path(__file__).parent / "multi_dof_results.json"
@@ -320,17 +319,17 @@ def run_maneuver(name: str, cfg: dict) -> dict:
     print(f"  MANEUVER: {name.upper()} — {desc}")
     print("=" * W)
 
-    print(f"  [1/3] CPU RK4 (gold standard)...")
+    print("  [1/3] CPU RK4 (gold standard)...")
     cpu_rk4 = run_cpu_rk4(tau_ned, n_steps)
     print(f"  Final pos: [{cpu_rk4['pos'][-1, 0]:.5f}, "
           f"{cpu_rk4['pos'][-1, 1]:.5f}, {cpu_rk4['pos'][-1, 2]:.5f}]")
 
-    print(f"  [2/3] CPU Euler (integration baseline)...")
+    print("  [2/3] CPU Euler (integration baseline)...")
     cpu_euler = run_cpu_euler(tau_ned, n_steps)
     print(f"  Final pos: [{cpu_euler['pos'][-1, 0]:.5f}, "
           f"{cpu_euler['pos'][-1, 1]:.5f}, {cpu_euler['pos'][-1, 2]:.5f}]")
 
-    print(f"  [3/3] GPU Tier-1 (Warp kernels)...")
+    print("  [3/3] GPU Tier-1 (Warp kernels)...")
     gpu_tier1 = run_gpu_tier1(wrench_add, n_steps)
     print(f"  Final pos: [{gpu_tier1['pos'][-1, 0]:.5f}, "
           f"{gpu_tier1['pos'][-1, 1]:.5f}, {gpu_tier1['pos'][-1, 2]:.5f}]")
@@ -348,7 +347,7 @@ def run_maneuver(name: str, cfg: dict) -> dict:
 
     # Print results
     print(f"\n  {'─' * (W - 4)}")
-    print(f"  ERROR vs CPU RK4 REFERENCE")
+    print("  ERROR vs CPU RK4 REFERENCE")
     print(f"  {'─' * (W - 4)}")
     for m in [m_euler, m_gpu]:
         pe = m["position"]
@@ -364,7 +363,7 @@ def run_maneuver(name: str, cfg: dict) -> dict:
 
     pp = m_gpu["position"]["relative_final_pct"] < 5.0
     ap = m_gpu["attitude"]["rms_deg"] < 3.0
-    print(f"\n  PASS/FAIL (GPU vs RK4):")
+    print("\n  PASS/FAIL (GPU vs RK4):")
     print(f"    Position < 5%  : {'PASS' if pp else 'FAIL'}  ({m_gpu['position']['relative_final_pct']:.2f}%)")
     print(f"    Attitude < 3°  : {'PASS' if ap else 'FAIL'}  ({m_gpu['attitude']['rms_deg']:.4f}°)")
     overall = pp and ap
@@ -373,7 +372,7 @@ def run_maneuver(name: str, cfg: dict) -> dict:
     int_pct = m_euler["position"]["relative_final_pct"]
     gpu_pct = m_gpu["position"]["relative_final_pct"]
     impl_pct = gpu_pct - int_pct
-    print(f"\n  Error decomposition:")
+    print("\n  Error decomposition:")
     print(f"    Integration (Euler vs RK4) : {int_pct:+.2f}%")
     print(f"    Implementation (Tier-1)    : {impl_pct:+.2f}%")
     print(f"    Total                      : {gpu_pct:.2f}%")

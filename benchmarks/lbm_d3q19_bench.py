@@ -339,7 +339,9 @@ def _define_warp_kernels():
         if i >= nx or j >= ny or k >= nz:
             return
         r = rho[i, j, k]
-        vx = ux[i, j, k]; vy = uy[i, j, k]; vz = uz[i, j, k]
+        vx = ux[i, j, k]
+        vy = uy[i, j, k]
+        vz = uz[i, j, k]
         usq = vx * vx + vy * vy + vz * vz
         for q in range(19):
             cu = float(cx_arr[q]) * vx + float(cy_arr[q]) * vy + float(cz_arr[q]) * vz
@@ -363,16 +365,25 @@ def _define_warp_kernels():
         is_wall = (i == 0 or i == nx - 1 or j == 0 or j == ny - 1 or k == 0 or k == nz - 1)
         if is_wall:
             rho[i, j, k] = 1.0
-            ux[i, j, k] = float(0.0); uy[i, j, k] = float(0.0); uz[i, j, k] = float(0.0)
+            ux[i, j, k] = 0.0
+            uy[i, j, k] = 0.0
+            uz[i, j, k] = 0.0
             return
-        r = float(0.0); vx = float(0.0); vy = float(0.0); vz = float(0.0)
+        r = float(0.0)  # noqa: UP018 - Warp needs dynamic variables in kernels.
+        vx = float(0.0)  # noqa: UP018 - Warp needs dynamic variables in kernels.
+        vy = float(0.0)  # noqa: UP018 - Warp needs dynamic variables in kernels.
+        vz = float(0.0)  # noqa: UP018 - Warp needs dynamic variables in kernels.
         for q in range(19):
             fq = f[q, i, j, k]
             r += fq
-            vx += fq * float(cx_arr[q]); vy += fq * float(cy_arr[q]); vz += fq * float(cz_arr[q])
+            vx += fq * float(cx_arr[q])
+            vy += fq * float(cy_arr[q])
+            vz += fq * float(cz_arr[q])
         rho[i, j, k] = r
         inv_r = 1.0 / r
-        ux[i, j, k] = vx * inv_r; uy[i, j, k] = vy * inv_r; uz[i, j, k] = vz * inv_r
+        ux[i, j, k] = vx * inv_r
+        uy[i, j, k] = vy * inv_r
+        uz[i, j, k] = vz * inv_r
 
     @wp.kernel
     def collide_bgk(
@@ -395,7 +406,10 @@ def _define_warp_kernels():
         is_wall = (i == 0 or i == nx - 1 or j == 0 or j == ny - 1 or k == 0 or k == nz - 1)
         if is_wall:
             return
-        r = rho[i, j, k]; vx = ux[i, j, k]; vy = uy[i, j, k]; vz = uz[i, j, k]
+        r = rho[i, j, k]
+        vx = ux[i, j, k]
+        vy = uy[i, j, k]
+        vz = uz[i, j, k]
         usq = vx * vx + vy * vy + vz * vz
         for q in range(19):
             cu = float(cx_arr[q]) * vx + float(cy_arr[q]) * vy + float(cz_arr[q]) * vz
@@ -422,7 +436,9 @@ def _define_warp_kernels():
                 f[oq, i, j, k] = fnew[q, i, j, k]
         else:
             for q in range(19):
-                si = i - cx_arr[q]; sj = j - cy_arr[q]; sk = k - cz_arr[q]
+                si = i - cx_arr[q]
+                sj = j - cy_arr[q]
+                sk = k - cz_arr[q]
                 if si < 0 or si >= nx or sj < 0 or sj >= ny or sk < 0 or sk >= nz:
                     oq = opp_arr[q]
                     f[q, i, j, k] = fnew[oq, i, j, k]
@@ -607,7 +623,7 @@ class WarpLBM:
         centerline_u = ux_host[nx // 2, :, nz // 2] / u_lid
 
         if np.any(np.isnan(centerline_u)):
-            print(f"    WARNING: NaN detected — unstable")
+            print("    WARNING: NaN detected — unstable")
             l2 = float('nan')
         else:
             l2 = compute_l2_ghia(centerline_u, ny, re)
@@ -741,7 +757,7 @@ def run_benchmark(backends: list[str], sizes: list[int], steps: int):
 
     # Warmup
     print("\nWarmup...")
-    for name, solver in solvers.items():
+    for _name, solver in solvers.items():
         solver.run_lid_cavity(16, 16, 16, re=100, max_steps=50, warmup_steps=5)
     print("Warmup done.")
 
@@ -754,7 +770,7 @@ def run_benchmark(backends: list[str], sizes: list[int], steps: int):
     for n in sizes:
         max_s = min(steps, 5000 if n <= 64 else (3000 if n <= 128 else 2000))
         for re in [100, 400, 1000]:
-            for name, solver in solvers.items():
+            for _name, solver in solvers.items():
                 r = solver.run_lid_cavity(n, n, n, re=re, max_steps=max_s, warmup_steps=100)
                 if r is not None:
                     cavity_results.append(r)
@@ -765,7 +781,7 @@ def run_benchmark(backends: list[str], sizes: list[int], steps: int):
     print("-" * 50)
 
     channel_results: list[dict[str, Any]] = []
-    for name, solver in solvers.items():
+    for _name, solver in solvers.items():
         r = solver.run_channel_flow(nx=128, ny=64, nz=64, max_steps=min(steps, 5000), warmup_steps=100)
         channel_results.append(r)
 
@@ -791,7 +807,7 @@ def run_benchmark(backends: list[str], sizes: list[int], steps: int):
                     speedup = warp_r[0]['mlups'] / torch_r[0]['mlups']
                     print(f"  {n}^3 Re={re}: {speedup:.2f}x")
 
-    print(f"\nChannel flow:")
+    print("\nChannel flow:")
     for r in channel_results:
         print(f"  [{r['backend']}] MLUPS: {r['mlups']:.1f}, L2: {r['l2_error']:.6f}")
 

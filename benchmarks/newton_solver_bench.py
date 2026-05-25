@@ -11,8 +11,8 @@ Notes on Newton 1.2.0 API (verified by inspection):
   - replicate is a @staticmethod taking (builder, world_count, spacing)
 """
 
-import time
 import gc
+import time
 import traceback
 
 import numpy as np
@@ -23,7 +23,7 @@ device = wp.get_device("cuda:0")
 print(f"Device: {device}")
 print(f"Warp {wp.__version__}, CUDA available: {wp.is_cuda_available()}")
 
-import newton
+import newton  # noqa: E402
 
 print(f"Newton {newton.__version__}")
 print("=" * 70)

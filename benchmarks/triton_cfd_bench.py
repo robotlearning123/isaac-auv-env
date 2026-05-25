@@ -1,6 +1,7 @@
 """Triton vs Warp vs PyTorch 3D Jacobi stencil benchmark (128^3)."""
 
 import time
+
 import numpy as np
 import torch
 import triton
@@ -154,8 +155,8 @@ def bench_warp():
 # ---- Modulus FNO inference (physics-ML baseline) ----
 def bench_modulus_fno():
     from modulus.models.fno.fno import FNO
-    from modulus.models.module import Module
     from modulus.models.meta import ModelMetaData
+    from modulus.models.module import Module
 
     class Dec(Module):
         def __init__(self):
@@ -214,7 +215,7 @@ def main():
     print()
     print("=== Modulus FNO (physics-ML baseline) ===")
     try:
-        ms, params = bench_modulus_fno()
+        ms, _params = bench_modulus_fno()
         print(f"Modulus FNO inference: {ms:.3f} ms/iter (4.2M params, batch=2, 64x64)")
     except Exception as e:
         print(f"Modulus FNO: FAILED ({e})")

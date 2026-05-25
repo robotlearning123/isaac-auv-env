@@ -12,7 +12,6 @@ import subprocess
 import time
 
 import numpy as np
-
 import warp as wp
 
 wp.init()
@@ -96,15 +95,15 @@ def compute_macroscopic(
                k == 0 or k == nz - 1)
     if is_wall:
         rho[i, j, k] = 1.0
-        ux[i, j, k] = float(0.0)
-        uy[i, j, k] = float(0.0)
-        uz[i, j, k] = float(0.0)
+        ux[i, j, k] = 0.0
+        uy[i, j, k] = 0.0
+        uz[i, j, k] = 0.0
         return
 
-    r = float(0.0)
-    vx = float(0.0)
-    vy = float(0.0)
-    vz = float(0.0)
+    r = 0.0
+    vx = 0.0
+    vy = 0.0
+    vz = 0.0
     for q in range(19):
         fq = f[q, i, j, k]
         r += fq
@@ -365,7 +364,7 @@ def run_lid_cavity(nx, ny, nz, re, u_lid=0.1, max_steps=5000, warmup_steps=100):
     wp.synchronize_device('cuda')
 
     all_times = []
-    for step in range(max_steps):
+    for _step in range(max_steps):
         t0 = time.perf_counter()
 
         # 1. Macroscopic from f (wall cells set to rho=1, u=0)
@@ -413,7 +412,7 @@ def run_lid_cavity(nx, ny, nz, re, u_lid=0.1, max_steps=5000, warmup_steps=100):
     centerline_u = ux_host[nx // 2, :, nz // 2] / u_lid
 
     if np.any(np.isnan(centerline_u)):
-        print(f"    WARNING: NaN detected. Simulation unstable.")
+        print("    WARNING: NaN detected. Simulation unstable.")
         l2_error = float('nan')
     else:
         ghia_y = {100: GHIA_RE100_Y, 400: GHIA_RE400_Y, 1000: GHIA_RE1000_Y}[re]
@@ -465,7 +464,7 @@ def run_channel_flow(nx=128, ny=64, nz=64, u_max=0.05, max_steps=5000, warmup_st
     wp.synchronize_device('cuda')
 
     all_times = []
-    for step in range(max_steps):
+    for _step in range(max_steps):
         t0 = time.perf_counter()
 
         wp.launch(compute_macroscopic, dim=(nx, ny, nz),
@@ -473,20 +472,24 @@ def run_channel_flow(nx=128, ny=64, nz=64, u_max=0.05, max_steps=5000, warmup_st
                           lat['cx'], lat['cy'], lat['cz']],
                   device='cuda')
 
-        wp.launch(collide_stream_pull, dim=(nx, ny, nz),
+        wp.launch(collide_bgk, dim=(nx, ny, nz),
                   inputs=[f, fnew, rho, ux, uy, uz, nx, ny, nz,
                           wp.float32(omega_val),
-                          lat['w'], lat['cx'], lat['cy'], lat['cz'], lat['opp']],
+                          lat['w'], lat['cx'], lat['cy'], lat['cz']],
+                  device='cuda')
+        wp.launch(copy_walls, dim=(nx, ny, nz),
+                  inputs=[f, fnew, nx, ny, nz], device='cuda')
+        wp.synchronize_device('cuda')
+        wp.launch(stream_pull, dim=(nx, ny, nz),
+                  inputs=[fnew, f, nx, ny, nz,
+                          lat['cx'], lat['cy'], lat['cz'], lat['opp']],
                   device='cuda')
 
         wp.launch(channel_inlet_zou_he, dim=(ny, nz),
-                  inputs=[fnew, wp.float32(u_max), ny, nz], device='cuda')
+                  inputs=[f, wp.float32(u_max), ny, nz], device='cuda')
 
         wp.launch(channel_outlet_copy, dim=(ny, nz),
-                  inputs=[fnew, nx, ny, nz], device='cuda')
-
-        wp.launch(copy_f, dim=(nx, ny, nz),
-                  inputs=[f, fnew, nx, ny, nz], device='cuda')
+                  inputs=[f, nx, ny, nz], device='cuda')
 
         wp.synchronize_device('cuda')
         all_times.append(time.perf_counter() - t0)
@@ -506,7 +509,7 @@ def run_channel_flow(nx=128, ny=64, nz=64, u_max=0.05, max_steps=5000, warmup_st
     if np.any(np.isnan(profile)):
         l2_error = float('nan')
         max_u = float('nan')
-        print(f"    WARNING: NaN in channel flow.")
+        print("    WARNING: NaN in channel flow.")
     else:
         l2_error = np.sqrt(np.mean((profile[interior] - analytical[interior]) ** 2))
         max_u = float(np.max(np.abs(profile[interior])))

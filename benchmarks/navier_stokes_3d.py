@@ -19,7 +19,6 @@ import subprocess
 import time
 
 import numpy as np
-
 import warp as wp
 
 wp.init()
@@ -47,7 +46,7 @@ def field_bytes(n: int) -> int:
 
 
 def max_grid_for_mem(gb_limit: float = 28.0) -> int:
-    _, total_mb = gpu_mem_mb()
+    _, _total_mb = gpu_mem_mb()
     limit_bytes = gb_limit * 1024**3
     n = int((limit_bytes / 32) ** (1.0 / 3.0))
     # round down to power of 2
@@ -662,7 +661,7 @@ def bench_taylor_green(grid_sizes: list[int], n_steps: int = 100) -> list[dict]:
         wp.synchronize_device(DEVICE)
         t_total_start = time.perf_counter()
 
-        for s in range(n_steps):
+        for _s in range(n_steps):
             timings = solver.step()
             for k in step_times:
                 step_times[k] += timings[k]

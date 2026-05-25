@@ -31,8 +31,8 @@ import warp as wp
 wp.init()
 DEVICE = wp.get_device("cuda:0")
 
-import newton
-from newton import ModelBuilder
+import newton  # noqa: E402
+from newton import ModelBuilder  # noqa: E402
 
 RHO_WATER = 1000.0
 GRAVITY = 9.81
@@ -739,7 +739,7 @@ def bench_solver_compare():
             state_1 = model.state()
 
             t_start = time.perf_counter()
-            for step in range(n_steps):
+            for _step in range(n_steps):
                 state_0.clear_forces()
                 wp.launch(
                     compute_hydro_forces_box,

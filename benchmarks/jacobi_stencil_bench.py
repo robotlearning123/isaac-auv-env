@@ -171,7 +171,7 @@ def bench_2d_pytorch(n: int, compile_mode: bool = False) -> dict:
 # 3D Jacobi — 7-point stencil: p_new = (6 neighbors - rhs) / 6
 # =========================================================================
 
-import warp as wp
+import warp as wp  # noqa: E402
 
 wp.init()
 
@@ -223,7 +223,7 @@ def bench_3d_pytorch(n: int, compile_mode: bool = False) -> dict:
     import torch
 
     p = torch.zeros(n, n, n, device="cuda", dtype=torch.float32)
-    p_new = torch.zeros_like(p)
+    torch.zeros_like(p)
     rhs = torch.rand(n, n, n, device="cuda", dtype=torch.float32) * 2 - 1
 
     def step(p_in):

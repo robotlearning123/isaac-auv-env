@@ -6,8 +6,9 @@ Grids: 64x64, 128x128, 256x256, 512x512.
 """
 
 import time
-import numpy as np
+
 import cupy as cp
+import numpy as np
 import torch
 from scipy import sparse as sp
 from scipy.sparse.linalg import spsolve as scipy_spsolve
@@ -196,7 +197,7 @@ def main():
     print("PART 3: Sparse Linear Solve Benchmark (Pressure Poisson Equation)")
     print("=" * 90)
     print(f"CuPy {cp.__version__}, PyTorch {torch.__version__}")
-    print(f"5-point Laplacian stencil, Dirichlet BC")
+    print("5-point Laplacian stencil, Dirichlet BC")
     print()
 
     grids = [64, 128, 256, 512]

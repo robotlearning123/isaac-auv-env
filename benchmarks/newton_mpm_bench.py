@@ -15,10 +15,9 @@ API reference: newton/examples/mpm/example_mpm_granular.py, example_mpm_viscous.
 import subprocess
 import time
 
+import newton
 import numpy as np
 import warp as wp
-
-import newton
 from newton.solvers import SolverImplicitMPM
 
 wp.init()
@@ -155,13 +154,13 @@ def run_benchmark(scenario_name, build_fn, num_particles, voxel_size, num_steps=
     warmup_time = time.perf_counter() - t0
     print(f"  Warmup: {warmup_time:.2f}s")
 
-    mem_after_init = get_gpu_memory_mb()
+    get_gpu_memory_mb()
 
     # Timed run
     dt = 1.0 / 240.0
     print(f"  Running {num_steps} steps (dt={dt:.4f}s)...")
     t0 = time.perf_counter()
-    for i in range(num_steps):
+    for _i in range(num_steps):
         solver.step(state_0, state_1, None, None, dt)
         state_0, state_1 = state_1, state_0
     wp.synchronize_device()
@@ -173,7 +172,7 @@ def run_benchmark(scenario_name, build_fn, num_particles, voxel_size, num_steps=
     ms_per_step = (elapsed / num_steps) * 1000.0
     mem_used = mem_after_run - mem_before
 
-    print(f"\n  RESULTS:")
+    print("\n  RESULTS:")
     print(f"    Particles:         {actual_particles}")
     print(f"    Voxel size:        {voxel_size}")
     print(f"    Steps:             {num_steps}")

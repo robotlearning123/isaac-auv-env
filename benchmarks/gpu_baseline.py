@@ -1,7 +1,7 @@
 """RTX 5090 GPU baseline benchmarks — memory bandwidth, compute, kernel launch, allocation speed."""
 
-import time
 import subprocess
+import time
 
 import cupy as cp
 import numpy as np

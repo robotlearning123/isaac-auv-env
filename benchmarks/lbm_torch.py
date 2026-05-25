@@ -188,13 +188,13 @@ def run_lid_cavity(nx, ny, nz, re, u_lid=0.05, max_steps=5000, warmup_steps=100)
 
     f = equilibrium(rho, ux, uy, uz).to(device)
 
-    lat_cx = CX.to(device)
-    lat_cy = CY.to(device)
-    lat_cz = CZ.to(device)
+    CX.to(device)
+    CY.to(device)
+    CZ.to(device)
 
     all_times = []
 
-    for step in range(max_steps):
+    for _step in range(max_steps):
         torch.cuda.synchronize()
         t0 = time.perf_counter()
 
@@ -212,7 +212,7 @@ def run_lid_cavity(nx, ny, nz, re, u_lid=0.05, max_steps=5000, warmup_steps=100)
         all_times.append(dt)
 
     # Final validation
-    rho, ux_final, uy_final, uz_final = macroscopic(f)
+    rho, ux_final, _uy_final, _uz_final = macroscopic(f)
     torch.cuda.synchronize()
 
     ux_host = ux_final.cpu().numpy()
@@ -261,7 +261,7 @@ def run_channel_flow(nx=128, ny=64, nz=64, u_max=0.05, max_steps=5000, warmup_st
     H = ny - 1
     tau = 0.8
     nu = (tau - 0.5) / 3.0
-    force_x = 8.0 * nu * u_max / (H * H)
+    8.0 * nu * u_max / (H * H)
     omega = 1.0 / tau
     re = u_max * H / nu
 
@@ -277,7 +277,7 @@ def run_channel_flow(nx=128, ny=64, nz=64, u_max=0.05, max_steps=5000, warmup_st
 
     all_times = []
 
-    for step in range(max_steps):
+    for _step in range(max_steps):
         torch.cuda.synchronize()
         t0 = time.perf_counter()
 
@@ -307,7 +307,7 @@ def run_channel_flow(nx=128, ny=64, nz=64, u_max=0.05, max_steps=5000, warmup_st
         all_times.append(dt)
 
     # Final validation
-    rho, ux_final, uy_final, uz_final = macroscopic(f)
+    rho, ux_final, _uy_final, _uz_final = macroscopic(f)
     torch.cuda.synchronize()
 
     ux_host = ux_final.cpu().numpy()

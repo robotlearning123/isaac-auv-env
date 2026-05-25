@@ -7,8 +7,9 @@ Targets RTX 5090 (CUDA 12.8). Tests:
 """
 
 import time
-import numpy as np
+
 import cupy as cp
+import numpy as np
 import torch
 import warp as wp
 
@@ -147,7 +148,7 @@ def bench_pseudo_spectral_ns():
         KX_cp = cp.asarray(KX)
         KY_cp = cp.asarray(KY)
         omega_hat_cp = cp.asarray(omega_hat)
-        N_cp = cp.int32(N)
+        cp.int32(N)
 
         # Dealias mask (2/3 rule)
         dealias = cp.ones((N, N))
@@ -162,7 +163,16 @@ def bench_pseudo_spectral_ns():
         dealias_np[np.abs(KIDX_Y) > N // 3] = 0
         dealias_cp = cp.asarray(dealias_np)
 
-        def step(omega_hat, dt, nu):
+        def step(
+            omega_hat,
+            dt,
+            nu,
+            K2_cp=K2_cp,
+            K2_inv_cp=K2_inv_cp,
+            KX_cp=KX_cp,
+            KY_cp=KY_cp,
+            dealias_cp=dealias_cp,
+        ):
             # Compute velocity from vorticity
             # psi_hat = -omega_hat / K2
             psi_hat = -omega_hat * K2_inv_cp
@@ -247,7 +257,7 @@ def bench_pcg_warp():
     h2 = h * h
 
     print(f"Grid: {N}^3 = {n_total} unknowns (interior points), h = {h:.6f}")
-    print(f"Using Dirichlet BC (u=0 on boundary), so grid is interior-only")
+    print("Using Dirichlet BC (u=0 on boundary), so grid is interior-only")
     print()
 
     # For Dirichlet BC interior grid, Laplacian is standard 7-point stencil.
@@ -365,7 +375,7 @@ def bench_pcg_warp():
         z = wp.zeros(n_total, dtype=wp.float64)
         p_vec = wp.zeros(n_total, dtype=wp.float64)
         Ap = wp.zeros(n_total, dtype=wp.float64)
-        tmp = wp.zeros(n_total, dtype=wp.float64)
+        wp.zeros(n_total, dtype=wp.float64)
 
         # r = b - A*x (x=0, so r=b initially)
         wp.launch(copy_kernel, dim=n_total, inputs=[b_wp, r])
@@ -506,7 +516,7 @@ def bench_pcg_warp():
         cp.cuda.Stream.null.synchronize()
 
         t0 = time.perf_counter()
-        x_cg, info_cg = csplg.cg(A_gpu, b_gpu, atol=1e-6, rtol=1e-6)
+        x_cg, _info_cg = csplg.cg(A_gpu, b_gpu, atol=1e-6, rtol=1e-6)
         cp.cuda.Stream.null.synchronize()
         t_cupy_cg = time.perf_counter() - t0
 
@@ -522,7 +532,7 @@ def bench_pcg_warp():
 
 
 if __name__ == "__main__":
-    print(f"GPU: RTX 5090, VRAM: 31 GB")
+    print("GPU: RTX 5090, VRAM: 31 GB")
     print(f"CuPy {cp.__version__}, PyTorch {torch.__version__}, Warp {wp.__version__}")
     print(f"NumPy {np.__version__}")
     print()

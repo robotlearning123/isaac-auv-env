@@ -12,7 +12,6 @@ import subprocess
 import time
 
 import numpy as np
-
 import warp as wp
 
 wp.init()
@@ -231,8 +230,6 @@ def bench_torch_advect(gs: int) -> dict:
     import torch
 
     total = gs ** 3
-    dx = 1.0 / 64.0
-    dt_sim = 0.01
     vel = (torch.rand(total, 3, device="cuda", dtype=torch.float32) - 0.5)
     vel_new = torch.zeros_like(vel)
     vel3d = vel.view(gs, gs, gs, 3)
@@ -247,7 +244,7 @@ def bench_torch_advect(gs: int) -> dict:
     # (full semi-Lagrangian in torch requires index_put which is slower)
     torch.cuda.synchronize()
     t0 = time.perf_counter()
-    for s in range(ADVECT_STEPS):
+    for _s in range(ADVECT_STEPS):
         vel3d_new.copy_(vel3d)
     torch.cuda.synchronize()
     dt = time.perf_counter() - t0
@@ -323,7 +320,7 @@ def bench_cupy_advect(gs: int) -> dict:
 
     cp.cuda.Stream.null.synchronize()
     t0 = time.perf_counter()
-    for s in range(ADVECT_STEPS):
+    for _s in range(ADVECT_STEPS):
         vel3d_new[:] = vel3d
     cp.cuda.Stream.null.synchronize()
     dt = time.perf_counter() - t0
@@ -425,7 +422,7 @@ def main():
 
     jacobi_results = []
     for gs in GRID_SIZES:
-        for bench_fn, name in [
+        for bench_fn, _name in [
             (bench_warp_jacobi, "Warp"),
             (bench_torch_jacobi, "PyTorch"),
             (bench_cupy_jacobi, "CuPy"),
