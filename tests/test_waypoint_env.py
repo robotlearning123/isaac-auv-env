@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
+import torch
 import warp as wp
 
 from oceanscale.envs.waypoint_env import WaypointFollowingEnv
@@ -18,14 +19,14 @@ wp.init()
 
 @pytest.fixture
 def env():
-    e = WaypointFollowingEnv(n_envs=1, device="cuda", sensor_noise_std=0.0)
+    e = WaypointFollowingEnv(n_envs=1, device="cuda:0", sensor_noise_std=0.0)
     yield e
     e.close()
 
 
 @pytest.fixture
 def batched_env():
-    e = WaypointFollowingEnv(n_envs=8, device="cuda", sensor_noise_std=0.0)
+    e = WaypointFollowingEnv(n_envs=8, device="cuda:0", sensor_noise_std=0.0)
     yield e
     e.close()
 
@@ -153,7 +154,7 @@ class TestWaypointAdvancement:
         """ROV at waypoint 0 position -> current_wp_idx advances to 1."""
         env.reset()
         pos, _, _ = env._get_body_state()
-        env._waypoints[0, 0] = pos[0].copy()
+        env._waypoints[0, 0] = pos[0].clone()
 
         _, _, _, _, info = env.step(np.zeros(6, dtype=np.float32))
         assert info["current_wp_idx"][0] >= 1
@@ -161,7 +162,9 @@ class TestWaypointAdvancement:
     def test_no_advance_when_far(self, env):
         """ROV far from waypoint -> no advancement."""
         env.reset()
-        env._waypoints[0, 0] = np.array([50.0, 50.0, -50.0], dtype=np.float32)
+        env._waypoints[0, 0] = torch.tensor(
+            [50.0, 50.0, -50.0], device=env.device, dtype=torch.float32
+        )
 
         _, _, _, _, info = env.step(np.zeros(6, dtype=np.float32))
         assert info["current_wp_idx"][0] == 0
@@ -171,7 +174,7 @@ class TestWaypointAdvancement:
         env.reset()
         pos, _, _ = env._get_body_state()
         for j in range(5):
-            env._waypoints[0, j] = pos[0].copy()
+            env._waypoints[0, j] = pos[0].clone()
 
         for _ in range(10):
             _, _, _terminated, _truncated, info = env.step(np.zeros(6, dtype=np.float32))
@@ -193,7 +196,7 @@ class TestTermination:
         env.reset()
         pos, _, _ = env._get_body_state()
         for j in range(5):
-            env._waypoints[0, j] = pos[0].copy()
+            env._waypoints[0, j] = pos[0].clone()
 
         for _ in range(10):
             _, _, terminated, _, info = env.step(np.zeros(6, dtype=np.float32))
@@ -206,7 +209,9 @@ class TestTermination:
     def test_oob_terminates(self, env):
         """ROV >10m from current waypoint -> terminated."""
         env.reset()
-        env._waypoints[0, 0] = np.array([50.0, 50.0, -50.0], dtype=np.float32)
+        env._waypoints[0, 0] = torch.tensor(
+            [50.0, 50.0, -50.0], device=env.device, dtype=torch.float32
+        )
 
         for _ in range(10):
             _, _, terminated, _, _ = env.step(np.zeros(6, dtype=np.float32))
@@ -225,7 +230,9 @@ class TestReward:
     def test_reward_positive_without_reach(self, env):
         """Exp reward is always positive even without reaching waypoint."""
         env.reset()
-        env._waypoints[0, 0] = np.array([50.0, 0.0, -1.5], dtype=np.float32)
+        env._waypoints[0, 0] = torch.tensor(
+            [50.0, 0.0, -1.5], device=env.device, dtype=torch.float32
+        )
         _, reward, _, _, info = env.step(np.zeros(6, dtype=np.float32))
         assert info["current_wp_idx"][0] == 0
         assert 0.0 <= float(reward) < 1.0
@@ -234,8 +241,8 @@ class TestReward:
         """Reaching waypoint gives +10 bonus, making total reward positive."""
         env.reset()
         pos, _, _ = env._get_body_state()
-        env._waypoints[0, 0] = pos[0].copy()
-        env._waypoints[0, 1] = pos[0].copy()
+        env._waypoints[0, 0] = pos[0].clone()
+        env._waypoints[0, 1] = pos[0].clone()
 
         _, reward, _, _, info = env.step(np.zeros(6, dtype=np.float32))
         assert info["current_wp_idx"][0] >= 1
@@ -245,12 +252,16 @@ class TestReward:
         """Closer to waypoint -> less negative reward."""
         env.reset()
         pos, _, _ = env._get_body_state()
-        env._waypoints[0, 0] = pos[0] + np.array([0.1, 0.0, 0.0], dtype=np.float32)
+        env._waypoints[0, 0] = pos[0] + torch.tensor(
+            [0.1, 0.0, 0.0], device=env.device, dtype=torch.float32
+        )
         _, reward_close, _, _, _ = env.step(np.zeros(6, dtype=np.float32))
 
         env.reset()
         pos2, _, _ = env._get_body_state()
-        env._waypoints[0, 0] = pos2[0] + np.array([4.0, 0.0, 0.0], dtype=np.float32)
+        env._waypoints[0, 0] = pos2[0] + torch.tensor(
+            [4.0, 0.0, 0.0], device=env.device, dtype=torch.float32
+        )
         _, reward_far, _, _, _ = env.step(np.zeros(6, dtype=np.float32))
 
         assert float(reward_close) > float(reward_far)

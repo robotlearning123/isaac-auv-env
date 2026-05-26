@@ -1,10 +1,19 @@
 """DockingApproachEnv — Precision docking approach task for ROV.
 
+Uses OceanSim for physics (Newton rigid-body + Tier1 Fossen hydrodynamics).
 The ROV must approach a fixed docking station from 2-4m away and arrive
 within 0.1m with velocity <0.05 m/s and heading error <15 degrees.
-Requires a deceleration profile enforced by a speed-limit schedule.
 
-Observation (31-dim): extends ROVEnv 26-dim with:
+Observation (31-dim):
+    [0:3]   relative position to dock (world frame)
+    [3:7]   quaternion (xyzw)
+    [7:10]  angular velocity (body frame)
+    [10:13] linear velocity (body frame)
+    [13]    depth difference
+    [14]    roll angle
+    [15]    pitch angle
+    [16:22] previous action (6-dim)
+    [22:26] previous wrench [fz, tx, ty, tz]
     [26]    range to dock (scalar distance)
     [27:30] bearing to dock (unit vector, body frame)
     [30]    approach speed (velocity component along bearing)
@@ -12,105 +21,144 @@ Observation (31-dim): extends ROVEnv 26-dim with:
 
 from __future__ import annotations
 
-from typing import Any, cast
+from dataclasses import dataclass
+from typing import Any, ClassVar
 
+import gymnasium as gym
 import numpy as np
+import torch
 import warp as wp
-from gymnasium import spaces
-from numpy.typing import NDArray
 
-from oceanscale.hydro.tier1 import DEFAULT_DT, RandomizationRanges
-from oceanscale.hydro.tier1_kernels import tier1_zero_wrench
-from oceanscale.rov_env import ROVEnv
+from oceanscale.sim import OceanConfig, OceanSim, OceanSimConfig
+from oceanscale.vehicles.bluerov2 import BlueROV2Heavy
 
-FloatArray = NDArray[np.float32]
-BoolArray = NDArray[np.bool_]
-StepReturn = tuple[
-    FloatArray,
-    FloatArray | float,
-    BoolArray | bool,
-    BoolArray | bool,
-    dict[str, Any],
-]
+OBS_DIM = 31
+ACT_DIM = 6
 
 
-def _wp_numpy(array: Any) -> NDArray[Any]:
-    return cast(NDArray[Any], array.numpy())
+def _rotate_to_body_torch(quat: torch.Tensor, vec_world: torch.Tensor) -> torch.Tensor:
+    """Rotate vectors from world to body frame using quaternion (xyzw).
+
+    Computes q* ⊗ v ⊗ q (conjugate sandwich) for inverse rotation.
+    """
+    qx, qy, qz, qw = quat[:, 0], quat[:, 1], quat[:, 2], quat[:, 3]
+    vx, vy, vz = vec_world[:, 0], vec_world[:, 1], vec_world[:, 2]
+    t0 = 2.0 * (qy * vz - qz * vy)
+    t1 = 2.0 * (qz * vx - qx * vz)
+    t2 = 2.0 * (qx * vy - qy * vx)
+    return torch.stack(
+        [
+            vx - qw * t0 + qy * t2 - qz * t1,
+            vy - qw * t1 + qz * t0 - qx * t2,
+            vz - qw * t2 + qx * t1 - qy * t0,
+        ],
+        dim=-1,
+    )
 
 
-def _require_value(value: Any, name: str) -> Any:
-    if value is None:
-        raise RuntimeError(f"DockingApproachEnv missing {name}")
-    return value
+def _rotate_to_world_torch(quat: torch.Tensor, vec_body: torch.Tensor) -> torch.Tensor:
+    """Rotate vectors from body to world frame using quaternion (xyzw).
+
+    Computes q ⊗ v ⊗ q* for forward rotation.
+    """
+    qx, qy, qz, qw = quat[:, 0], quat[:, 1], quat[:, 2], quat[:, 3]
+    vx, vy, vz = vec_body[:, 0], vec_body[:, 1], vec_body[:, 2]
+    t0 = 2.0 * (qy * vz - qz * vy)
+    t1 = 2.0 * (qz * vx - qx * vz)
+    t2 = 2.0 * (qx * vy - qy * vx)
+    return torch.stack(
+        [
+            vx + qw * t0 + qy * t2 - qz * t1,
+            vy + qw * t1 + qz * t0 - qx * t2,
+            vz + qw * t2 + qx * t1 - qy * t0,
+        ],
+        dim=-1,
+    )
 
 
-def _require_float_array(value: FloatArray | None, name: str) -> FloatArray:
-    if value is None:
-        raise RuntimeError(f"DockingApproachEnv missing {name}")
-    return value
+@dataclass
+class DockingApproachEnvCfg:
+    """Configuration for DockingApproachEnv."""
+
+    n_envs: int = 64
+    device: str = "cuda:0"
+    dt: float = 1.0 / 240.0
+    decimation: int = 1
+    max_episode_steps: int = 7200
+    dock_pos: tuple[float, float, float] = (0.0, 0.0, -1.5)
+    sensor_noise_std: float = 0.02
+    use_domain_randomization: bool = False
+    dock_offset_range: float = 1.0
+    init_range_min: float = 2.0
+    init_range_max: float = 4.0
+    init_bearing_v_max: float = 20.0
+    init_vel_max: float = 0.2
+    init_heading_offset_max: float = 30.0
+    current_speed_max: float = 0.3
+    current_coupling: float = 5.0
 
 
-class DockingApproachEnv(ROVEnv):
-    """Precision docking approach environment.
+class DockingApproachEnv(gym.Env):
+    """Precision docking approach environment backed by OceanSim.
 
-    Extends ROVEnv with docking-specific observation, reward, and termination.
-    The ROV must decelerate as it approaches the dock to achieve a soft landing.
+    The ROV must decelerate as it approaches the dock to achieve a soft
+    landing. Physics via OceanSim.step_torch(); docking-specific obs,
+    reward, and termination computed on GPU with torch tensors.
     """
 
-    def __init__(
-        self,
-        n_envs: int = 64,
-        n_thrusters: int = 8,
-        device: str = "cuda",
-        dt: float = DEFAULT_DT,
-        dock_pos: np.ndarray | None = None,
-        coeffs: dict[str, Any] | None = None,
-        sensor_noise_std: float = 0.02,
-        use_domain_randomization: bool = False,
-        randomization_ranges: RandomizationRanges | None = None,
-        dock_offset_range: float = 1.0,
-    ) -> None:
-        if dock_pos is None:
-            dock_pos = np.array([0.0, 0.0, -1.5], dtype=np.float32)
+    is_vector_env = True
+    metadata: ClassVar[dict[str, Any]] = {"render_modes": []}
 
-        super().__init__(
-            n_envs=n_envs,
-            n_thrusters=n_thrusters,
-            device=device,
-            dt=dt,
-            max_episode_steps=7200,
-            target_pos=dock_pos,
-            coeffs=coeffs,
-            sensor_noise_std=sensor_noise_std,
-            use_domain_randomization=use_domain_randomization,
-            randomization_ranges=randomization_ranges,
-            init_pos_noise_std=0.0,
-            init_yaw_noise_std=0.0,
-            use_fluid=False,
+    def __init__(self, cfg: DockingApproachEnvCfg | None = None) -> None:
+        if cfg is None:
+            cfg = DockingApproachEnvCfg()
+        self.cfg = cfg
+        self.num_envs = cfg.n_envs
+        self._device = torch.device(cfg.device)
+
+        self.observation_space = gym.spaces.Box(
+            low=-np.inf, high=np.inf, shape=(OBS_DIM,), dtype=np.float32
+        )
+        self.action_space = gym.spaces.Box(
+            low=-1.0, high=1.0, shape=(ACT_DIM,), dtype=np.float32
         )
 
-        self.observation_space = spaces.Box(low=-np.inf, high=np.inf, shape=(31,), dtype=np.float32)
+        self.sim = OceanSim(
+            OceanSimConfig(
+                vehicle=BlueROV2Heavy(),
+                ocean=OceanConfig(),
+                n_envs=cfg.n_envs,
+                dt=cfg.dt,
+                device=cfg.device,
+                init_pos=cfg.dock_pos,
+            )
+        )
 
-        self._w_range = 1.0
-        self._w_vel_dock = 2.0
-        self._w_align = 0.5
-        self._w_soft = 3.0
-        self._w_dock = 100.0
-        self._w_crash = 50.0
-        self._w_act_dock = 0.01
+        self._target = torch.tensor(
+            cfg.dock_pos, dtype=torch.float32, device=self._device
+        )
+        self._step_count = torch.zeros(
+            cfg.n_envs, dtype=torch.int64, device=self._device
+        )
+        self._prev_action = torch.zeros(
+            cfg.n_envs, ACT_DIM, dtype=torch.float32, device=self._device
+        )
+        self._prev_wrench = torch.zeros(
+            cfg.n_envs, 4, dtype=torch.float32, device=self._device
+        )
+        self._dock_positions = (
+            self._target.unsqueeze(0).expand(cfg.n_envs, -1).clone()
+        )
+        self._min_range = torch.full(
+            (cfg.n_envs,), float("inf"), dtype=torch.float32, device=self._device
+        )
+        self._current_force = torch.zeros(
+            cfg.n_envs, 3, dtype=torch.float32, device=self._device
+        )
 
-        self._init_range_min = 2.0
-        self._init_range_max = 4.0
-        self._init_bearing_v_max = np.deg2rad(20.0)
-        self._init_vel_max = 0.2
-        self._init_heading_offset_max = np.deg2rad(30.0)
-        self._current_speed_max = 0.3
-        self._current_coupling = 5.0
-        self._dock_offset_range = dock_offset_range
-
-        self._dock_positions: FloatArray | None = None
-        self._min_range: FloatArray | None = None
-        self._current_force: FloatArray | None = None
+    # ------------------------------------------------------------------
+    # Reset
+    # ------------------------------------------------------------------
 
     def reset(
         self,
@@ -118,116 +166,236 @@ class DockingApproachEnv(ROVEnv):
         seed: int | None = None,
         options: dict[str, Any] | None = None,
         env_ids: list[int] | np.ndarray | None = None,
-    ) -> tuple[np.ndarray, dict[str, Any]]:
-        obs, info = super().reset(seed=seed, options=options, env_ids=env_ids)
-        if self.n_envs == 1:
-            obs = obs.squeeze(0)
+    ) -> tuple[torch.Tensor, dict[str, Any]]:
+        super().reset(seed=seed)
+        if env_ids is None:
+            self._reset_indices(torch.arange(self.num_envs, device=self._device))
+        else:
+            ids_t = torch.as_tensor(env_ids, dtype=torch.long, device=self._device)
+            self._reset_indices(ids_t)
+
+        obs = self._get_observations()
+        info: dict[str, Any] = {"min_range": self._min_range.clone()}
+        if self.num_envs == 1:
+            return obs.squeeze(0), info
         return obs, info
 
-    # ------------------------------------------------------------------
-    # Lifecycle
-    # ------------------------------------------------------------------
+    def _reset_indices(self, env_ids: torch.Tensor) -> None:
+        import newton as nt
 
-    def _build(self) -> None:
-        super()._build()
-        self._dock_positions = np.tile(self.target_pos, (self.n_envs, 1)).astype(np.float32)
-        self._min_range = np.full(self.n_envs, np.inf, dtype=np.float32)
-        self._current_force = np.zeros((self.n_envs, 3), dtype=np.float32)
+        from oceanscale.hydro.tier1 import RandomizationRanges
+
+        n = len(env_ids)
+        dev = self._device
+        cfg = self.cfg
+        ids_np = env_ids.cpu().numpy()
+        wp_dev = str(dev)
+
+        # Dock position with optional offset
+        if cfg.dock_offset_range > 0:
+            offset = (torch.rand(n, 3, device=dev) * 2 - 1) * cfg.dock_offset_range
+            self._dock_positions[env_ids] = self._target.unsqueeze(0) + offset
+        else:
+            self._dock_positions[env_ids] = self._target.unsqueeze(0)
+
+        dock_pos = self._dock_positions[env_ids]
+
+        # Random start position on sphere around dock
+        init_range = torch.empty(n, device=dev).uniform_(
+            cfg.init_range_min, cfg.init_range_max
+        )
+        bearing_h = torch.empty(n, device=dev).uniform_(0, 2 * np.pi)
+        bearing_v = torch.empty(n, device=dev).uniform_(
+            -np.deg2rad(cfg.init_bearing_v_max),
+            np.deg2rad(cfg.init_bearing_v_max),
+        )
+        dx = torch.cos(bearing_h) * torch.cos(bearing_v)
+        dy = torch.sin(bearing_h) * torch.cos(bearing_v)
+        dz = torch.sin(bearing_v)
+        direction = torch.stack([dx, dy, dz], dim=-1)
+        start_pos = dock_pos + init_range.unsqueeze(-1) * direction
+
+        # Heading: face dock with random offset
+        yaw_to_dock = torch.atan2(-dy, -dx)
+        heading_offset = torch.empty(n, device=dev).uniform_(
+            -np.deg2rad(cfg.init_heading_offset_max),
+            np.deg2rad(cfg.init_heading_offset_max),
+        )
+        yaw = yaw_to_dock + heading_offset
+        half_yaw = yaw * 0.5
+
+        # Random initial velocity
+        init_vel = torch.empty(n, device=dev).uniform_(0, cfg.init_vel_max)
+        vel_h = torch.empty(n, device=dev).uniform_(0, 2 * np.pi)
+        vel_v = torch.empty(n, device=dev).uniform_(-0.5, 0.5)
+        vx = init_vel * torch.cos(vel_h) * torch.cos(vel_v)
+        vy = init_vel * torch.sin(vel_h) * torch.cos(vel_v)
+        vz = init_vel * torch.sin(vel_v)
+
+        # Write to Newton model
+        q = self.sim.model.joint_q.numpy()
+        qd = self.sim.model.joint_qd.numpy()
+        for k, idx in enumerate(env_ids.tolist()):
+            bq = idx * 7
+            q[bq : bq + 3] = [
+                start_pos[k, 0].item(),
+                start_pos[k, 1].item(),
+                start_pos[k, 2].item(),
+            ]
+            q[bq + 3 : bq + 7] = [
+                0.0,
+                0.0,
+                torch.sin(half_yaw[k]).item(),
+                torch.cos(half_yaw[k]).item(),
+            ]
+            bqd = idx * 6
+            qd[bqd : bqd + 6] = [
+                vx[k].item(),
+                vy[k].item(),
+                vz[k].item(),
+                0.0,
+                0.0,
+                0.0,
+            ]
+        self.sim.model.joint_q.assign(q)
+        self.sim.model.joint_qd.assign(qd)
+        nt.eval_fk(
+            self.sim.model,
+            self.sim.model.joint_q,
+            self.sim.model.joint_qd,
+            self.sim.state_curr,
+        )
+
+        # Reset tier1 internal state
+        nu_prev = self.sim.tier1.nu_prev.numpy()
+        nu_dot_prev = self.sim.tier1.nu_dot_prev.numpy()
+        u_eff_prev = self.sim.tier1.u_eff_prev.numpy()
+        nu_prev[ids_np] = 0.0
+        nu_dot_prev[ids_np] = 0.0
+        u_eff_prev[ids_np] = 0.0
+        wp.copy(
+            self.sim.tier1.nu_prev,
+            wp.array(nu_prev, dtype=wp.spatial_vectorf, device=wp_dev),
+        )
+        wp.copy(
+            self.sim.tier1.nu_dot_prev,
+            wp.array(nu_dot_prev, dtype=wp.spatial_vectorf, device=wp_dev),
+        )
+        wp.copy(
+            self.sim.tier1.u_eff_prev,
+            wp.array(u_eff_prev, dtype=wp.float32, device=wp_dev),
+        )
+        self.sim.tier1.zero_wrench()
+        wp.synchronize()
+
+        # Domain randomization
+        if cfg.use_domain_randomization:
+            docking_ranges = RandomizationRanges(
+                mass=0.15, added_mass=0.20, d_lin=0.20, d_quad=0.20
+            )
+            self.sim.tier1.randomize_coeffs(env_ids=ids_np, ranges=docking_ranges)
+
+        # Random current per env
+        current_speed = torch.empty(n, device=dev).uniform_(0, cfg.current_speed_max)
+        current_dir = torch.empty(n, device=dev).uniform_(0, 2 * np.pi)
+        self._current_force[env_ids, 0] = (
+            cfg.current_coupling * current_speed * torch.cos(current_dir)
+        )
+        self._current_force[env_ids, 1] = (
+            cfg.current_coupling * current_speed * torch.sin(current_dir)
+        )
+        self._current_force[env_ids, 2] = 0.0
+
+        # Reset tracking state
+        self._step_count[env_ids] = 0
+        self._prev_action[env_ids] = 0.0
+        self._prev_wrench[env_ids] = 0.0
+        self._min_range[env_ids] = float("inf")
 
     # ------------------------------------------------------------------
     # Step
     # ------------------------------------------------------------------
 
-    def step(  # type: ignore[override]
-        self, action: np.ndarray
-    ) -> StepReturn:
-        if not self._built:
-            raise RuntimeError("Call reset() first")
-
-        action = cast(FloatArray, np.asarray(action, dtype=np.float32))
+    def step(
+        self, action: torch.Tensor | np.ndarray
+    ) -> tuple[
+        torch.Tensor,
+        torch.Tensor | float,
+        torch.Tensor | bool,
+        torch.Tensor | bool,
+        dict[str, Any],
+    ]:
+        action = torch.as_tensor(action, dtype=torch.float32, device=self._device)
         if action.ndim == 1:
-            action = np.broadcast_to(action, (self.n_envs, 6)).copy()
-        action = cast(FloatArray, np.clip(action, -1.0, 1.0))
-        self._prev_action = action.copy()
+            action = action.unsqueeze(0).expand(self.num_envs, -1).clone()
+        action = action.clamp(-1.0, 1.0)
+        self._prev_action.copy_(action)
 
-        if self._t_pinv is not None:
-            u_cmd = np.clip(action @ self._t_pinv.T, -1.0, 1.0).astype(np.float32)
-        else:
-            u_cmd = np.zeros((self.n_envs, self.n_thrusters), dtype=np.float32)
-            for i in range(min(6, self.n_thrusters)):
-                u_cmd[:, i] = action[:, i]
-        self._u_cmd = wp.array(u_cmd, dtype=wp.float32, device=self.device)
+        for _ in range(self.cfg.decimation):
+            self.sim.step_torch(action)
+            self._apply_docking_current_impulse()
 
-        body_f = _require_value(self.state_curr.body_f, "body_f")
-        body_qd = _require_value(self.state_curr.body_qd, "body_qd")
-
-        wp.launch(
-            tier1_zero_wrench,
-            dim=self.n_envs,
-            inputs=[body_f],
-            device=self.device,
+        # Capture wrench from last substep
+        wrench = self.sim.tier1.wrench_buf.numpy()
+        self._prev_wrench.copy_(
+            torch.tensor(wrench[:, 2:6], dtype=torch.float32, device=self._device)
         )
 
-        self.tier1.compute_wrench(
-            nu=body_qd,
-            quat=self._extract_quat(),
-            u_cmd=self._u_cmd,
-            dt=self.dt,
-        )
-        self.tier1.write_to_body_f(body_f)
-
-        self._apply_docking_current()
-
-        self.solver.step(self.state_curr, self.state_next, self.control, None, self.dt)
-        cast(Any, wp.synchronize)()
-        self.state_curr, self.state_next = self.state_next, self.state_curr
-
-        self._prev_wrench = cast(FloatArray, _wp_numpy(self.tier1.wrench_buf).copy())
         self._step_count += 1
 
-        reward, info = self._compute_reward_with_components()
+        # State from OceanSim
+        state = self.sim.observe_torch()
+        pos = state["position"]
+        quat = state["orientation"]
+        lin_vel = state["linear_velocity"]
+        ang_vel = state["angular_velocity"]
 
-        pos, quat, vel = self._get_body_state()
-        dock_positions = _require_float_array(self._dock_positions, "_dock_positions")
-        min_range = _require_float_array(self._min_range, "_min_range")
-        diff = dock_positions - pos
-        range_to_dock = np.linalg.norm(diff, axis=-1)
-        vel_norm = np.linalg.norm(vel[:, :3], axis=-1)
+        # Docking geometry
+        diff = self._dock_positions - pos
+        range_to_dock = torch.linalg.norm(diff, dim=-1)
+        vel_norm = torch.linalg.norm(lin_vel, dim=-1)
 
-        self._min_range = cast(FloatArray, np.minimum(min_range, range_to_dock))
+        self._min_range = torch.minimum(self._min_range, range_to_dock)
 
-        bearing_world = diff / np.maximum(range_to_dock[:, None], 1e-8)
+        bearing_world = diff / torch.clamp(range_to_dock.unsqueeze(-1), min=1e-8)
         heading_err = self._heading_error_to_dock(quat, bearing_world, range_to_dock)
 
-        success = (range_to_dock < 0.1) & (vel_norm < 0.05) & (heading_err < np.deg2rad(15))
+        # Reward
+        reward, info = self._compute_reward(range_to_dock, vel_norm, heading_err)
+
+        # Termination
+        success = (
+            (range_to_dock < 0.1) & (vel_norm < 0.05) & (heading_err < np.deg2rad(15))
+        )
         hard_contact = (range_to_dock < 0.05) & (vel_norm > 0.3)
         drift = range_to_dock > 5.0
 
-        reward = np.where(success, reward + 5.0, reward)
-        reward = np.where(hard_contact, reward - 5.0, reward)
+        reward = torch.where(success, reward + 5.0, reward)
+        reward = torch.where(hard_contact, reward - 5.0, reward)
 
         terminated = hard_contact | drift
-        truncated = self._step_count >= self.max_episode_steps
-        self._done = terminated | truncated | success
+        truncated = self._step_count >= self.cfg.max_episode_steps
 
         info["success"] = success
-        info["min_range"] = self._min_range.copy()
+        info["min_range"] = self._min_range.clone()
         info["final_range"] = range_to_dock
         info["hard_contact"] = hard_contact
         info["range_to_dock"] = range_to_dock
 
-        divergent = ~np.isfinite(reward) | drift
-        if np.any(divergent):
-            div_ids = np.where(divergent)[0]
+        # Auto-reset divergent envs
+        divergent = ~torch.isfinite(reward) | drift
+        if divergent.any():
+            div_ids = divergent.nonzero(as_tuple=True)[0]
             self._reset_indices(div_ids)
             reward[div_ids] = 0.0
             terminated[div_ids] = False
             truncated[div_ids] = False
 
-        obs = self._get_flat_obs()
-        if self.n_envs == 1:
+        obs = self._get_observations()
+
+        if self.num_envs == 1:
             return (
-                cast(FloatArray, obs.squeeze(0)),
+                obs.squeeze(0),
                 float(reward.item()),
                 bool(terminated.item()),
                 bool(truncated.item()),
@@ -236,258 +404,102 @@ class DockingApproachEnv(ROVEnv):
         return obs, reward, terminated, truncated, info
 
     # ------------------------------------------------------------------
-    # Observation
+    # Observations
     # ------------------------------------------------------------------
 
-    def _get_obs_for(self, env_ids: np.ndarray) -> np.ndarray:
-        pos, quat, vel = self._get_body_state()
-        dock_positions = _require_float_array(self._dock_positions, "_dock_positions")
-        dock_pos = dock_positions[env_ids]
+    def _get_observations(self) -> torch.Tensor:
+        state = self.sim.observe_torch()
+        pos = state["position"]
+        quat = state["orientation"]
+        lin_vel = state["linear_velocity"]
+        ang_vel = state["angular_velocity"]
 
-        obs = np.zeros((len(env_ids), 31), dtype=np.float32)
+        diff = self._dock_positions - pos
+        range_to_dock = torch.linalg.norm(diff, dim=-1)
+        bearing_world = diff / torch.clamp(range_to_dock.unsqueeze(-1), min=1e-8)
+        bearing_body = _rotate_to_body_torch(quat, bearing_world)
 
-        obs[:, 0:3] = dock_pos - pos[env_ids]
-        obs[:, 3:7] = quat[env_ids]
-        obs[:, 7:10] = vel[env_ids, 0:3]
-        obs[:, 10:13] = vel[env_ids, 3:6]
-        obs[:, 13] = dock_pos[:, 2] - pos[env_ids, 2]
-
-        q = quat[env_ids]
-        obs[:, 14] = 2.0 * np.arctan2(q[:, 2], q[:, 3])
-        obs[:, 15] = 2.0 * np.arcsin(np.clip(-q[:, 0] * q[:, 2] + q[:, 1] * q[:, 3], -1, 1))
-        obs[:, 16:22] = self._prev_action[env_ids]
-        obs[:, 22:26] = self._prev_wrench[env_ids, 2:6]
-
-        diff = dock_pos - pos[env_ids]
-        range_to_dock = np.linalg.norm(diff, axis=-1)
-        bearing_world = diff / np.maximum(range_to_dock[:, None], 1e-8)
-        bearing_body = self._rotate_to_body(quat[env_ids], bearing_world)
-
+        obs = torch.zeros(
+            self.num_envs, OBS_DIM, dtype=torch.float32, device=self._device
+        )
+        obs[:, 0:3] = diff
+        obs[:, 3:7] = quat
+        obs[:, 7:10] = ang_vel
+        obs[:, 10:13] = lin_vel
+        obs[:, 13] = diff[:, 2]
+        obs[:, 14] = 2.0 * torch.atan2(quat[:, 2], quat[:, 3])
+        obs[:, 15] = 2.0 * torch.arcsin(
+            torch.clamp(-quat[:, 0] * quat[:, 2] + quat[:, 1] * quat[:, 3], -1, 1)
+        )
+        obs[:, 16:22] = self._prev_action
+        obs[:, 22:26] = self._prev_wrench
         obs[:, 26] = range_to_dock
         obs[:, 27:30] = bearing_body
-        obs[:, 30] = np.sum(vel[env_ids, 0:3] * bearing_body, axis=-1)
+        obs[:, 30] = torch.sum(lin_vel * bearing_body, dim=-1)
 
-        if self.sensor_noise_std > 0:
-            obs += self.np_random.normal(0, self.sensor_noise_std, obs.shape).astype(np.float32)
+        if self.cfg.sensor_noise_std > 0:
+            obs += torch.randn_like(obs) * self.cfg.sensor_noise_std
 
-        np.nan_to_num(obs, copy=False, nan=0.0, posinf=1e6, neginf=-1e6)
+        obs.nan_to_num_(nan=0.0, posinf=1e6, neginf=-1e6)
         return obs
 
     # ------------------------------------------------------------------
     # Reward
     # ------------------------------------------------------------------
 
-    def _compute_reward_with_components(  # type: ignore[override]
+    def _compute_reward(
         self,
-    ) -> tuple[FloatArray, dict[str, Any]]:
-        pos, quat, vel = self._get_body_state()
-        dock_pos = _require_float_array(self._dock_positions, "_dock_positions")
+        range_to_dock: torch.Tensor,
+        vel_norm: torch.Tensor,
+        heading_err: torch.Tensor,
+    ) -> tuple[torch.Tensor, dict[str, Any]]:
+        act_norm = torch.linalg.norm(self._prev_action, dim=-1)
 
-        diff = dock_pos - pos
-        range_to_dock = np.linalg.norm(diff, axis=-1)
-        bearing_world = diff / np.maximum(range_to_dock[:, None], 1e-8)
-        self._rotate_to_body(quat, bearing_world)
+        r_range = 0.4 * torch.exp(-range_to_dock / 2.0)
+        r_vel = 0.3 * torch.exp(-vel_norm / 0.5)
+        r_heading = 0.2 * torch.exp(-heading_err / 0.5)
+        r_act = 0.1 * torch.exp(-act_norm / 1.0)
 
-        vel_body = vel[:, 0:3]
-        vel_norm = np.linalg.norm(vel_body, axis=-1)
-
-        body_x = np.zeros((len(quat), 3), dtype=np.float32)
-        body_x[:, 0] = 1.0
-        body_x_world = self._rotate_to_world(quat, body_x)
-        cos_heading = np.sum(body_x_world * bearing_world, axis=-1)
-        heading_err = np.arccos(np.clip(cos_heading, -1, 1))
-
-        act_norm = np.linalg.norm(self._prev_action, axis=-1)
-
-        r_range = 0.4 * np.exp(-range_to_dock / 2.0)
-        r_vel = 0.3 * np.exp(-vel_norm / 0.5)
-        r_heading = 0.2 * np.exp(-heading_err / 0.5)
-        r_act = 0.1 * np.exp(-act_norm / 1.0)
-
-        reward = (r_range + r_vel + r_heading + r_act).astype(np.float32)
+        reward = (r_range + r_vel + r_heading + r_act).to(torch.float32)
 
         info = {
-            "reward_range": float(np.mean(r_range)),
-            "reward_velocity": float(np.mean(r_vel)),
-            "reward_heading": float(np.mean(r_heading)),
-            "reward_action": float(np.mean(r_act)),
+            "reward_range": float(r_range.mean()),
+            "reward_velocity": float(r_vel.mean()),
+            "reward_heading": float(r_heading.mean()),
+            "reward_action": float(r_act.mean()),
         }
-        return cast(FloatArray, reward), info
-
-    # ------------------------------------------------------------------
-    # Reset
-    # ------------------------------------------------------------------
-
-    def _reset_indices(self, env_ids: np.ndarray) -> None:
-        import newton
-
-        n_reset = len(env_ids)
-        dock_positions = _require_float_array(self._dock_positions, "_dock_positions")
-        current_force = _require_float_array(self._current_force, "_current_force")
-        min_range = _require_float_array(self._min_range, "_min_range")
-
-        if self._dock_offset_range > 0:
-            dock_offset = self.np_random.uniform(
-                -self._dock_offset_range, self._dock_offset_range, (n_reset, 3)
-            ).astype(np.float32)
-            dock_positions[env_ids] = self.target_pos + dock_offset
-        else:
-            dock_positions[env_ids] = self.target_pos
-
-        dock_pos = dock_positions[env_ids]
-
-        init_range = self.np_random.uniform(
-            self._init_range_min, self._init_range_max, n_reset
-        ).astype(np.float32)
-        bearing_h = self.np_random.uniform(0, 2 * np.pi, n_reset).astype(np.float32)
-        bearing_v = self.np_random.uniform(
-            -self._init_bearing_v_max, self._init_bearing_v_max, n_reset
-        ).astype(np.float32)
-
-        dx = np.cos(bearing_h) * np.cos(bearing_v)
-        dy = np.sin(bearing_h) * np.cos(bearing_v)
-        dz = np.sin(bearing_v)
-        direction = np.stack([dx, dy, dz], axis=-1)
-
-        start_pos = dock_pos + init_range[:, None] * direction
-
-        yaw_to_dock = np.arctan2(-dy, -dx)
-        heading_offset = self.np_random.uniform(
-            -self._init_heading_offset_max, self._init_heading_offset_max, n_reset
-        ).astype(np.float32)
-        yaw = yaw_to_dock + heading_offset
-        half_yaw = yaw * 0.5
-
-        joint_q = _wp_numpy(_require_value(self.model.joint_q, "model.joint_q"))
-        for k, idx in enumerate(env_ids):
-            base = idx * 7
-            joint_q[base : base + 7] = [
-                float(start_pos[k, 0]),
-                float(start_pos[k, 1]),
-                float(start_pos[k, 2]),
-                0.0,
-                0.0,
-                float(np.sin(half_yaw[k])),
-                float(np.cos(half_yaw[k])),
-            ]
-        self.model.joint_q = wp.array(joint_q, dtype=wp.float32, device=self.device)
-
-        init_vel_mag = self.np_random.uniform(0, self._init_vel_max, n_reset).astype(np.float32)
-        vel_dir_h = self.np_random.uniform(0, 2 * np.pi, n_reset).astype(np.float32)
-        vel_dir_v = self.np_random.uniform(-0.5, 0.5, n_reset).astype(np.float32)
-        vx = init_vel_mag * np.cos(vel_dir_h) * np.cos(vel_dir_v)
-        vy = init_vel_mag * np.sin(vel_dir_h) * np.cos(vel_dir_v)
-        vz = init_vel_mag * np.sin(vel_dir_v)
-
-        joint_qd = _wp_numpy(_require_value(self.model.joint_qd, "model.joint_qd"))
-        for k, idx in enumerate(env_ids):
-            base = idx * 6
-            joint_qd[base : base + 6] = [
-                float(vx[k]),
-                float(vy[k]),
-                float(vz[k]),
-                0.0,
-                0.0,
-                0.0,
-            ]
-        self.model.joint_qd = wp.array(joint_qd, dtype=wp.float32, device=self.device)
-
-        cast(Any, newton.eval_fk)(
-            self.model, self.model.joint_q, self.model.joint_qd, self.state_curr
-        )
-
-        body_f = _require_value(self.state_curr.body_f, "body_f")
-
-        wp.launch(
-            tier1_zero_wrench,
-            dim=self.n_envs,
-            inputs=[body_f],
-            device=self.device,
-        )
-
-        nu_prev = _wp_numpy(self.tier1.nu_prev)
-        nu_dot_prev = _wp_numpy(self.tier1.nu_dot_prev)
-        u_eff_prev = _wp_numpy(self.tier1.u_eff_prev)
-        nu_prev[env_ids] = 0.0
-        nu_dot_prev[env_ids] = 0.0
-        u_eff_prev[env_ids] = 0.0
-        wp.copy(
-            self.tier1.nu_prev,
-            wp.array(nu_prev, dtype=wp.spatial_vectorf, device=self.device),
-        )
-        wp.copy(
-            self.tier1.nu_dot_prev,
-            wp.array(nu_dot_prev, dtype=wp.spatial_vectorf, device=self.device),
-        )
-        wp.copy(
-            self.tier1.u_eff_prev,
-            wp.array(u_eff_prev, dtype=wp.float32, device=self.device),
-        )
-
-        self.tier1.zero_wrench()
-        cast(Any, wp.synchronize)()
-
-        if self.use_domain_randomization:
-            docking_ranges = RandomizationRanges(
-                mass=0.15, added_mass=0.20, d_lin=0.20, d_quad=0.20
-            )
-            self.tier1.randomize_coeffs(env_ids=env_ids, ranges=docking_ranges)
-
-        current_speed = self.np_random.uniform(0, self._current_speed_max, n_reset).astype(
-            np.float32
-        )
-        current_dir = self.np_random.uniform(0, 2 * np.pi, n_reset).astype(np.float32)
-        current_force[env_ids, 0] = self._current_coupling * current_speed * np.cos(current_dir)
-        current_force[env_ids, 1] = self._current_coupling * current_speed * np.sin(current_dir)
-        current_force[env_ids, 2] = 0.0
-
-        self._prev_action[env_ids] = 0.0
-        self._prev_wrench[env_ids] = 0.0
-        self._step_count[env_ids] = 0
-        self._done[env_ids] = False
-        min_range[env_ids] = np.inf
+        return reward, info
 
     # ------------------------------------------------------------------
     # Helpers
     # ------------------------------------------------------------------
 
-    def _apply_docking_current(self) -> None:
-        current_force = _require_float_array(self._current_force, "_current_force")
-        body_q = _require_value(self.state_curr.body_q, "body_q")
-        body_f = _require_value(self.state_curr.body_f, "body_f")
-        quat = _wp_numpy(body_q)[:, 3:7]
-        force_body = self._rotate_to_body(quat, current_force)
-        body_f_np = _wp_numpy(body_f)
-        body_f_np[:, 0:3] += force_body
-        wp.copy(
-            body_f,
-            wp.array(body_f_np, dtype=wp.float32, device=self.device),
-        )
-
-    @staticmethod
-    def _rotate_to_body(quat: np.ndarray, vec_world: np.ndarray) -> np.ndarray:
-        qx, qy, qz, qw = quat[:, 0], quat[:, 1], quat[:, 2], quat[:, 3]
-        vx, vy, vz = vec_world[:, 0], vec_world[:, 1], vec_world[:, 2]
-        t0 = 2.0 * (qy * vz - qz * vy)
-        t1 = 2.0 * (qz * vx - qx * vz)
-        t2 = 2.0 * (qx * vy - qy * vx)
-        result = np.stack(
-            [
-                vx - qw * t0 + qy * t2 - qz * t1,
-                vy - qw * t1 + qz * t0 - qx * t2,
-                vz - qw * t2 + qx * t1 - qy * t0,
-            ],
-            axis=-1,
-        )
-        return result.astype(np.float32)
-
     def _heading_error_to_dock(
-        self, quat: np.ndarray, bearing_world: np.ndarray, range_to_dock: np.ndarray
-    ) -> np.ndarray:
-        body_x = np.zeros((len(quat), 3), dtype=np.float32)
+        self,
+        quat: torch.Tensor,
+        bearing_world: torch.Tensor,
+        range_to_dock: torch.Tensor,
+    ) -> torch.Tensor:
+        body_x = torch.zeros(len(quat), 3, dtype=torch.float32, device=self._device)
         body_x[:, 0] = 1.0
-        body_x_world = self._rotate_to_world(quat, body_x)
-        cos_angle = np.clip(np.sum(body_x_world * bearing_world, axis=-1), -1, 1)
-        heading_err = np.arccos(cos_angle)
-        heading_err = np.where(range_to_dock < 0.15, 0.0, heading_err)
-        return heading_err
+        body_x_world = _rotate_to_world_torch(quat, body_x)
+        cos_angle = torch.clamp(
+            torch.sum(body_x_world * bearing_world, dim=-1), -1, 1
+        )
+        heading_err = torch.arccos(cos_angle)
+        return torch.where(
+            range_to_dock < 0.15, torch.zeros_like(heading_err), heading_err
+        )
+
+    def _apply_docking_current_impulse(self) -> None:
+        if self._current_force.abs().max() < 1e-8:
+            return
+        quat = self.sim.observe_torch()["orientation"]
+        F_body = _rotate_to_body_torch(quat, self._current_force)
+        mass = self.sim.cfg.vehicle.mass
+        dv = F_body * (self.sim.dt / mass)
+        body_qd_t = wp.to_torch(self.sim.state_curr.body_qd)
+        body_qd_t[:, 3:6] += dv
+
+    def close(self) -> None:
+        self.sim.close()

@@ -12,10 +12,12 @@ from oceanscale.sensors.dvl_configs import DVLConfig
 from oceanscale.sensors.imaging_sonar import ImagingSonar, ImagingSonarConfig
 from oceanscale.sensors.multibeam import MultibeamSonar, MultibeamConfig
 from oceanscale.sensors.sidescan_sonar import SideScanSonar, SideScanSonarConfig
+from oceanscale.sensors.underwater_camera import UnderwaterCamera, CameraConfig
 
 __all__ = [
     "AcousticModem",
     "AcousticModemConfig",
+    "CameraConfig",
     "DVLConfig",
     "DVLSensor",
     "IMUSensor",
@@ -30,6 +32,7 @@ __all__ = [
     "RaySonar",
     "SideScanSonar",
     "SideScanSonarConfig",
+    "UnderwaterCamera",
     "USBL",
     "USBLConfig",
 ]
