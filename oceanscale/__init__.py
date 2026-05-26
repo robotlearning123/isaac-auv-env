@@ -24,6 +24,10 @@ def __getattr__(name: str) -> Any:
         "DVLSensor": "oceanscale.sensors.dvl",
         "IMUSensor": "oceanscale.sensors.imu",
         "PressureSensor": "oceanscale.sensors.pressure",
+        "OceanSim": "oceanscale.sim",
+        "OceanSimConfig": "oceanscale.sim",
+        "OceanConfig": "oceanscale.sim",
+        "SensorMount": "oceanscale.sim",
     }
     if name in _lazy:
         import importlib
