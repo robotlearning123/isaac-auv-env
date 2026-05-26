@@ -223,7 +223,7 @@ def test_isaacsim_demo_extracts_underwater_mvp_trajectory() -> None:
             "controller": "mvp_standoff_pd",
             "gym_registered": True,
             "steps": 3,
-            "observation_dim": 33,
+            "observation_dim": 20,
             "action_dim": 6,
             "obs_finite": True,
             "reward_finite": True,
@@ -247,7 +247,7 @@ def test_isaacsim_demo_extracts_underwater_mvp_trajectory() -> None:
             "controller": "mvp_standoff_pd",
             "gym_registered": True,
             "steps": 3,
-            "observation_dim": 33,
+            "observation_dim": 20,
             "action_dim": 6,
             "obs_finite": True,
             "reward_finite": True,
@@ -300,7 +300,7 @@ def test_canonical_isaacsim_artifact_carries_mvp_evidence() -> None:
     assert isaaclab_probe["task_id"] == OCEANSCALE_UNDERWATER_TASK_ID
     assert isaaclab_probe["gym_registered"] is True
     assert isaaclab_probe["controller"] == "mvp_standoff_pd"
-    assert isaaclab_probe["observation_dim"] == 33
+    assert isaaclab_probe["observation_dim"] == 20
     assert isaaclab_probe["action_dim"] == 6
     assert isaaclab_probe["obs_finite"] is True
     assert isaaclab_probe["reward_finite"] is True

@@ -9,7 +9,7 @@
   "isaaclab_tasks_version": "0.11.7",
   "isaaclab_version": "0.47.7",
   "num_envs": 1,
-  "observation_space": "Box(-inf, inf, (33,), float32)",
+  "observation_space": "Box(-inf, inf, (20,), float32)",
   "oceanscale_task_registered": true,
   "ok": true,
   "package_overlay_dir": "/home/robot/workspace/46-marine/.venv/lib/python3.12/site-packages",

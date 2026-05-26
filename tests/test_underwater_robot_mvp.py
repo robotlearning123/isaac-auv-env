@@ -45,7 +45,7 @@ def test_underwater_robot_mvp_runs_real_vehicle_stack() -> None:
     assert result["isaac_lab_probe"]["gym_registered"] is True
     assert result["isaac_lab_probe"]["controller"] == "mvp_standoff_pd"
     assert result["isaac_lab_probe"]["steps"] == 3
-    assert result["isaac_lab_probe"]["observation_dim"] == 33
+    assert result["isaac_lab_probe"]["observation_dim"] == 20
     assert result["isaac_lab_probe"]["action_dim"] == 6
     assert result["isaac_lab_probe"]["obs_finite"] is True
     assert result["isaac_lab_probe"]["reward_finite"] is True

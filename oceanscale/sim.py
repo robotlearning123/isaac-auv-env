@@ -26,6 +26,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 import numpy as np
+import torch
 import warp as wp
 
 
@@ -252,16 +253,92 @@ class OceanSim:
         qd = self.state_curr.body_qd.numpy()[: self.n_envs]
         return qd.astype(np.float32)
 
+    def _get_body_state_torch(
+        self,
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        """GPU-only body state via wp.to_torch (zero-copy)."""
+        body_q = wp.to_torch(self.state_curr.body_q)
+        body_qd = wp.to_torch(self.state_curr.body_qd)
+        return body_q[:, :3], body_q[:, 3:7], body_qd
+
+    def observe_torch(self) -> dict[str, torch.Tensor]:
+        """GPU-native observations — zero-copy torch tensors on device."""
+        pos, quat, vel = self._get_body_state_torch()
+        return {
+            "position": pos,
+            "orientation": quat,
+            "linear_velocity": vel[:, 3:6],
+            "angular_velocity": vel[:, :3],
+        }
+
     # ------------------------------------------------------------------
     # Simulation loop
     # ------------------------------------------------------------------
 
-    def step(self, action: np.ndarray) -> dict[str, Any]:
-        """Advance simulation by one timestep.
+    def _physics_step(self, u_cmd: wp.array) -> None:
+        """Run one physics substep (shared by step/step_torch)."""
+        self._u_cmd = u_cmd
+        body_f = self.state_curr.body_f
+        body_qd = self.state_curr.body_qd
+
+        wp.launch(
+            self._zero_wrench_kernel,
+            dim=self.n_envs,
+            inputs=[body_f],
+            device=self.device,
+        )
+        self.tier1.compute_wrench(
+            nu=body_qd, quat=self._extract_quat(), u_cmd=self._u_cmd, dt=self.dt
+        )
+        self.tier1.write_to_body_f(body_f)
+
+        if self._current_field is not None:
+            self._apply_current_force()
+
+        self.solver.step(self.state_curr, self.state_next, self.control, None, self.dt)
+        self.state_curr, self.state_next = self.state_next, self.state_curr
+        self.time += self.dt
+        self._step_count += 1
+
+        if self._wave_field is not None:
+            self._wave_field.step(self.dt)
+
+    def step_torch(self, action: torch.Tensor) -> dict[str, torch.Tensor]:
+        """GPU-native step: accepts and returns CUDA tensors.
 
         Args:
             action: (n_envs, 6) or (6,) wrench command in [-1, 1].
-                    Mapped to thrusters via pseudoinverse allocation.
+
+        Returns:
+            dict with position, orientation, linear_velocity,
+            angular_velocity as torch.Tensor on device.
+        """
+        action = action.to(device=self.device, dtype=torch.float32)
+        if action.ndim == 1:
+            action = action.unsqueeze(0).expand(self.n_envs, -1)
+        action = action.clamp(-1.0, 1.0)
+
+        if self._t_pinv is not None:
+            if not hasattr(self, "_t_pinv_torch"):
+                self._t_pinv_torch = torch.from_numpy(self._t_pinv).to(self.device)
+            u_cmd = (action @ self._t_pinv_torch.T).clamp(-1.0, 1.0)
+        else:
+            u_cmd = torch.zeros(
+                self.n_envs, self._n_thrusters, device=self.device, dtype=torch.float32
+            )
+            for i in range(min(6, self._n_thrusters)):
+                u_cmd[:, i] = action[:, i]
+
+        u_cmd_wp = wp.from_torch(u_cmd.contiguous(), dtype=wp.float32)
+        self._physics_step(u_cmd_wp)
+        wp.synchronize()
+        return self.observe_torch()
+
+    def step(self, action: np.ndarray) -> dict[str, Any]:
+        """Advance simulation by one timestep (numpy I/O).
+
+        Args:
+            action: (n_envs, 6) or (6,) wrench command in [-1, 1].
 
         Returns:
             dict with position, orientation, linear_velocity,
@@ -279,35 +356,9 @@ class OceanSim:
             for i in range(min(6, self._n_thrusters)):
                 u_cmd[:, i] = action[:, i]
 
-        self._u_cmd = wp.array(u_cmd, dtype=wp.float32, device=self.device)
-        body_f = self.state_curr.body_f
-        body_qd = self.state_curr.body_qd
-
-        wp.launch(
-            self._zero_wrench_kernel,
-            dim=self.n_envs,
-            inputs=[body_f],
-            device=self.device,
-        )
-
-        self.tier1.compute_wrench(
-            nu=body_qd, quat=self._extract_quat(), u_cmd=self._u_cmd, dt=self.dt
-        )
-        self.tier1.write_to_body_f(body_f)
-
-        if self._current_field is not None:
-            self._apply_current_force()
-
-        self.solver.step(self.state_curr, self.state_next, self.control, None, self.dt)
+        u_cmd_wp = wp.array(u_cmd, dtype=wp.float32, device=self.device)
+        self._physics_step(u_cmd_wp)
         wp.synchronize()
-
-        self.state_curr, self.state_next = self.state_next, self.state_curr
-        self.time += self.dt
-        self._step_count += 1
-
-        if self._wave_field is not None:
-            self._wave_field.step(self.dt)
-
         return self._observe()
 
     def _apply_current_force(self) -> None:

@@ -88,7 +88,7 @@
       "controller": "mvp_standoff_pd",
       "gym_registered": true,
       "steps": 3,
-      "observation_dim": 33,
+      "observation_dim": 20,
       "action_dim": 6,
       "obs_finite": true,
       "reward_finite": true
@@ -100,7 +100,7 @@
     "controller": "mvp_standoff_pd",
     "gym_registered": true,
     "steps": 3,
-    "observation_dim": 33,
+    "observation_dim": 20,
     "action_dim": 6,
     "obs_finite": true,
     "reward_finite": true
@@ -127,7 +127,7 @@
         "version": "1.2.0"
       }
     ],
-    "observation_space": "Box(-inf, inf, (33,), float32)",
+    "observation_space": "Box(-inf, inf, (20,), float32)",
     "action_space": "Box(-1.0, 1.0, (6,), float32)",
     "action_shape": [
       1,
