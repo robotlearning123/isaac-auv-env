@@ -21,7 +21,7 @@ Architecture::
 from __future__ import annotations
 
 import importlib.util
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
@@ -36,46 +36,55 @@ ACT_DIM = 6
 _HAS_ISAACLAB = importlib.util.find_spec("isaaclab") is not None
 
 
-@dataclass
-class OceanScaleTaskCfg:
-    """Configuration for OceanScaleTask.
-
-    When Isaac Lab is available this should use @configclass decorator.
-    Plain dataclass used here for portability.
-    """
-
-    num_envs: int = 64
-    episode_length_s: float = 30.0
-    decimation: int = 4
-    physics_dt: float = 1 / 240
-    device: str = "cuda:0"
-
-    target_pos: tuple[float, float, float] = (0.0, 0.0, -5.0)
-    init_pos: tuple[float, float, float] = (0.0, 0.0, -5.0)
-    init_pos_noise: float = 0.5
-    oob_distance: float = 5.0
-
-    current_speed: float = 0.0
-    current_direction: float = 0.0
-    wave_height: float = 0.0
-    wave_period: float = 8.0
-    rho_water: float = 1025.0
-    current_drag_coeff: float = 5.0
-
-    reward_distance_scale: float = 1.0
-    reward_velocity_weight: float = 0.1
-    reward_action_weight: float = 0.05
-
-    action_space: int = ACT_DIM
-    observation_space: int = OBS_DIM
-
-    # Isaac Lab expects these nested configs; stubs for portability
-    sim: Any = None
-    scene: Any = None
-
-
 if _HAS_ISAACLAB:
     from isaaclab.envs import DirectRLEnv, DirectRLEnvCfg
+    from isaaclab.scene import InteractiveSceneCfg
+    from isaaclab.sim import SimulationCfg
+    from isaaclab.utils.configclass import configclass
+
+    @configclass
+    class OceanScaleTaskCfg(DirectRLEnvCfg):
+        """Isaac Lab native configuration for OceanScaleTask."""
+
+        num_envs: int = 64
+        episode_length_s: float = 30.0
+        decimation: int = 4
+        physics_dt: float = 1 / 240
+        device: str = "cuda:0"
+
+        target_pos: tuple[float, float, float] = (0.0, 0.0, -5.0)
+        init_pos: tuple[float, float, float] = (0.0, 0.0, -5.0)
+        init_pos_noise: float = 0.5
+        oob_distance: float = 5.0
+
+        current_speed: float = 0.0
+        current_direction: float = 0.0
+        wave_height: float = 0.0
+        wave_period: float = 8.0
+        rho_water: float = 1025.0
+        current_drag_coeff: float = 5.0
+
+        reward_distance_scale: float = 1.0
+        reward_velocity_weight: float = 0.1
+        reward_action_weight: float = 0.05
+
+        action_space: int = ACT_DIM
+        observation_space: int = OBS_DIM
+        state_space: int = 0
+
+        sim: SimulationCfg = SimulationCfg(dt=1 / 240, render_interval=decimation)
+        scene: InteractiveSceneCfg = InteractiveSceneCfg(
+            num_envs=num_envs,
+            env_spacing=8.0,
+            replicate_physics=True,
+            clone_in_fabric=True,
+        )
+        ui_window_class_type: type | str | None = None
+
+        def __post_init__(self) -> None:
+            self.sim.dt = self.physics_dt
+            self.sim.render_interval = self.decimation
+            self.scene.num_envs = self.num_envs
 
     class OceanScaleTask(DirectRLEnv):
         """Isaac Lab 3 native underwater ROV environment.
@@ -224,6 +233,38 @@ if _HAS_ISAACLAB:
                     body_q[i, 2] += torch.empty(1, device=self.device).uniform_(-noise, noise).item()
 
 else:
+
+    @dataclass
+    class OceanScaleTaskCfg:
+        """Portable configuration stub used when Isaac Lab is unavailable."""
+
+        num_envs: int = 64
+        episode_length_s: float = 30.0
+        decimation: int = 4
+        physics_dt: float = 1 / 240
+        device: str = "cuda:0"
+
+        target_pos: tuple[float, float, float] = (0.0, 0.0, -5.0)
+        init_pos: tuple[float, float, float] = (0.0, 0.0, -5.0)
+        init_pos_noise: float = 0.5
+        oob_distance: float = 5.0
+
+        current_speed: float = 0.0
+        current_direction: float = 0.0
+        wave_height: float = 0.0
+        wave_period: float = 8.0
+        rho_water: float = 1025.0
+        current_drag_coeff: float = 5.0
+
+        reward_distance_scale: float = 1.0
+        reward_velocity_weight: float = 0.1
+        reward_action_weight: float = 0.05
+
+        action_space: int = ACT_DIM
+        observation_space: int = OBS_DIM
+
+        sim: Any = None
+        scene: Any = None
 
     class OceanScaleTask:
         """Placeholder — Isaac Lab 3 is not installed.

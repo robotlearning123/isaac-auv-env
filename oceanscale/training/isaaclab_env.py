@@ -1,14 +1,15 @@
 # mypy: ignore-errors
-"""Isaac Lab DirectRLEnv wrapper for OceanScale.
+"""Isaac Lab-compatible Gymnasium vector environment for OceanScale.
 
 GPU-batched underwater RL environment built on the unified OceanSim
-orchestrator. When Isaac Lab is installed, plugs directly into its
-training infrastructure (PPO, SAC, curriculum, logging). Without
-Isaac Lab, works as a standalone Gymnasium env.
+orchestrator. The environment matches the common Isaac Lab direct-RL
+observation/action surface while keeping Isaac Lab optional. It is not
+an Isaac Lab DirectRLEnv subclass; build a separate optional native
+adapter if training needs Isaac Lab's SimulationContext/scene lifecycle.
 
 Architecture::
 
-    Isaac Lab training loop
+    RL training loop
         └── OceanScaleDirectRLEnv (this file)
             └── OceanSim.step_torch()
                 ├── Newton rigid-body physics
@@ -105,7 +106,7 @@ def register_oceanscale_tasks() -> str:
 class OceanScaleDirectRLEnv(gym.Env):
     """GPU-batched underwater RL env backed by OceanSim.
 
-    Follows Isaac Lab's DirectRLEnv protocol:
+    Matches the DirectRLEnv-style vector data surface:
     - step/reset return ``{"policy": Tensor(n_envs, obs_dim)}``
     - All computation on GPU (no CPU roundtrips in hot path)
     - Supports partial reset via ``_reset_idx``

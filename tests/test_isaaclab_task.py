@@ -63,3 +63,17 @@ class TestDirectRLEnv:
             "_get_observations", "_get_rewards", "_get_dones", "_reset_idx",
         ]:
             assert hasattr(OceanScaleTask, method), f"Missing {method}"
+
+    def test_cfg_is_directrl_ready(self):
+        from isaaclab.envs import DirectRLEnvCfg
+        from oceanscale.training.isaaclab_task import OceanScaleTaskCfg
+
+        cfg = OceanScaleTaskCfg(num_envs=2, physics_dt=1 / 120, decimation=3)
+        assert isinstance(cfg, DirectRLEnvCfg)
+        assert hasattr(cfg, "validate")
+        assert cfg.sim is not None
+        assert cfg.scene is not None
+        assert cfg.sim.dt == 1 / 120
+        assert cfg.sim.render_interval == 3
+        assert cfg.scene.num_envs == 2
+        cfg.validate()

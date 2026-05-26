@@ -1,8 +1,8 @@
 # mypy: ignore-errors
-"""Tests for Isaac Lab DirectRLEnv wrapper backed by OceanSim.
+"""Tests for the Isaac Lab-compatible OceanSim vector environment.
 
-Validates the GPU-batched env works with the Isaac Lab DirectRLEnv
-protocol: batched tensors, partial reset, decimation, reward/done.
+Validates the GPU-batched env works with the DirectRLEnv-style data
+surface: batched tensors, partial reset, decimation, reward/done.
 """
 
 from __future__ import annotations
