@@ -3,23 +3,23 @@ export const defaultLang = 'en';
 
 export const ui = {
   zh: {
-    'nav.vision': '愿景',
+    'nav.vision': 'Challenge',
     'nav.virtualOcean': 'Virtual Ocean',
     'nav.usecases': '应用',
     'nav.roadmap': '路线图',
     'nav.contact': '联系',
     'lang.other': 'EN',
-    'footer.tagline': '水下机器人训练的虚拟海洋',
+    'footer.tagline': '水下机器人的虚拟海洋',
     'footer.copyright': '© 2026 OceanScale',
   },
   en: {
-    'nav.vision': 'Vision',
+    'nav.vision': 'Challenge',
     'nav.virtualOcean': 'Virtual Ocean',
     'nav.usecases': 'Use Cases',
     'nav.roadmap': 'Roadmap',
     'nav.contact': 'Contact',
     'lang.other': '中',
-    'footer.tagline': 'A virtual ocean for robot training',
+    'footer.tagline': 'A virtual ocean for underwater robots',
     'footer.copyright': '© 2026 OceanScale',
   },
 } as const;

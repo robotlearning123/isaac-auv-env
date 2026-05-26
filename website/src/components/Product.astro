@@ -7,21 +7,21 @@ const copy = isZh
   ? {
       label: 'Solution',
       titleLines: ['Virtual Ocean'],
-      body: '一个可控、并行、可回放的虚拟海洋，让水下机器人先经历任务、失败和恢复，再进入真实海试。',
-      briefTitle: '核心',
-      briefBody: '把海试前最昂贵的迭代放进仿真：大规模训练、失败重放、部署前验证。',
-      coreMetric: '任务 失败 恢复',
-      coreLine: '每一次真实海试前，先在虚拟海洋中跑完可回放训练。',
+      body: '一个可控、并行、可回放的海洋仿真环境，让水下机器人在部署前经历任务、失败与恢复。',
+      briefTitle: '训练闭环',
+      briefBody: '把最昂贵的海试前迭代放进仿真：大规模训练、失败重放、部署前验证。',
+      coreStages: ['任务', '失败', '恢复'],
+      coreLine: '在真实海试前，先跑完可回放的虚拟任务。',
       panelLabel: 'OceanScale 训练系统面板',
     }
   : {
       label: 'Solution',
       titleLines: ['Virtual Ocean'],
-      body: 'A controllable, parallel, replayable virtual ocean where underwater robots experience missions, failures, and recovery before real sea trials.',
-      briefTitle: 'Core',
+      body: 'A controllable, parallel, replayable ocean simulator where underwater robots experience missions, failures, and recovery before deployment.',
+      briefTitle: 'Training loop',
       briefBody: 'Move the most expensive pre-sea-trial iteration into simulation: large-scale training, failure replay, and deployment validation.',
-      coreMetric: 'Mission Failure Recovery',
-      coreLine: 'Before each real sea trial, run the mission in a replayable virtual ocean.',
+      coreStages: ['Mission', 'Failure', 'Recovery'],
+      coreLine: 'Before sea trials, run the mission in a replayable virtual ocean.',
       panelLabel: 'OceanScale training system panel',
     };
 
@@ -78,7 +78,11 @@ const panelRows = [
             </div>
             <div class="training-panel__core-copy">
               <span>Virtual Ocean</span>
-              <strong>{copy.coreMetric}</strong>
+              <div class="training-panel__stages">
+                {copy.coreStages.map((stage) => (
+                  <strong>{stage}</strong>
+                ))}
+              </div>
               <p>{copy.coreLine}</p>
             </div>
           </div>
@@ -306,8 +310,7 @@ const panelRows = [
     animation: training-orbit 3.6s ease-in-out infinite alternate;
   }
 
-  .training-panel__core-copy span,
-  .training-panel__core-copy strong {
+  .training-panel__core-copy span {
     display: block;
   }
 
@@ -320,12 +323,30 @@ const panelRows = [
     text-transform: uppercase;
   }
 
-  .training-panel__core-copy strong {
+  .training-panel__stages {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.52rem 0.7rem;
     margin-top: 0.55rem;
+  }
+
+  .training-panel__stages strong {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
     color: rgba(255, 255, 255, 0.95);
     font-size: clamp(1.2rem, 2.4vw, 1.75rem);
     font-weight: 850;
     line-height: 1.1;
+  }
+
+  .training-panel__stages strong:not(:last-child)::after {
+    content: "";
+    width: clamp(1rem, 2vw, 1.7rem);
+    height: 1px;
+    background: linear-gradient(90deg, rgba(45, 212, 191, 0.85), rgba(45, 212, 191, 0));
   }
 
   .training-panel__core-copy p {
@@ -425,7 +446,11 @@ const panelRows = [
       width: min(100%, 120px);
     }
 
-    .training-panel__core-copy strong {
+    .training-panel__stages {
+      gap: 0.38rem 0.52rem;
+    }
+
+    .training-panel__stages strong {
       font-size: 1.18rem;
     }
 

@@ -10,41 +10,33 @@ const manifestHref = '/demo/underwater_robot_demo_manifest.json';
 
 const copy = isZh
   ? {
-      eyebrow: 'Verified Demo',
-      titleLines: ['仿真对接'],
-      body: '视频来自 Isaac Sim PathTracing，使用 BlueROV2 Heavy 网格；任务轨迹、Isaac Lab smoke 和 manifest 证据保存在同一次输出中。',
-      videoAria: 'Isaac Sim PathTracing 生成的 BlueROV2 Heavy 水下对接视频',
-      status: 'Verification: PASS',
+      eyebrow: 'Validation',
+      titleLines: ['仿真验证'],
+      body: '基于水下机器人动力学模型的对接任务，视频、轨迹与验证证据来自同一次仿真输出。',
+      videoAria: '水下机器人对接任务仿真验证视频',
+      status: 'Evidence: one run',
       manifest: 'Manifest JSON',
-      mp4: 'MP4 artifact',
-      commandLabel: 'Fast verification',
-      command: 'python scripts/verify_isaacsim_underwater_demo.py',
+      mp4: 'MP4 output',
       metrics: [
-        ['Renderer', 'PathTracing'],
-        ['Samples', '64 spp'],
-        ['Frame', '1920x1080'],
-        ['Sequence', '24 frames / 12 fps'],
-        ['Final distance', '0.136 m'],
-        ['Robot mesh', '198,040 tris'],
+        ['任务', 'Autonomous docking'],
+        ['模型', 'BlueROV2 Heavy'],
+        ['轨迹', '24 frames'],
+        ['收敛距离', '0.136 m'],
       ],
     }
   : {
-      eyebrow: 'Verified Isaac demo',
-      titleLines: ['Simulated Docking'],
-      body: 'Captured in Isaac Sim PathTracing with a BlueROV2 Heavy mesh; mission trajectory, Isaac Lab smoke, and manifest evidence are saved from one demo output.',
-      videoAria: 'Isaac Sim PathTracing video of the BlueROV2 Heavy underwater docking run',
-      status: 'Verification: PASS',
+      eyebrow: 'Validation',
+      titleLines: ['Simulation Proof'],
+      body: 'A docking mission based on an underwater robot dynamics model, with video, trajectory, and verification evidence saved from the same simulation output.',
+      videoAria: 'Simulation proof video of an underwater robot docking mission',
+      status: 'Evidence: one run',
       manifest: 'Manifest JSON',
-      mp4: 'MP4 artifact',
-      commandLabel: 'Fast verification',
-      command: 'python scripts/verify_isaacsim_underwater_demo.py',
+      mp4: 'MP4 output',
       metrics: [
-        ['Renderer', 'PathTracing'],
-        ['Samples', '64 spp'],
-        ['Frame', '1920x1080'],
-        ['Sequence', '24 frames / 12 fps'],
+        ['Mission', 'Autonomous docking'],
+        ['Robot', 'BlueROV2 Heavy'],
+        ['Trace', '24 frames'],
         ['Final distance', '0.136 m'],
-        ['Robot mesh', '198,040 tris'],
       ],
     };
 ---
@@ -94,15 +86,6 @@ const copy = isZh
       ))}
     </div>
 
-    <div class="os-terminal robot-demo__terminal reveal" data-delay="4">
-      <div class="os-terminal__bar">
-        <span class="os-terminal__dot os-terminal__dot--red"></span>
-        <span class="os-terminal__dot os-terminal__dot--yellow"></span>
-        <span class="os-terminal__dot os-terminal__dot--green"></span>
-        <span class="os-terminal__title">{copy.commandLabel}</span>
-      </div>
-      <pre><code><span class="prompt">$</span> {copy.command}</code></pre>
-    </div>
   </div>
 </section>
 
@@ -210,7 +193,7 @@ const copy = isZh
 
   .robot-demo__metrics {
     display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     margin-top: clamp(24px, 4vw, 38px);
     border-top: 1px solid rgba(180, 216, 206, 0.18);
     border-bottom: 1px solid rgba(180, 216, 206, 0.18);
@@ -247,27 +230,11 @@ const copy = isZh
     overflow-wrap: anywhere;
   }
 
-  .robot-demo__terminal {
-    margin-top: clamp(22px, 4vw, 34px);
-  }
-
   @media (max-width: 980px) {
     .robot-demo__header {
       grid-template-columns: 1fr;
       align-items: start;
       gap: 18px;
-    }
-
-    .robot-demo__metrics {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .robot-demo__metric:nth-child(3n) {
-      border-right: 0;
-    }
-
-    .robot-demo__metric:nth-child(n + 4) {
-      border-top: 1px solid rgba(180, 216, 206, 0.14);
     }
   }
 
@@ -291,23 +258,6 @@ const copy = isZh
     .robot-demo__evidence {
       flex-direction: column;
       gap: 12px;
-    }
-
-    .robot-demo__metrics {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .robot-demo__metric,
-    .robot-demo__metric:nth-child(3n) {
-      border-right: 1px solid rgba(180, 216, 206, 0.14);
-    }
-
-    .robot-demo__metric:nth-child(2n) {
-      border-right: 0;
-    }
-
-    .robot-demo__metric:nth-child(n + 3) {
-      border-top: 1px solid rgba(180, 216, 206, 0.14);
     }
   }
 </style>

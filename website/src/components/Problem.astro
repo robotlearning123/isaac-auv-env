@@ -5,23 +5,23 @@ const isZh = lang === 'zh';
 
 const content = isZh ? {
   label: 'Challenge',
-  title: '海试很难',
-  titleLines: ['海试很难'],
-  body: '每一次下海都要等天气窗口、船期、人员、海况、布放装备和硬件状态同时满足。一次失败，往往意味着重新出船、重新布放，再等下一轮有效数据。',
+  title: '真实海洋不是训练循环',
+  titleLines: ['真实海洋不是', '训练循环'],
+  body: '每一次下海都受天气、船期、人员、海况、布放装备和硬件风险限制。一次失败，往往意味着重新出船、重新布放，再等待下一轮有效数据。',
   stats: [
-    ['天气窗口', '窗口很窄'],
-    ['船和人员', '按天计费'],
-    ['迭代时间', '一次失败拖数周'],
+    ['天气窗口', '不可控'],
+    ['船与人员', '按天计费'],
+    ['失败代价', '拖慢数周'],
   ],
 } : {
   label: 'Challenge',
-  title: 'Sea trials are hard',
-  titleLines: ['Sea trials are hard'],
-  body: 'Field tests are gated by weather, boats, crew, currents, gear, and hardware risk. A failed run can mean rebooking, redeploying, and waiting weeks for the next useful dataset.',
+  title: 'The ocean is not a training loop',
+  titleLines: ['The ocean is not', 'a training loop'],
+  body: 'Every field test is gated by weather, vessels, crew, currents, deployment gear, and hardware risk. One failed run can mean rebooking, redeploying, and waiting weeks for the next useful dataset.',
   stats: [
-    ['Weather', 'narrow windows'],
+    ['Weather windows', 'uncontrolled'],
     ['Vessels + crew', 'day-rate cost'],
-    ['Iteration time', 'weeks lost'],
+    ['Failure cost', 'weeks lost'],
   ],
 };
 ---

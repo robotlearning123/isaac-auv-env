@@ -3,10 +3,10 @@ import { getLangFromUrl } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const isZh = lang === 'zh';
 
-const heading = isZh ? '联系我们' : 'Build with OceanScale';
+const heading = isZh ? '在虚拟海洋中构建' : 'Build in the Virtual Ocean';
 const body = isZh
-  ? '如果你正在研发水下机器人、海洋任务策略或仿真基础设施，可以把机器人形态、任务和验证目标发给我们。'
-  : 'If you are building underwater robots, ocean mission policies, or simulation infrastructure, send us the robot form factor, task, and validation target.';
+  ? '如果你正在研发水下机器人、自主任务策略或部署验证流程，可以把机器人形态、任务场景和验证目标发给我们。'
+  : 'If you are building underwater robots, autonomy policies, or deployment validation workflows, send us the robot form factor, mission scenario, and validation target.';
 const emailLabel = isZh ? '联系 OceanScale' : 'Contact OceanScale';
 ---
 <section id="contact" class="contact-section">
