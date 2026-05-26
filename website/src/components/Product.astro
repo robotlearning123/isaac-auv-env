@@ -10,6 +10,8 @@ const copy = isZh
       body: '一个可控、并行、可回放的虚拟海洋，让水下机器人先经历任务、失败和恢复，再进入真实海试。',
       briefTitle: '核心',
       briefBody: '把海试前最昂贵的迭代放进仿真：大规模训练、失败重放、部署前验证。',
+      coreMetric: '任务 失败 恢复',
+      coreLine: '每一次真实海试前，先在虚拟海洋中跑完可回放训练。',
       panelLabel: 'OceanScale 训练系统面板',
     }
   : {
@@ -18,6 +20,8 @@ const copy = isZh
       body: 'A controllable, parallel, replayable virtual ocean where underwater robots experience missions, failures, and recovery before real sea trials.',
       briefTitle: 'Core',
       briefBody: 'Move the most expensive pre-sea-trial iteration into simulation: large-scale training, failure replay, and deployment validation.',
+      coreMetric: 'Mission Failure Recovery',
+      coreLine: 'Before each real sea trial, run the mission in a replayable virtual ocean.',
       panelLabel: 'OceanScale training system panel',
     };
 
@@ -65,10 +69,18 @@ const panelRows = [
             <span>OceanScale Runtime</span>
             <strong>4096 envs</strong>
           </div>
-          <div class="training-panel__map">
-            {Array.from({ length: 42 }).map((_, index) => (
-              <i style={`--delay:${index * 0.045}s; --alpha:${0.16 + ((index * 17) % 42) / 100};`}></i>
-            ))}
+          <div class="training-panel__core">
+            <div class="training-panel__loop" aria-hidden="true">
+              <span class="training-panel__orbit training-panel__orbit--outer"></span>
+              <span class="training-panel__orbit training-panel__orbit--inner"></span>
+              <span class="training-panel__route"></span>
+              <span class="training-panel__vehicle"></span>
+            </div>
+            <div class="training-panel__core-copy">
+              <span>Virtual Ocean</span>
+              <strong>{copy.coreMetric}</strong>
+              <p>{copy.coreLine}</p>
+            </div>
           </div>
           <div class="training-panel__rows">
             {panelRows.map(([label, value]) => (
@@ -233,28 +245,94 @@ const panelRows = [
     color: rgba(45, 212, 191, 0.96);
   }
 
-  .training-panel__map {
+  .training-panel__core {
     display: grid;
-    grid-template-columns: repeat(14, minmax(0, 1fr));
-    gap: 0.55rem;
-    align-content: center;
+    grid-template-columns: minmax(160px, 0.74fr) minmax(0, 1fr);
+    gap: clamp(1rem, 2vw, 1.65rem);
+    align-items: center;
     min-height: 205px;
-    padding: clamp(0.9rem, 1.6vw, 1.35rem) 0;
+    padding: clamp(0.9rem, 1.7vw, 1.45rem) 0;
   }
 
-  .training-panel__map i {
+  .training-panel__loop {
+    position: relative;
     display: block;
     aspect-ratio: 1;
-    border: 1px solid rgba(45, 212, 191, 0.4);
-    border-radius: 4px;
-    background:
-      radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.22), transparent 18%),
-      linear-gradient(135deg, rgba(45, 212, 191, calc(var(--alpha) + 0.22)), rgba(45, 212, 191, 0.04));
+    width: min(100%, 190px);
+    margin-inline: auto;
+    border-radius: 999px;
+    background: radial-gradient(circle at 50% 50%, rgba(45, 212, 191, 0.18), rgba(45, 212, 191, 0.04) 42%, transparent 68%);
     box-shadow:
-      inset 0 0 18px rgba(45, 212, 191, 0.2),
-      0 0 18px rgba(45, 212, 191, 0.08);
-    animation: training-cell 1.4s ease-in-out infinite alternate;
-    animation-delay: var(--delay);
+      inset 0 0 40px rgba(45, 212, 191, 0.08),
+      0 0 48px rgba(45, 212, 191, 0.08);
+  }
+
+  .training-panel__orbit,
+  .training-panel__route,
+  .training-panel__vehicle {
+    position: absolute;
+    display: block;
+  }
+
+  .training-panel__orbit {
+    inset: 9%;
+    border: 1px solid rgba(45, 212, 191, 0.36);
+    border-radius: 999px;
+  }
+
+  .training-panel__orbit--inner {
+    inset: 28%;
+    border-color: rgba(232, 237, 243, 0.16);
+  }
+
+  .training-panel__route {
+    top: 50%;
+    left: 12%;
+    right: 12%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(45, 212, 191, 0.8), transparent);
+    transform: rotate(-18deg);
+  }
+
+  .training-panel__vehicle {
+    top: 36%;
+    left: 49%;
+    width: 18%;
+    aspect-ratio: 1.8;
+    border: 1px solid rgba(232, 237, 243, 0.4);
+    border-radius: 999px 999px 55% 55%;
+    background: linear-gradient(135deg, rgba(232, 237, 243, 0.42), rgba(45, 212, 191, 0.14));
+    box-shadow: 0 0 24px rgba(45, 212, 191, 0.2);
+    animation: training-orbit 3.6s ease-in-out infinite alternate;
+  }
+
+  .training-panel__core-copy span,
+  .training-panel__core-copy strong {
+    display: block;
+  }
+
+  .training-panel__core-copy span {
+    color: rgba(45, 212, 191, 0.92);
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .training-panel__core-copy strong {
+    margin-top: 0.55rem;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: clamp(1.2rem, 2.4vw, 1.75rem);
+    font-weight: 850;
+    line-height: 1.1;
+  }
+
+  .training-panel__core-copy p {
+    margin: 0.75rem 0 0;
+    color: rgba(232, 237, 243, 0.66);
+    font-size: 0.92rem;
+    line-height: 1.56;
   }
 
   .training-panel__rows {
@@ -281,9 +359,9 @@ const panelRows = [
     font-size: 0.76rem;
   }
 
-  @keyframes training-cell {
-    0% { opacity: 0.45; transform: translateY(0); }
-    100% { opacity: 1; transform: translateY(-2px); }
+  @keyframes training-orbit {
+    0% { transform: translate(-18%, 14%) rotate(-10deg); opacity: 0.68; }
+    100% { transform: translate(18%, -12%) rotate(8deg); opacity: 1; }
   }
 
   @media (max-width: 980px) {
@@ -336,9 +414,23 @@ const panelRows = [
       display: none;
     }
 
-    .training-panel__map {
+    .training-panel__core {
+      height: 100%;
       min-height: 0;
-      grid-template-columns: repeat(7, minmax(0, 1fr));
+      grid-template-columns: minmax(88px, 0.62fr) minmax(0, 1fr);
+      gap: 0.9rem;
+    }
+
+    .training-panel__loop {
+      width: min(100%, 120px);
+    }
+
+    .training-panel__core-copy strong {
+      font-size: 1.18rem;
+    }
+
+    .training-panel__core-copy p {
+      display: none;
     }
 
   }
