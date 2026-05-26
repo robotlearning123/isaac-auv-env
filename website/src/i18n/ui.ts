@@ -4,8 +4,9 @@ export const defaultLang = 'en';
 export const ui = {
   zh: {
     'nav.vision': '挑战',
-    'nav.virtualOcean': '虚拟海洋',
-    'nav.usecases': '应用',
+    'nav.solution': '方案',
+    'nav.validation': '验证',
+    'nav.usecases': '场景',
     'nav.roadmap': '路线图',
     'nav.contact': '联系',
     'lang.other': 'EN',
@@ -14,8 +15,9 @@ export const ui = {
   },
   en: {
     'nav.vision': 'Challenge',
-    'nav.virtualOcean': 'Virtual Ocean',
-    'nav.usecases': 'Use Cases',
+    'nav.solution': 'Solution',
+    'nav.validation': 'Validation',
+    'nav.usecases': 'Missions',
     'nav.roadmap': 'Roadmap',
     'nav.contact': 'Contact',
     'lang.other': '中',

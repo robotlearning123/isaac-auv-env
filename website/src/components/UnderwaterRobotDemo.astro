@@ -14,30 +14,12 @@ const copy = isZh
       titleLines: ['仿真验证'],
       body: '基于水下机器人动力学模型的对接任务，视频、轨迹与验证证据来自同一次仿真输出。',
       videoAria: '水下机器人对接任务仿真验证视频',
-      status: '证据：同一次输出',
-      manifest: '验证清单',
-      mp4: '视频文件',
-      metrics: [
-        ['任务', '自主对接'],
-        ['模型', 'BlueROV2 Heavy'],
-        ['轨迹', '24 帧'],
-        ['收敛距离', '0.136 m'],
-      ],
     }
   : {
       eyebrow: 'Validation',
       titleLines: ['Simulation Proof'],
       body: 'A docking mission based on an underwater robot dynamics model, with video, trajectory, and verification evidence saved from the same simulation output.',
       videoAria: 'Simulation proof video of an underwater robot docking mission',
-      status: 'Evidence: one run',
-      manifest: 'Manifest JSON',
-      mp4: 'MP4 output',
-      metrics: [
-        ['Mission', 'Autonomous docking'],
-        ['Robot', 'BlueROV2 Heavy'],
-        ['Trace', '24 frames'],
-        ['Final distance', '0.136 m'],
-      ],
     };
 ---
 
@@ -69,23 +51,6 @@ const copy = isZh
       </video>
     </div>
 
-    <div class="robot-demo__evidence reveal" data-delay="2">
-      <div class="robot-demo__status">{copy.status}</div>
-      <div class="robot-demo__links">
-        <a href={manifestHref}>{copy.manifest}</a>
-        <a href={videoSrc}>{copy.mp4}</a>
-      </div>
-    </div>
-
-    <div class="robot-demo__metrics reveal" data-delay="3" aria-label="Underwater robot demo metrics">
-      {copy.metrics.map(([label, value]) => (
-        <div class="robot-demo__metric">
-          <span>{label}</span>
-          <strong>{value}</strong>
-        </div>
-      ))}
-    </div>
-
   </div>
 </section>
 
@@ -95,10 +60,37 @@ const copy = isZh
     overflow: hidden;
     scroll-margin-top: 92px;
     padding: clamp(96px, 12vw, 156px) 0 clamp(72px, 10vw, 132px);
-    background: #071414;
+    background: #04101a;
     color: var(--color-text);
     border-top: 1px solid rgba(180, 216, 206, 0.14);
     border-bottom: 1px solid rgba(180, 216, 206, 0.14);
+  }
+
+  .robot-demo::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(140deg, rgba(5, 16, 26, 0.86), rgba(6, 9, 16, 0.48), rgba(6, 9, 16, 0.82)),
+      url("/images/demos-bg.jpg") center / cover no-repeat;
+    opacity: 0.9;
+    z-index: 0;
+  }
+
+  .robot-demo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 76% 18%, rgba(45, 212, 191, 0.13), transparent 40%),
+      linear-gradient(0deg, rgba(3, 7, 12, 0.68), rgba(3, 7, 12, 0.14) 38%, rgba(3, 7, 12, 0.68));
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .robot-demo > .os-container {
+    position: relative;
+    z-index: 2;
   }
 
   .robot-demo__header {
@@ -189,45 +181,6 @@ const copy = isZh
   .robot-demo__links a:hover {
     color: var(--color-accent);
     border-bottom-color: var(--color-accent);
-  }
-
-  .robot-demo__metrics {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    margin-top: clamp(24px, 4vw, 38px);
-    border-top: 1px solid rgba(180, 216, 206, 0.18);
-    border-bottom: 1px solid rgba(180, 216, 206, 0.18);
-  }
-
-  .robot-demo__metric {
-    min-width: 0;
-    padding: 18px 16px 20px;
-    border-right: 1px solid rgba(180, 216, 206, 0.14);
-  }
-
-  .robot-demo__metric:last-child {
-    border-right: 0;
-  }
-
-  .robot-demo__metric span {
-    display: block;
-    color: var(--color-text-muted);
-    font-size: 0.72rem;
-    line-height: 1.25;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-
-  .robot-demo__metric strong {
-    display: block;
-    margin-top: 10px;
-    color: var(--color-text);
-    font-family: var(--font-mono);
-    font-size: clamp(0.9rem, 1.5vw, 1.05rem);
-    font-weight: 500;
-    line-height: 1.25;
-    letter-spacing: 0;
-    overflow-wrap: anywhere;
   }
 
   @media (max-width: 980px) {

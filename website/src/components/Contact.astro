@@ -8,15 +8,14 @@ const body = isZh
   ? '如果你正在研发水下机器人、自主任务策略或部署验证流程，可以把机器人形态、任务场景和验证目标发给我们。'
   : 'If you are building underwater robots, autonomy policies, or deployment validation workflows, send us the robot form factor, mission scenario, and validation target.';
 const label = isZh ? '联系' : 'Contact';
-const emailLabel = isZh ? '联系 OceanScale' : 'Contact OceanScale';
 ---
 <section id="contact" class="contact-section">
-  <div class="contact-section__bg"></div>
+  <div class="contact-section__bg" aria-hidden="true"></div>
+  <div class="contact-section__shade"></div>
   <div class="os-container contact-section__inner reveal">
     <p class="section-label">{label}</p>
     <h2>{heading}</h2>
     <p>{body}</p>
-    <a href="mailto:business@oceanscale.cn" class="contact-link">{emailLabel}</a>
   </div>
 </section>
 
@@ -28,7 +27,7 @@ const emailLabel = isZh ? '联系 OceanScale' : 'Contact OceanScale';
     display: flex;
     align-items: center;
     background: var(--color-bg);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(45, 212, 191, 0.16);
     scroll-margin-top: 84px;
   }
 
@@ -36,14 +35,40 @@ const emailLabel = isZh ? '联系 OceanScale' : 'Contact OceanScale';
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(90deg, rgba(3, 7, 12, 0.92), rgba(3, 7, 12, 0.52), rgba(3, 7, 12, 0.9)),
-      url("/images/oceanscale-bg-evidence-validation.png") center / cover no-repeat;
-    opacity: 0.9;
+      linear-gradient(115deg, rgba(45, 212, 191, 0.16) 0 1px, transparent 1px 100%) 72% 18% / 180px 86px,
+      linear-gradient(180deg, rgba(2, 8, 14, 0.1), rgba(2, 8, 14, 0.82)),
+      radial-gradient(ellipse at 80% 22%, rgba(95, 184, 212, 0.24), transparent 48%),
+      radial-gradient(ellipse at 18% 78%, rgba(21, 80, 112, 0.2), transparent 44%),
+      linear-gradient(135deg, #02060b 0%, #06131d 46%, #02060b 100%);
+    opacity: 1;
+  }
+
+  .contact-section__shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(2, 6, 11, 0.92) 0%, rgba(2, 6, 11, 0.7) 42%, rgba(2, 6, 11, 0.38) 100%),
+      linear-gradient(0deg, var(--color-bg) 0%, rgba(3, 7, 12, 0) 24%),
+      linear-gradient(180deg, var(--color-bg) 0%, rgba(3, 7, 12, 0) 22%);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .contact-section::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(105deg, transparent 0 56%, rgba(45, 212, 191, 0.16) 56.2%, transparent 56.6%),
+      linear-gradient(105deg, transparent 0 64%, rgba(111, 209, 235, 0.1) 64.2%, transparent 64.55%);
+    opacity: 0.72;
+    z-index: 1;
+    pointer-events: none;
   }
 
   .contact-section__inner {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     max-width: 700px;
     padding: clamp(5rem, 10vw, 8rem) 0;
   }
@@ -72,28 +97,6 @@ const emailLabel = isZh ? '联系 OceanScale' : 'Contact OceanScale';
     color: rgba(232, 237, 243, 0.75);
     font-size: 1.08rem;
     line-height: 1.66;
-  }
-
-  .contact-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 48px;
-    margin-top: 2.3rem;
-    padding: 0 1.35rem;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    border-radius: 4px;
-    color: #fff;
-    font-size: 0.88rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    transition: background 0.2s, border-color 0.2s;
-  }
-
-  .contact-link:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.75);
   }
 
   @media (max-width: 760px) {

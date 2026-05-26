@@ -10,13 +10,31 @@ const cases = isZh ? [
   { icon: '⎔', title: '自主对接', body: '在洋流、低能见度和定位误差下训练对接策略。' },
   { icon: '◎', title: '定点保持', body: '让机器人在扰动海况中保持位置、姿态和作业稳定性。' },
   { icon: '⇢', title: '巡检测量', body: '沿复杂水下结构训练自主导航、避障和数据采集。' },
+  { icon: '◐', title: '结构检修', body: '在复杂设备附近学习接近、避障、固定姿态和镜头对位。' },
+  { icon: '◉', title: '目标搜寻', body: '在低能见度和遮挡环境中，训练快速扩散搜寻与回报策略。' },
+  { icon: '⬢', title: '物体回收', body: '让机械臂/抓手在潮流和定位漂移下完成多阶段抓取与回传。' },
 ] : [
   { icon: '⎔', title: 'Autonomous Docking', body: 'Train docking policies under current, low visibility, and localization error.' },
   { icon: '◎', title: 'Station Keeping', body: 'Hold position, attitude, and operational stability in disturbed ocean conditions.' },
   { icon: '⇢', title: 'Inspection & Survey', body: 'Train autonomous navigation, obstacle avoidance, and data collection along complex underwater structures.' },
+  { icon: '◐', title: 'Maintenance', body: 'Train approach, obstacle avoidance, and alignment behaviors for close-in structure work.' },
+  { icon: '◉', title: 'Search', body: 'Train robust search patterns and return policies under occlusion and visibility loss.' },
+  { icon: '⬢', title: 'Recovery', body: 'Train grasp-and-recover workflows for manipulators under flow and localization drift.' },
 ];
 ---
-<section id="usecases" class="relative py-24 lg:py-32" style="background: var(--color-surface); border-top: 1px solid var(--color-border);">
+<section id="usecases" class="relative py-24 lg:py-32 usecases-section">
+  <video
+    class="usecases__media"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+    poster="/images/oceanscale-bg-evidence-validation.png"
+  >
+    <source src="/videos/bluerov2-demo.mp4" type="video/mp4" />
+  </video>
+  <div class="usecases__shade"></div>
   <div class="os-container relative z-10">
     <p class="uc-kicker">{kicker}</p>
     <h2 class="os-h2 uc-heading">{heading}</h2>
@@ -34,6 +52,49 @@ const cases = isZh ? [
 </section>
 
 <style is:global>
+  .usecases-section {
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid var(--color-border);
+    background: #050c15;
+  }
+
+  .usecases__media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    opacity: 0.72;
+    z-index: 0;
+    transform: scale(1.02);
+  }
+
+  .usecases__shade {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      linear-gradient(135deg, rgba(5, 14, 22, 0.58), rgba(3, 7, 14, 0.42), rgba(3, 7, 14, 0.62));
+  }
+
+  .usecases-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 20%, rgba(58, 205, 186, 0.08), transparent 48%),
+      radial-gradient(circle at 82% 88%, rgba(34, 131, 255, 0.08), transparent 44%);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .usecases-section > .os-container {
+    position: relative;
+    z-index: 2;
+  }
+
   .uc-kicker {
     margin: 0 0 1rem;
     font-family: var(--font-mono);
