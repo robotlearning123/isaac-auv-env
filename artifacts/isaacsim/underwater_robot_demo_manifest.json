@@ -1,0 +1,233 @@
+{
+  "ok": true,
+  "artifacts": {
+    "summary": "/home/robot/workspace/46-marine/artifacts/isaacsim/underwater_robot_demo_pathtracing64_summary.json",
+    "stage": "/home/robot/workspace/46-marine/artifacts/isaacsim/underwater_robot_demo_pathtracing64.usda",
+    "capture": "/home/robot/workspace/46-marine/artifacts/isaacsim/underwater_robot_demo_pathtracing64.png",
+    "video": "/home/robot/workspace/46-marine/artifacts/isaacsim/underwater_robot_demo_pathtracing64.mp4",
+    "frames_dir": "/home/robot/workspace/46-marine/artifacts/isaacsim/underwater_robot_demo_pathtracing64_frames",
+    "video_probe": {
+      "width": 1920,
+      "height": 1080,
+      "nb_frames": 24,
+      "fps": 12.0,
+      "duration": 2.0,
+      "bit_rate": 726924
+    }
+  },
+  "checks": [
+    {
+      "name": "summary_exists",
+      "ok": true,
+      "evidence": "/home/robot/workspace/46-marine/artifacts/isaacsim/underwater_robot_demo_pathtracing64_summary.json"
+    },
+    {
+      "name": "stage_exists",
+      "ok": true,
+      "evidence": "/home/robot/workspace/46-marine/artifacts/isaacsim/underwater_robot_demo_pathtracing64.usda"
+    },
+    {
+      "name": "capture_exists",
+      "ok": true,
+      "evidence": "/home/robot/workspace/46-marine/artifacts/isaacsim/underwater_robot_demo_pathtracing64.png"
+    },
+    {
+      "name": "video_exists",
+      "ok": true,
+      "evidence": "/home/robot/workspace/46-marine/artifacts/isaacsim/underwater_robot_demo_pathtracing64.mp4"
+    },
+    {
+      "name": "frames_dir_exists",
+      "ok": true,
+      "evidence": "/home/robot/workspace/46-marine/artifacts/isaacsim/underwater_robot_demo_pathtracing64_frames"
+    },
+    {
+      "name": "renderer_is_path_tracing",
+      "ok": true,
+      "evidence": "Isaac Sim PathTracing"
+    },
+    {
+      "name": "path_tracing_spp",
+      "ok": true,
+      "evidence": 64
+    },
+    {
+      "name": "capture_resolution",
+      "ok": true,
+      "evidence": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "name": "requested_resolution",
+      "ok": true,
+      "evidence": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "name": "capture_png_size",
+      "ok": true,
+      "evidence": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "name": "sequence_frame_count",
+      "ok": true,
+      "evidence": 24
+    },
+    {
+      "name": "summary_frame_count",
+      "ok": true,
+      "evidence": 24
+    },
+    {
+      "name": "sequence_resolution",
+      "ok": true,
+      "evidence": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "name": "sequence_png_sizes",
+      "ok": true,
+      "evidence": {
+        "widths": [
+          1920
+        ],
+        "heights": [
+          1080
+        ]
+      }
+    },
+    {
+      "name": "required_visual_effects",
+      "ok": true,
+      "evidence": []
+    },
+    {
+      "name": "required_robot_features",
+      "ok": true,
+      "evidence": []
+    },
+    {
+      "name": "mission_completed",
+      "ok": true,
+      "evidence": true
+    },
+    {
+      "name": "mission_final_distance",
+      "ok": true,
+      "evidence": 0.13649843633174896
+    },
+    {
+      "name": "mission_sonar_detection",
+      "ok": true,
+      "evidence": 1.0
+    },
+    {
+      "name": "isaac_lab_runtime_ok",
+      "ok": true,
+      "evidence": true
+    },
+    {
+      "name": "isaac_lab_task",
+      "ok": true,
+      "evidence": "OceanScale-UnderwaterRobot-Direct-v0"
+    },
+    {
+      "name": "isaac_lab_device",
+      "ok": true,
+      "evidence": "cuda:0"
+    },
+    {
+      "name": "isaac_lab_step_obs_finite",
+      "ok": true,
+      "evidence": true
+    },
+    {
+      "name": "external_robot_triangles",
+      "ok": true,
+      "evidence": 198040
+    },
+    {
+      "name": "external_robot_license",
+      "ok": true,
+      "evidence": "MIT"
+    },
+    {
+      "name": "material_asset_exists:seafloor_albedo",
+      "ok": true,
+      "evidence": "/home/robot/workspace/46-marine/artifacts/isaacsim/procedural_textures/seafloor_albedo.png"
+    },
+    {
+      "name": "material_asset_size:seafloor_albedo",
+      "ok": true,
+      "evidence": [
+        512,
+        512
+      ]
+    },
+    {
+      "name": "material_asset_usd_binding:seafloor_albedo",
+      "ok": true,
+      "evidence": "/home/robot/workspace/46-marine/artifacts/isaacsim/procedural_textures/seafloor_albedo.png"
+    },
+    {
+      "name": "material_asset_exists:rock_albedo",
+      "ok": true,
+      "evidence": "/home/robot/workspace/46-marine/artifacts/isaacsim/procedural_textures/rock_albedo.png"
+    },
+    {
+      "name": "material_asset_size:rock_albedo",
+      "ok": true,
+      "evidence": [
+        512,
+        512
+      ]
+    },
+    {
+      "name": "material_asset_usd_binding:rock_albedo",
+      "ok": true,
+      "evidence": "/home/robot/workspace/46-marine/artifacts/isaacsim/procedural_textures/rock_albedo.png"
+    },
+    {
+      "name": "required_stage_tokens",
+      "ok": true,
+      "evidence": []
+    },
+    {
+      "name": "forbidden_stage_tokens",
+      "ok": true,
+      "evidence": []
+    },
+    {
+      "name": "video_resolution",
+      "ok": true,
+      "evidence": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "name": "video_frame_count",
+      "ok": true,
+      "evidence": 24
+    },
+    {
+      "name": "video_fps",
+      "ok": true,
+      "evidence": 12.0
+    },
+    {
+      "name": "video_duration",
+      "ok": true,
+      "evidence": 2.0
+    }
+  ]
+}

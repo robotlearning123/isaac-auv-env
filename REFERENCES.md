@@ -47,10 +47,14 @@ Anything failing 1-3 → §5 Anti-references.
 |---|---|---|---|---|---|---|
 | `REF-NEWTON` | newton-physics/newton | Apache-2.0 ✓ | Vendor (Apache) + cite | S (active daily) | G2-G5 | API still 1.x, breaking changes possible |
 | `REF-WARP` | NVIDIA/warp | Apache-2.0 ✓ | Vendor (Apache) | S | G2-G5 | 1.x→2.x breaking changes flagged |
-| `REF-MARINEGYM` | Marine-RL/MarineGym | MIT ✓ | Vendor + Port | A (Jan 2026 last commit) | G3, G4 | Single-lab, may stall |
-| `REF-OCEANSIM` | umfieldrobotics/OceanSim | BSD-3-Clause ✓ | Vendor + Port | A (Sept 2025 last commit) | v0.2 sensors | Replicator-coupled; needs rewrite |
-| `REF-ISAACAUV` | warplab/isaac-auv-env | BSD-3-Clause ✓ (inherited Isaac Lab) | Port + Study | A (Aug 2025 last commit) | G5 | Tied to Isaac Lab; design transfers, plumbing doesn't |
-| `REF-BLUEROV2GZ` | clydemcqueen/bluerov2_gz | MIT in `package.xml` ✓ | Optional generated visual asset + study | S (Dec 2025 last commit) | G4 | No root LICENSE file; preserve package metadata and pin commit |
+| `REF-MARINEGYM` | Marine-RL/MarineGym | MIT ✓ | **Integrated 2026-05-25** | A (Jan 2026 last commit) | G3, G4 | BlueROV USD + hydro YAML + T200 thruster ported |
+| `REF-OCEANSIM` | umfieldrobotics/OceanSim | BSD-3-Clause ✓ | **Integrated 2026-05-25** | A (Sept 2025 last commit) | v0.2 sensors | ImagingSonar + UW rendering ported to Warp standalone |
+| `REF-ISAACAUV` | warplab/isaac-auv-env | BSD-3-Clause ✓ (inherited Isaac Lab) | **Integrated 2026-05-25** | A (Aug 2025 last commit) | G5 | MuJoCo drag + domain rand + WarpAUV ported |
+| `REF-BLUEROV2GZ` | clydemcqueen/bluerov2_gz | MIT in `package.xml` ✓ | **Integrated 2026-05-25** | S (Dec 2025 last commit) | G4 | Heavy mesh + seabed terrain copied |
+| `REF-UUVSIM` | uuvsimulator/uuv_simulator | Apache-2.0 ✓ | **Integrated 2026-05-25** | B (archived) | G4, G5 | RexROV + environments + controllers |
+| `REF-DAVE` | Field-Robotics-Lab/dave | Apache-2.0 ✓ | **Integrated 2026-05-25** | A (2025) | G4, G5 | Gliders + DVL configs + environments |
+| `REF-SMARC` | smarc-project/smarc_stonefish_worlds | BSD-3-Clause ✓ | **Integrated 2026-05-25** | A (2025) | G4 | Pipeline + shipwreck environments |
+| `REF-FISHSIM` | srl-ethz/fishsim | MIT ✓ | **Integrated 2026-05-25** | S (2026) | G5 | Kutta/Magnus lift + TendonFish + sysid |
 | `REF-BLUEROV2GYM` | gokulp01/bluerov2_gym | **NO LICENSE** ❌ | **Study only** | A (Apr 2025) | G4 | License blocker |
 | `REF-FOSSEN21` | Fossen 2021 Handbook | Textbook (citation only) | Cite (math equations) | n/a | G3, T1.3 | Equations not copyrightable; numerical examples are |
 | `REF-MSS` | cybergalactic/MSS | MIT (verify) | Study (MATLAB reference impl) | A | G3 | Different language; numerical cross-check only |

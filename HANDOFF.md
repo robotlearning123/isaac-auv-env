@@ -1,54 +1,73 @@
-# Session Handoff — 2026-05-24 (session 4)
+# Session Handoff — 2026-05-25 (session 5)
 
 ## What shipped
 
-7 PRs merged (#47-53), 693 tests, ~14,000 LOC. Zero uncommitted changes.
+PR #54 merged (cleanup/organize WIP). Massive multi-project integration: 8 open-source underwater sim projects merged into OceanScale. Tests: 730 → 922 (+192), 0 regressions.
 
-| PR | Content | Tests |
-|----|---------|-------|
-| 47 | Fluid upgrades (HashGrid SPH, wave, fidelity API) + sim/website/CI | 391 |
-| 48 | wp.Volume solver, CUDA Graph, Newton tether | 423 |
-| 49 | All NVIDIA features: Mesh FSI, ray sensors, diff NS, FFT, MPM, MarchingCubes, cloth, adaptive grid | 505 |
-| 50 | End-to-end integration pipeline (fluid→sensor→training) | 516 |
-| 51 | Isaac Lab DirectRLEnv training layer | 534 |
-| 52 | OceanWorld + UnifiedDemo | 592 |
-| 53 | Ocean physics: water column, propulsion, currents, acoustics | 693 |
+## Integration summary
 
-## 12 NVIDIA features integrated
+| Source | License | What was merged |
+|--------|---------|----------------|
+| MarineGym | MIT | BlueROV USD + hydro YAML + T200 thruster (Warp kernel) |
+| OceanSim | Apache-2.0 | ImagingSonar (5 Warp kernels) + UW rendering (10 Jerlov water types) |
+| isaac-auv-env | BSD-3 | MuJoCo drag + domain randomization + WarpAUV USD |
+| bluerov2_gz | MIT | BlueROV2 Heavy high-fidelity Collada mesh (24MB) + seabed terrain |
+| UUV Simulator | Apache-2.0 | RexROV (mesh + hydro + TAM) + 3 environments (shipwreck, Munkholmen, BOP) + PID/NL-PID/sliding mode controllers |
+| DAVE | Apache-2.0 | 4 vehicles (Slocum, Wave Glider, WHOI, eROV) + 9 real DVL configs + Santorini terrain + objects |
+| SMARC | BSD-3 | Pipeline + shipwreck + rock environments |
+| fishsim | MIT | Kutta lift + Magnus lift (Warp kernels, experimentally validated) + TendonFish + CMA-ES sysid |
 
-wp.Volume, CUDA Graph, Newton rod, wp.Mesh FSI, mesh_query_ray sensors, differentiable NS (wp.Tape), Tile FFT, MPM coupling, MarchingCubes, Newton cloth, AdaptiveNanogrid, Isaac Lab DirectRLEnv.
+## New modules (13)
 
-## 4 self-developed ocean physics modules
+| Module | Path | Engine |
+|--------|------|--------|
+| T200 thruster | `propulsion/t200.py` | Warp |
+| ImagingSonar | `sensors/imaging_sonar.py` | Warp |
+| DVL configs (9 models) | `sensors/dvl_configs.py` | dataclass |
+| UW rendering | `rendering/underwater.py` | Warp |
+| MuJoCo drag + lift | `hydro/mujoco_drag.py` | Warp |
+| Distributed drag | `hydro/distributed_drag.py` | Warp |
+| Partial submersion | `hydro/submersion.py` | Warp |
+| System identification | `hydro/sysid.py` | dataclass |
+| PID controller | `controllers/pid.py` | numpy |
+| Lee geometric ctrl | `controllers/lee_position.py` | numpy |
+| Domain randomization | `training/domain_rand.py` | numpy |
+| Fish vehicle | `vehicles/fish.py` | dataclass |
+| Vehicle fleet registry | `vehicles/fleet.py` | dataclass |
 
-WaterColumn (UNESCO EOS-80), PropellerThruster/FlappingFin/BuoyancyEngine, OceanCurrentField (M2 tides + Ekman), AcousticPropagation (Snell + Thorp + Wenz).
+## 10 underwater robots supported
 
-## Performance baselines (RTX 5090)
+BlueROV2 Heavy, BlueROV MarineGym, WarpAUV, RexROV, Slocum Glider, Wave Glider, WHOI Hybrid, eROV, TendonFish. Assets in `oceanscale/assets/`.
 
-FFT Wave: 4,983 steps/s · CUDA Graph: 5.5x · RayDVL: 8,765 Hz · Pipeline: 194 steps/s · Isaac Lab 16 envs: 80 env-steps/s · GPU: 3%.
+## 7 environments
 
-## Key decisions
+Shipwreck, Munkholmen, BOP panel, Santorini terrain, pipeline, rock, sand heightmap. In `oceanscale/assets/environments/`.
 
-1. Official features first — max NVIDIA, then custom ocean physics
-2. No official ocean sim = our market window
-3. Fossen = baseline; real fidelity = Warp CFD + Newton
-4. OpenUSD = scene format (Newton `builder.add_usd()` ready)
-5. Ocean core, NVIDIA decides robot scope
-6. 12 ocean robot types mapped to Newton solvers
+## Isaac Sim status
 
-## Known issues
+- **5.1**: Camera/SyntheticData segfaults on RTX 5090 + Driver 580. Swapchain capture works (1440×900). MarineGym/OceanSim partially run but blocked by API breaks.
+- **6.0**: Installing at `/mnt/storage/isaacsim-6.0-official/` (downloading 4.2GB Kit runtime via `isaacsim[all,extscache]`). Not finished.
+- **4.5 pip**: Stub, no Kit runtime.
 
-1. `cosh` overflow wave.py T<5s deep water → deep-water approx k*d>20
-2. VBD cloth ≥15×15 NaN → increase iterations or reduce dt
-3. DVL beam direction on complex terrain → check orientation
-4. Pipeline ROV not advancing → force coupling chain
-5. UnifiedDemo ROV falls → gravity/buoyancy tuning
+## Demo videos produced
+
+- Warp 3D + OceanSim physics water FX: 240 frames, 8s, 1920×1080
+- Isaac Sim RTX + MarineGym BlueROV mesh: 120 frames, 4s, 1440×900
+- Isaac Sim RTX raw (no postfx): 120 frames, comparison
+
+## Key decisions this session
+
+1. OceanScale = THE unified underwater robot simulator (absorb all open-source projects)
+2. All merged code has provenance headers (URL + license + paper + modifications)
+3. Isaac Sim 6.0 is the target rendering platform (Newton schema, RT2)
+4. Development-phase: license compliance deferred to pre-release audit
+5. FARMS swim-to-walk physics implemented independently (partial submersion + distributed drag)
 
 ## Next priorities
 
-1. Fix 5 known issues
-2. Wire ocean physics into UnifiedDemo (WaterColumn + currents + acoustics + propellers)
-3. USD scene import (`builder.add_usd()` for BlueROV2)
-4. AUV vehicle model (torpedo hydro + rudder joints)
-5. ROV + manipulator arm (Featherstone + URDF)
-6. Build the virtual ocean — all modules as one realistic system
-7. Soft robot PoC (XPBD + FSI for bio-inspired)
+1. **Isaac Sim 6.0**: Complete installation → test headless Camera → if works, build rendering pipeline
+2. **Commit + PR**: All integration work is uncommitted on main — create branch, atomic commits, PR
+3. **Hover task port**: Port MarineGym Hover reward/obs to OceanScale Newton env (P0c deferred)
+4. **FARMS CPG**: Integrate amphibious locomotion controllers (v0.2)
+5. **Demo video**: Re-render with Isaac Sim 6.0 RT2 once available
+6. **MSS validation**: Extract Fossen reference trajectories from cybergalactic/MSS for hydro kernel numerical verification

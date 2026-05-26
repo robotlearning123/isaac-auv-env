@@ -3,9 +3,13 @@
 from __future__ import annotations
 
 import math
+from typing import TYPE_CHECKING
 
 import numpy as np
 import warp as wp
+
+if TYPE_CHECKING:
+    from oceanscale.sensors.dvl_configs import DVLConfig
 
 
 @wp.kernel
@@ -49,6 +53,22 @@ class RayDVL:
     seabed mesh and measures per-beam range. Altitude is derived from
     average beam range projected to vertical.
     """
+
+    @classmethod
+    def from_config(
+        cls,
+        config: "DVLConfig",
+        seabed_mesh: wp.Mesh,
+        device: str = "cuda:0",
+    ) -> "RayDVL":
+        """Construct from a real-world DVL hardware config."""
+        return cls(
+            seabed_mesh=seabed_mesh,
+            n_beams=config.n_beams,
+            beam_angle=config.beam_angle_deg,
+            max_range=config.max_range_m,
+            device=device,
+        )
 
     def __init__(
         self,

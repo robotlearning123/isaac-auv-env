@@ -1,0 +1,44 @@
+{
+  "action_shape": [
+    1,
+    6
+  ],
+  "action_space": "Box(-1.0, 1.0, (6,), float32)",
+  "api": "Isaac Lab DirectRLEnv",
+  "device": "cuda:0",
+  "isaaclab_tasks_version": "0.11.7",
+  "isaaclab_version": "0.47.7",
+  "num_envs": 1,
+  "observation_space": "Box(-inf, inf, (33,), float32)",
+  "oceanscale_task_registered": true,
+  "ok": true,
+  "package_overlay_dir": "/home/robot/workspace/46-marine/.venv/lib/python3.12/site-packages",
+  "preloaded_packages": [
+    {
+      "file": "/home/robot/workspace/46-marine/.venv/lib/python3.12/site-packages/warp/__init__.py",
+      "name": "warp",
+      "version": "1.13.0"
+    },
+    {
+      "file": "/home/robot/workspace/46-marine/.venv/lib/python3.12/site-packages/newton/__init__.py",
+      "name": "newton",
+      "version": "1.2.0"
+    }
+  ],
+  "reset_obs_finite": true,
+  "reward_finite": true,
+  "reward_shape": [
+    1
+  ],
+  "step_obs_finite": true,
+  "task": "OceanScale-UnderwaterRobot-Direct-v0",
+  "terminated_any": false,
+  "terminated_shape": [
+    1
+  ],
+  "truncated_any": false,
+  "truncated_shape": [
+    1
+  ],
+  "use_fabric": false
+}

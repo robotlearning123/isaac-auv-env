@@ -4,7 +4,7 @@ Cross-tool configuration for AI coding agents. Read by: Claude Code (via @AGENTS
 
 ## Project Overview
 
-OceanScale builds AI-native simulation infrastructure for underwater robotics. GPU-native ocean simulator built on Newton + Warp.
+OceanScale is the unified GPU-native simulation platform for underwater robotics, built on Newton + Warp. It integrates the best of MarineGym, OceanSim, UUV Simulator, DAVE, and more into a single framework — 10 underwater robots, 7 environments, 922+ tests.
 
 - Monorepo: `oceanscale/` (Python GPU sim), `website/` (Astro 6 landing page), `benchmarks/` (perf tests), `notebooks/` (Colab notebooks), `tests/`, `docs/`
 - Each sub-package has its own `AGENTS.md` — read it before working in that directory
@@ -72,7 +72,7 @@ uv run python benchmarks/kernel_throughput.py    # GPU benchmarks
 <claude-mem-context>
 # Memory Context
 
-# [46-marine] recent context, 2026-05-25 2:43pm EDT
+# [46-marine] recent context, 2026-05-25 5:07pm EDT
 
 No previous sessions found.
 </claude-mem-context>

@@ -5,6 +5,9 @@ Adapted from MarineGym marinegym/robots/drone/underwaterVehicle.py
 commit ebdca1bf 2026-01-21). See THIRD_PARTY_NOTICES.md.
 """
 
+from oceanscale.hydro.distributed_drag import DistributedDrag, DistributedDragConfig
+from oceanscale.hydro.mujoco_drag import MuJoCoDrag, MuJoCoDragParams
+from oceanscale.hydro.submersion import PartialSubmersion, PartialSubmersionConfig
 from oceanscale.hydro.tier1 import RandomizationRanges, Tier1
 from oceanscale.hydro.tier1_kernels import (
     tier1_accumulate_to_body_f,
@@ -16,6 +19,12 @@ from oceanscale.hydro.tier1_kernels import (
 )
 
 __all__ = [
+    "DistributedDrag",
+    "DistributedDragConfig",
+    "MuJoCoDrag",
+    "MuJoCoDragParams",
+    "PartialSubmersion",
+    "PartialSubmersionConfig",
     "RandomizationRanges",
     "Tier1",
     "tier1_accumulate_to_body_f",

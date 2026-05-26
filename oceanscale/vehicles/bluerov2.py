@@ -17,9 +17,12 @@ NOTE: von Benzon uses rho=1000 (fresh water), g=9.82.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from importlib.resources import files
+from pathlib import Path
 from typing import Any
 
 import numpy as np
+import yaml
 
 
 def _rz(angle: float) -> np.ndarray:
@@ -157,3 +160,194 @@ class BlueROV2Heavy:
             "coBM": self.coBM,
             "T_matrix": self.compute_t_matrix(),
         }
+
+
+def _marinegym_asset_dir() -> Path:
+    return Path(str(files("oceanscale.assets").joinpath("bluerov_marinegym")))
+
+
+def _load_marinegym_yaml() -> dict[str, Any]:
+    yaml_path = _marinegym_asset_dir() / "BlueROV.yaml"
+    with open(yaml_path) as f:
+        return yaml.safe_load(f)
+
+
+@dataclass(frozen=True)
+class BlueROV2MarineGym:
+    """BlueROV config from MarineGym — 6 rotors, different hydro source.
+
+    Adapted from MarineGym (https://github.com/Marine-RL/MarineGym)
+    Original: marinegym/robots/assets/usd/BlueROV/BlueROV.yaml | License: MIT
+    Paper: Chu et al., "MarineGym", IROS 2025
+    Modifications: Loaded as OceanScale dataclass; set_coeffs_kwargs() maps
+    to Tier1 Fossen format.
+    """
+
+    mass: float = 11.5
+    volume: float = 0.0113459
+    length: float = 0.46
+    width: float = 0.58
+    height: float = 0.25
+
+    Ix: float = 0.16
+    Iy: float = 0.16
+    Iz: float = 0.16
+
+    coBM: float = 0.01  # noqa: N815
+    drag_coef: float = 0.3
+
+    n_thrusters: int = 6
+    max_thrust: float = 51.5
+    min_thrust: float = -40.2
+
+    added_mass: tuple[float, ...] = (5.5, 12.7, 14.57, 0.12, 0.12, 0.12)
+    d_lin: tuple[float, ...] = (4.03, 6.22, 5.18, 0.07, 0.07, 0.07)
+    d_quad: tuple[float, ...] = (18.18, 21.66, 36.99, 1.55, 1.55, 1.55)
+
+    rotor_directions: tuple[float, ...] = (1.0, -1.0, 1.0, -1.0, 1.0, -1.0)
+    rotor_time_constants: tuple[float, ...] = (0.01, 0.01, 0.01, 0.01, 0.01, 0.01)
+    rotor_force_constants: tuple[float, ...] = (4.4e-7, 4.4e-7, 4.4e-7, 4.4e-7, 4.4e-7, 4.4e-7)
+    rotor_moment_constants: tuple[float, ...] = (
+        1.368e-9, 1.368e-9, 1.368e-9, 1.368e-9, 1.368e-9, 1.368e-9,
+    )
+    rotor_max_rpm: tuple[float, ...] = (3900, 3900, 3900, 3900, 3900, 3900)
+
+    @classmethod
+    def from_yaml(cls, yaml_path: str | Path | None = None) -> BlueROV2MarineGym:
+        """Load from MarineGym YAML config."""
+        if yaml_path is None:
+            data = _load_marinegym_yaml()
+        else:
+            with open(yaml_path) as f:
+                data = yaml.safe_load(f)
+        hc = data["hydro_coef"]
+        rc = data["rotor_configuration"]
+        return cls(
+            volume=data.get("volume", 0.0113459),
+            coBM=data.get("coBM", 0.01),
+            drag_coef=data.get("drag_coef", 0.3),
+            n_thrusters=rc["num_rotors"],
+            added_mass=tuple(hc["added_mass"]),
+            d_lin=tuple(hc["linear_damping"]),
+            d_quad=tuple(hc["quadratic_damping"]),
+            rotor_directions=tuple(rc["directions"]),
+            rotor_time_constants=tuple(rc["time_constants"]),
+            rotor_force_constants=tuple(rc["force_constants"]),
+            rotor_moment_constants=tuple(rc["moment_constants"]),
+            rotor_max_rpm=tuple(rc["max_rotation_velocities"]),
+        )
+
+    def usd_path(self) -> Path:
+        return _marinegym_asset_dir() / "BlueROV.usd"
+
+    def set_coeffs_kwargs(self) -> dict[str, Any]:
+        """Return kwargs dict for Tier1.set_coeffs()."""
+        return {
+            "added_mass": self.added_mass,
+            "d_lin": self.d_lin,
+            "d_quad": self.d_quad,
+            "mass": self.mass,
+            "volume": self.volume,
+            "coBM": self.coBM,
+        }
+
+    def rotor_config(self) -> dict[str, Any]:
+        """Return rotor configuration for T200 thruster model."""
+        return {
+            "num_rotors": self.n_thrusters,
+            "directions": list(self.rotor_directions),
+            "time_constants": list(self.rotor_time_constants),
+            "force_constants": list(self.rotor_force_constants),
+            "moment_constants": list(self.rotor_moment_constants),
+            "max_rpm": list(self.rotor_max_rpm),
+        }
+
+
+def _warpauv_asset_dir() -> Path:
+    return Path(str(files("oceanscale.assets").joinpath("warpauv")))
+
+
+@dataclass(frozen=True)
+class WarpAUV:
+    """WarpAUV vehicle config from isaac-auv-env.
+
+    Adapted from isaac-auv-env (https://github.com/warplab/isaac-auv-env)
+    Original: warpauv_env.py + assets/warpauv.py by Kevin Chang and Levi Cai
+    License: BSD-3-Clause
+    Paper: Lofaro et al., "Learning to Swim", arXiv 2410.00120
+    Modifications: Extracted vehicle parameters into OceanScale dataclass.
+    """
+
+    mass: float = 22.701
+    volume: float = 0.02275
+    length: float = 0.70
+    width: float = 0.40
+    height: float = 0.20
+
+    Ix: float = 0.37
+    Iy: float = 0.97
+    Iz: float = 1.19
+
+    coBM: float = 0.01
+    n_thrusters: int = 6
+
+    com_to_cob_offset: tuple[float, float, float] = (0.0, 0.0, 0.01)
+    water_rho: float = 997.0
+    water_beta: float = 0.001306
+    rotor_constant: float = 0.001
+    dyn_time_constant: float = 0.05
+
+    thruster_positions: tuple[tuple[float, float, float], ...] = (
+        (-0.4127, 0.1506, -0.0889),
+        (-0.4127, -0.1506, -0.0889),
+        (-0.303, 0.1461, -0.1587),
+        (-0.303, -0.1461, -0.1587),
+        (0.0585, 0.1461, -0.0540),
+        (0.0585, -0.1461, -0.0540),
+    )
+
+    def usd_path(self) -> Path:
+        return _warpauv_asset_dir() / "warpauv.usd"
+
+    def inertia_diag(self) -> np.ndarray:
+        return np.array([self.Ix, self.Iy, self.Iz], dtype=np.float32)
+
+    def mujoco_drag_kwargs(self) -> dict[str, Any]:
+        """Return kwargs for MuJoCoDrag constructor."""
+        return {
+            "inertia_diag": self.inertia_diag(),
+            "mass": self.mass,
+        }
+
+
+def _bluerov2_heavy_gz_dir() -> Path:
+    return Path(str(files("oceanscale.assets").joinpath("bluerov2_heavy_gz")))
+
+
+def bluerov2_heavy_gz_mesh_paths() -> dict[str, Path]:
+    # Adapted from clydemcqueen/bluerov2_gz (https://github.com/clydemcqueen/bluerov2_gz)
+    # License: MIT (in package.xml) | Commit: 661264b
+    # Content: BlueROV2 Heavy high-fidelity Collada visual meshes + T200 propeller meshes
+    d = _bluerov2_heavy_gz_dir() / "meshes"
+    return {
+        "hull": d / "bluerov2_heavy.dae",
+        "prop_ccw": d / "t200_ccw_prop.dae",
+        "prop_cw": d / "t200_cw_prop.dae",
+    }
+
+
+def bluerov2_heavy_gz_sdf_path() -> Path:
+    # Adapted from clydemcqueen/bluerov2_gz (https://github.com/clydemcqueen/bluerov2_gz)
+    # License: MIT | Commit: 661264b
+    return _bluerov2_heavy_gz_dir() / "model.sdf"
+
+
+def sand_heightmap_mesh_paths() -> dict[str, Path]:
+    # Adapted from clydemcqueen/bluerov2_gz (https://github.com/clydemcqueen/bluerov2_gz)
+    # License: MIT | Commit: 661264b
+    d = Path(str(files("oceanscale.assets").joinpath("sand_heightmap")))
+    return {
+        "heightmap": d / "heightmap.dae",
+        "seabed": d / "sandseabed.dae",
+        "texture": d / "soil_sand_0045_01.jpg",
+    }
