@@ -34,7 +34,7 @@ class LeePositionConfig:
 
 
 def _quat_to_rotmat(q: np.ndarray) -> np.ndarray:
-    w, x, y, z = q
+    x, y, z, w = q
     return np.array(
         [
             [1 - 2 * (y * y + z * z), 2 * (x * y - w * z), 2 * (x * z + w * y)],

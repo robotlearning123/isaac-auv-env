@@ -57,11 +57,13 @@ class MultibeamSonar:
         environment_mesh: wp.Mesh,
         config: MultibeamConfig | None = None,
         device: str = "cuda:0",
+        seed: int | None = None,
     ) -> None:
         cfg = config or MultibeamConfig()
         self.cfg = cfg
         self.mesh = environment_mesh
         self.device = device
+        self._rng = np.random.RandomState(seed)
 
         half_swath = math.radians(cfg.swath_angle_deg / 2)
         angles = np.linspace(-half_swath, half_swath, cfg.n_beams, dtype=np.float32)
@@ -105,7 +107,7 @@ class MultibeamSonar:
         intensity = self._intensity.numpy().copy()
 
         if self.cfg.range_noise_std > 0:
-            ranges += np.random.normal(0, self.cfg.range_noise_std, ranges.shape).astype(np.float32)
+            ranges += self._rng.normal(0, self.cfg.range_noise_std, ranges.shape).astype(np.float32)
 
         pos = np.asarray(position, dtype=np.float32)
         points = pos[np.newaxis, :] + dirs * ranges[:, np.newaxis]

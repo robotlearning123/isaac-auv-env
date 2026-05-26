@@ -62,7 +62,7 @@ class TendonFish:
     def magnus_lift(self) -> float:
         return self.fluid_coef[4]
 
-    def mujoco_drag_params(self) -> dict[str, float]:
+    def mujoco_drag_params(self) -> "MuJoCoDragParams":
         from oceanscale.hydro.mujoco_drag import MuJoCoDragParams
 
         return MuJoCoDragParams(

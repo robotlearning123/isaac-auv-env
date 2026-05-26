@@ -108,7 +108,7 @@ class TestLeePositionController:
         out = ctrl.compute(
             position=np.array([1, 0, 0], dtype=np.float32),
             velocity=np.zeros(6, dtype=np.float32),
-            orientation_quat=np.array([1, 0, 0, 0], dtype=np.float32),
+            orientation_quat=np.array([0, 0, 0, 1], dtype=np.float32),
             angular_velocity=np.zeros(6, dtype=np.float32),
             target_position=np.array([1, 0, 0], dtype=np.float32),
         )
@@ -120,7 +120,7 @@ class TestLeePositionController:
         out = ctrl.compute(
             position=np.zeros(3, dtype=np.float32),
             velocity=np.zeros(6, dtype=np.float32),
-            orientation_quat=np.array([1, 0, 0, 0], dtype=np.float32),
+            orientation_quat=np.array([0, 0, 0, 1], dtype=np.float32),
             angular_velocity=np.zeros(6, dtype=np.float32),
             target_position=np.array([1, 0, 0], dtype=np.float32),
         )
