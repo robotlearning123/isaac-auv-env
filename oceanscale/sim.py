@@ -2,9 +2,8 @@
 
 Composes Newton rigid-body physics, Fossen hydrodynamics, ocean state
 (water column, currents, waves), and sensors into a single step() call.
-All components share the same physical world and simulation time.
 
-Usage::
+Single-vehicle mode (backward compatible)::
 
     from oceanscale.sim import OceanSim, OceanSimConfig, OceanConfig
     from oceanscale.vehicles import BlueROV2Heavy
@@ -18,6 +17,24 @@ Usage::
     for _ in range(1000):
         action = np.random.uniform(-1, 1, (64, 6))
         obs = sim.step(action)
+
+Multi-vehicle mode (fleet/swarm)::
+
+    from oceanscale.sim import OceanSim, MultiVehicleConfig, VehicleSpec
+
+    sim = OceanSim(MultiVehicleConfig(
+        vehicles={
+            "alpha": VehicleSpec(vehicle=BlueROV2Heavy(), init_pos=(0, 0, -5)),
+            "beta": VehicleSpec(vehicle=BlueROV2Heavy(), init_pos=(5, 0, -5)),
+        },
+        n_envs=64,
+    ))
+    obs = sim.reset()
+    for _ in range(1000):
+        obs = sim.step({
+            "alpha": np.random.uniform(-1, 1, (64, 6)),
+            "beta": np.random.uniform(-1, 1, (64, 6)),
+        })
 """
 
 from __future__ import annotations
@@ -54,7 +71,7 @@ class SensorMount:
 
 @dataclass
 class OceanSimConfig:
-    """Complete simulation configuration."""
+    """Complete simulation configuration (single vehicle)."""
 
     vehicle: Any
     ocean: OceanConfig = field(default_factory=OceanConfig)
@@ -66,18 +83,49 @@ class OceanSimConfig:
     init_quat: tuple[float, float, float, float] = (0.0, 0.0, 0.0, 1.0)
     seabed_mesh: Any = None
     current_drag_coeff: float = 5.0
+    use_domain_randomization: bool = False
+    randomization_ranges: dict[str, float] | None = None
+    randomization_seed: int | None = None
+
+
+@dataclass
+class VehicleSpec:
+    """One vehicle in a multi-vehicle fleet."""
+
+    vehicle: Any
+    init_pos: tuple[float, float, float] = (0.0, 0.0, -5.0)
+    init_quat: tuple[float, float, float, float] = (0.0, 0.0, 0.0, 1.0)
+
+
+@dataclass
+class MultiVehicleConfig:
+    """Configuration for multiple vehicle types in the same world."""
+
+    vehicles: dict[str, VehicleSpec] = field(default_factory=dict)
+    ocean: OceanConfig = field(default_factory=OceanConfig)
+    n_envs: int = 1
+    dt: float = 1 / 240
+    device: str = "cuda:0"
+    seabed_mesh: Any = None
+    current_drag_coeff: float = 5.0
 
 
 class OceanSim:
-    """Unified GPU underwater simulation.
+    """Unified GPU underwater simulation — single or multi-vehicle.
 
     Composes Newton physics + Fossen hydrodynamics + ocean state +
-    sensors into a single step() call. Replaces the three parallel
-    integration paths (ROVEnv, OceanWorld, UnifiedDemo) with one
-    shared orchestration loop.
+    sensors into a single step() call.
+
+    Single-vehicle: pass OceanSimConfig (backward compatible).
+    Multi-vehicle: pass MultiVehicleConfig for fleet/swarm sim.
     """
 
-    def __init__(self, config: OceanSimConfig) -> None:
+    def __init__(self, config: OceanSimConfig | MultiVehicleConfig) -> None:
+        self._is_multi = isinstance(config, MultiVehicleConfig)
+        if self._is_multi:
+            self._init_multi(config)
+            return
+
         self.cfg = config
         self.device = config.device
         self.dt = config.dt
@@ -90,6 +138,60 @@ class OceanSim:
         self._init_ocean()
         self._init_sensors()
         self._step_count = np.zeros(config.n_envs, dtype=np.int32)
+        self._rng = np.random.default_rng(config.randomization_seed)
+
+    # ------------------------------------------------------------------
+    # Multi-vehicle fleet
+    # ------------------------------------------------------------------
+
+    def _init_multi(self, config: MultiVehicleConfig) -> None:
+        self._fleet_cfg = config
+        self._fleet: dict[str, OceanSim] = {}
+        for name, spec in config.vehicles.items():
+            self._fleet[name] = OceanSim(OceanSimConfig(
+                vehicle=spec.vehicle,
+                init_pos=spec.init_pos,
+                init_quat=spec.init_quat,
+                ocean=config.ocean,
+                n_envs=config.n_envs,
+                dt=config.dt,
+                device=config.device,
+                seabed_mesh=config.seabed_mesh,
+                current_drag_coeff=config.current_drag_coeff,
+            ))
+        self.n_envs = config.n_envs
+        self.dt = config.dt
+        self.device = config.device
+        self.time = 0.0
+        self._step_count = np.zeros(config.n_envs, dtype=np.int32)
+
+    def add_vehicle(
+        self,
+        name: str,
+        vehicle: Any,
+        init_pos: tuple[float, float, float] = (0.0, 0.0, -5.0),
+        init_quat: tuple[float, float, float, float] = (0.0, 0.0, 0.0, 1.0),
+    ) -> None:
+        """Add a vehicle to a multi-vehicle fleet."""
+        if not self._is_multi:
+            raise RuntimeError("add_vehicle requires MultiVehicleConfig")
+        self._fleet[name] = OceanSim(OceanSimConfig(
+            vehicle=vehicle, init_pos=init_pos, init_quat=init_quat,
+            ocean=self._fleet_cfg.ocean, n_envs=self.n_envs,
+            dt=self.dt, device=self.device,
+            seabed_mesh=self._fleet_cfg.seabed_mesh,
+            current_drag_coeff=self._fleet_cfg.current_drag_coeff,
+        ))
+
+    def reset_vehicle(self, name: str) -> dict[str, Any]:
+        """Reset a single vehicle in multi-vehicle mode."""
+        if not self._is_multi:
+            raise RuntimeError("reset_vehicle only in multi-vehicle mode")
+        return self._fleet[name].reset()
+
+    # ------------------------------------------------------------------
+    # Single-vehicle physics
+    # ------------------------------------------------------------------
 
     def _build_physics(self) -> None:
         import newton as nt
@@ -234,6 +336,21 @@ class OceanSim:
             )
 
     # ------------------------------------------------------------------
+    # Domain randomization
+    # ------------------------------------------------------------------
+
+    def randomize(self, env_ids: np.ndarray | None = None) -> None:
+        """Apply domain randomization to Tier1 hydrodynamic coefficients.
+
+        Args:
+            env_ids: Env indices to randomize. None = all envs.
+        """
+        from oceanscale.hydro.tier1 import RandomizationRanges
+
+        ranges = RandomizationRanges(**(self.cfg.randomization_ranges or {}))
+        self.tier1.randomize_coeffs(env_ids=env_ids, ranges=ranges, rng=self._rng)
+
+    # ------------------------------------------------------------------
     # State access
     # ------------------------------------------------------------------
 
@@ -263,6 +380,8 @@ class OceanSim:
 
     def observe_torch(self) -> dict[str, torch.Tensor]:
         """GPU-native observations — zero-copy torch tensors on device."""
+        if self._is_multi:
+            return {n: s.observe_torch() for n, s in self._fleet.items()}
         pos, quat, vel = self._get_body_state_torch()
         return {
             "position": pos,
@@ -306,13 +425,25 @@ class OceanSim:
     def step_torch(self, action: torch.Tensor) -> dict[str, torch.Tensor]:
         """GPU-native step: accepts and returns CUDA tensors.
 
+        In multi-vehicle mode, action is a dict {name: tensor}.
+
         Args:
-            action: (n_envs, 6) or (6,) wrench command in [-1, 1].
+            action: (n_envs, 6) or (6,) wrench command in [-1, 1],
+                    or dict {vehicle_name: tensor} for multi-vehicle.
 
         Returns:
             dict with position, orientation, linear_velocity,
             angular_velocity as torch.Tensor on device.
         """
+        if self._is_multi:
+            if not isinstance(action, dict):
+                raise TypeError("Multi-vehicle requires dict actions {name: tensor}")
+            return {
+                n: s.step_torch(action.get(n, torch.zeros(
+                    self.n_envs, 6, device=self.device, dtype=torch.float32)))
+                for n, s in self._fleet.items()
+            }
+
         action = action.to(device=self.device, dtype=torch.float32)
         if action.ndim == 1:
             action = action.unsqueeze(0).expand(self.n_envs, -1)
@@ -337,13 +468,27 @@ class OceanSim:
     def step(self, action: np.ndarray) -> dict[str, Any]:
         """Advance simulation by one timestep (numpy I/O).
 
+        In multi-vehicle mode, action is a dict {name: array}.
+
         Args:
-            action: (n_envs, 6) or (6,) wrench command in [-1, 1].
+            action: (n_envs, 6) or (6,) wrench command in [-1, 1],
+                    or dict {vehicle_name: array} for multi-vehicle.
 
         Returns:
             dict with position, orientation, linear_velocity,
             angular_velocity, time, step_count, and sensors.
         """
+        if self._is_multi:
+            if not isinstance(action, dict):
+                raise TypeError("Multi-vehicle requires dict actions {name: array}")
+            results = {}
+            for n, s in self._fleet.items():
+                a = action.get(n, np.zeros((self.n_envs, 6), dtype=np.float32))
+                results[n] = s.step(a)
+            self.time = next(iter(self._fleet.values())).time
+            self._step_count = next(iter(self._fleet.values()))._step_count
+            return results
+
         action = np.asarray(action, dtype=np.float32)
         if action.ndim == 1:
             action = np.tile(action, (self.n_envs, 1))
@@ -377,6 +522,9 @@ class OceanSim:
         self.state_curr.body_f.assign(body_f_np)
 
     def _observe(self) -> dict[str, Any]:
+        if self._is_multi:
+            return {n: s._observe() for n, s in self._fleet.items()}
+
         positions = self._get_positions()
         orientations = self._get_orientations()
         vel = self._get_velocities()
@@ -409,7 +557,17 @@ class OceanSim:
     # ------------------------------------------------------------------
 
     def reset(self) -> dict[str, Any]:
-        """Reset all environments to initial conditions."""
+        """Reset all environments to initial conditions.
+
+        In multi-vehicle mode, resets all vehicles and returns
+        dict {vehicle_name: obs_dict}.
+        """
+        if self._is_multi:
+            results = {n: s.reset() for n, s in self._fleet.items()}
+            self.time = 0.0
+            self._step_count[:] = 0
+            return results
+
         import newton as nt
 
         x, y, z = self.cfg.init_pos
@@ -429,10 +587,17 @@ class OceanSim:
 
         self.time = 0.0
         self._step_count[:] = 0
+        if self.cfg.use_domain_randomization:
+            self.randomize()
         return self._observe()
 
     def reset_envs(self, env_ids: np.ndarray) -> dict[str, Any]:
         """Partial reset: reset only specified env indices."""
+        if self._is_multi:
+            for s in self._fleet.values():
+                s.reset_envs(env_ids)
+            return {n: s._observe() for n, s in self._fleet.items()}
+
         import newton as nt
 
         x, y, z = self.cfg.init_pos
@@ -451,8 +616,12 @@ class OceanSim:
         )
 
         self._step_count[env_ids] = 0
+        if self.cfg.use_domain_randomization:
+            self.randomize(env_ids=env_ids)
         return self._observe()
 
     def close(self) -> None:
         """Release GPU resources."""
-        pass
+        if self._is_multi:
+            for s in self._fleet.values():
+                s.close()
