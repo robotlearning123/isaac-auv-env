@@ -1,17 +1,17 @@
 # OceanScale — Architecture
 
-**Status:** Current v0.0.1 shipping stack. Last revised 2026-05-23.
+**Status:** Current v0.0.2 shipping stack. Last revised 2026-05-23.
 **Authority:** This file describes what OceanScale ACTUALLY ships today. For the original architectural ambitions, see ARCHITECTURE_PROPOSAL_2026-05-15.md (archived). For positioning law, see POSITIONING.md.
 
 ---
 
-## Stack (current v0.0.1)
+## Stack (current v0.0.2)
 
 | Layer | Choice | Version |
 |-------|--------|---------|
 | Physics core | Newton (GPU-native, USD-native) | >=1.2.0,<1.3 |
 | GPU kernels | NVIDIA Warp (Python-to-CUDA, autograd) | >=1.13.0,<2.0 |
-| RL framework | Stable-Baselines3 (PPO baseline) | >=2.5 |
+| RL framework | skrl 2.0 (default) / Stable-Baselines3 (legacy) | >=2.0 |
 | Vectorization | Custom BatchedVecEnv on top of Newton tensors | (internal) |
 | Renderer (current) | matplotlib Agg + imageio-ffmpeg (headless MP4) | (internal) |
 | Hydrodynamics | Custom Warp Tier-1 Fossen 6-DOF kernels | (internal) |
@@ -22,7 +22,7 @@
 | GPU | Reference platform | RTX 5090 |
 | License | Apache-2.0 | — |
 
-**Explicitly NOT in v0.0.1**: Isaac Sim, Isaac Lab, Omniverse RTX, BELLHOP, USD-native scenes, Gaussian-Splat scene capture, ray-traced sonar, world-model layer. These are documented in ARCHITECTURE_PROPOSAL_2026-05-15.md as future ambitions, not current capability.
+**Explicitly NOT in v0.0.2**: Isaac Sim, Isaac Lab, Omniverse RTX, BELLHOP, USD-native scenes, Gaussian-Splat scene capture, ray-traced sonar, world-model layer. These are documented in ARCHITECTURE_PROPOSAL_2026-05-15.md as future ambitions, not current capability.
 
 ---
 
@@ -38,7 +38,7 @@ OceanScale is structured as a tiered hierarchy. Only Tier 1 ships today.
 
 ---
 
-## What ships in v0.0.1
+## What ships in v0.0.2
 
 - BlueROV2 Heavy 6-DOF dynamics (Fossen + von Benzon 2022 validation)
 - Tier-1 Warp hydrodynamics: added mass, Coriolis, damping, restoring
@@ -52,7 +52,7 @@ OceanScale is structured as a tiered hierarchy. Only Tier 1 ships today.
 
 ---
 
-## What does NOT ship in v0.0.1
+## What does NOT ship in v0.0.2
 
 Per ADR-007 (`DECISIONS.md`): no Isaac Sim / Isaac Lab dependency. Per POSITIONING.md §4 promotion thresholds: no world-model layer claim (Tier 2) and no foundation-model claim (Tier 3) in public surfaces.
 
@@ -76,3 +76,4 @@ Future tier promotions are gated on:
 ## Changelog
 
 - **2026-05-23 v1** — Initial current-state architecture. Replaces the 2026-05-15 architecture proposal which was archived to ARCHITECTURE_PROPOSAL_2026-05-15.md.
+- **2026-05-23 v2** — Bump version to v0.0.2; mark skrl as default RL framework, SB3 as legacy.

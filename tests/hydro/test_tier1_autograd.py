@@ -36,11 +36,12 @@ def _damping_ref(
     f3 = -(dla[:, 0] + dqa[:, 0] * va[:, 0].abs()) * va[:, 0]
     f4 = -(dla[:, 1] + dqa[:, 1] * va[:, 1].abs()) * va[:, 1]
     f5 = -(dla[:, 2] + dqa[:, 2] * va[:, 2].abs()) * va[:, 2]
-    # Cross-coupling (MarineGym underwaterVehicle.py:239-244)
-    f1 = f1 - dql[:, 1] * va[:, 2].abs() * va[:, 2]
-    f5 = f5 - dqa[:, 2] * vl[:, 1].abs() * vl[:, 1]
-    f2 = f2 - dql[:, 2] * va[:, 1].abs() * va[:, 1]
-    f4 = f4 - dqa[:, 1] * vl[:, 2].abs() * vl[:, 2]
+    # cross-coupling disabled in v0.1 — coefficients not independently identified
+    # (see YAW_CROSSCOUPLING_ANALYSIS.md)
+    # f1 = f1 - dql[:, 1] * va[:, 2].abs() * va[:, 2]
+    # f5 = f5 - dqa[:, 2] * vl[:, 1].abs() * vl[:, 1]
+    # f2 = f2 - dql[:, 2] * va[:, 1].abs() * va[:, 1]
+    # f4 = f4 - dqa[:, 1] * vl[:, 2].abs() * vl[:, 2]
     return torch.stack([f0, f1, f2, f3, f4, f5], dim=-1)
 
 
@@ -312,9 +313,9 @@ def test_coriolis_a_autograd_vs_torch() -> None:
 
 @pytest.mark.gpu
 def test_damping_full_jacobian_vs_torch() -> None:
-    """Full damping kernel (incl. cross-coupling) gradient matches torch at random states.
+    """Full damping kernel gradient matches torch at random states.
 
-    Source: tier1_kernels.py:40-73 — D(nu)*nu with 4 cross-coupling terms.
+    Source: tier1_kernels.py:40-73 — D(nu)*nu (cross-coupling disabled in v0.1).
     """
     import warp as wp
 

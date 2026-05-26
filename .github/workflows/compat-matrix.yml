@@ -1,0 +1,92 @@
+name: Version Compatibility Matrix
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # weekly Monday 6am UTC
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: 'Tier to test (t1/t2/all)'
+        required: false
+        default: 'all'
+
+jobs:
+  # T1: Reference platform — every PR
+  t1-reference:
+    runs-on: [self-hosted, gpu, rtx5090]
+    container:
+      image: nvidia/cuda:12.8.1-devel-ubuntu24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+      - name: Install (CUDA 12.8 + PyTorch cu128)
+        run: uv sync --extra dev --extra bench
+      - name: Version report
+        run: uv run pytest tests/test_version_compat.py::TestVersionDetection -v -s
+      - name: Compatibility checks
+        run: uv run pytest tests/test_version_compat.py -v
+      - name: Full test suite
+        run: uv run pytest tests/ -v --tb=short
+
+  # T2: Forward compat — CUDA 13 + PyTorch 2.12
+  t2-cuda13:
+    runs-on: [self-hosted, gpu, rtx5090]
+    container:
+      image: nvidia/cuda:13.0.0-devel-ubuntu24.04
+    if: ${{ github.event.inputs.tier != 't1' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+      - name: Install (CUDA 13 + PyTorch cu130)
+        run: |
+          uv sync --extra dev --extra bench \
+            --override "torch>=2.12.0" \
+            --index-url https://download.pytorch.org/whl/cu130
+      - name: Version report
+        run: uv run pytest tests/test_version_compat.py::TestVersionDetection -v -s
+      - name: Compatibility checks
+        run: uv run pytest tests/test_version_compat.py -v
+      - name: Full test suite
+        run: uv run pytest tests/ -v --tb=short
+    continue-on-error: true  # T2 = should-pass, not gate
+
+  # T2: Python 3.13
+  t2-py313:
+    runs-on: [self-hosted, gpu, rtx5090]
+    container:
+      image: nvidia/cuda:12.8.1-devel-ubuntu24.04
+    if: ${{ github.event.inputs.tier != 't1' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+          python-version: "3.13"
+      - name: Install
+        run: uv sync --extra dev --extra bench --python 3.13
+      - name: Version report
+        run: uv run pytest tests/test_version_compat.py::TestVersionDetection -v -s
+      - name: Compatibility checks
+        run: uv run pytest tests/test_version_compat.py -v
+      - name: Full test suite
+        run: uv run pytest tests/ -v --tb=short
+    continue-on-error: true
+
+  # Summary
+  compat-summary:
+    needs: [t1-reference, t2-cuda13, t2-py313]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report matrix results
+        run: |
+          echo "## Compatibility Matrix Results" >> $GITHUB_STEP_SUMMARY
+          echo "| Tier | Job | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| T1 Reference | CUDA 12.8 + Py3.12 + PyTorch 2.7 | ${{ needs.t1-reference.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| T2 Forward | CUDA 13.0 + PyTorch 2.12 | ${{ needs.t2-cuda13.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| T2 Python | Python 3.13 | ${{ needs.t2-py313.result }} |" >> $GITHUB_STEP_SUMMARY

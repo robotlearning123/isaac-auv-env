@@ -450,3 +450,103 @@ class TestDomainRandomization:
             assert np.all(np.isfinite(obs))
             assert np.all(np.isfinite(reward))
         e.close()
+
+    def test_thruster_gain_default_one(self):
+        e = ROVEnv(n_envs=4, device="cuda")
+        e.reset()
+        np.testing.assert_array_equal(e._thruster_gain, 1.0)
+        e.close()
+
+    def test_thruster_gain_randomized_in_range(self):
+        e = ROVEnv(n_envs=64, device="cuda", use_domain_randomization=True)
+        e.reset()
+        gains = e._thruster_gain.copy()
+        assert np.all(gains >= 0.8), f"min gain {gains.min()} < 0.8"
+        assert np.all(gains <= 1.2), f"max gain {gains.max()} > 1.2"
+        assert np.std(gains) > 0.01, "gains should vary across envs"
+        e.close()
+
+    def test_thruster_gain_differs_across_resets(self):
+        e = ROVEnv(n_envs=16, device="cuda", use_domain_randomization=True)
+        e.reset()
+        g1 = e._thruster_gain.copy()
+        e.reset()
+        g2 = e._thruster_gain.copy()
+        assert not np.allclose(g1, g2), "thruster gains should differ across resets"
+        e.close()
+
+    def test_thruster_gain_affects_force(self):
+        """Same action should produce different velocities with different gains."""
+        import torch
+        e = ROVEnv(n_envs=4, device="cuda", sensor_noise_std=0.0,
+                    init_pos_noise_std=0.0, init_yaw_noise_std=0.0)
+        e.reset()
+        e._thruster_gain[:] = [0.8, 1.0, 1.0, 1.2]
+        e._thruster_gain_gpu = torch.tensor(
+            e._thruster_gain, device=e.device, dtype=torch.float32
+        )
+        action = np.array([[1.0, 0, 0, 0, 0, 0]] * 4, dtype=np.float32)
+        for _ in range(50):
+            obs, _, _, _, _ = e.step(action)
+        # Lower gain → lower velocity
+        v_low = np.linalg.norm(obs[0, 7:10])
+        v_mid = np.linalg.norm(obs[1, 7:10])
+        v_high = np.linalg.norm(obs[3, 7:10])
+        assert v_low < v_mid < v_high, f"v_low={v_low}, v_mid={v_mid}, v_high={v_high}"
+        e.close()
+
+
+# ---------------------------------------------------------------------------
+# 12. GPU-native torch interface
+# ---------------------------------------------------------------------------
+
+class TestTorchInterface:
+    def test_reset_torch_returns_cuda_tensors(self):
+        import torch
+        e = ROVEnv(n_envs=4, device="cuda")
+        obs, info = e.reset_torch()
+        assert isinstance(obs, torch.Tensor)
+        assert obs.device.type == "cuda"
+        assert obs.shape == (4, 26)
+        assert obs.dtype == torch.float32
+        e.close()
+
+    def test_step_torch_returns_cuda_tensors(self):
+        import torch
+        e = ROVEnv(n_envs=4, device="cuda")
+        e.reset_torch()
+        action = torch.zeros(4, 6, device="cuda", dtype=torch.float32)
+        obs, reward, terminated, truncated, info = e.step_torch(action)
+        assert isinstance(obs, torch.Tensor)
+        assert obs.device.type == "cuda"
+        assert obs.shape == (4, 26)
+        assert isinstance(reward, torch.Tensor)
+        assert reward.device.type == "cuda"
+        assert reward.shape == (4,)
+        assert isinstance(terminated, torch.Tensor)
+        assert terminated.device.type == "cuda"
+        assert isinstance(truncated, torch.Tensor)
+        assert truncated.device.type == "cuda"
+        e.close()
+
+    def test_step_torch_matches_step(self):
+        """step_torch and step produce identical values with no noise."""
+        import torch
+        e = ROVEnv(n_envs=4, device="cuda", sensor_noise_std=0.0,
+                    init_pos_noise_std=0.0, init_yaw_noise_std=0.0)
+        action_np = np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0]] * 4, dtype=np.float32)
+        action_t = torch.from_numpy(action_np).to("cuda")
+
+        # Gymnasium path
+        e.reset(seed=42)
+        obs_np, rew_np, term_np, trunc_np, _ = e.step(action_np)
+
+        # Torch path (same env, fresh reset with same seed)
+        e.reset(seed=42)
+        obs_t, rew_t, term_t, trunc_t, _ = e.step_torch(action_t)
+
+        np.testing.assert_allclose(obs_t.cpu().numpy(), obs_np, atol=1e-5)
+        np.testing.assert_allclose(rew_t.cpu().numpy(), rew_np, atol=1e-5)
+        np.testing.assert_array_equal(term_t.cpu().numpy(), term_np)
+        np.testing.assert_array_equal(trunc_t.cpu().numpy(), trunc_np)
+        e.close()
