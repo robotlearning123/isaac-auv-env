@@ -1,0 +1,215 @@
+{
+  "stage": "/home/robot/workspace/46-marine/artifacts/isaacsim/underwater_robot_demo_pathtracing64.usda",
+  "robot_asset": "/home/robot/workspace/46-marine/oceanscale/assets/bluerov2_heavy.usda",
+  "external_robot_asset": "/home/robot/workspace/46-marine/artifacts/isaacsim/external_assets/bluerov2_gz_heavy/bluerov2_gz_heavy.usdc",
+  "frames": 180,
+  "renderer": "Isaac Sim PathTracing",
+  "robot": "BlueROV2 Heavy",
+  "thrusters": 8,
+  "robot_asset_evidence": {
+    "asset": "/home/robot/workspace/46-marine/oceanscale/assets/bluerov2_heavy.usda",
+    "prim": "/World/BlueROV2Heavy",
+    "asset_role": "mvp_visual_proxy",
+    "vehicle": "BlueROV2 Heavy",
+    "geometry_reference": "scratch OpenUSD from public dimensions and von Benzon Table A1",
+    "dynamics_reference": "von Benzon et al. 2022 Table A1",
+    "thruster_count": 8,
+    "cad_derived": false,
+    "upgrade_candidate": "clydemcqueen/bluerov2_gz models/bluerov2_heavy, MIT in package.xml, DAE conversion not yet stable"
+  },
+  "isaac_lab_env": "OceanScaleDirectRLEnv",
+  "mission_trajectory_samples": 32,
+  "material_assets": {
+    "seafloor_albedo": "/home/robot/workspace/46-marine/artifacts/isaacsim/procedural_textures/seafloor_albedo.png",
+    "rock_albedo": "/home/robot/workspace/46-marine/artifacts/isaacsim/procedural_textures/rock_albedo.png"
+  },
+  "visual_effects": [
+    "open_ocean_backdrop",
+    "bathymetric_seafloor",
+    "procedural_pbr_material_textures",
+    "irregular_rock_field",
+    "layered_sediment_patches",
+    "layered_water_backscatter",
+    "depth_graded_water_volume",
+    "top_light_shafts",
+    "marine_snow",
+    "soft_seafloor_caustics",
+    "multi_scale_caustic_lattice",
+    "subtle_mission_trace",
+    "subsea_pipeline_inspection_target",
+    "biofouled_pipeline_detail",
+    "rov_headlight_beams",
+    "low_angle_inspection_camera",
+    "thruster_bubbles",
+    "thruster_wake",
+    "robot_relative_thruster_wake_plumes",
+    "robot_weathering_detail"
+  ],
+  "robot_visual_features": [
+    "sampled_vehicle_attitude",
+    "electronics_tube_endcaps",
+    "acrylic_plate_bolts",
+    "frame_standoffs",
+    "dvl_pod",
+    "forward_sonar",
+    "thruster_rotor_blades",
+    "tether_strain_relief",
+    "subtle_robot_scuffs",
+    "localized_biofilm_patches",
+    "silt_runoff_streaks",
+    "robot_relative_bubble_trails",
+    "external_high_fidelity_mesh"
+  ],
+  "external_robot_asset_evidence": {
+    "asset": "/home/robot/workspace/46-marine/artifacts/isaacsim/external_assets/bluerov2_gz_heavy/bluerov2_gz_heavy.usdc",
+    "prim": "/BlueROV2HeavyGz",
+    "asset_role": "external_high_fidelity_mesh",
+    "vehicle": "BlueROV2 Heavy",
+    "source_repo": "https://github.com/clydemcqueen/bluerov2_gz",
+    "source_commit": "661264b719ffd2dcdd0d0990de80547d6029cc16",
+    "source_license": "MIT",
+    "source_model": "models/bluerov2_heavy/model.sdf",
+    "source_asset_type": "SDF + Collada visual mesh",
+    "thruster_count": 8,
+    "visual_mesh_count": 9,
+    "unique_collada_mesh_count": 3,
+    "triangle_instance_count": 198040
+  },
+  "mission_evidence": {
+    "completed": true,
+    "final_distance_to_target_m": 0.13649843633174896,
+    "min_distance_to_target_m": 0.13649843633174896,
+    "sonar_detection_rate": 1.0,
+    "steps_per_sec": 181.064349803847,
+    "trajectory_sample_count": 32,
+    "isaac_lab_probe": {
+      "api": "OceanScaleDirectRLEnv",
+      "task_id": "OceanScale-UnderwaterRobot-Direct-v0",
+      "controller": "mvp_standoff_pd",
+      "gym_registered": true,
+      "steps": 3,
+      "observation_dim": 20,
+      "action_dim": 6,
+      "obs_finite": true,
+      "reward_finite": true
+    }
+  },
+  "isaac_lab_probe": {
+    "api": "OceanScaleDirectRLEnv",
+    "task_id": "OceanScale-UnderwaterRobot-Direct-v0",
+    "controller": "mvp_standoff_pd",
+    "gym_registered": true,
+    "steps": 3,
+    "observation_dim": 20,
+    "action_dim": 6,
+    "obs_finite": true,
+    "reward_finite": true
+  },
+  "isaac_lab_task_id": "OceanScale-UnderwaterRobot-Direct-v0",
+  "isaac_lab_runtime_smoke": {
+    "ok": true,
+    "api": "Isaac Lab DirectRLEnv",
+    "task": "OceanScale-UnderwaterRobot-Direct-v0",
+    "isaaclab_version": "0.47.7",
+    "isaaclab_tasks_version": "0.11.7",
+    "num_envs": 1,
+    "device": "cuda:0",
+    "oceanscale_task_registered": true,
+    "preloaded_packages": [
+      {
+        "file": "/home/robot/workspace/46-marine/.venv/lib/python3.12/site-packages/warp/__init__.py",
+        "name": "warp",
+        "version": "1.13.0"
+      },
+      {
+        "file": "/home/robot/workspace/46-marine/.venv/lib/python3.12/site-packages/newton/__init__.py",
+        "name": "newton",
+        "version": "1.2.0"
+      }
+    ],
+    "observation_space": "Box(-inf, inf, (20,), float32)",
+    "action_space": "Box(-1.0, 1.0, (6,), float32)",
+    "action_shape": [
+      1,
+      6
+    ],
+    "reset_obs_finite": true,
+    "step_obs_finite": true,
+    "reward_finite": true
+  },
+  "render_quality": {
+    "renderer": "PathTracing",
+    "quality_preset": "cinematic",
+    "denoiser": true,
+    "material_sync_loads": true,
+    "capture_alpha_opaque": true,
+    "capture_overlay_hidden": true,
+    "wait_idle": true,
+    "shadows": true,
+    "reflections": true,
+    "ambient_occlusion": true,
+    "tonemap_op": 6,
+    "pathtracing_total_spp": 64
+  },
+  "requested_resolution": [
+    1920,
+    1080
+  ],
+  "external_robot_mesh": {
+    "source": "/home/robot/workspace/46-marine/artifacts/isaacsim/external_assets/bluerov2_gz_heavy/bluerov2_gz_heavy.usdc",
+    "usd": "/home/robot/workspace/46-marine/artifacts/isaacsim/external_assets/bluerov2_gz_heavy/bluerov2_gz_heavy.usdc",
+    "converted": false,
+    "asset_evidence": {
+      "asset": "/home/robot/workspace/46-marine/artifacts/isaacsim/external_assets/bluerov2_gz_heavy/bluerov2_gz_heavy.usdc",
+      "prim": "/BlueROV2HeavyGz",
+      "asset_role": "external_high_fidelity_mesh",
+      "vehicle": "BlueROV2 Heavy",
+      "source_repo": "https://github.com/clydemcqueen/bluerov2_gz",
+      "source_commit": "661264b719ffd2dcdd0d0990de80547d6029cc16",
+      "source_license": "MIT",
+      "source_model": "models/bluerov2_heavy/model.sdf",
+      "source_asset_type": "SDF + Collada visual mesh",
+      "thruster_count": 8,
+      "visual_mesh_count": 9,
+      "unique_collada_mesh_count": 3,
+      "triangle_instance_count": 198040
+    },
+    "reference_prim": "/BlueROV2HeavyGz"
+  },
+  "external_robot_scale": 1.0,
+  "mission_json": "/home/robot/workspace/46-marine/artifacts/isaacsim/underwater_robot_demo_pathtracing64_mission.json",
+  "isaaclab_runtime_smoke_json": "/home/robot/workspace/46-marine/artifacts/isaacsim/oceanscale_isaaclab_task_smoke.json",
+  "capture": {
+    "path": "/home/robot/workspace/46-marine/artifacts/isaacsim/underwater_robot_demo_pathtracing64.png",
+    "camera": "/World/Camera",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "warmup_frames": 80
+  },
+  "sequence": {
+    "directory": "/home/robot/workspace/46-marine/artifacts/isaacsim/underwater_robot_demo_pathtracing64_frames",
+    "frame_count": 24,
+    "fps": 12,
+    "first_frame": "/home/robot/workspace/46-marine/artifacts/isaacsim/underwater_robot_demo_pathtracing64_frames/frame_0000.png",
+    "last_frame": "/home/robot/workspace/46-marine/artifacts/isaacsim/underwater_robot_demo_pathtracing64_frames/frame_0023.png",
+    "resolution": [
+      1920,
+      1080
+    ]
+  },
+  "video": {
+    "path": "/home/robot/workspace/46-marine/artifacts/isaacsim/underwater_robot_demo_pathtracing64.mp4",
+    "fps": 12,
+    "encoder": "ffmpeg/libx264",
+    "ffmpeg_stderr": [
+      "[libx264 @ 0x563d1d4a4700] i8c dc,h,v,p: 66% 18% 10%  5%",
+      "[libx264 @ 0x563d1d4a4700] Weighted P-Frames: Y:0.0% UV:0.0%",
+      "[libx264 @ 0x563d1d4a4700] ref P L0: 74.1% 11.2% 10.6%  4.2%",
+      "[libx264 @ 0x563d1d4a4700] ref B L0: 89.5%  9.7%  0.8%",
+      "[libx264 @ 0x563d1d4a4700] ref B L1: 97.1%  2.9%",
+      "[libx264 @ 0x563d1d4a4700] kb/s:724.16"
+    ]
+  }
+}

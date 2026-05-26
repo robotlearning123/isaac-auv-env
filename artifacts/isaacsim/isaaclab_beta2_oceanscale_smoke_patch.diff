@@ -1,0 +1,488 @@
+diff --git a/scripts/demos/quadcopter.py b/scripts/demos/quadcopter.py
+index 4cc9e1a2..639f0c8f 100644
+--- a/scripts/demos/quadcopter.py
++++ b/scripts/demos/quadcopter.py
+@@ -74,7 +74,7 @@ def main():
+ 
+     # Fetch relevant parameters to make the quadcopter hover in place
+     prop_body_ids = robot.find_bodies("m.*_prop")[0]
+-    robot_mass = robot.root_view.get_masses().sum()
++    robot_mass = torch.as_tensor(robot.root_physx_view.get_masses(), dtype=torch.float32, device=sim.device).sum()
+     gravity = torch.tensor(sim.cfg.gravity, device=sim.device).norm()
+ 
+     # Now we are ready!
+diff --git a/scripts/tutorials/03_envs/create_cube_base_env.py b/scripts/tutorials/03_envs/create_cube_base_env.py
+index f1deeabc..a2b4224a 100644
+--- a/scripts/tutorials/03_envs/create_cube_base_env.py
++++ b/scripts/tutorials/03_envs/create_cube_base_env.py
+@@ -288,7 +288,7 @@ class CubeEnvCfg(ManagerBasedEnvCfg):
+     # The flag 'replicate_physics' is set to False, which means that the cube is not replicated
+     # across multiple environments but rather each environment gets its own cube instance.
+     # This allows modifying the cube's properties independently for each environment.
+-    scene: MySceneCfg = MySceneCfg(num_envs=args_cli.num_envs, env_spacing=2.5, replicate_physics=True)
++    scene: MySceneCfg = MySceneCfg(num_envs=args_cli.num_envs, env_spacing=2.5, replicate_physics=False)
+ 
+     # Basic settings
+     observations: ObservationsCfg = ObservationsCfg()
+diff --git a/scripts/tutorials/04_sensors/add_sensors_on_robot.py b/scripts/tutorials/04_sensors/add_sensors_on_robot.py
+index a89c1f91..4781b6aa 100644
+--- a/scripts/tutorials/04_sensors/add_sensors_on_robot.py
++++ b/scripts/tutorials/04_sensors/add_sensors_on_robot.py
+@@ -22,6 +22,36 @@ We add the following sensors on the quadruped robot, ANYmal-C (ANYbotics):
+ """Launch Isaac Sim Simulator first."""
+ 
+ import argparse
++import types
++
++import numpy as np
++import warp as wp
++
++if not hasattr(wp, "context"):
++    wp.context = types.SimpleNamespace(Kernel=wp.Kernel)
++if not hasattr(wp.types, "array"):
++    wp.types.array = wp.array
++if not hasattr(wp.types, "warp_type_to_np_dtype"):
++    wp.types.warp_type_to_np_dtype = {
++        getattr(wp, name): getattr(np, name)
++        for name in (
++            "int8",
++            "int16",
++            "int32",
++            "int64",
++            "uint8",
++            "uint16",
++            "uint32",
++            "uint64",
++            "float16",
++            "float32",
++            "float64",
++        )
++    }
++if not hasattr(wp.types, "np_dtype_to_warp_type"):
++    wp.types.np_dtype_to_warp_type = {
++        np.dtype(np_dtype): wp_dtype for wp_dtype, np_dtype in wp.types.warp_type_to_np_dtype.items()
++    }
+ 
+ from isaaclab.app import AppLauncher
+ 
+@@ -40,6 +70,31 @@ simulation_app = app_launcher.app
+ """Rest everything follows."""
+ 
+ import torch
++from isaacsim.core.experimental.utils.app import enable_extension
++
++enable_extension("omni.warp.core")
++if not hasattr(wp, "context"):
++    wp.context = types.SimpleNamespace(Kernel=wp.Kernel)
++if not hasattr(wp.types, "array"):
++    wp.types.array = wp.array
++if not hasattr(wp.types, "warp_type_to_np_dtype"):
++    wp.types.warp_type_to_np_dtype = {
++        getattr(wp, name): getattr(np, name)
++        for name in (
++            "int8",
++            "int16",
++            "int32",
++            "int64",
++            "uint8",
++            "uint16",
++            "uint32",
++            "uint64",
++            "float16",
++            "float32",
++            "float64",
++        )
++    }
++enable_extension("omni.replicator.core")
+ 
+ import isaaclab.sim as sim_utils
+ from isaaclab.assets import ArticulationCfg, AssetBaseCfg
+diff --git a/scripts/tutorials/04_sensors/run_frame_transformer.py b/scripts/tutorials/04_sensors/run_frame_transformer.py
+index 980ced30..fcfc1dae 100644
+--- a/scripts/tutorials/04_sensors/run_frame_transformer.py
++++ b/scripts/tutorials/04_sensors/run_frame_transformer.py
+@@ -36,6 +36,9 @@ import math
+ 
+ import torch
+ 
++from isaacsim.core.experimental.utils.app import enable_extension
++
++enable_extension("isaacsim.util.debug_draw")
+ import isaacsim.util.debug_draw._debug_draw as omni_debug_draw
+ 
+ import isaaclab.sim as sim_utils
+diff --git a/scripts/tutorials/04_sensors/run_ray_caster_camera.py b/scripts/tutorials/04_sensors/run_ray_caster_camera.py
+index e19b0ebf..c82b97a1 100644
+--- a/scripts/tutorials/04_sensors/run_ray_caster_camera.py
++++ b/scripts/tutorials/04_sensors/run_ray_caster_camera.py
+@@ -18,6 +18,36 @@ The camera sensor is based on using Warp kernels which do ray-casting against st
+ """Launch Isaac Sim Simulator first."""
+ 
+ import argparse
++import types
++
++import numpy as np
++import warp as wp
++
++if not hasattr(wp, "context"):
++    wp.context = types.SimpleNamespace(Kernel=wp.Kernel)
++if not hasattr(wp.types, "array"):
++    wp.types.array = wp.array
++if not hasattr(wp.types, "warp_type_to_np_dtype"):
++    wp.types.warp_type_to_np_dtype = {
++        getattr(wp, name): getattr(np, name)
++        for name in (
++            "int8",
++            "int16",
++            "int32",
++            "int64",
++            "uint8",
++            "uint16",
++            "uint32",
++            "uint64",
++            "float16",
++            "float32",
++            "float64",
++        )
++    }
++if not hasattr(wp.types, "np_dtype_to_warp_type"):
++    wp.types.np_dtype_to_warp_type = {
++        np.dtype(np_dtype): wp_dtype for wp_dtype, np_dtype in wp.types.warp_type_to_np_dtype.items()
++    }
+ 
+ from isaaclab.app import AppLauncher
+ 
+@@ -38,7 +68,31 @@ simulation_app = app_launcher.app
+ import os
+ 
+ import torch
+-
++from isaacsim.core.experimental.utils.app import enable_extension
++
++enable_extension("omni.warp.core")
++if not hasattr(wp, "context"):
++    wp.context = types.SimpleNamespace(Kernel=wp.Kernel)
++if not hasattr(wp.types, "array"):
++    wp.types.array = wp.array
++if not hasattr(wp.types, "warp_type_to_np_dtype"):
++    wp.types.warp_type_to_np_dtype = {
++        getattr(wp, name): getattr(np, name)
++        for name in (
++            "int8",
++            "int16",
++            "int32",
++            "int64",
++            "uint8",
++            "uint16",
++            "uint32",
++            "uint64",
++            "float16",
++            "float32",
++            "float64",
++        )
++    }
++enable_extension("omni.replicator.core")
+ import omni.replicator.core as rep
+ 
+ import isaaclab.sim as sim_utils
+diff --git a/scripts/tutorials/04_sensors/run_usd_camera.py b/scripts/tutorials/04_sensors/run_usd_camera.py
+index 5c041d73..872b146d 100644
+--- a/scripts/tutorials/04_sensors/run_usd_camera.py
++++ b/scripts/tutorials/04_sensors/run_usd_camera.py
+@@ -22,6 +22,36 @@ the simulator or OpenGL convention for the camera, we use the robotics or ROS co
+ """Launch Isaac Sim Simulator first."""
+ 
+ import argparse
++import types
++
++import numpy as np
++import warp as wp
++
++if not hasattr(wp, "context"):
++    wp.context = types.SimpleNamespace(Kernel=wp.Kernel)
++if not hasattr(wp.types, "array"):
++    wp.types.array = wp.array
++if not hasattr(wp.types, "warp_type_to_np_dtype"):
++    wp.types.warp_type_to_np_dtype = {
++        getattr(wp, name): getattr(np, name)
++        for name in (
++            "int8",
++            "int16",
++            "int32",
++            "int64",
++            "uint8",
++            "uint16",
++            "uint32",
++            "uint64",
++            "float16",
++            "float32",
++            "float64",
++        )
++    }
++if not hasattr(wp.types, "np_dtype_to_warp_type"):
++    wp.types.np_dtype_to_warp_type = {
++        np.dtype(np_dtype): wp_dtype for wp_dtype, np_dtype in wp.types.warp_type_to_np_dtype.items()
++    }
+ 
+ from isaaclab.app import AppLauncher
+ 
+@@ -63,10 +93,33 @@ simulation_app = app_launcher.app
+ import os
+ import random
+ 
+-import numpy as np
+ import torch
+ from isaaclab_physx.renderers import IsaacRtxRendererCfg
+-
++from isaacsim.core.experimental.utils.app import enable_extension
++
++enable_extension("omni.warp.core")
++if not hasattr(wp, "context"):
++    wp.context = types.SimpleNamespace(Kernel=wp.Kernel)
++if not hasattr(wp.types, "array"):
++    wp.types.array = wp.array
++if not hasattr(wp.types, "warp_type_to_np_dtype"):
++    wp.types.warp_type_to_np_dtype = {
++        getattr(wp, name): getattr(np, name)
++        for name in (
++            "int8",
++            "int16",
++            "int32",
++            "int64",
++            "uint8",
++            "uint16",
++            "uint32",
++            "uint64",
++            "float16",
++            "float32",
++            "float64",
++        )
++    }
++enable_extension("omni.replicator.core")
+ import omni.replicator.core as rep
+ 
+ import isaaclab.sim as sim_utils
+diff --git a/source/isaaclab/isaaclab/envs/mdp/events.py b/source/isaaclab/isaaclab/envs/mdp/events.py
+index f6cfddc2..cd105b57 100644
+--- a/source/isaaclab/isaaclab/envs/mdp/events.py
++++ b/source/isaaclab/isaaclab/envs/mdp/events.py
+@@ -2129,6 +2129,37 @@ class randomize_visual_texture_material(ManagerTermBase):
+         # enable replicator extension if not already enabled (local: isaacsim only available with Kit)
+         from isaacsim.core.experimental.utils.app import enable_extension  # noqa: PLC0415
+ 
++        enable_extension("omni.warp.core")
++        import types  # noqa: PLC0415
++
++        import numpy as np  # noqa: PLC0415
++        import warp as wp  # noqa: PLC0415
++
++        if not hasattr(wp, "context"):
++            wp.context = types.SimpleNamespace(Kernel=wp.Kernel)
++        if not hasattr(wp.types, "array"):
++            wp.types.array = wp.array
++        if not hasattr(wp.types, "warp_type_to_np_dtype"):
++            wp.types.warp_type_to_np_dtype = {
++                getattr(wp, name): getattr(np, name)
++                for name in (
++                    "int8",
++                    "int16",
++                    "int32",
++                    "int64",
++                    "uint8",
++                    "uint16",
++                    "uint32",
++                    "uint64",
++                    "float16",
++                    "float32",
++                    "float64",
++                )
++            }
++        if not hasattr(wp.types, "np_dtype_to_warp_type"):
++            wp.types.np_dtype_to_warp_type = {
++                np.dtype(np_dtype): wp_dtype for wp_dtype, np_dtype in wp.types.warp_type_to_np_dtype.items()
++            }
+         enable_extension("omni.replicator.core")
+         # we import the module here since we may not always need the replicator
+         import omni.replicator.core as rep  # noqa: PLC0415
+@@ -2300,6 +2331,37 @@ class randomize_visual_color(ManagerTermBase):
+         # enable replicator extension if not already enabled (local: isaacsim only available with Kit)
+         from isaacsim.core.experimental.utils.app import enable_extension  # noqa: PLC0415
+ 
++        enable_extension("omni.warp.core")
++        import types  # noqa: PLC0415
++
++        import numpy as np  # noqa: PLC0415
++        import warp as wp  # noqa: PLC0415
++
++        if not hasattr(wp, "context"):
++            wp.context = types.SimpleNamespace(Kernel=wp.Kernel)
++        if not hasattr(wp.types, "array"):
++            wp.types.array = wp.array
++        if not hasattr(wp.types, "warp_type_to_np_dtype"):
++            wp.types.warp_type_to_np_dtype = {
++                getattr(wp, name): getattr(np, name)
++                for name in (
++                    "int8",
++                    "int16",
++                    "int32",
++                    "int64",
++                    "uint8",
++                    "uint16",
++                    "uint32",
++                    "uint64",
++                    "float16",
++                    "float32",
++                    "float64",
++                )
++            }
++        if not hasattr(wp.types, "np_dtype_to_warp_type"):
++            wp.types.np_dtype_to_warp_type = {
++                np.dtype(np_dtype): wp_dtype for wp_dtype, np_dtype in wp.types.warp_type_to_np_dtype.items()
++            }
+         enable_extension("omni.replicator.core")
+         # we import the module here since we may not always need the replicator
+         import omni.replicator.core as rep  # noqa: PLC0415
+diff --git a/source/isaaclab/isaaclab/utils/noise/__init__.py b/source/isaaclab/isaaclab/utils/noise/__init__.py
+index 85ea960a..6c556c13 100644
+--- a/source/isaaclab/isaaclab/utils/noise/__init__.py
++++ b/source/isaaclab/isaaclab/utils/noise/__init__.py
+@@ -29,3 +29,9 @@ Usage:
+ from isaaclab.utils.module import lazy_export
+ 
+ lazy_export()
++
++from .noise_cfg import ConstantNoiseCfg, GaussianNoiseCfg, UniformNoiseCfg
++
++ConstantBiasNoiseCfg = ConstantNoiseCfg
++AdditiveUniformNoiseCfg = UniformNoiseCfg
++AdditiveGaussianNoiseCfg = GaussianNoiseCfg
+diff --git a/source/isaaclab_physx/isaaclab_physx/assets/articulation/articulation.py b/source/isaaclab_physx/isaaclab_physx/assets/articulation/articulation.py
+index 78fdb387..e1e728d7 100644
+--- a/source/isaaclab_physx/isaaclab_physx/assets/articulation/articulation.py
++++ b/source/isaaclab_physx/isaaclab_physx/assets/articulation/articulation.py
+@@ -42,7 +42,7 @@ from .articulation_data import ArticulationData
+ if TYPE_CHECKING:
+     from isaaclab_newton.actuators import NewtonActuatorAdapter
+ 
+-    import omni.physics.tensors.api as physx
++    import omni.physics.tensors.impl.api as physx
+ 
+     from isaaclab.assets.articulation.articulation_cfg import ArticulationCfg
+ 
+diff --git a/source/isaaclab_physx/isaaclab_physx/assets/articulation/articulation_data.py b/source/isaaclab_physx/isaaclab_physx/assets/articulation/articulation_data.py
+index 6f1ab285..9d2f0173 100644
+--- a/source/isaaclab_physx/isaaclab_physx/assets/articulation/articulation_data.py
++++ b/source/isaaclab_physx/isaaclab_physx/assets/articulation/articulation_data.py
+@@ -22,7 +22,7 @@ from isaaclab_physx.assets.articulation import kernels as articulation_kernels
+ from isaaclab_physx.physics import PhysxManager as SimulationManager
+ 
+ if TYPE_CHECKING:
+-    import omni.physics.tensors.api as physx
++    import omni.physics.tensors.impl.api as physx
+ 
+ # import logger
+ logger = logging.getLogger(__name__)
+diff --git a/source/isaaclab_physx/isaaclab_physx/assets/deformable_object/deformable_object.py b/source/isaaclab_physx/isaaclab_physx/assets/deformable_object/deformable_object.py
+index 759e31d9..0b34f3bb 100644
+--- a/source/isaaclab_physx/isaaclab_physx/assets/deformable_object/deformable_object.py
++++ b/source/isaaclab_physx/isaaclab_physx/assets/deformable_object/deformable_object.py
+@@ -14,7 +14,7 @@ import numpy as np
+ import torch
+ import warp as wp
+ 
+-import omni.physics.tensors.api as physx
++import omni.physics.tensors.impl.api as physx
+ from pxr import UsdShade
+ 
+ import isaaclab.sim as sim_utils
+diff --git a/source/isaaclab_physx/isaaclab_physx/assets/deformable_object/deformable_object_data.py b/source/isaaclab_physx/isaaclab_physx/assets/deformable_object/deformable_object_data.py
+index df22c8b0..40cb3736 100644
+--- a/source/isaaclab_physx/isaaclab_physx/assets/deformable_object/deformable_object_data.py
++++ b/source/isaaclab_physx/isaaclab_physx/assets/deformable_object/deformable_object_data.py
+@@ -7,7 +7,7 @@ import weakref
+ 
+ import warp as wp
+ 
+-import omni.physics.tensors.api as physx
++import omni.physics.tensors.impl.api as physx
+ 
+ from isaaclab.utils.buffers import TimestampedBufferWarp as TimestampedBuffer
+ from isaaclab.utils.warp import ProxyArray
+diff --git a/source/isaaclab_physx/isaaclab_physx/assets/rigid_object/rigid_object.py b/source/isaaclab_physx/isaaclab_physx/assets/rigid_object/rigid_object.py
+index 930b8836..e5cf9160 100644
+--- a/source/isaaclab_physx/isaaclab_physx/assets/rigid_object/rigid_object.py
++++ b/source/isaaclab_physx/isaaclab_physx/assets/rigid_object/rigid_object.py
+@@ -26,7 +26,7 @@ from isaaclab_physx.physics import PhysxManager as SimulationManager
+ from .rigid_object_data import RigidObjectData
+ 
+ if TYPE_CHECKING:
+-    import omni.physics.tensors.api as physx
++    import omni.physics.tensors.impl.api as physx
+ 
+     from isaaclab.assets.rigid_object.rigid_object_cfg import RigidObjectCfg
+ 
+diff --git a/source/isaaclab_physx/isaaclab_physx/assets/rigid_object/rigid_object_data.py b/source/isaaclab_physx/isaaclab_physx/assets/rigid_object/rigid_object_data.py
+index a8e674dc..789c36cc 100644
+--- a/source/isaaclab_physx/isaaclab_physx/assets/rigid_object/rigid_object_data.py
++++ b/source/isaaclab_physx/isaaclab_physx/assets/rigid_object/rigid_object_data.py
+@@ -21,7 +21,7 @@ from isaaclab_physx.assets import kernels as shared_kernels
+ from isaaclab_physx.physics import PhysxManager as SimulationManager
+ 
+ if TYPE_CHECKING:
+-    import omni.physics.tensors.api as physx
++    import omni.physics.tensors.impl.api as physx
+ 
+ # import logger
+ logger = logging.getLogger(__name__)
+diff --git a/source/isaaclab_physx/isaaclab_physx/assets/rigid_object_collection/rigid_object_collection.py b/source/isaaclab_physx/isaaclab_physx/assets/rigid_object_collection/rigid_object_collection.py
+index 2031ded5..ee380a61 100644
+--- a/source/isaaclab_physx/isaaclab_physx/assets/rigid_object_collection/rigid_object_collection.py
++++ b/source/isaaclab_physx/isaaclab_physx/assets/rigid_object_collection/rigid_object_collection.py
+@@ -15,7 +15,7 @@ import numpy as np
+ import torch
+ import warp as wp
+ 
+-import omni.physics.tensors.api as physx
++import omni.physics.tensors.impl.api as physx
+ from pxr import UsdPhysics
+ 
+ import isaaclab.sim as sim_utils
+diff --git a/source/isaaclab_physx/isaaclab_physx/assets/rigid_object_collection/rigid_object_collection_data.py b/source/isaaclab_physx/isaaclab_physx/assets/rigid_object_collection/rigid_object_collection_data.py
+index cee0d4de..b6899ed4 100644
+--- a/source/isaaclab_physx/isaaclab_physx/assets/rigid_object_collection/rigid_object_collection_data.py
++++ b/source/isaaclab_physx/isaaclab_physx/assets/rigid_object_collection/rigid_object_collection_data.py
+@@ -21,7 +21,7 @@ from isaaclab_physx.assets import kernels as shared_kernels
+ from isaaclab_physx.physics import PhysxManager as SimulationManager
+ 
+ if TYPE_CHECKING:
+-    import omni.physics.tensors.api as physx
++    import omni.physics.tensors.impl.api as physx
+ 
+ # import logger
+ logger = logging.getLogger(__name__)
+diff --git a/source/isaaclab_physx/isaaclab_physx/sensors/contact_sensor/contact_sensor.py b/source/isaaclab_physx/isaaclab_physx/sensors/contact_sensor/contact_sensor.py
+index c38a0fff..3a67a609 100644
+--- a/source/isaaclab_physx/isaaclab_physx/sensors/contact_sensor/contact_sensor.py
++++ b/source/isaaclab_physx/isaaclab_physx/sensors/contact_sensor/contact_sensor.py
+@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING
+ import torch
+ import warp as wp
+ 
+-import omni.physics.tensors.api as physx
++import omni.physics.tensors.impl.api as physx
+ 
+ import isaaclab.sim as sim_utils
+ from isaaclab.app.settings_manager import get_settings_manager
+diff --git a/source/isaaclab_physx/isaaclab_physx/sensors/joint_wrench/joint_wrench_sensor.py b/source/isaaclab_physx/isaaclab_physx/sensors/joint_wrench/joint_wrench_sensor.py
+index 9ae39c62..13366015 100644
+--- a/source/isaaclab_physx/isaaclab_physx/sensors/joint_wrench/joint_wrench_sensor.py
++++ b/source/isaaclab_physx/isaaclab_physx/sensors/joint_wrench/joint_wrench_sensor.py
+@@ -25,7 +25,7 @@ from .joint_wrench_sensor_data import JointWrenchSensorData
+ from .kernels import joint_wrench_reset_kernel, joint_wrench_split_kernel
+ 
+ if TYPE_CHECKING:
+-    import omni.physics.tensors.api as physx
++    import omni.physics.tensors.impl.api as physx
+ 
+     from isaaclab.sensors.joint_wrench import JointWrenchSensorCfg
+ 

@@ -46,7 +46,7 @@ refactor(scope): short summary
 
 - Run tests after every code change. Fix failures before committing.
 - Bug fix: failing test first, then fix.
-- Python: `uv run pytest tests/ -v`
+- Python: `uv run pytest tests/ -v`  (922+ tests, ~37s on RTX 5090)
 - Website: `cd website && pnpm build` (build-time check)
 
 ## Pull request checklist

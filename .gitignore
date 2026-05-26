@@ -88,3 +88,4 @@ benchmarks/.playwright-cli/
 website/.playwright-cli/
 
 .context/
+.claude/

@@ -1,0 +1,34 @@
+# Source: isaac-auv-env (https://github.com/warplab/isaac-auv-env)
+# Original: agents/rsl_rl_ppo_cfg.py
+# License: BSD-3-Clause | Paper: Lofaro et al., arXiv 2410.00120
+# Pretrained weights: weights/2024-09-13_20-15-03_poshold_DR_2.pt (146K)
+
+task: PositionHold
+vehicle: WarpAUV
+algorithm: PPO
+
+training:
+  num_steps_per_env: 24
+  max_iterations: 400
+  save_interval: 50
+  empirical_normalization: false
+
+policy:
+  actor_hidden_dims: [64, 64]
+  critic_hidden_dims: [64, 64]
+  activation: elu
+  init_noise_std: 1.0
+
+ppo:
+  value_loss_coef: 1.0
+  use_clipped_value_loss: true
+  clip_param: 0.2
+  entropy_coef: 0.0
+  num_learning_epochs: 5
+  num_mini_batches: 4
+  learning_rate: 5.0e-4
+  schedule: adaptive
+  gamma: 0.99
+  lam: 0.95
+  desired_kl: 0.01
+  max_grad_norm: 1.0

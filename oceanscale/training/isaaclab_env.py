@@ -1,23 +1,26 @@
 # mypy: ignore-errors
-"""Isaac Lab compatible environment wrapper for OceanScale.
+"""Isaac Lab-compatible Gymnasium vector environment for OceanScale.
 
-Implements the DirectRLEnv protocol so OceanScale underwater environments
-can be trained with Isaac Lab's RL infrastructure (PPO, SAC, etc.).
+GPU-batched underwater RL environment built on the unified OceanSim
+orchestrator. The environment matches the common Isaac Lab direct-RL
+observation/action surface while keeping Isaac Lab optional. It is not
+an Isaac Lab DirectRLEnv subclass; build a separate optional native
+adapter if training needs Isaac Lab's SimulationContext/scene lifecycle.
 
-When Isaac Lab is not installed, provides a standalone shim implementing
-the same step/reset/observation protocol, enabling training with any
-Gymnasium-compatible RL library while maintaining API compatibility.
+Architecture::
 
-Architecture:
-    GPU Fluid (FFT wave) → FSI (drag) → Newton Physics (ROV body)
-      → Sensors (RayDVL, RaySonar) → Observations → RL Training
+    RL training loop
+        └── OceanScaleDirectRLEnv (this file)
+            └── OceanSim.step_torch()
+                ├── Newton rigid-body physics
+                ├── Tier1 Fossen hydrodynamics
+                ├── Ocean currents / waves / water column
+                └── Sensors (DVL, sonar, magnetometer)
 """
 
 from __future__ import annotations
 
-import importlib
 import importlib.util
-from collections.abc import Sequence
 from dataclasses import dataclass, field
 from typing import Any, ClassVar
 
@@ -25,51 +28,62 @@ import gymnasium as gym
 import numpy as np
 import torch
 
+from oceanscale.sim import OceanConfig, OceanSim, OceanSimConfig
+from oceanscale.vehicles.bluerov2 import BlueROV2Heavy
+
 
 def _has_isaaclab() -> bool:
-    if importlib.util.find_spec("isaaclab") is None:
-        return False
-    return importlib.util.find_spec("isaaclab.envs") is not None
+    return importlib.util.find_spec("isaaclab") is not None
 
 
 HAS_ISAACLAB = _has_isaaclab()
 
-
-OBS_DIM = 33
+OBS_DIM = 20
 ACT_DIM = 6
-OCEANSCALE_UNDERWATER_TASK_ID = "OceanScale-UnderwaterRobot-Direct-v0"
+TASK_ID = "OceanScale-UnderwaterRobot-Direct-v0"
+OCEANSCALE_UNDERWATER_TASK_ID = TASK_ID
+
+def register_oceanscale_isaaclab_tasks() -> str:
+    return register_oceanscale_tasks()
 
 
 @dataclass
 class OceanScaleSimCfg:
-    """Minimal simulation config fields used by Isaac Lab task parsers."""
-
     device: str = "cuda:0"
     use_fabric: bool = False
 
 
 @dataclass
 class OceanScaleSceneCfg:
-    """Minimal scene config fields used by Isaac Lab task parsers."""
-
     num_envs: int = 64
 
 
 @dataclass
 class OceanScaleEnvCfg:
-    """Configuration mirroring Isaac Lab's DirectRLEnvCfg fields."""
+    """DirectRLEnv-compatible configuration."""
 
     num_envs: int = 64
     episode_length_s: float = 30.0
     decimation: int = 4
-    physics_dt: float = 0.005
+    physics_dt: float = 1 / 240
     device: str = "cuda:0"
     seed: int = 42
-    wave_height: float = 1.0
+
+    target_pos: tuple[float, float, float] = (0.0, 0.0, -5.0)
+    init_pos: tuple[float, float, float] = (0.0, 0.0, -5.0)
+    init_pos_noise: float = 0.5
+    oob_distance: float = 5.0
+
+    current_speed: float = 0.0
+    current_direction: float = 0.0
+    wave_height: float = 0.0
     wave_period: float = 8.0
-    seabed_depth: float = -50.0
-    tether_length: float = 20.0
-    drag_coeff: float = 5.0
+    current_drag_coeff: float = 5.0
+
+    reward_distance_scale: float = 1.0
+    reward_velocity_weight: float = 0.1
+    reward_action_weight: float = 0.05
+
     sim: OceanScaleSimCfg = field(default_factory=OceanScaleSimCfg)
     scene: OceanScaleSceneCfg = field(default_factory=OceanScaleSceneCfg)
 
@@ -78,71 +92,29 @@ class OceanScaleEnvCfg:
         self.scene.num_envs = self.num_envs
 
 
-def _load_cfg_entry_point(entry_point: Any) -> OceanScaleEnvCfg:
-    if entry_point is None:
-        return OceanScaleEnvCfg()
-    if isinstance(entry_point, str):
-        module_name, attr_name = entry_point.split(":")
-        module = importlib.import_module(module_name)
-        cfg_cls = getattr(module, attr_name)
-    else:
-        cfg_cls = entry_point
-    cfg = cfg_cls() if callable(cfg_cls) else cfg_cls
-    if not isinstance(cfg, OceanScaleEnvCfg):
-        raise TypeError(f"Expected OceanScaleEnvCfg, got {type(cfg).__name__}")
-    return cfg
-
-
-def _sync_isaaclab_cfg_fields(cfg: OceanScaleEnvCfg) -> OceanScaleEnvCfg:
-    cfg.device = str(cfg.sim.device)
-    cfg.num_envs = int(cfg.scene.num_envs)
-    return cfg
-
-
-def register_oceanscale_isaaclab_tasks() -> str:
-    """Register the OceanScale underwater DirectRL task with Gymnasium."""
-
-    if OCEANSCALE_UNDERWATER_TASK_ID not in gym.envs.registration.registry:
+def register_oceanscale_tasks() -> str:
+    if TASK_ID not in gym.envs.registration.registry:
         gym.register(
-            id=OCEANSCALE_UNDERWATER_TASK_ID,
+            id=TASK_ID,
             entry_point="oceanscale.training.isaaclab_env:OceanScaleDirectRLEnv",
             disable_env_checker=True,
-            kwargs={
-                "env_cfg_entry_point": "oceanscale.training.isaaclab_env:OceanScaleEnvCfg",
-            },
+            kwargs={"cfg": OceanScaleEnvCfg()},
         )
-    return OCEANSCALE_UNDERWATER_TASK_ID
-
-
-def _build_obs(step_result: dict) -> np.ndarray:
-    """Flatten step result dict into a fixed-size observation vector."""
-    pos = step_result["rov_position"][:3]
-    vel = step_result["rov_velocity"][:6]
-    wave = step_result["wave_velocity"][:3]
-    dvl_ranges = step_result["dvl"]["beam_ranges"][:4]
-    dvl_alt = np.array([step_result["dvl"]["altitude"]], dtype=np.float32)
-    sonar = step_result["sonar"][:16]
-    tension = np.array([step_result["tether_tension"]], dtype=np.float32)
-    time_frac = np.array([step_result["time"] % 30.0 / 30.0], dtype=np.float32)
-    obs = np.concatenate([pos, vel, wave, dvl_ranges, dvl_alt, sonar, tension, time_frac])
-    return obs[:OBS_DIM].astype(np.float32)
+    return TASK_ID
 
 
 class OceanScaleDirectRLEnv(gym.Env):
-    """Isaac Lab DirectRLEnv-compatible wrapper for OceanScale.
+    """GPU-batched underwater RL env backed by OceanSim.
 
-    Follows the DirectRLEnv protocol:
-      - step(action) -> (obs_dict, reward, terminated, truncated, info)
-      - reset() -> (obs_dict, info)
-      - All tensors are batched: (num_envs, dim)
-      - Observations returned as dict: {"policy": tensor}
-
-    When Isaac Lab is available, this can be registered as an Isaac Lab env.
-    When not available, it works standalone with any Gymnasium-compatible trainer.
+    Matches the DirectRLEnv-style vector data surface:
+    - step/reset return ``{"policy": Tensor(n_envs, obs_dim)}``
+    - All computation on GPU (no CPU roundtrips in hot path)
+    - Supports partial reset via ``_reset_idx``
+    - Decimation: multiple physics substeps per RL step
     """
 
     is_vector_env = True
-    metadata: ClassVar[dict[str, list[None]]] = {"render_modes": [None]}
+    metadata: ClassVar[dict[str, Any]] = {"render_modes": []}
 
     def __init__(
         self,
@@ -151,8 +123,7 @@ class OceanScaleDirectRLEnv(gym.Env):
         **kwargs: Any,
     ) -> None:
         if cfg is None:
-            cfg = _load_cfg_entry_point(kwargs.get("env_cfg_entry_point"))
-        cfg = _sync_isaaclab_cfg_fields(cfg)
+            cfg = OceanScaleEnvCfg()
         self.cfg = cfg
         self.render_mode = render_mode
         self.num_envs = cfg.num_envs
@@ -160,7 +131,6 @@ class OceanScaleDirectRLEnv(gym.Env):
         self.physics_dt = cfg.physics_dt
         self.step_dt = cfg.physics_dt * cfg.decimation
         self.max_episode_length = int(cfg.episode_length_s / self.step_dt)
-        self.max_episode_length_s = cfg.episode_length_s
 
         self.observation_space = gym.spaces.Box(
             low=-np.inf, high=np.inf, shape=(OBS_DIM,), dtype=np.float32
@@ -171,109 +141,150 @@ class OceanScaleDirectRLEnv(gym.Env):
         self.num_observations = OBS_DIM
         self.num_actions = ACT_DIM
 
-        from oceanscale.integration import IntegratedPipeline
-
-        self._pipelines = [
-            IntegratedPipeline(
-                seabed_depth=cfg.seabed_depth,
-                wave_height=cfg.wave_height,
-                wave_period=cfg.wave_period,
-                tether_length=cfg.tether_length,
-                drag_coeff=cfg.drag_coeff,
+        self.sim = OceanSim(
+            OceanSimConfig(
+                vehicle=BlueROV2Heavy(),
+                ocean=OceanConfig(
+                    current_speed=cfg.current_speed,
+                    current_direction=cfg.current_direction,
+                    wave_height=cfg.wave_height,
+                    wave_period=cfg.wave_period,
+                ),
+                n_envs=cfg.num_envs,
                 dt=cfg.physics_dt,
                 device=cfg.device,
+                init_pos=cfg.init_pos,
+                current_drag_coeff=cfg.current_drag_coeff,
             )
-            for _ in range(cfg.num_envs)
-        ]
+        )
 
-        self._step_count = torch.zeros(cfg.num_envs, dtype=torch.int64, device=self.device)
-        self._episode_rewards = torch.zeros(cfg.num_envs, dtype=torch.float32, device=self.device)
+        self._target = torch.tensor(
+            cfg.target_pos, dtype=torch.float32, device=self.device
+        )
+        self._step_count = torch.zeros(
+            cfg.num_envs, dtype=torch.int64, device=self.device
+        )
+        self._prev_action = torch.zeros(
+            cfg.num_envs, ACT_DIM, dtype=torch.float32, device=self.device
+        )
+
+    # ------------------------------------------------------------------
+    # DirectRLEnv protocol
+    # ------------------------------------------------------------------
 
     def reset(
         self,
         seed: int | None = None,
-        env_ids: Sequence[int] | None = None,
+        env_ids: list[int] | None = None,
         options: dict | None = None,
     ) -> tuple[dict[str, torch.Tensor], dict]:
         if env_ids is None:
-            env_ids = range(self.num_envs)
-
-        obs_list = []
-        for i in env_ids:
-            result = self._pipelines[i].reset()
-            obs_list.append(_build_obs(result))
-            self._step_count[i] = 0
-            self._episode_rewards[i] = 0.0
-
-        if len(env_ids) == self.num_envs:
-            obs_np = np.stack(obs_list)
+            self.sim.reset()
+            if self.cfg.init_pos_noise > 0:
+                self._randomize_init_positions(range(self.num_envs))
+            self._step_count.zero_()
+            self._prev_action.zero_()
         else:
-            obs_np = np.zeros((self.num_envs, OBS_DIM), dtype=np.float32)
-            for idx, i in enumerate(env_ids):
-                obs_np[i] = obs_list[idx]
-
-        obs_tensor = torch.from_numpy(obs_np).to(self.device)
-        return {"policy": obs_tensor}, {}
+            self._reset_idx(env_ids)
+        return {"policy": self._get_observations()}, {}
 
     def step(
         self, action: torch.Tensor
-    ) -> tuple[dict[str, torch.Tensor], torch.Tensor, torch.Tensor, torch.Tensor, dict]:
-        action_np = action.detach().cpu().numpy()
-        obs_list = []
-        rewards = torch.zeros(self.num_envs, dtype=torch.float32, device=self.device)
-        terminated = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
-        truncated = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+    ) -> tuple[
+        dict[str, torch.Tensor],
+        torch.Tensor,
+        torch.Tensor,
+        torch.Tensor,
+        dict,
+    ]:
+        action = action.to(device=self.device, dtype=torch.float32).clamp(-1.0, 1.0)
+        if action.ndim == 1:
+            action = action.unsqueeze(0).expand(self.num_envs, -1)
+        self._prev_action.copy_(action)
 
-        for i in range(self.num_envs):
-            for _ in range(self.cfg.decimation):
-                result = self._pipelines[i].step(
-                    action=action_np[i] if action_np.ndim > 1 else action_np,
-                    dt=self.physics_dt,
-                )
+        for _ in range(self.cfg.decimation):
+            self.sim.step_torch(action)
 
-            obs_list.append(_build_obs(result))
-            rewards[i] = result["reward"]
-            self._step_count[i] += 1
-            self._episode_rewards[i] += result["reward"]
+        self._step_count += 1
+        obs = self._get_observations()
+        reward = self._compute_reward(obs, action)
+        terminated, truncated = self._get_dones(obs)
 
-            pos = result["rov_position"]
-            if np.linalg.norm(pos) > 100.0 or not np.all(np.isfinite(pos)):
-                terminated[i] = True
-            if self._step_count[i] >= self.max_episode_length:
-                truncated[i] = True
+        done_ids = (terminated | truncated).nonzero(as_tuple=True)[0]
+        if len(done_ids) > 0:
+            self._reset_idx(done_ids.tolist())
 
-        obs_tensor = torch.from_numpy(np.stack(obs_list)).to(self.device)
+        return {"policy": obs}, reward, terminated, truncated, {}
 
-        done_ids = (terminated | truncated).nonzero(as_tuple=True)[0].tolist()
-        if done_ids:
-            self._reset_idx(done_ids)
+    def _reset_idx(self, env_ids: list[int] | range) -> None:
+        ids_np = np.array(list(env_ids), dtype=np.int32)
+        self.sim.reset_envs(ids_np)
+        if self.cfg.init_pos_noise > 0:
+            self._randomize_init_positions(env_ids)
+        ids_t = torch.tensor(list(env_ids), device=self.device, dtype=torch.long)
+        self._step_count[ids_t] = 0
+        self._prev_action[ids_t] = 0.0
 
-        extras = {
-            "episode_rewards": self._episode_rewards.clone(),
-            "step_count": self._step_count.clone(),
-        }
-        return {"policy": obs_tensor}, rewards, terminated, truncated, extras
-
-    def _reset_idx(self, env_ids: Sequence[int]) -> None:
+    def _randomize_init_positions(self, env_ids: list[int] | range) -> None:
+        noise = self.cfg.init_pos_noise
+        q = self.sim.model.joint_q.numpy()
         for i in env_ids:
-            self._pipelines[i].reset()
-            self._step_count[i] = 0
-            self._episode_rewards[i] = 0.0
+            q[i * 7] += np.random.uniform(-noise, noise)
+            q[i * 7 + 1] += np.random.uniform(-noise, noise)
+            q[i * 7 + 2] += np.random.uniform(-noise, noise)
+        self.sim.model.joint_q.assign(q)
 
-    def _get_observations(self) -> dict[str, torch.Tensor]:
-        obs_list = []
-        for i in range(self.num_envs):
-            result = self._pipelines[i].step(dt=0.0001)
-            obs_list.append(_build_obs(result))
-        return {"policy": torch.from_numpy(np.stack(obs_list)).to(self.device)}
+    # ------------------------------------------------------------------
+    # Observations (GPU-native)
+    # ------------------------------------------------------------------
 
-    def _get_rewards(self) -> torch.Tensor:
-        return self._episode_rewards
+    def _get_observations(self) -> torch.Tensor:
+        state = self.sim.observe_torch()
+        pos = state["position"]
+        quat = state["orientation"]
+        lin_vel = state["linear_velocity"]
+        ang_vel = state["angular_velocity"]
+        pos_error = self._target - pos
+        depth = pos[:, 2:3]
+        return torch.cat(
+            [pos_error, quat, lin_vel, ang_vel, depth, self._prev_action],
+            dim=-1,
+        )
 
-    def _get_dones(self) -> tuple[torch.Tensor, torch.Tensor]:
-        terminated = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+    # ------------------------------------------------------------------
+    # Reward
+    # ------------------------------------------------------------------
+
+    def _compute_reward(
+        self, obs: torch.Tensor, action: torch.Tensor
+    ) -> torch.Tensor:
+        pos_error = obs[:, :3]
+        lin_vel = obs[:, 7:10]
+
+        dist = torch.linalg.norm(pos_error, dim=-1)
+        r_dist = torch.exp(-dist / self.cfg.reward_distance_scale)
+        r_vel = -self.cfg.reward_velocity_weight * torch.linalg.norm(lin_vel, dim=-1)
+        r_act = -self.cfg.reward_action_weight * torch.linalg.norm(action, dim=-1)
+
+        return r_dist + r_vel + r_act
+
+    # ------------------------------------------------------------------
+    # Termination
+    # ------------------------------------------------------------------
+
+    def _get_dones(
+        self, obs: torch.Tensor
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        pos_error = obs[:, :3]
+        dist = torch.linalg.norm(pos_error, dim=-1)
+
+        terminated = dist > self.cfg.oob_distance
         truncated = self._step_count >= self.max_episode_length
         return terminated, truncated
 
+    # ------------------------------------------------------------------
+    # Lifecycle
+    # ------------------------------------------------------------------
+
     def close(self) -> None:
-        pass
+        self.sim.close()
