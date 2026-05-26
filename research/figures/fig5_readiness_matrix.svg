@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="800" viewBox="0 0 1500 800" role="img">
+<rect width="100%" height="100%" fill="white" />
+<text x="70.0" y="70.0" fill="#17202a" font-size="34" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Figure 5 | Readiness matrix for paper claims</text>
+<text x="70.0" y="108.0" fill="#52606d" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Separate local runtime evidence from release, type-safety, and public-surface readiness</text>
+<rect x="70.0" y="190.0" width="310.0" height="142.0" rx="8" fill="#f7fafc" stroke="#d6dee6" stroke-width="2" />
+<text x="94.0" y="234.0" fill="#17202a" font-size="22" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Full tests</text>
+<rect x="94.0" y="256.0" width="144.0" height="36.0" rx="18" fill="#0f766e" stroke="none" stroke-width="0" />
+<text x="166.0" y="281.0" fill="white" font-size="16" font-weight="800" text-anchor="middle" font-family="Arial, Helvetica, sans-serif">PASS</text>
+<text x="94.0" y="316.0" fill="#52606d" font-size="19" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">1027 passed</text>
+<rect x="420.0" y="190.0" width="310.0" height="142.0" rx="8" fill="#f7fafc" stroke="#d6dee6" stroke-width="2" />
+<text x="444.0" y="234.0" fill="#17202a" font-size="22" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Internal verifier</text>
+<rect x="444.0" y="256.0" width="144.0" height="36.0" rx="18" fill="#0f766e" stroke="none" stroke-width="0" />
+<text x="516.0" y="281.0" fill="white" font-size="16" font-weight="800" text-anchor="middle" font-family="Arial, Helvetica, sans-serif">PASS</text>
+<text x="444.0" y="316.0" fill="#52606d" font-size="19" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">15 checks</text>
+<rect x="770.0" y="190.0" width="310.0" height="142.0" rx="8" fill="#f7fafc" stroke="#d6dee6" stroke-width="2" />
+<text x="794.0" y="234.0" fill="#17202a" font-size="22" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Benchmark JSON</text>
+<rect x="794.0" y="256.0" width="144.0" height="36.0" rx="18" fill="#0f766e" stroke="none" stroke-width="0" />
+<text x="866.0" y="281.0" fill="white" font-size="16" font-weight="800" text-anchor="middle" font-family="Arial, Helvetica, sans-serif">PASS</text>
+<text x="794.0" y="316.0" fill="#52606d" font-size="19" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">valid artifact</text>
+<rect x="1120.0" y="190.0" width="310.0" height="142.0" rx="8" fill="#f7fafc" stroke="#d6dee6" stroke-width="2" />
+<text x="1144.0" y="234.0" fill="#17202a" font-size="22" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Ruff</text>
+<rect x="1144.0" y="256.0" width="144.0" height="36.0" rx="18" fill="#b91c1c" stroke="none" stroke-width="0" />
+<text x="1216.0" y="281.0" fill="white" font-size="16" font-weight="800" text-anchor="middle" font-family="Arial, Helvetica, sans-serif">FAIL</text>
+<text x="1144.0" y="316.0" fill="#52606d" font-size="19" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">73 errors</text>
+<rect x="70.0" y="395.0" width="310.0" height="142.0" rx="8" fill="#f7fafc" stroke="#d6dee6" stroke-width="2" />
+<text x="94.0" y="439.0" fill="#17202a" font-size="22" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Mypy</text>
+<rect x="94.0" y="461.0" width="144.0" height="36.0" rx="18" fill="#b91c1c" stroke="none" stroke-width="0" />
+<text x="166.0" y="486.0" fill="white" font-size="16" font-weight="800" text-anchor="middle" font-family="Arial, Helvetica, sans-serif">FAIL</text>
+<text x="94.0" y="521.0" fill="#52606d" font-size="19" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">299 errors</text>
+<rect x="420.0" y="395.0" width="310.0" height="142.0" rx="8" fill="#f7fafc" stroke="#d6dee6" stroke-width="2" />
+<text x="444.0" y="439.0" fill="#17202a" font-size="22" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Public release</text>
+<rect x="444.0" y="461.0" width="144.0" height="36.0" rx="18" fill="#b45309" stroke="none" stroke-width="0" />
+<text x="516.0" y="486.0" fill="white" font-size="16" font-weight="800" text-anchor="middle" font-family="Arial, Helvetica, sans-serif">DEFERRED</text>
+<text x="444.0" y="521.0" fill="#52606d" font-size="19" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">not public</text>
+<rect x="770.0" y="395.0" width="310.0" height="142.0" rx="8" fill="#f7fafc" stroke="#d6dee6" stroke-width="2" />
+<text x="794.0" y="439.0" fill="#17202a" font-size="22" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">PyPI</text>
+<rect x="794.0" y="461.0" width="144.0" height="36.0" rx="18" fill="#b45309" stroke="none" stroke-width="0" />
+<text x="866.0" y="486.0" fill="white" font-size="16" font-weight="800" text-anchor="middle" font-family="Arial, Helvetica, sans-serif">DEFERRED</text>
+<text x="794.0" y="521.0" fill="#52606d" font-size="19" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">no publish</text>
+<rect x="1120.0" y="395.0" width="310.0" height="142.0" rx="8" fill="#f7fafc" stroke="#d6dee6" stroke-width="2" />
+<text x="1144.0" y="439.0" fill="#17202a" font-size="22" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Live claims</text>
+<rect x="1144.0" y="461.0" width="144.0" height="36.0" rx="18" fill="#b45309" stroke="none" stroke-width="0" />
+<text x="1216.0" y="486.0" fill="white" font-size="16" font-weight="800" text-anchor="middle" font-family="Arial, Helvetica, sans-serif">STALE</text>
+<text x="1144.0" y="521.0" fill="#52606d" font-size="19" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">alignment needed</text>
+<rect x="70.0" y="640.0" width="1360.0" height="92.0" rx="8" fill="#eef7f5" stroke="#0f766e" stroke-width="2" />
+<text x="95.0" y="678.0" fill="#0f766e" font-size="22" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Use in manuscript</text>
+<text x="95.0" y="711.0" fill="#17202a" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Claim alpha research readiness; avoid release-grade or public-launch language until failed/deferred gates are resolved.</text>
+</svg>

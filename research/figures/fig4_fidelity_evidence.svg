@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1420" height="820" viewBox="0 0 1420 820" role="img">
+<rect width="100%" height="100%" fill="white" />
+<text x="70.0" y="70.0" fill="#17202a" font-size="34" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Figure 4 | Fidelity evidence and caveats</text>
+<text x="70.0" y="108.0" fill="#52606d" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">von Benzon BlueROV2 Heavy scenario: 5.0 N surge, 1000 steps, dt = 0.01 s</text>
+<rect x="80.0" y="190.0" width="595.0" height="140.0" rx="8" fill="#f7fafc" stroke="#d6dee6" stroke-width="2" />
+<text x="112.0" y="242.0" fill="#52606d" font-size="22" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Position error</text>
+<text x="112.0" y="298.0" fill="#0f766e" font-size="44" font-weight="800" text-anchor="start" font-family="Arial, Helvetica, sans-serif">0.013%</text>
+<rect x="755.0" y="190.0" width="595.0" height="140.0" rx="8" fill="#f7fafc" stroke="#d6dee6" stroke-width="2" />
+<text x="787.0" y="242.0" fill="#52606d" font-size="22" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Attitude RMS</text>
+<text x="787.0" y="298.0" fill="#0f766e" font-size="44" font-weight="800" text-anchor="start" font-family="Arial, Helvetica, sans-serif">0.0025 deg</text>
+<rect x="80.0" y="380.0" width="595.0" height="140.0" rx="8" fill="#f7fafc" stroke="#d6dee6" stroke-width="2" />
+<text x="112.0" y="432.0" fill="#52606d" font-size="22" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Position RMS</text>
+<text x="112.0" y="488.0" fill="#1d4ed8" font-size="44" font-weight="800" text-anchor="start" font-family="Arial, Helvetica, sans-serif">0.000223 m</text>
+<rect x="755.0" y="380.0" width="595.0" height="140.0" rx="8" fill="#f7fafc" stroke="#d6dee6" stroke-width="2" />
+<text x="787.0" y="432.0" fill="#52606d" font-size="22" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Position max</text>
+<text x="787.0" y="488.0" fill="#1d4ed8" font-size="44" font-weight="800" text-anchor="start" font-family="Arial, Helvetica, sans-serif">0.000414 m</text>
+<rect x="80.0" y="620.0" width="1270.0" height="128.0" rx="8" fill="#fff7ed" stroke="#9a3412" stroke-width="2" />
+<text x="110.0" y="660.0" fill="#9a3412" font-size="22" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Caveat for paper text</text>
+<text x="110.0" y="700.0" fill="#17202a" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">The regression suite also includes a frozen self-generated snapshot and parameter-fidelity guardrails with known</text>
+<text x="110.0" y="730.0" fill="#17202a" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">differences; do not claim full tank or deployment validation.</text>
+</svg>

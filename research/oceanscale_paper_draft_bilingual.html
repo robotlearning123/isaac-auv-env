@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OceanScale Paper Draft - EN / CN</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #17202a;
+        --muted: #52606d;
+        --line: #d6dee6;
+        --panel: #f7fafc;
+        --accent: #0f766e;
+        --accent-2: #9a3412;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: #ffffff;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        line-height: 1.6;
+      }
+
+      header {
+        border-bottom: 1px solid var(--line);
+        background: #f8fbfd;
+      }
+
+      main,
+      .header-inner {
+        width: min(1280px, calc(100% - 40px));
+        margin: 0 auto;
+      }
+
+      .header-inner {
+        padding: 28px 0 22px;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: clamp(30px, 4vw, 52px);
+        line-height: 1.08;
+        letter-spacing: 0;
+      }
+
+      .subtitle {
+        margin: 0;
+        max-width: 920px;
+        color: var(--muted);
+        font-size: 16px;
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .meta span {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 4px 8px;
+        background: #ffffff;
+      }
+
+      main {
+        padding: 24px 0 48px;
+      }
+
+      section {
+        border-top: 1px solid var(--line);
+        padding: 28px 0;
+      }
+
+      section:first-child {
+        border-top: 0;
+        padding-top: 0;
+      }
+
+      .pair {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 28px;
+      }
+
+      .col {
+        min-width: 0;
+      }
+
+      h2 {
+        margin: 0 0 16px;
+        font-size: 24px;
+        line-height: 1.24;
+        letter-spacing: 0;
+      }
+
+      h3 {
+        margin: 24px 0 10px;
+        font-size: 17px;
+        line-height: 1.3;
+        letter-spacing: 0;
+      }
+
+      p {
+        margin: 0 0 14px;
+      }
+
+      ul,
+      ol {
+        margin: 0 0 16px;
+        padding-left: 22px;
+      }
+
+      li {
+        margin-bottom: 8px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0 18px;
+        font-size: 14px;
+      }
+
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 8px 10px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: var(--panel);
+        font-weight: 650;
+      }
+
+      code {
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        padding: 1px 4px;
+        background: var(--panel);
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 0.92em;
+      }
+
+      .label {
+        display: inline-block;
+        margin-bottom: 10px;
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .zh .label {
+        color: var(--accent-2);
+      }
+
+      .callout {
+        border-left: 3px solid var(--accent);
+        padding: 10px 14px;
+        background: var(--panel);
+      }
+
+      .zh .callout {
+        border-left-color: var(--accent-2);
+      }
+
+      .figure-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 26px;
+      }
+
+      .figure-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+        background: #ffffff;
+      }
+
+      .figure-card img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #ffffff;
+      }
+
+      .caption-pair {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 18px;
+        margin-top: 12px;
+      }
+
+      .caption {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .caption strong {
+        color: var(--ink);
+      }
+
+      @media (max-width: 860px) {
+        main,
+        .header-inner {
+          width: min(100% - 28px, 720px);
+        }
+
+        .pair {
+          grid-template-columns: 1fr;
+          gap: 22px;
+        }
+
+        .caption-pair {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-inner">
+        <h1>OceanScale: GPU-Native Simulation Infrastructure for Underwater Robotics</h1>
+        <p class="subtitle">OceanScale：面向水下机器人的 GPU 原生仿真基础设施</p>
+        <div class="meta">
+          <span>Working paper draft</span>
+          <span>Prepared 2026-05-25</span>
+          <span>Authors: OceanScale Team</span>
+          <span>EN / CN review copy</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section>
+        <div class="pair">
+          <div class="col en">
+            <span class="label">English</span>
+            <h2>Draft Status</h2>
+            <p class="callout">This is a manuscript-ready starting point, not a submission-ready paper. It is grounded in the current repository, local verification commands, and saved benchmark artifacts.</p>
+            <p>Before submission, resolve the target venue, author list, version identity, and whether new benchmark runs should replace the saved 2026-05-24 artifacts.</p>
+            <p>The paper should be framed as a Tier-1 simulator paper: OceanScale currently ships GPU-native simulation infrastructure for underwater robotics on Newton + Warp. It should not claim a shipped learned dynamics layer, physical deployment transfer, public package availability, or release-ready external infrastructure.</p>
+          </div>
+          <div class="col zh" lang="zh-Hans">
+            <span class="label">中文</span>
+            <h2>草稿状态</h2>
+            <p class="callout">这是可继续打磨的论文初稿，不是可直接投稿的最终稿。内容基于当前代码仓库、本地验证命令和已保存的 benchmark artifact。</p>
+            <p>投稿前需要确定目标会议或期刊、作者列表、版本口径，以及是否用新的 benchmark 结果替换 2026-05-24 保存的结果。</p>
+            <p>本文应定位为 Tier-1 仿真器论文：OceanScale 当前交付的是基于 Newton + Warp 的 GPU 原生水下机器人仿真基础设施。不要声称已经交付学习动力学层、真实部署迁移、公开包发布，或可公开发布的外部基础设施。</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="pair">
+          <div class="col en">
+            <span class="label">English</span>
+            <h2>Abstract</h2>
+            <p>Underwater robots still learn in the most expensive test environment on earth: the real ocean. OceanScale addresses this bottleneck with GPU-native simulation infrastructure for underwater robotics. The current system combines Newton rigid-body simulation, Warp kernels, Fossen 6-DOF hydrodynamics, vectorized Gymnasium environments, underwater vehicle assets, sensor models, and reinforcement-learning interfaces into a Python package for batched robot learning workloads.</p>
+            <p>On an NVIDIA RTX 5090, the current standardized OceanScale benchmark reports 85,824 environment-steps per second at 64 parallel environments and 4,588,922 environment-steps per second at 4096 parallel environments. A separate PyBullet baseline sweep reports that OceanScale is slower at a single environment but 10.49x faster than PyBullet at 64 environments on the matched BlueROV2 hover task.</p>
+            <p>The current fidelity artifact reports 0.013 percent position error and 0.0025 degree attitude RMS against the von Benzon et al. BlueROV2 reference scenario. Local verification on this checkout passed the full test suite with 1027 passed tests, 4 expected failures, and 1 unexpected pass.</p>
+            <p>The main contribution is an evidence-bounded system design for batched underwater robotics simulation. The current implementation is strongest for headless, vectorized dynamics and RL iteration; it is not yet validated for contact-rich manipulation, multi-vehicle interaction, field transfer, or public release claims.</p>
+          </div>
+          <div class="col zh" lang="zh-Hans">
+            <span class="label">中文</span>
+            <h2>摘要</h2>
+            <p>水下机器人仍然在地球上最昂贵的测试环境中学习：真实海洋。OceanScale 用 GPU 原生的水下机器人仿真基础设施来缩短这一瓶颈。当前系统把 Newton 刚体仿真、Warp kernel、Fossen 6-DOF 水动力学、向量化 Gymnasium 环境、水下机器人资产、传感器模型和强化学习接口组合成一个面向批量机器人学习工作负载的 Python package。</p>
+            <p>在 NVIDIA RTX 5090 上，当前标准化 OceanScale benchmark 报告 64 个并行环境下达到 85,824 env-steps/s，4096 个并行环境下达到 4,588,922 env-steps/s。另一个独立的 PyBullet baseline sweep 显示，在匹配的 BlueROV2 hover task 上，OceanScale 单环境更慢，但在 64 个环境下比 PyBullet 快 10.49x。</p>
+            <p>当前 fidelity artifact 报告，在 von Benzon 等人的 BlueROV2 参考场景上，位置误差为 0.013 percent，姿态 RMS 为 0.0025 degree。本次 checkout 的本地验证通过了完整测试套件：1027 passed，4 xfailed，1 xpassed。</p>
+            <p>本文的核心贡献是一个有证据边界的批量水下机器人仿真系统设计。当前实现最强的部分是 headless、向量化动力学和 RL 迭代；它尚未验证 contact-rich manipulation、多机器人交互、真实场景迁移，或公开发布级别的 claim。</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="pair">
+          <div class="col en">
+            <span class="label">English</span>
+            <h2>1. Introduction</h2>
+            <p>Underwater robotics development remains constrained by the cost and latency of field testing. AUVs and ROVs operate in environments where access is expensive, instrumentation is difficult, and physical iteration loops are slow. Simulation can shorten this loop, but conventional underwater simulators often force a trade-off between hydrodynamic fidelity, learning throughput, and modern GPU execution.</p>
+            <p>OceanScale is designed around a narrower claim: provide the ocean simulator for underwater robotics. The project uses Newton for GPU-native physics and Warp for custom kernels, then builds underwater-specific dynamics, vehicles, environments, and sensor models around that stack.</p>
+            <p>The present paper describes the current Tier-1 system. It focuses on the evidence that exists today: Fossen 6-DOF hydrodynamics, BlueROV2 reference validation, vectorized RL environments, reproducible throughput artifacts, and local tests.</p>
+          </div>
+          <div class="col zh" lang="zh-Hans">
+            <span class="label">中文</span>
+            <h2>1. 引言</h2>
+            <p>水下机器人研发仍受到现场试验成本和周期的限制。AUV 与 ROV 工作在进入成本高、测量困难、物理迭代慢的环境中。仿真可以缩短这一循环，但传统水下仿真系统往往需要在水动力保真度、学习吞吐和现代 GPU 执行之间取舍。</p>
+            <p>OceanScale 的设计围绕一个更窄、更可验证的 claim：提供面向水下机器人的海洋仿真基础设施。项目使用 Newton 承载 GPU 原生物理，用 Warp 编写自定义 kernel，并在此基础上构建水下动力学、机器人、环境和传感器模型。</p>
+            <p>本文描述当前 Tier-1 系统。重点放在今天已经存在的证据：Fossen 6-DOF 水动力学、BlueROV2 reference validation、向量化 RL 环境、可复查的吞吐 artifact 和本地测试。</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="pair">
+          <div class="col en">
+            <span class="label">English</span>
+            <h2>2. Contributions</h2>
+            <ol>
+              <li>A GPU-native underwater robotics simulation architecture built on Newton and Warp, with Fossen 6-DOF hydrodynamics injected into batched rigid-body worlds.</li>
+              <li>A vectorized reinforcement-learning interface with Gymnasium-compatible observations and actions, partial reset support, domain randomization, and package-level CLI entry points.</li>
+              <li>A growing underwater robotics asset and model set that includes ROVs, AUVs, gliders, propulsion models, current and wave primitives, sensor modules, and underwater rendering components, while preserving source provenance.</li>
+              <li>An evidence discipline for performance and fidelity claims: saved benchmark artifacts, explicit hardware context, documented comparison differences, and local verification commands.</li>
+            </ol>
+          </div>
+          <div class="col zh" lang="zh-Hans">
+            <span class="label">中文</span>
+            <h2>2. 贡献</h2>
+            <ol>
+              <li>一个基于 Newton 与 Warp 的 GPU 原生水下机器人仿真架构，将 Fossen 6-DOF 水动力学注入批量刚体世界。</li>
+              <li>一个向量化强化学习接口，包含 Gymnasium-compatible observation/action、partial reset、domain randomization 和 package-level CLI。</li>
+              <li>一个持续扩展的水下机器人资产与模型集合，覆盖 ROV、AUV、glider、推进模型、洋流与波浪 primitive、传感器模块和水下渲染组件，同时保留来源 provenance。</li>
+              <li>一套围绕性能与 fidelity claim 的证据纪律：保存 benchmark artifact、明确硬件上下文、记录比较差异，并给出本地验证命令。</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="pair">
+          <div class="col en">
+            <span class="label">English</span>
+            <h2>Figure Package</h2>
+            <p class="callout">Draft-only provenance note: these figures are deterministic SVG schematics generated by <code>scripts/generate_paper_figures.py</code>. They are review/layout figures, not <code>$imagegen</code> or <code>gpt-image-2</code> outputs.</p>
+          </div>
+          <div class="col zh" lang="zh-Hans">
+            <span class="label">中文</span>
+            <h2>图组</h2>
+            <p class="callout">草稿来源说明：这些图是由 <code>scripts/generate_paper_figures.py</code> 生成的确定性 SVG schematic，用于审阅和排版；它们不是 <code>$imagegen</code> 或 <code>gpt-image-2</code> 输出。</p>
+          </div>
+        </div>
+        <div class="figure-grid">
+          <article class="figure-card">
+            <img src="figures/fig1_system_architecture.svg" alt="OceanScale system architecture diagram" />
+            <div class="caption-pair">
+              <p class="caption"><strong>Figure 1.</strong> Evidence-bounded Tier-1 simulator stack: vehicle assets, hydrodynamic coefficients, ocean fields, and task configurations feed the Newton + Warp core; current outputs are batched env-steps, RL rollouts, fidelity metrics, and CLI demos.</p>
+              <p class="caption" lang="zh-Hans"><strong>图 1。</strong> 有证据边界的 Tier-1 仿真器栈：机器人资产、水动力系数、海洋场和任务配置进入 Newton + Warp 核心；当前输出是批量 env-steps、RL rollout、fidelity metric 和 CLI demo。</p>
+            </div>
+          </article>
+          <article class="figure-card">
+            <img src="figures/fig2_throughput_scaling.svg" alt="OceanScale throughput scaling bar chart" />
+            <div class="caption-pair">
+              <p class="caption"><strong>Figure 2.</strong> Standardized OceanScale-only throughput. The main performance claim is vectorized batched throughput, not single-environment latency.</p>
+              <p class="caption" lang="zh-Hans"><strong>图 2。</strong> 标准化 OceanScale-only 吞吐。主要性能 claim 是向量化批量吞吐，而不是单环境 latency。</p>
+            </div>
+          </article>
+          <article class="figure-card">
+            <img src="figures/fig3_pybullet_comparison.svg" alt="PyBullet and OceanScale throughput comparison" />
+            <div class="caption-pair">
+              <p class="caption"><strong>Figure 3.</strong> Matched PyBullet comparison. PyBullet is faster at n = 1; OceanScale wins once the task is vectorized to n = 16 and n = 64.</p>
+              <p class="caption" lang="zh-Hans"><strong>图 3。</strong> PyBullet matched comparison。PyBullet 在 n = 1 时更快；任务向量化到 n = 16 与 n = 64 后 OceanScale 获胜。</p>
+            </div>
+          </article>
+          <article class="figure-card">
+            <img src="figures/fig4_fidelity_evidence.svg" alt="BlueROV2 fidelity evidence metrics and caveat" />
+            <div class="caption-pair">
+              <p class="caption"><strong>Figure 4.</strong> BlueROV2 / von Benzon fidelity signal with the caveat kept in-frame: the result supports the reference path, not broad tank validation or deployment transfer.</p>
+              <p class="caption" lang="zh-Hans"><strong>图 4。</strong> BlueROV2 / von Benzon fidelity signal，并在同一视图中保留 caveat：该结果支持参考路径，不等同于广泛水池验证或真实部署迁移。</p>
+            </div>
+          </article>
+          <article class="figure-card">
+            <img src="figures/fig5_readiness_matrix.svg" alt="Readiness matrix for paper claims" />
+            <div class="caption-pair">
+              <p class="caption"><strong>Figure 5.</strong> Readiness matrix separating runtime evidence from static-quality, release, and public-surface gates.</p>
+              <p class="caption" lang="zh-Hans"><strong>图 5。</strong> Readiness matrix，将 runtime evidence 与 static-quality、release、public-surface gate 分开。</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <div class="pair">
+          <div class="col en">
+            <span class="label">English</span>
+            <h2>3. System Design</h2>
+            <h3>3.1 Execution Model</h3>
+            <p>OceanScale uses Newton's multi-world model replication to create independent parallel simulation worlds on a single GPU. The core ROV environment constructs a template rigid body, replicates it with world_count = n_envs, finalizes the model on the selected device, and steps it with Newton's semi-implicit solver.</p>
+            <p>The current ROVEnv observation space is 26-dimensional and the action space is 6-dimensional. Actions represent surge, sway, heave, roll, pitch, and yaw commands in [-1, 1].</p>
+            <h3>3.2 Hydrodynamics</h3>
+            <p>The Tier-1 hydrodynamics layer implements Fossen-style 6-DOF terms on GPU: added mass, Coriolis and centripetal effects, linear and quadratic damping, restoring forces, and thruster allocation. The implementation keeps per-env coefficient arrays on GPU and accumulates a wrench into Newton's body force state before each solver step.</p>
+            <p>The standardized benchmark records Fossen 6-DOF terms, thruster low-pass and deadband, ocean-current coupling, and no cross-coupling damping in v0.1 because the required coefficients are not independently identified.</p>
+            <h3>3.3 Vehicles, Environments, Sensors, and Rendering</h3>
+            <p>The repository contains vehicle definitions and assets derived from BlueROV2, MarineGym, UUV Simulator, DAVE, SMARC, fishsim, Isaac AUV Env, and related sources. The paper should describe this as a growing asset and model set rather than over-indexing on a single count.</p>
+            <p>The standardized benchmark artifact marks the launch-standardized sensor evidence as IMU, DVL, and pressure/depth stubs only. Sonar, camera, and acoustic communication should be discussed as implemented modules or active subsystem work, not as equally validated benchmark-level claims.</p>
+            <h3>3.4 Learning Interface</h3>
+            <p>OceanScale exposes a Gymnasium-compatible ROV environment and vectorized wrappers for RL workflows. The current package includes both Stable-Baselines3 compatibility and skrl training code; the paper should present this as practical RL integration, not as a new RL algorithm.</p>
+          </div>
+          <div class="col zh" lang="zh-Hans">
+            <span class="label">中文</span>
+            <h2>3. 系统设计</h2>
+            <h3>3.1 执行模型</h3>
+            <p>OceanScale 使用 Newton 的 multi-world model replication，在单张 GPU 上创建相互独立的并行仿真世界。核心 ROV 环境先构建 template rigid body，再用 world_count = n_envs 复制世界，在指定 device 上 finalize model，并使用 Newton semi-implicit solver 进行 step。</p>
+            <p>当前 ROVEnv 的 observation space 为 26 维，action space 为 6 维。Action 表示 surge、sway、heave、roll、pitch、yaw，范围为 [-1, 1]。</p>
+            <h3>3.2 水动力学</h3>
+            <p>Tier-1 水动力层在 GPU 上实现 Fossen-style 6-DOF 项：added mass、Coriolis/centripetal、linear/quadratic damping、restoring forces 和 thruster allocation。实现方式是在 GPU 上保存 per-env coefficient array，并在每个 solver step 前把 wrench 累积到 Newton body force state。</p>
+            <p>标准化 benchmark 记录的物理范围包括 Fossen 6-DOF 项、thruster low-pass/deadband、ocean-current coupling；v0.1 不启用 cross-coupling damping，因为相关系数尚未独立识别。</p>
+            <h3>3.3 机器人、环境、传感器与渲染</h3>
+            <p>仓库包含来自 BlueROV2、MarineGym、UUV Simulator、DAVE、SMARC、fishsim、Isaac AUV Env 及相关来源的机器人定义和资产。论文应把这描述为持续扩展的资产与模型集合，而不是过度依赖单一数量口径。</p>
+            <p>标准化 benchmark artifact 将当前 launch-standardized sensor evidence 限定为 IMU、DVL 和 pressure/depth stub。Sonar、camera 和 acoustic communication 应描述为已实现模块或活跃子系统工作，而不是同等验证强度的 benchmark-level claim。</p>
+            <h3>3.4 学习接口</h3>
+            <p>OceanScale 暴露 Gymnasium-compatible ROV environment 和向量化 wrapper，用于 RL workflow。当前 package 同时包含 Stable-Baselines3 compatibility 和 skrl training code；论文应把它呈现为实用 RL 集成，而不是新的 RL 算法贡献。</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="pair">
+          <div class="col en">
+            <span class="label">English</span>
+            <h2>4. Evaluation</h2>
+            <h3>4.1 Local Verification</h3>
+            <table>
+              <thead>
+                <tr><th>Check</th><th>Command</th><th>Result</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Full test suite</td><td><code>uv run pytest tests/ -q --tb=short</code></td><td>PASS: 1027 passed, 4 xfailed, 1 xpassed, 1 warning in 35.90s</td></tr>
+                <tr><td>Internal readiness verifier</td><td><code>uv run python scripts/verify_internal_launch_suite.py</code></td><td>PASS: 15 internal checks</td></tr>
+                <tr><td>Benchmark JSON parse</td><td><code>uv run python -m json.tool benchmarks/competitive/results.json</code></td><td>PASS</td></tr>
+                <tr><td>Ruff</td><td><code>uv run ruff check oceanscale tests benchmarks --statistics</code></td><td>FAIL: 73 errors</td></tr>
+                <tr><td>Mypy</td><td><code>uv run mypy oceanscale</code></td><td>FAIL: 299 errors in 16 files</td></tr>
+              </tbody>
+            </table>
+            <p>The tests support current runtime behavior. The ruff and mypy failures mean the project is not yet static-quality clean.</p>
+            <h3>4.2 Standardized OceanScale Throughput</h3>
+            <table>
+              <thead>
+                <tr><th>Parallel environments</th><th>Environment-steps/s</th><th>Wall time</th><th>Bench steps</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>1,326</td><td>0.1508 s</td><td>200</td></tr>
+                <tr><td>64</td><td>85,824</td><td>0.1491 s</td><td>200</td></tr>
+                <tr><td>256</td><td>303,206</td><td>0.1689 s</td><td>200</td></tr>
+                <tr><td>1024</td><td>1,272,106</td><td>0.1610 s</td><td>200</td></tr>
+                <tr><td>4096</td><td>4,588,922</td><td>0.1785 s</td><td>200</td></tr>
+              </tbody>
+            </table>
+            <h3>4.3 PyBullet Baseline Comparison</h3>
+            <table>
+              <thead>
+                <tr><th>Engine</th><th>Throughput</th><th>Time for 1M env-steps</th><th>Speedup</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>PyBullet n=1</td><td>1,661 env-steps/s</td><td>602.9 s</td><td>1.00x</td></tr>
+                <tr><td>OceanScale n=1</td><td>337 env-steps/s</td><td>2,972.2 s</td><td>0.20x</td></tr>
+                <tr><td>OceanScale n=16</td><td>5,076 env-steps/s</td><td>197.0 s</td><td>3.06x</td></tr>
+                <tr><td>OceanScale n=64</td><td>17,427 env-steps/s</td><td>57.4 s</td><td>10.49x</td></tr>
+              </tbody>
+            </table>
+            <p>PyBullet is faster for a single environment; OceanScale wins when the task is vectorized. The comparison is matched, not bit-for-bit identical.</p>
+            <h3>4.4 Fidelity Evidence</h3>
+            <p>The benchmark artifact reports a von Benzon et al. BlueROV2 Heavy scenario with 5.0 N surge for 1000 steps at dt = 0.01s, with 0.013 percent position error, 0.0025 degree attitude RMS, 0.000223 m position RMS, and 0.000414 m maximum position error.</p>
+          </div>
+          <div class="col zh" lang="zh-Hans">
+            <span class="label">中文</span>
+            <h2>4. 评估</h2>
+            <h3>4.1 本地验证</h3>
+            <table>
+              <thead>
+                <tr><th>检查项</th><th>命令</th><th>结果</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>完整测试套件</td><td><code>uv run pytest tests/ -q --tb=short</code></td><td>PASS: 1027 passed, 4 xfailed, 1 xpassed, 1 warning in 35.90s</td></tr>
+                <tr><td>内部 readiness verifier</td><td><code>uv run python scripts/verify_internal_launch_suite.py</code></td><td>PASS: 15 internal checks</td></tr>
+                <tr><td>Benchmark JSON 解析</td><td><code>uv run python -m json.tool benchmarks/competitive/results.json</code></td><td>PASS</td></tr>
+                <tr><td>Ruff</td><td><code>uv run ruff check oceanscale tests benchmarks --statistics</code></td><td>FAIL: 73 errors</td></tr>
+                <tr><td>Mypy</td><td><code>uv run mypy oceanscale</code></td><td>FAIL: 299 errors in 16 files</td></tr>
+              </tbody>
+            </table>
+            <p>测试结果支持当前 runtime behavior。ruff 和 mypy 的失败说明项目尚未达到静态质量 clean 的状态。</p>
+            <h3>4.2 标准化 OceanScale 吞吐</h3>
+            <table>
+              <thead>
+                <tr><th>并行环境数</th><th>Env-steps/s</th><th>Wall time</th><th>Bench steps</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>1,326</td><td>0.1508 s</td><td>200</td></tr>
+                <tr><td>64</td><td>85,824</td><td>0.1491 s</td><td>200</td></tr>
+                <tr><td>256</td><td>303,206</td><td>0.1689 s</td><td>200</td></tr>
+                <tr><td>1024</td><td>1,272,106</td><td>0.1610 s</td><td>200</td></tr>
+                <tr><td>4096</td><td>4,588,922</td><td>0.1785 s</td><td>200</td></tr>
+              </tbody>
+            </table>
+            <h3>4.3 PyBullet Baseline 对比</h3>
+            <table>
+              <thead>
+                <tr><th>引擎</th><th>吞吐</th><th>1M env-steps 时间</th><th>相对速度</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>PyBullet n=1</td><td>1,661 env-steps/s</td><td>602.9 s</td><td>1.00x</td></tr>
+                <tr><td>OceanScale n=1</td><td>337 env-steps/s</td><td>2,972.2 s</td><td>0.20x</td></tr>
+                <tr><td>OceanScale n=16</td><td>5,076 env-steps/s</td><td>197.0 s</td><td>3.06x</td></tr>
+                <tr><td>OceanScale n=64</td><td>17,427 env-steps/s</td><td>57.4 s</td><td>10.49x</td></tr>
+              </tbody>
+            </table>
+            <p>PyBullet 单环境更快；任务向量化后 OceanScale 获胜。该对比是 matched comparison，不是 bit-for-bit identical comparison。</p>
+            <h3>4.4 Fidelity Evidence</h3>
+            <p>Benchmark artifact 报告了 von Benzon 等人的 BlueROV2 Heavy 场景：5.0 N surge，1000 steps，dt = 0.01s；位置误差 0.013 percent，姿态 RMS 0.0025 degree，position RMS 0.000223 m，maximum position error 0.000414 m。</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="pair">
+          <div class="col en">
+            <span class="label">English</span>
+            <h2>5. Limitations</h2>
+            <ol>
+              <li>The strongest evidence is for headless, vectorized dynamics and RL data collection, not for photorealistic rendering or contact-rich manipulation.</li>
+              <li>The current fidelity evidence is strongest around the BlueROV2 / von Benzon reference path. Wider vehicle, sensor, and environment breadth exists in the codebase, but not all subsystems have the same end-to-end evidence level.</li>
+              <li>The PyBullet comparison is matched but not identical. It establishes a throughput regime, not a universal physics or latency result.</li>
+              <li>The project has no verified physical deployment transfer result in the current evidence set.</li>
+              <li>Release and external-publication posture is deferred. Internal readiness artifacts pass, but public package availability, public release flows, and live public surface alignment are not the core evidence for this paper.</li>
+              <li>Static code-quality gates are not yet clean in this checkout. The full tests pass, but ruff and strict mypy require cleanup before a release-grade claim.</li>
+            </ol>
+          </div>
+          <div class="col zh" lang="zh-Hans">
+            <span class="label">中文</span>
+            <h2>5. 局限</h2>
+            <ol>
+              <li>最强证据集中在 headless、向量化动力学和 RL 数据采集，而不是 photorealistic rendering 或 contact-rich manipulation。</li>
+              <li>当前 fidelity evidence 最强的是 BlueROV2 / von Benzon reference path。代码库中存在更广的机器人、传感器和环境覆盖，但并非所有子系统都有同等强度的 end-to-end evidence。</li>
+              <li>PyBullet 对比是 matched comparison，但不是 identical comparison。它证明的是吞吐 regime，不是通用物理精度或 latency 结论。</li>
+              <li>当前 evidence set 中没有 verified physical deployment transfer result。</li>
+              <li>release 与 external-publication posture 当前是 deferred。内部 readiness artifact 通过，但公开 package availability、public release flow 和 live public surface alignment 不是本文的核心证据。</li>
+              <li>当前 checkout 的静态代码质量 gate 尚未 clean。完整测试通过，但 ruff 和 strict mypy 需要清理后才能支撑 release-grade claim。</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="pair">
+          <div class="col en">
+            <span class="label">English</span>
+            <h2>6. Related Work</h2>
+            <p>Fossen's 6-DOF hydrodynamic formulation provides the analytical basis for the Tier-1 dynamics. Von Benzon et al. provide the BlueROV2 reference model used for the current fidelity benchmark. MarineGym, OceanSim, UUV Simulator, DAVE, SMARC, fishsim, and Isaac AUV Env provide important source material for vehicles, assets, sensors, propulsion, drag models, and environment design.</p>
+            <p>Newton and Warp provide the GPU-native execution substrate. PyBullet provides the current CPU baseline for the matched hover-task throughput comparison.</p>
+            <p>The paper should keep this related-work section factual and provenance-driven. Do not present integrated third-party assets as original contributions; present OceanScale's contribution as the GPU-native integration and underwater-specific simulation infrastructure layer.</p>
+          </div>
+          <div class="col zh" lang="zh-Hans">
+            <span class="label">中文</span>
+            <h2>6. 相关工作</h2>
+            <p>Fossen 的 6-DOF 水动力学公式构成 Tier-1 dynamics 的解析基础。von Benzon 等人的 BlueROV2 reference model 是当前 fidelity benchmark 的参考路径。MarineGym、OceanSim、UUV Simulator、DAVE、SMARC、fishsim 和 Isaac AUV Env 为机器人、资产、传感器、推进、drag model 和环境设计提供了重要来源材料。</p>
+            <p>Newton 与 Warp 提供 GPU 原生执行基座。PyBullet 提供当前 matched hover-task throughput comparison 的 CPU baseline。</p>
+            <p>论文应保持 factual 和 provenance-driven 的相关工作表述。不要把集成的第三方资产表述为原创贡献；OceanScale 的贡献应表述为 GPU 原生集成和水下机器人专用仿真基础设施层。</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="pair">
+          <div class="col en">
+            <span class="label">English</span>
+            <h2>7. Conclusion</h2>
+            <p>OceanScale demonstrates that underwater robotics simulation can be organized around GPU-native batched execution without dropping the underwater-specific dynamics needed for AUV and ROV research. The current evidence supports a focused claim: on RTX 5090 hardware, the system provides high-throughput, vectorized Fossen-style dynamics for RL workloads and a growing underwater robotics simulation surface with explicit provenance and limitations.</p>
+            <p>The next step for a submission-quality paper is stronger evidence: a fresh reproducible benchmark run, a clean static-quality gate, an externally grounded validation experiment beyond self-generated snapshots, and a clear venue-specific positioning decision.</p>
+          </div>
+          <div class="col zh" lang="zh-Hans">
+            <span class="label">中文</span>
+            <h2>7. 结论</h2>
+            <p>OceanScale 展示了水下机器人仿真可以围绕 GPU 原生批量执行来组织，同时保留 AUV 与 ROV 研究所需的水下专用动力学。当前证据支持一个聚焦 claim：在 RTX 5090 硬件上，该系统为 RL workload 提供高吞吐、向量化的 Fossen-style dynamics，并以明确的 provenance 和 limitation 扩展水下机器人仿真 surface。</p>
+            <p>让本文达到可投稿质量的下一步是补强证据：新的可复现 benchmark run、clean static-quality gate、超出 self-generated snapshot 的外部验证实验，以及明确的 venue-specific positioning decision。</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="pair">
+          <div class="col en">
+            <span class="label">English</span>
+            <h2>Evidence Map and TODOs</h2>
+            <table>
+              <thead>
+                <tr><th>Claim area</th><th>Source</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Positioning and scope</td><td><code>POSITIONING.md</code></td></tr>
+                <tr><td>Current shipping architecture</td><td><code>ARCHITECTURE.md</code></td></tr>
+                <tr><td>Core vectorized environment</td><td><code>oceanscale/rov_env.py</code></td></tr>
+                <tr><td>Hydrodynamics implementation</td><td><code>oceanscale/hydro/tier1.py</code>, <code>oceanscale/hydro/tier1_kernels.py</code></td></tr>
+                <tr><td>Benchmarks</td><td><code>benchmarks/RESULTS.md</code>, <code>benchmarks/competitive/results.json</code></td></tr>
+                <tr><td>Fidelity tests</td><td><code>tests/hydro/test_vonbenzon_regression.py</code>, <code>tests/test_param_fidelity.py</code></td></tr>
+                <tr><td>Internal readiness boundary</td><td><code>artifacts/LAUNCH_FINAL_GATE_INTERNAL_2026-05-24.md</code></td></tr>
+              </tbody>
+            </table>
+            <ul>
+              <li>Choose the target venue and adjust emphasis.</li>
+              <li>Reconcile version identity across package, website, tags, and paper text.</li>
+              <li>Decide whether to rerun the standardized benchmark for the final table.</li>
+              <li>Add final author list, affiliations, acknowledgements, and BibTeX formatting.</li>
+            </ul>
+          </div>
+          <div class="col zh" lang="zh-Hans">
+            <span class="label">中文</span>
+            <h2>证据地图与 TODO</h2>
+            <table>
+              <thead>
+                <tr><th>Claim area</th><th>Source</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>定位与范围</td><td><code>POSITIONING.md</code></td></tr>
+                <tr><td>当前交付架构</td><td><code>ARCHITECTURE.md</code></td></tr>
+                <tr><td>核心向量化环境</td><td><code>oceanscale/rov_env.py</code></td></tr>
+                <tr><td>水动力实现</td><td><code>oceanscale/hydro/tier1.py</code>, <code>oceanscale/hydro/tier1_kernels.py</code></td></tr>
+                <tr><td>Benchmark</td><td><code>benchmarks/RESULTS.md</code>, <code>benchmarks/competitive/results.json</code></td></tr>
+                <tr><td>Fidelity tests</td><td><code>tests/hydro/test_vonbenzon_regression.py</code>, <code>tests/test_param_fidelity.py</code></td></tr>
+                <tr><td>内部 readiness boundary</td><td><code>artifacts/LAUNCH_FINAL_GATE_INTERNAL_2026-05-24.md</code></td></tr>
+              </tbody>
+            </table>
+            <ul>
+              <li>确定目标会议或期刊，并相应调整重点。</li>
+              <li>统一 package、website、tag 和论文正文的版本口径。</li>
+              <li>决定最终表格是否需要重新跑标准化 benchmark。</li>
+              <li>补齐最终作者列表、单位、致谢和 BibTeX 格式。</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

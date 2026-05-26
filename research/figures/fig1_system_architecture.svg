@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img">
+<rect width="100%" height="100%" fill="white" />
+<text x="70.0" y="70.0" fill="#17202a" font-size="34" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Figure 1 | OceanScale system architecture</text>
+<text x="70.0" y="108.0" fill="#52606d" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Evidence-bounded Tier-1 simulator stack for batched underwater robotics workloads</text>
+<rect x="70.0" y="170.0" width="300.0" height="540.0" rx="8" fill="#f7fafc" stroke="#d6dee6" stroke-width="2" />
+<text x="92.0" y="215.0" fill="#0f766e" font-size="26" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Inputs</text>
+<rect x="94.0" y="260.0" width="252.0" height="56.0" rx="6" fill="white" stroke="#d6dee6" stroke-width="2" />
+<text x="112.0" y="296.0" fill="#17202a" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Vehicle assets</text>
+<rect x="94.0" y="354.0" width="252.0" height="56.0" rx="6" fill="white" stroke="#d6dee6" stroke-width="2" />
+<text x="112.0" y="390.0" fill="#17202a" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Hydro coefficients</text>
+<rect x="94.0" y="448.0" width="252.0" height="56.0" rx="6" fill="white" stroke="#d6dee6" stroke-width="2" />
+<text x="112.0" y="484.0" fill="#17202a" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Ocean fields</text>
+<rect x="94.0" y="542.0" width="252.0" height="56.0" rx="6" fill="white" stroke="#d6dee6" stroke-width="2" />
+<text x="112.0" y="578.0" fill="#17202a" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Task configs</text>
+<rect x="470.0" y="170.0" width="300.0" height="540.0" rx="8" fill="#f7fafc" stroke="#d6dee6" stroke-width="2" />
+<text x="492.0" y="215.0" fill="#0f766e" font-size="26" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">OceanScale Core</text>
+<rect x="494.0" y="260.0" width="252.0" height="56.0" rx="6" fill="white" stroke="#d6dee6" stroke-width="2" />
+<text x="512.0" y="296.0" fill="#17202a" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Newton multi-worlds</text>
+<rect x="494.0" y="354.0" width="252.0" height="56.0" rx="6" fill="white" stroke="#d6dee6" stroke-width="2" />
+<text x="512.0" y="390.0" fill="#17202a" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Warp hydro kernels</text>
+<rect x="494.0" y="448.0" width="252.0" height="56.0" rx="6" fill="white" stroke="#d6dee6" stroke-width="2" />
+<text x="512.0" y="484.0" fill="#17202a" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Fossen 6-DOF</text>
+<rect x="494.0" y="542.0" width="252.0" height="56.0" rx="6" fill="white" stroke="#d6dee6" stroke-width="2" />
+<text x="512.0" y="578.0" fill="#17202a" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Vectorized ROVEnv</text>
+<rect x="870.0" y="170.0" width="300.0" height="540.0" rx="8" fill="#f7fafc" stroke="#d6dee6" stroke-width="2" />
+<text x="892.0" y="215.0" fill="#0f766e" font-size="26" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Outputs</text>
+<rect x="894.0" y="260.0" width="252.0" height="56.0" rx="6" fill="white" stroke="#d6dee6" stroke-width="2" />
+<text x="912.0" y="296.0" fill="#17202a" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Env-steps/s</text>
+<rect x="894.0" y="354.0" width="252.0" height="56.0" rx="6" fill="white" stroke="#d6dee6" stroke-width="2" />
+<text x="912.0" y="390.0" fill="#17202a" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">RL rollouts</text>
+<rect x="894.0" y="448.0" width="252.0" height="56.0" rx="6" fill="white" stroke="#d6dee6" stroke-width="2" />
+<text x="912.0" y="484.0" fill="#17202a" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Fidelity metrics</text>
+<rect x="894.0" y="542.0" width="252.0" height="56.0" rx="6" fill="white" stroke="#d6dee6" stroke-width="2" />
+<text x="912.0" y="578.0" fill="#17202a" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">CLI demos</text>
+<rect x="1270.0" y="170.0" width="300.0" height="540.0" rx="8" fill="#f7fafc" stroke="#d6dee6" stroke-width="2" />
+<text x="1292.0" y="215.0" fill="#9a3412" font-size="26" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Boundaries</text>
+<rect x="1294.0" y="260.0" width="252.0" height="56.0" rx="6" fill="white" stroke="#d6dee6" stroke-width="2" />
+<text x="1312.0" y="296.0" fill="#17202a" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">No sim-to-real claim</text>
+<rect x="1294.0" y="354.0" width="252.0" height="56.0" rx="6" fill="white" stroke="#d6dee6" stroke-width="2" />
+<text x="1312.0" y="390.0" fill="#17202a" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">No public release claim</text>
+<rect x="1294.0" y="448.0" width="252.0" height="56.0" rx="6" fill="white" stroke="#d6dee6" stroke-width="2" />
+<text x="1312.0" y="484.0" fill="#17202a" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">No contact-rich claim</text>
+<rect x="1294.0" y="542.0" width="252.0" height="56.0" rx="6" fill="white" stroke="#d6dee6" stroke-width="2" />
+<text x="1312.0" y="578.0" fill="#17202a" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">No world-model claim</text>
+<line x1="390.0" y1="440.0" x2="444.0" y2="440.0" stroke="#52606d" stroke-width="2.5" stroke-linecap="round" /><path d="M 444.0 440.0 l -12 -7 l 0 14 z" fill="#52606d" />
+<line x1="790.0" y1="440.0" x2="844.0" y2="440.0" stroke="#52606d" stroke-width="2.5" stroke-linecap="round" /><path d="M 844.0 440.0 l -12 -7 l 0 14 z" fill="#52606d" />
+<line x1="1190.0" y1="440.0" x2="1244.0" y2="440.0" stroke="#52606d" stroke-width="2.5" stroke-linecap="round" /><path d="M 1244.0 440.0 l -12 -7 l 0 14 z" fill="#52606d" />
+<rect x="470.0" y="750.0" width="700.0" height="92.0" rx="8" fill="#eef7f5" stroke="#0f766e" stroke-width="2.5" />
+<text x="495.0" y="786.0" fill="#0f766e" font-size="22" font-weight="700" text-anchor="start" font-family="Arial, Helvetica, sans-serif">Current strongest claim</text>
+<text x="495.0" y="820.0" fill="#17202a" font-size="20" font-weight="400" text-anchor="start" font-family="Arial, Helvetica, sans-serif">High-throughput, headless, vectorized dynamics for underwater robotics RL workloads</text>
+</svg>
