@@ -1,6 +1,7 @@
 # OceanScale Isaac 6 Final Summary - 2026-05-26
 
 Generated at: 2026-05-26T00:00:50-04:00
+Updated at: 2026-05-26T12:56:52-04:00
 
 ## Verdict
 
@@ -22,13 +23,14 @@ This is not a claim that every official Isaac Sim / IsaacLab demo has been swept
 Run from the repository root:
 
 ~~~bash
-python3 artifacts/isaacsim/verify_oceanscale_latest_isaac_baseline.py
+export ISAAC_ROOT=/mnt/storage/isaacsim-6.0-official
+python3 artifacts/isaacsim/verify_oceanscale_latest_isaac_baseline.py --isaac-root "$ISAAC_ROOT"
 ~~~
 
 Latest result:
 
 ~~~text
-{"passed": true, "summary": "/mnt/storage/isaacsim-6.0-official/logs/oceanscale-latest-isaac-baseline-2026-05-25-235642/summary.json"}
+{"passed": true, "summary": "/mnt/storage/isaacsim-6.0-official/logs/oceanscale-latest-isaac-baseline-2026-05-26-125621/summary.json"}
 ~~~
 
 ## Final Verifier Evidence
@@ -36,7 +38,7 @@ Latest result:
 Summary JSON:
 
 ~~~text
-/mnt/storage/isaacsim-6.0-official/logs/oceanscale-latest-isaac-baseline-2026-05-25-235642/summary.json
+/mnt/storage/isaacsim-6.0-official/logs/oceanscale-latest-isaac-baseline-2026-05-26-125621/summary.json
 ~~~
 
 Key result:
@@ -49,8 +51,8 @@ Key result:
 | Source heads and clean source status | pass |
 | OceanScale development env versions | pass |
 | Isaac validation env versions | pass |
-| OceanScale core tests | 146 passed, 3 skipped, 1 warning in 18.27s |
-| Isaac validation adapter/native cfg tests | 27 passed, 3 skipped, 41 warnings in 3.32s |
+| OceanScale core tests | 146 passed, 3 skipped, 1 warning in 15.85s |
+| Isaac validation adapter/native cfg tests | 27 passed, 3 skipped, 40 warnings in 3.10s |
 | OceanScale native IsaacLab stress | pass |
 
 Native IsaacLab stress result:
@@ -65,12 +67,14 @@ Native IsaacLab stress result:
 | Actions | random, scale 0.35 |
 | Observation shape | [16, 20] |
 | Reward shape | [16] |
-| obs_abs_max | 5.070893287658691 |
-| reward_min | -0.04258129373192787 |
-| reward_max | 0.9089276790618896 |
-| terminated_count | 0 |
+| obs_abs_max | 395.8927917480469 |
+| reward_min | -47250.00390625 |
+| reward_max | 0.9516979455947876 |
+| terminated_count | 788 |
 | truncated_count | 0 |
 | returncode | 0 |
+
+Random actions can terminate episodes; the pass condition is that the native task launches, resets, steps with finite observations/rewards, and the verifier exits with `passed: true`.
 
 ## Installed Runtime Layout
 
@@ -180,7 +184,8 @@ Interpretation:
 Primary final verifier:
 
 ~~~bash
-python3 artifacts/isaacsim/verify_oceanscale_latest_isaac_baseline.py
+export ISAAC_ROOT=/mnt/storage/isaacsim-6.0-official
+python3 artifacts/isaacsim/verify_oceanscale_latest_isaac_baseline.py --isaac-root "$ISAAC_ROOT"
 ~~~
 
 Core OceanScale test slice used by the verifier:
@@ -211,8 +216,12 @@ PYTHONNOUSERSITE=1 ACCEPT_EULA=Y OMNI_KIT_ACCEPT_EULA=YES PYTHONPATH=/home/robot
 Runtime basics smoke:
 
 ~~~bash
+export ISAAC_ROOT=/mnt/storage/isaacsim-6.0-official
 python3 artifacts/isaacsim/run_isaacsim_standalone_smokes.py \
-  --logs-dir /mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r31-runtime-basics-recheck \
+  --root "$ISAAC_ROOT" \
+  --sim-root "$ISAAC_ROOT/sources/IsaacSim-develop" \
+  --venv "$ISAAC_ROOT/venv-isaacsim-strict" \
+  --logs-dir "$ISAAC_ROOT/logs/isaacsim-standalone-smokes-2026-05-25-r31-runtime-basics-recheck" \
   --case simulation_app_headless_no_rendering \
   --case simulation_app_ovd \
   --case validation_extension_count_headless \
@@ -265,4 +274,3 @@ The working tree is not clean. Current status at final logging time included exi
 - tmp/
 
 Do not reset or overwrite these changes without explicit confirmation.
-

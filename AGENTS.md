@@ -4,12 +4,12 @@ Cross-tool configuration for AI coding agents. Read by: Claude Code (via @AGENTS
 
 ## Project Overview
 
-OceanScale is the unified GPU-native simulation platform for underwater robotics, built on Newton + Warp. It integrates the best of MarineGym, OceanSim, UUV Simulator, DAVE, and more into a single framework — 10 underwater robots, 7 environments, 922+ tests.
+OceanScale is the ocean simulator for underwater robotics. It is the ocean layer in the NVIDIA robotics simulation ecosystem: Isaac Sim 6, Isaac Lab 3, Newton, Warp, CUDA, and PyTorch.
 
 - Monorepo: `oceanscale/` (Python GPU sim), `website/` (Astro 6 landing page), `benchmarks/` (perf tests), `notebooks/` (Colab notebooks), `tests/`, `docs/`
 - Each sub-package has its own `AGENTS.md` — read it before working in that directory
-- Docs: `POSITIONING.md` (brand law — read first for any messaging work), `DESIGN.md` (visual brand law), `ARCHITECTURE.md` (technical architecture), `STACK.md`, `SURVEY.md`, `REFERENCES.md`, `RISKS.md`, `GLOSSARY.md`, `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`
-- `VERSION` tracks project identity (currently `0.0.x`, post-positioning reset). Sub-packages have their own versions (`oceanscale/pyproject.toml`, `website/package.json`)
+- Docs: `docs/README.md` (documentation map), `docs/getting-started.md` (source install), `docs/verification.md` (customer/new-user verification runbook), `docs/isaac6-isaaclab3-install.md` (Isaac 6 lane), `POSITIONING.md` (brand law), `DESIGN.md` (visual brand law), `ARCHITECTURE.md` (technical architecture), `STACK.md`, `RISKS.md`, `GLOSSARY.md`, `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`
+- `VERSION` tracks project identity (currently `0.1.0-alpha`). Python package metadata is in `pyproject.toml`; website package metadata is in `website/package.json`
 - Agent configs: `.codex/AGENTS.md`, `.gemini/{settings.json,GEMINI.md}`, `.cursor/rules/oceanscale.mdc`, `.windsurfrules`, `.github/copilot-instructions.md` — all inherit from this root `AGENTS.md`
 
 ## Messaging Authority
@@ -24,6 +24,7 @@ cd website && pnpm install && pnpm dev        # dev server at localhost:4321
 cd website && pnpm build                       # production build
 
 # Python package
+uv python pin 3.12
 uv sync --extra dev                              # install all deps (CUDA 12.8)
 uv run pytest tests/ -v                          # run test suite
 uv run python benchmarks/kernel_throughput.py    # GPU benchmarks
@@ -40,6 +41,7 @@ uv run python benchmarks/kernel_throughput.py    # GPU benchmarks
 
 - Website: Astro 6 + Tailwind v4, bilingual (zh/en) via content collections in `src/content/`
 - Python: Newton 1.2.0 + Warp (CUDA 12.8), Python 3.12, `uv` for package management
+- Isaac lane: Isaac Sim 6 / Isaac Lab 3 validation env remains separate from the OceanScale `.venv`; use `docs/isaac6-isaaclab3-install.md`
 - GPU: targets RTX 5090, CUDA 12.8+
 - Deployment: Cloudflare Pages, tag-driven (`v*.*.*` tags trigger production deploy)
 
@@ -72,7 +74,7 @@ uv run python benchmarks/kernel_throughput.py    # GPU benchmarks
 <claude-mem-context>
 # Memory Context
 
-# [46-marine] recent context, 2026-05-25 5:07pm EDT
+# [46-marine] recent context, 2026-05-26 1:22pm EDT
 
 No previous sessions found.
 </claude-mem-context>

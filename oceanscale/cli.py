@@ -85,8 +85,8 @@ def _demo_bluerov2_hover(args: argparse.Namespace) -> None:
             fps=30,
             view="side",
             cinematic=cinematic,
-            title_card="OceanScale v0.1 — BlueROV2 hover with PPO (skrl)" if cinematic else None,
-            end_card="10.5x faster than PyBullet at n=64\npip install oceanscale"
+            title_card="OceanScale v0.1 — BlueROV2 hover policy smoke" if cinematic else None,
+            end_card="Source install: uv sync --extra dev\nuv run oceanscale demo bluerov2-hover"
             if cinematic
             else None,
         )

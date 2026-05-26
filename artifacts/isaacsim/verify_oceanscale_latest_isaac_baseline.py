@@ -8,13 +8,13 @@ import subprocess
 import sys
 import time
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
-ISAAC_ROOT = Path("/mnt/storage/isaacsim-6.0-official")
+DEFAULT_ISAAC_ROOT = Path(os.environ.get("ISAAC_ROOT", "/mnt/storage/isaacsim-6.0-official"))
+ISAAC_ROOT = DEFAULT_ISAAC_ROOT
 ISAAC_VENV_PYTHON = ISAAC_ROOT / "venv/bin/python"
 DEFAULT_LOG_ROOT = ISAAC_ROOT / "logs"
 
@@ -89,6 +89,45 @@ ISAAC_TEST_COMMAND = [
     "tests/test_isaaclab_training.py",
     "-q",
 ]
+
+
+def configure_paths(isaac_root: Path) -> None:
+    global ISAAC_ROOT, ISAAC_VENV_PYTHON, DEFAULT_LOG_ROOT
+    global SOURCE_BASELINE, ISAAC_TEST_COMMAND
+
+    ISAAC_ROOT = isaac_root.expanduser().resolve()
+    ISAAC_VENV_PYTHON = ISAAC_ROOT / "venv/bin/python"
+    DEFAULT_LOG_ROOT = ISAAC_ROOT / "logs"
+    SOURCE_BASELINE = {
+        "isaacsim_develop": {
+            "path": ISAAC_ROOT / "sources/IsaacSim-develop",
+            "head": "f8c8f900ff0ae2bf8bf8e2dd922cea9ff70a99bc",
+        },
+        "isaaclab_develop": {
+            "path": ISAAC_ROOT / "sources/IsaacLab-develop",
+            "head": "f39f5b231b84daab09c1a1ecb1b7efa4bd56340f",
+        },
+        "isaaclab_release_3_0_0_beta2": {
+            "path": ISAAC_ROOT / "sources/IsaacLab-release-3.0.0-beta2",
+            "head": "9fe080c1a1c73e8f8a7a8f971f98517876a99861",
+        },
+        "isaaclab_main": {
+            "path": ISAAC_ROOT / "sources/IsaacLab-main-2026-05-25",
+            "head": "54a65ea830c6002e17dc18c77831fa60e43937bc",
+        },
+        "newton_v1_2_0": {
+            "path": ISAAC_ROOT / "sources/newton-v1.2.0",
+            "head": "a886e3fb411137d8a6ff370a1f3da427eccefbed",
+        },
+    }
+    ISAAC_TEST_COMMAND = [
+        str(ISAAC_VENV_PYTHON),
+        "-m",
+        "pytest",
+        "tests/test_isaaclab_task.py",
+        "tests/test_isaaclab_training.py",
+        "-q",
+    ]
 
 
 @dataclass
@@ -604,8 +643,9 @@ def build_report(output_dir: Path, skip_tests: bool) -> tuple[dict[str, Any], bo
         )
 
     report = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "repo_root": str(REPO_ROOT),
+        "isaac_root": str(ISAAC_ROOT),
         "output_dir": str(output_dir),
         "scope": "OceanScale latest Isaac ecosystem baseline, not full official demo sweep",
         "sources": sources,
@@ -632,6 +672,15 @@ def parse_args() -> argparse.Namespace:
         )
     )
     parser.add_argument(
+        "--isaac-root",
+        type=Path,
+        default=DEFAULT_ISAAC_ROOT,
+        help=(
+            "Isaac root containing venv/, logs/, and sources/. Defaults to $ISAAC_ROOT "
+            "or /mnt/storage/isaacsim-6.0-official."
+        ),
+    )
+    parser.add_argument(
         "--output-dir",
         type=Path,
         default=None,
@@ -647,6 +696,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    configure_paths(args.isaac_root)
     if args.output_dir is None:
         timestamp = datetime.now().strftime("%Y-%m-%d-%H%M%S")
         output_dir = DEFAULT_LOG_ROOT / f"oceanscale-latest-isaac-baseline-{timestamp}"

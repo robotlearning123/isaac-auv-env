@@ -1,10 +1,12 @@
 # Changelog
 
-OceanScale releases. Tag a version (`git tag v0.0.3`) to trigger production deploy.
+OceanScale releases. Tag only after `VERSION`, `pyproject.toml`, website package metadata, and release notes agree.
 
 ## [Unreleased]
 
 ### Added
+- **Customer verification runbook** (`docs/verification.md`) — source install, CLI smoke, demo, focused tests, full suite, Isaac baseline verifier, and evidence files.
+- **Isaac Sim 6 / Isaac Lab 3 install guide** (`docs/isaac6-isaaclab3-install.md`) — separate Isaac validation venv, source checkouts, official references, and no-overwrite policy.
 - **OceanSim unified orchestrator** (`oceanscale/sim.py`) — single `step()` composes Newton physics + Fossen hydro + ocean state + sensors. Replaces three parallel env paths.
 - **Isaac Lab 3 native DirectRLEnv** (`training/isaaclab_task.py`) — wrench composer, JIT reward (`torch.jit.script`), scene setup via InteractiveScene. GPU-batched, zero for-loop.
 - **Standalone Isaac Lab env** (`training/isaaclab_env.py`) — runs without Isaac Sim dependency.
@@ -16,7 +18,9 @@ OceanScale releases. Tag a version (`git tag v0.0.3`) to trigger production depl
 - **GPU benchmark suite** (`benchmarks/suite.py`) — kernel throughput benchmarking framework.
 
 ### Changed
-- Tests: 922 → 1066 (+144), 0 regressions.
+- Version identity aligned to `0.1.0-alpha` for the current source-installable alpha line.
+- Public PyPI claims removed from current user docs until publish is verified end-to-end.
+- Test coverage expanded across OceanSim, Isaac Lab integration, sensors, controllers, and vehicle assets; use `docs/verification.md` for current verification commands.
 - `sensors/multibeam.py` and `hydro/mujoco_drag.py` updated for OceanSim integration.
 - RL envs migrated to use OceanSim orchestrator as backend.
 - Isaac Lab training uses official DirectRLEnv 3 pattern with wrench composer.

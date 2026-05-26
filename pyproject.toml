@@ -56,7 +56,7 @@ dev = [
 ]
 rl = [
     # legacy alias — RL deps moved to base in v0.1 so demo works after default install
-    # kept for back-compat with users who do `pip install oceanscale[rl]`
+    # kept for back-compat with the legacy [rl] extra name
     "gymnasium>=0.29",
     "stable-baselines3>=2.5",
     "imageio>=2.34",
