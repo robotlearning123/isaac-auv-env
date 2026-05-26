@@ -46,8 +46,27 @@ refactor(scope): short summary
 
 - Run tests after every code change. Fix failures before committing.
 - Bug fix: failing test first, then fix.
-- Python: `uv run pytest tests/ -v`  (922+ tests, ~37s on RTX 5090)
+- Python: `uv run pytest tests/ -v`  (1066+ tests)
 - Website: `cd website && pnpm build` (build-time check)
+
+## Project structure
+
+```
+oceanscale/
+  sim.py              # OceanSim unified orchestrator
+  fluid/              # Multi-fidelity fluid (Grid, SPH, MPM, Volume)
+  hydro/              # Fossen 6-DOF + MuJoCo drag + distributed drag
+  sensors/            # DVL, sonar, camera, multibeam, IMU, pressure
+  envs/               # Task envs: docking, station-keeping, waypoint
+  training/           # Isaac Lab DirectRLEnv, domain rand, PPO
+  vehicles/           # 10 underwater robots
+  controllers/        # PID, Lee geometric, sliding mode
+  rendering/          # UW rendering (Jerlov) + video export
+  propulsion/         # T200 thruster, buoyancy engine, flapping fin
+  benchmarks/         # GPU kernel throughput suite
+website/              # Astro 6 + Tailwind v4 landing page
+tests/                # 1066+ tests
+```
 
 ## Pull request checklist
 

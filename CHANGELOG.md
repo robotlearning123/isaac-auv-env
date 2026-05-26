@@ -1,6 +1,25 @@
 # Changelog
 
-OceanScale website releases. Tag a version (`git tag v0.0.2`) to trigger production deploy.
+OceanScale releases. Tag a version (`git tag v0.0.3`) to trigger production deploy.
+
+## [Unreleased]
+
+### Added
+- **OceanSim unified orchestrator** (`oceanscale/sim.py`) — single `step()` composes Newton physics + Fossen hydro + ocean state + sensors. Replaces three parallel env paths.
+- **Isaac Lab 3 native DirectRLEnv** (`training/isaaclab_task.py`) — wrench composer, JIT reward (`torch.jit.script`), scene setup via InteractiveScene. GPU-batched, zero for-loop.
+- **Standalone Isaac Lab env** (`training/isaaclab_env.py`) — runs without Isaac Sim dependency.
+- **WCSPH fluid solver** (`fluid/sph.py`) — cubic spline kernel (Monaghan 1992), Warp HashGrid neighbor queries, Tait EOS. Seawater defaults (ρ=1025).
+- **Underwater camera sensor** (`sensors/underwater_camera.py`) — GPU pinhole ray casting + Beer-Lambert attenuation, Jerlov water presets, synthetic RGB + depth output.
+- **Multibeam echo sounder** (`sensors/multibeam.py`) — fan-shaped beam array, bathymetric depth profiles, Kongsberg EM-2040 defaults.
+- **Task environments** (`envs/`) — DockingApproachEnv, CurrentStationKeepingEnv, WaypointFollowingEnv.
+- **Fluid fidelity ladder** (`fluid/`) — 5 levels: None → Grid Eulerian → SPH → MPM → Volume (NanoVDB).
+- **GPU benchmark suite** (`benchmarks/suite.py`) — kernel throughput benchmarking framework.
+
+### Changed
+- Tests: 922 → 1066 (+144), 0 regressions.
+- `sensors/multibeam.py` and `hydro/mujoco_drag.py` updated for OceanSim integration.
+- RL envs migrated to use OceanSim orchestrator as backend.
+- Isaac Lab training uses official DirectRLEnv 3 pattern with wrench composer.
 
 ## [0.0.3] — 2026-05-25
 

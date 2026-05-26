@@ -1,73 +1,84 @@
-# Session Handoff — 2026-05-25 (session 5)
+# Session Handoff — 2026-05-26 (session 6)
 
-## What shipped
+## What shipped since last handoff
 
-PR #54 merged (cleanup/organize WIP). Massive multi-project integration: 8 open-source underwater sim projects merged into OceanScale. Tests: 730 → 922 (+192), 0 regressions.
+Four PRs merged (#55–#59):
 
-## Integration summary
+| PR | Title | Key additions |
+|----|-------|---------------|
+| #55 | MarineGym + OceanSim integration | OceanSim orchestrator, Isaac Lab DirectRLEnv, unified demo |
+| #56 | Isaac Lab 3 official pattern | Wrench composer, JIT reward, scene setup, DirectRLEnv 3 native |
+| #58 | RL envs → OceanSim + camera | Task envs (docking/waypoint/station-keeping), underwater camera sensor |
+| #59 | WCSPH fluid solver | Warp HashGrid + Tait EOS + cubic spline, fluid fidelity ladder |
 
-| Source | License | What was merged |
-|--------|---------|----------------|
-| MarineGym | MIT | BlueROV USD + hydro YAML + T200 thruster (Warp kernel) |
-| OceanSim | Apache-2.0 | ImagingSonar (5 Warp kernels) + UW rendering (10 Jerlov water types) |
-| isaac-auv-env | BSD-3 | MuJoCo drag + domain randomization + WarpAUV USD |
-| bluerov2_gz | MIT | BlueROV2 Heavy high-fidelity Collada mesh (24MB) + seabed terrain |
-| UUV Simulator | Apache-2.0 | RexROV (mesh + hydro + TAM) + 3 environments (shipwreck, Munkholmen, BOP) + PID/NL-PID/sliding mode controllers |
-| DAVE | Apache-2.0 | 4 vehicles (Slocum, Wave Glider, WHOI, eROV) + 9 real DVL configs + Santorini terrain + objects |
-| SMARC | BSD-3 | Pipeline + shipwreck + rock environments |
-| fishsim | MIT | Kutta lift + Magnus lift (Warp kernels, experimentally validated) + TendonFish + CMA-ES sysid |
+Tests: 922 → 1066 (+144), 0 regressions.
 
-## New modules (13)
+## Current codebase state
 
-| Module | Path | Engine |
-|--------|------|--------|
-| T200 thruster | `propulsion/t200.py` | Warp |
-| ImagingSonar | `sensors/imaging_sonar.py` | Warp |
-| DVL configs (9 models) | `sensors/dvl_configs.py` | dataclass |
-| UW rendering | `rendering/underwater.py` | Warp |
-| MuJoCo drag + lift | `hydro/mujoco_drag.py` | Warp |
-| Distributed drag | `hydro/distributed_drag.py` | Warp |
-| Partial submersion | `hydro/submersion.py` | Warp |
-| System identification | `hydro/sysid.py` | dataclass |
-| PID controller | `controllers/pid.py` | numpy |
-| Lee geometric ctrl | `controllers/lee_position.py` | numpy |
-| Domain randomization | `training/domain_rand.py` | numpy |
-| Fish vehicle | `vehicles/fish.py` | dataclass |
-| Vehicle fleet registry | `vehicles/fleet.py` | dataclass |
+### Core architecture
 
-## 10 underwater robots supported
+- **OceanSim** (`sim.py`) — single `step()` orchestrator: Newton physics + Fossen hydro + ocean state + sensors
+- **Fluid ladder** (`fluid/`) — 5 levels: None → Grid → SPH (WCSPH) → MPM → Volume (NanoVDB)
+- **Isaac Lab** (`training/isaaclab_task.py`) — DirectRLEnv 3 native with JIT reward, wrench composer
+- Standalone env (`training/isaaclab_env.py`) — runs without Isaac Sim
 
-BlueROV2 Heavy, BlueROV MarineGym, WarpAUV, RexROV, Slocum Glider, Wave Glider, WHOI Hybrid, eROV, TendonFish. Assets in `oceanscale/assets/`.
+### All modules (oceanscale/)
 
-## 7 environments
+| Module | Files | Engine |
+|--------|-------|--------|
+| sim.py | OceanSim, OceanSimConfig, OceanConfig | Warp + Newton |
+| fluid/ | sph (WCSPH), grid, mpm, volume_solver, wave, wave_fft, surface_extractor, mesh_boundary, adaptive_grid, differentiable, mpm_coupling | Warp |
+| hydro/ | tier1 (Fossen 6-DOF), tier1_kernels, mujoco_drag, distributed_drag, submersion, sysid | Warp |
+| sensors/ | ray_dvl, ray_sonar, imaging_sonar, underwater_camera, multibeam, dvl, dvl_configs, imu, pressure, magnetometer, usbl, acoustic_modem, sidescan_sonar | Warp |
+| envs/ | docking_env, waypoint_env, station_keeping_env | Newton |
+| training/ | isaaclab_task, isaaclab_env, domain_rand, train_isaaclab, skrl_trainer | PyTorch |
+| vehicles/ | bluerov2, commercial, fish, fleet | dataclass |
+| controllers/ | pid, lee_position | numpy |
+| rendering/ | underwater (Jerlov), video | Warp |
+| propulsion/ | t200, propeller, buoyancy_engine, flapping | Warp |
+| benchmarks/ | suite | Warp |
 
-Shipwreck, Munkholmen, BOP panel, Santorini terrain, pipeline, rock, sand heightmap. In `oceanscale/assets/environments/`.
+### Uncommitted changes (working tree)
 
-## Isaac Sim status
+```
+M  AGENTS.md
+M  artifacts/isaacsim/isaacsim6_official_setup_log_2026-05-25.md
+M  artifacts/isaacsim/official_suite_coverage.json
+M  artifacts/isaacsim/official_suite_coverage.md
+M  artifacts/isaacsim/run_isaacsim_standalone_smokes.py
+M  oceanscale/fluid/sph.py
+M  oceanscale/hydro/mujoco_drag.py
+M  oceanscale/sensors/multibeam.py
+M  oceanscale/sim.py
+M  oceanscale/training/isaaclab_task.py
+?? artifacts/isaacsim/oceanscale_isaac6_final_summary_2026-05-26.md
+?? artifacts/isaacsim/oceanscale_latest_isaac_baseline_2026-05-25.md
+?? artifacts/isaacsim/verify_oceanscale_latest_isaac_baseline.py
+?? oceanscale/benchmarks/
+?? tests/test_benchmarks.py
+?? tests/test_ocean_sim_domain_rand.py
+?? tmp/
+```
 
-- **5.1**: Camera/SyntheticData segfaults on RTX 5090 + Driver 580. Swapchain capture works (1440×900). MarineGym/OceanSim partially run but blocked by API breaks.
-- **6.0**: Installing at `/mnt/storage/isaacsim-6.0-official/` (downloading 4.2GB Kit runtime via `isaacsim[all,extscache]`). Not finished.
+### Isaac Sim status
+
+- **6.0**: Installed at `/mnt/storage/isaacsim-6.0-official/`. Kit runtime 4.2GB downloaded. Standheadless smoke tests partially passing. Camera/SyntheticData segfaults on RTX 5090 + Driver 580 remain.
+- **5.1**: Swapchain capture works (1440×900). MarineGym/OceanSim partially run but blocked by API breaks.
 - **4.5 pip**: Stub, no Kit runtime.
-
-## Demo videos produced
-
-- Warp 3D + OceanSim physics water FX: 240 frames, 8s, 1920×1080
-- Isaac Sim RTX + MarineGym BlueROV mesh: 120 frames, 4s, 1440×900
-- Isaac Sim RTX raw (no postfx): 120 frames, comparison
 
 ## Key decisions this session
 
-1. OceanScale = THE unified underwater robot simulator (absorb all open-source projects)
-2. All merged code has provenance headers (URL + license + paper + modifications)
-3. Isaac Sim 6.0 is the target rendering platform (Newton schema, RT2)
-4. Development-phase: license compliance deferred to pre-release audit
-5. FARMS swim-to-walk physics implemented independently (partial submersion + distributed drag)
+1. OceanSim = single orchestrator replacing three parallel env paths
+2. Isaac Lab 3 official DirectRLEnv pattern adopted (wrench composer + JIT reward)
+3. Fluid fidelity ladder: 5 levels, WCSPH at level 2
+4. Task envs (docking/waypoint/station-keeping) migrated to OceanSim backend
+5. Underwater camera: pinhole ray casting + Beer-Lambert (no Isaac Sim dep)
 
 ## Next priorities
 
-1. **Isaac Sim 6.0**: Complete installation → test headless Camera → if works, build rendering pipeline
-2. **Commit + PR**: All integration work is uncommitted on main — create branch, atomic commits, PR
-3. **Hover task port**: Port MarineGym Hover reward/obs to OceanScale Newton env (P0c deferred)
-4. **FARMS CPG**: Integrate amphibious locomotion controllers (v0.2)
-5. **Demo video**: Re-render with Isaac Sim 6.0 RT2 once available
-6. **MSS validation**: Extract Fossen reference trajectories from cybergalactic/MSS for hydro kernel numerical verification
+1. **Commit uncommitted changes** — several modified files (sph.py, sim.py, isaaclab_task.py, etc.) need branching + atomic commits + PR
+2. **Isaac Sim 6.0 rendering** — resolve Camera segfault on RTX 5090; if works, build RT2 rendering pipeline
+3. **Hover task port to OceanSim** — migrate PPO hover reward/obs to use OceanSim orchestrator
+4. **Benchmarks** — commit and run the new benchmark suite (`oceanscale/benchmarks/`)
+5. **FARMS CPG** — amphibious locomotion controllers (v0.2)
+6. **Website update** — update demo section to reflect OceanSim + fluid ladder
