@@ -250,7 +250,7 @@ Reviewed regularly. Anything in RED needs immediate attention; YELLOW watch; GRE
 
 ---
 
-## 6. Decision triggers
+## 7. Decision triggers
 
 | Risk | Triggers a major architecture re-think if... |
 |---|---|
