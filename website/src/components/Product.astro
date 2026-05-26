@@ -5,47 +5,45 @@ const isZh = lang === 'zh';
 
 const copy = isZh
   ? {
-      label: 'System',
+      label: 'Solution',
       titleLines: ['Virtual Ocean'],
-      body: 'OceanScale 把虚拟海洋、机器人策略、并行训练和可复现基准放进同一个工作流，让团队先在仿真中训练，再带着证据进入海洋。',
-      pillars: [
+      body: 'OceanScale 用一个可控的虚拟海洋替代反复下海试错，让水下机器人先在海流、地形、低能见度和任务失败中完成大规模训练。',
+      briefTitle: '先训练 再下海',
+      briefBody: '这不是把旧模块堆在一起，而是为水下机器人建立一个可重复、可加速、可回放的训练场。',
+      rows: [
         {
-          label: 'Solution',
-          title: '先在虚拟海洋中训练',
-          body: '海流、地形、传感器、执行器和任务约束在 GPU 原生仿真环境中运行。',
+          title: '海况变化',
+          body: '海流、能见度、地形和传感器噪声持续变化，让策略先经历真实海试前的复杂性。',
         },
         {
-          label: 'Product',
-          title: '连接海洋物理与机器人策略',
-          body: '水动力、推进器、传感器闭环、任务 API 和并行 rollout 组成训练基础设施。',
+          title: '机器人群训练',
+          body: '多种水下机器人同时 rollout，快速暴露失败边界，而不是等待下一次船期。',
         },
         {
-          label: 'Benchmarks',
-          title: '把训练结果变成可复现证据',
-          body: '策略在任务、扰动、失败边界和报告里重复验证，形成可比较的工程证据。',
+          title: '部署前回放',
+          body: '每次策略更新都留下任务轨迹、失败片段和验证结果，方便团队判断是否值得下海。',
         },
       ],
       panelLabel: 'OceanScale 训练系统面板',
     }
   : {
-      label: 'System',
+      label: 'Solution',
       titleLines: ['Virtual Ocean'],
-      body: 'OceanScale puts the virtual ocean, robot policies, parallel training, and repeatable benchmarks into one workflow, so teams train in simulation before entering the ocean with evidence.',
-      pillars: [
+      body: 'OceanScale replaces repeated offshore trial-and-error with a controllable virtual ocean where underwater robots train through currents, terrain, low visibility, and mission failure at scale.',
+      briefTitle: 'Train before sea trials',
+      briefBody: 'This is not the old sections stacked together. It is a repeatable, accelerated, replayable training ocean for underwater robots.',
+      rows: [
         {
-          label: 'Solution',
-          title: 'Train first in a virtual ocean',
-          body: 'Currents, terrain, sensors, actuators, and task constraints run inside one GPU-native simulator.',
+          title: 'Ocean variation',
+          body: 'Currents, visibility, terrain, and sensor noise keep changing so policies meet complexity before the field.',
         },
         {
-          label: 'Product',
-          title: 'Connect ocean physics to robot policy',
-          body: 'Hydrodynamics, thrusters, sensor loops, task APIs, and parallel rollouts form one training infrastructure.',
+          title: 'Fleet training',
+          body: 'Multiple underwater robot forms roll out at the same time, exposing failure boundaries without waiting for another vessel window.',
         },
         {
-          label: 'Benchmarks',
-          title: 'Turn training into repeatable evidence',
-          body: 'Policies can be re-tested across tasks, disturbances, failure boundaries, and reports for comparable engineering proof.',
+          title: 'Pre-deployment replay',
+          body: 'Every policy update leaves mission traces, failure clips, and validation results so teams know when a sea trial is worth it.',
         },
       ],
       panelLabel: 'OceanScale training system panel',
@@ -85,18 +83,17 @@ const panelRows = [
     </div>
 
     <div class="system-session__grid">
-      <div class="system-session__pillars">
-        {copy.pillars.map((pillar, index) => (
-          <article
-            id={pillar.label === 'Product' ? 'product' : pillar.label === 'Benchmarks' ? 'benchmarks' : undefined}
-            class="system-pillar reveal"
-            data-delay={String(index + 1)}
-          >
-            <span>{pillar.label}</span>
-            <h3>{pillar.title}</h3>
-            <p>{pillar.body}</p>
-          </article>
+      <div class="solution-brief reveal" data-delay="1">
+        <h3>{copy.briefTitle}</h3>
+        <p>{copy.briefBody}</p>
+        <div class="solution-brief__rows">
+          {copy.rows.map((row) => (
+            <article>
+              <h4>{row.title}</h4>
+              <p>{row.body}</p>
+            </article>
         ))}
+        </div>
       </div>
 
       <figure class="system-session__panel reveal" data-delay="2">
@@ -207,46 +204,63 @@ const panelRows = [
     margin-top: clamp(1.45rem, 3vw, 2.25rem);
   }
 
-  .system-session__pillars {
+  .solution-brief {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1px;
-    align-content: start;
     border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.12);
-  }
-
-  .system-pillar {
-    min-height: 118px;
-    padding: clamp(0.85rem, 1.55vw, 1.08rem);
+    padding: clamp(1.05rem, 1.8vw, 1.4rem);
     background: rgba(3, 7, 12, 0.72);
     backdrop-filter: blur(14px);
-    scroll-margin-top: 96px;
   }
 
-  .system-pillar span {
-    display: block;
+  .solution-brief h3 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(1.25rem, 2.1vw, 1.72rem);
+    font-weight: 850;
+    line-height: 1.12;
+  }
+
+  .solution-brief > p {
+    margin: 0.72rem 0 0;
+    color: rgba(232, 237, 243, 0.68);
+    font-size: 0.96rem;
+    line-height: 1.62;
+  }
+
+  .solution-brief__rows {
+    display: grid;
+    margin-top: 1.15rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .solution-brief__rows article {
+    padding: 0.82rem 0 0.86rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .solution-brief__rows article:last-child {
+    border-bottom: 0;
+  }
+
+  .solution-brief__rows h4 {
+    margin: 0;
     color: rgba(45, 212, 191, 0.94);
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.16em;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
   }
 
-  .system-pillar h3 {
-    margin: 0.52rem 0 0;
-    color: #fff;
-    font-size: 1.02rem;
-    font-weight: 850;
-    line-height: 1.22;
+  html[lang="zh"] .solution-brief__rows h4 {
+    letter-spacing: 0.12em;
   }
 
-  .system-pillar p {
-    margin: 0.42rem 0 0;
-    color: rgba(232, 237, 243, 0.68);
+  .solution-brief__rows p {
+    margin: 0.38rem 0 0;
+    color: rgba(232, 237, 243, 0.7);
     font-size: 0.88rem;
-    line-height: 1.5;
+    line-height: 1.52;
   }
 
   .system-session__panel {
@@ -383,10 +397,6 @@ const panelRows = [
       margin: 0;
       font-size: 0.98rem;
       line-height: 1.58;
-    }
-
-    .system-pillar {
-      min-height: auto;
     }
 
     .training-panel {
