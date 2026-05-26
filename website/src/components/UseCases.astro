@@ -4,6 +4,7 @@ const lang = getLangFromUrl(Astro.url);
 const isZh = lang === 'zh';
 
 const heading = isZh ? '任务场景' : 'Mission Domains';
+const kicker = isZh ? '应用' : 'Mission Domains';
 
 const cases = isZh ? [
   { icon: '⎔', title: '自主对接', body: '在洋流、低能见度和定位误差下训练对接策略。' },
@@ -17,7 +18,7 @@ const cases = isZh ? [
 ---
 <section id="usecases" class="relative py-24 lg:py-32" style="background: var(--color-surface); border-top: 1px solid var(--color-border);">
   <div class="os-container relative z-10">
-    <p class="uc-kicker">MISSION DOMAINS</p>
+    <p class="uc-kicker">{kicker}</p>
     <h2 class="os-h2 uc-heading">{heading}</h2>
 
     <div class="uc-grid">

@@ -3,8 +3,8 @@ export const defaultLang = 'en';
 
 export const ui = {
   zh: {
-    'nav.vision': 'Challenge',
-    'nav.virtualOcean': 'Virtual Ocean',
+    'nav.vision': '挑战',
+    'nav.virtualOcean': '虚拟海洋',
     'nav.usecases': '应用',
     'nav.roadmap': '路线图',
     'nav.contact': '联系',

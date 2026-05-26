@@ -7,12 +7,13 @@ const heading = isZh ? '在虚拟海洋中构建' : 'Build in the Virtual Ocean'
 const body = isZh
   ? '如果你正在研发水下机器人、自主任务策略或部署验证流程，可以把机器人形态、任务场景和验证目标发给我们。'
   : 'If you are building underwater robots, autonomy policies, or deployment validation workflows, send us the robot form factor, mission scenario, and validation target.';
+const label = isZh ? '联系' : 'Contact';
 const emailLabel = isZh ? '联系 OceanScale' : 'Contact OceanScale';
 ---
 <section id="contact" class="contact-section">
   <div class="contact-section__bg"></div>
   <div class="os-container contact-section__inner reveal">
-    <p class="section-label">Contact</p>
+    <p class="section-label">{label}</p>
     <h2>{heading}</h2>
     <p>{body}</p>
     <a href="mailto:business@oceanscale.cn" class="contact-link">{emailLabel}</a>

@@ -5,14 +5,22 @@ const isZh = lang === 'zh';
 
 const copy = isZh
   ? {
-      label: 'Solution',
-      titleLines: ['Virtual Ocean'],
+      label: '解决方案',
+      titleLines: ['虚拟海洋'],
       body: '一个可控、并行、可回放的海洋仿真环境，让水下机器人在部署前经历任务、失败与恢复。',
       briefTitle: '训练闭环',
       briefBody: '把最昂贵的海试前迭代放进仿真：大规模训练、失败重放、部署前验证。',
+      runtimeLabel: 'OceanScale 运行时',
+      envCount: '4096 环境',
+      productLabel: '虚拟海洋',
       coreStages: ['任务', '失败', '恢复'],
       coreLine: '在真实海试前，先跑完可回放的虚拟任务。',
       panelLabel: 'OceanScale 训练系统面板',
+      panelRows: [
+        ['并行仿真', '运行中'],
+        ['失败回放', '实时'],
+        ['部署门控', '就绪'],
+      ],
     }
   : {
       label: 'Solution',
@@ -20,16 +28,18 @@ const copy = isZh
       body: 'A controllable, parallel, replayable ocean simulator where underwater robots experience missions, failures, and recovery before deployment.',
       briefTitle: 'Training loop',
       briefBody: 'Move the most expensive pre-sea-trial iteration into simulation: large-scale training, failure replay, and deployment validation.',
+      runtimeLabel: 'OceanScale Runtime',
+      envCount: '4096 envs',
+      productLabel: 'Virtual Ocean',
       coreStages: ['Mission', 'Failure', 'Recovery'],
       coreLine: 'Before sea trials, run the mission in a replayable virtual ocean.',
       panelLabel: 'OceanScale training system panel',
+      panelRows: [
+        ['parallel rollouts', 'active'],
+        ['failure replay', 'live'],
+        ['deployment gate', 'ready'],
+      ],
     };
-
-const panelRows = [
-  ['parallel rollouts', 'active'],
-  ['failure replay', 'live'],
-  ['deployment gate', 'ready'],
-];
 ---
 
 <section id="solution" class="system-session">
@@ -66,8 +76,8 @@ const panelRows = [
       <figure class="system-session__panel reveal" data-delay="2">
         <div class="training-panel" aria-label={copy.panelLabel}>
           <div class="training-panel__top">
-            <span>OceanScale Runtime</span>
-            <strong>4096 envs</strong>
+            <span>{copy.runtimeLabel}</span>
+            <strong>{copy.envCount}</strong>
           </div>
           <div class="training-panel__core">
             <div class="training-panel__loop" aria-hidden="true">
@@ -77,7 +87,7 @@ const panelRows = [
               <span class="training-panel__vehicle"></span>
             </div>
             <div class="training-panel__core-copy">
-              <span>Virtual Ocean</span>
+              <span>{copy.productLabel}</span>
               <div class="training-panel__stages">
                 {copy.coreStages.map((stage) => (
                   <strong>{stage}</strong>
@@ -87,7 +97,7 @@ const panelRows = [
             </div>
           </div>
           <div class="training-panel__rows">
-            {panelRows.map(([label, value]) => (
+            {copy.panelRows.map(([label, value]) => (
               <div>
                 <span>{label}</span>
                 <strong>{value}</strong>
