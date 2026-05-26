@@ -116,12 +116,12 @@ class MultibeamSonar:
 
     def _rotate_rays(self, quat: np.ndarray) -> np.ndarray:
         qx, qy, qz, qw = quat
-        dirs = np.empty_like(self._body_dirs)
-        for i, d in enumerate(self._body_dirs):
-            tx = 2.0 * (qy * d[2] - qz * d[1])
-            ty = 2.0 * (qz * d[0] - qx * d[2])
-            tz = 2.0 * (qx * d[1] - qy * d[0])
-            dirs[i, 0] = d[0] + qw * tx + qy * tz - qz * ty
-            dirs[i, 1] = d[1] + qw * ty + qz * tx - qx * tz
-            dirs[i, 2] = d[2] + qw * tz + qx * ty - qy * tx
-        return dirs
+        d = self._body_dirs
+        tx = 2.0 * (qy * d[:, 2] - qz * d[:, 1])
+        ty = 2.0 * (qz * d[:, 0] - qx * d[:, 2])
+        tz = 2.0 * (qx * d[:, 1] - qy * d[:, 0])
+        out = np.empty_like(d)
+        out[:, 0] = d[:, 0] + qw * tx + qy * tz - qz * ty
+        out[:, 1] = d[:, 1] + qw * ty + qz * tx - qx * tz
+        out[:, 2] = d[:, 2] + qw * tz + qx * ty - qy * tx
+        return out

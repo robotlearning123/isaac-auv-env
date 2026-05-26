@@ -30,6 +30,12 @@ import numpy as np
 import warp as wp
 
 
+@wp.kernel
+def _accumulate_vec3(a: wp.array(dtype=wp.vec3), b: wp.array(dtype=wp.vec3)):
+    i = wp.tid()
+    a[i] = a[i] + b[i]
+
+
 @wp.func
 def _inferred_half_dim(inertia: wp.vec3, mass: wp.float32) -> wp.vec3:
     """Compute equivalent box half-dimensions from diagonal inertia and mass.
@@ -390,8 +396,7 @@ class MuJoCoDrag:
                         rho, wp.float32(self.params.kutta_lift), f_kutta],
                 device=self.device,
             )
-            f_total_np = f_total.numpy() + f_kutta.numpy()
-            f_total = wp.array(f_total_np, dtype=wp.vec3, device=self.device)
+            wp.launch(_accumulate_vec3, dim=self.n_envs, inputs=[f_total, f_kutta], device=self.device)
 
         # Magnus lift
         if self.params.magnus_lift > 0.0:
@@ -403,8 +408,7 @@ class MuJoCoDrag:
                         rho, wp.float32(self.params.magnus_lift), f_magnus],
                 device=self.device,
             )
-            f_total_np = f_total.numpy() + f_magnus.numpy()
-            f_total = wp.array(f_total_np, dtype=wp.vec3, device=self.device)
+            wp.launch(_accumulate_vec3, dim=self.n_envs, inputs=[f_total, f_magnus], device=self.device)
 
         # Added mass (acceleration-dependent)
         if self.params.enable_added_mass:
@@ -417,10 +421,8 @@ class MuJoCoDrag:
                         self._mass, rho, wp.float32(self.dt), f_am, t_am],
                 device=self.device,
             )
-            f_total_np = f_total.numpy() + f_am.numpy()
-            t_total_np = t_total.numpy() + t_am.numpy()
-            f_total = wp.array(f_total_np, dtype=wp.vec3, device=self.device)
-            t_total = wp.array(t_total_np, dtype=wp.vec3, device=self.device)
+            wp.launch(_accumulate_vec3, dim=self.n_envs, inputs=[f_total, f_am], device=self.device)
+            wp.launch(_accumulate_vec3, dim=self.n_envs, inputs=[t_total, t_am], device=self.device)
 
         # Store velocity for next-step acceleration estimate
         wp.copy(self._vel_prev, vel_body)
