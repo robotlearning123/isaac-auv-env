@@ -3,41 +3,104 @@ import { getLangFromUrl } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const isZh = lang === 'zh';
 
-const headingLines = isZh
-  ? ['一套训练系统，', '连接海洋物理', '与机器人策略。']
-  : ['One system for', 'ocean physics', 'and robot policy.'];
+const copy = isZh
+  ? {
+      label: 'System',
+      titleLines: ['Virtual Ocean'],
+      body: 'OceanScale 把虚拟海洋、机器人策略、并行训练和可复现基准放进同一个工作流，让团队先在仿真中训练，再带着证据进入海洋。',
+      pillars: [
+        {
+          label: 'Solution',
+          title: '先在虚拟海洋中训练',
+          body: '海流、地形、传感器、执行器和任务约束在 GPU 原生仿真环境中运行。',
+        },
+        {
+          label: 'Product',
+          title: '连接海洋物理与机器人策略',
+          body: '水动力、推进器、传感器闭环、任务 API 和并行 rollout 组成训练基础设施。',
+        },
+        {
+          label: 'Benchmarks',
+          title: '把训练结果变成可复现证据',
+          body: '策略在任务、扰动、失败边界和报告里重复验证，形成可比较的工程证据。',
+        },
+      ],
+      panelLabel: 'OceanScale 训练系统面板',
+    }
+  : {
+      label: 'System',
+      titleLines: ['Virtual Ocean'],
+      body: 'OceanScale puts the virtual ocean, robot policies, parallel training, and repeatable benchmarks into one workflow, so teams train in simulation before entering the ocean with evidence.',
+      pillars: [
+        {
+          label: 'Solution',
+          title: 'Train first in a virtual ocean',
+          body: 'Currents, terrain, sensors, actuators, and task constraints run inside one GPU-native simulator.',
+        },
+        {
+          label: 'Product',
+          title: 'Connect ocean physics to robot policy',
+          body: 'Hydrodynamics, thrusters, sensor loops, task APIs, and parallel rollouts form one training infrastructure.',
+        },
+        {
+          label: 'Benchmarks',
+          title: 'Turn training into repeatable evidence',
+          body: 'Policies can be re-tested across tasks, disturbances, failure boundaries, and reports for comparable engineering proof.',
+        },
+      ],
+      panelLabel: 'OceanScale training system panel',
+    };
 
-const body = isZh
-  ? '不是单个演示场景，而是面向水下机器人研发的仿真基础设施：物理、传感器、任务、并行 rollout 和验证基准在同一套系统中运行。'
-  : 'Not a one-off demo scene, but simulation infrastructure for underwater robotics: physics, sensors, tasks, parallel rollouts, and validation benchmarks running in one system.';
-
-const cards = isZh ? [
-  { title: 'GPU 原生仿真', body: '水动力、浮力、接触、推进器和执行器统一在并行环境中求解。' },
-  { title: '传感器闭环', body: '相机、声纳、DVL、IMU 和压力传感器可用于策略训练与验证。' },
-  { title: '训练吞吐', body: '用数千个场景同时生成经验，而不是等待下一次海试窗口。' },
-  { title: '标准接口', body: '面向 Gymnasium 和常见 RL 工作流，方便研究与工程团队接入。' },
-] : [
-  { title: 'GPU-native simulation', body: 'Hydrodynamics, buoyancy, contact, thrusters, and actuators solved across parallel environments.' },
-  { title: 'Sensor-in-the-loop', body: 'Camera, sonar, DVL, IMU, and pressure signals for policy training and validation.' },
-  { title: 'Training throughput', body: 'Generate experience from thousands of scenarios instead of waiting for the next sea-trial window.' },
-  { title: 'Standard interfaces', body: 'Designed around Gymnasium and common RL workflows for research and engineering teams.' },
+const panelRows = [
+  ['hydrodynamics', 'stable'],
+  ['sonar + camera', 'streaming'],
+  ['reward shaping', 'active'],
+  ['failure replay', 'recording'],
 ];
 ---
-<section id="product" class="product-system">
-  <div class="os-container product-system__inner">
-    <div class="product-system__copy reveal">
-      <div class="product-system__title">
-        <p class="section-label">Product</p>
+
+<section id="solution" class="system-session">
+  <video
+    class="system-session__media"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+    poster="/images/oceanscale-bg-solution-virtual-ocean.png"
+  >
+    <source src="/videos/oceanscale-solution-training-motion.mp4" type="video/mp4" />
+  </video>
+  <div class="system-session__shade"></div>
+
+  <div class="os-container system-session__inner">
+    <div class="system-session__head reveal">
+      <div>
+        <p class="section-label">{copy.label}</p>
         <h2>
-          {headingLines.map((line) => <span>{line}</span>)}
+          {copy.titleLines.map((line) => <span>{line}</span>)}
         </h2>
       </div>
-      <p>{body}</p>
+      <p>{copy.body}</p>
     </div>
 
-    <div class="product-system__grid">
-      <figure class="product-system__media reveal" data-delay="1">
-        <div class="training-panel" aria-label={isZh ? 'OceanScale 训练系统面板' : 'OceanScale training system panel'}>
+    <div class="system-session__grid">
+      <div class="system-session__pillars">
+        {copy.pillars.map((pillar, index) => (
+          <article
+            id={pillar.label === 'Product' ? 'product' : pillar.label === 'Benchmarks' ? 'benchmarks' : undefined}
+            class="system-pillar reveal"
+            data-delay={String(index + 1)}
+          >
+            <span>{pillar.label}</span>
+            <h3>{pillar.title}</h3>
+            <p>{pillar.body}</p>
+          </article>
+        ))}
+      </div>
+
+      <figure class="system-session__panel reveal" data-delay="2">
+        <div class="training-panel" aria-label={copy.panelLabel}>
           <div class="training-panel__top">
             <span>OceanScale Runtime</span>
             <strong>4096 envs</strong>
@@ -48,12 +111,7 @@ const cards = isZh ? [
             ))}
           </div>
           <div class="training-panel__rows">
-            {[
-              ['hydrodynamics', 'stable'],
-              ['sonar + camera', 'streaming'],
-              ['reward shaping', 'active'],
-              ['failure replay', 'recording'],
-            ].map(([label, value]) => (
+            {panelRows.map(([label, value]) => (
               <div>
                 <span>{label}</span>
                 <strong>{value}</strong>
@@ -62,112 +120,147 @@ const cards = isZh ? [
           </div>
         </div>
       </figure>
-
-      <div class="product-system__cards">
-        {cards.map((card, index) => (
-          <article class="product-system__card reveal" data-delay={String(index + 2)}>
-            <span>{String(index + 1).padStart(2, '0')}</span>
-            <h3>{card.title}</h3>
-            <p>{card.body}</p>
-          </article>
-        ))}
-      </div>
     </div>
   </div>
 </section>
 
 <style is:global>
-  .product-system {
+  .system-session {
     position: relative;
     overflow: hidden;
-    padding: clamp(5rem, 9vw, 8rem) 0;
-    background:
-      radial-gradient(circle at 78% 18%, rgba(45, 212, 191, 0.1), transparent 28rem),
-      linear-gradient(180deg, #060b12 0%, #08111a 52%, #060b12 100%);
+    min-height: 100vh;
+    padding: clamp(4.5rem, 6vw, 5.6rem) 0;
+    display: flex;
+    align-items: center;
+    background: #060b12;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     scroll-margin-top: 84px;
   }
 
-  .product-system::before {
-    content: "";
+  .system-session__media,
+  .system-session__shade {
     position: absolute;
     inset: 0;
-    opacity: 0.18;
-    background-image:
-      linear-gradient(rgba(45, 212, 191, 0.12) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(45, 212, 191, 0.08) 1px, transparent 1px);
-    background-size: 80px 80px;
-    mask-image: radial-gradient(ellipse at 50% 30%, black 0%, transparent 70%);
   }
 
-  .product-system__inner {
+  .system-session__media {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    opacity: 0.78;
+  }
+
+  .system-session__shade {
+    background:
+      linear-gradient(90deg, rgba(3, 7, 12, 0.94) 0%, rgba(3, 7, 12, 0.7) 42%, rgba(3, 7, 12, 0.36) 100%),
+      linear-gradient(0deg, var(--color-bg) 0%, rgba(6, 11, 18, 0) 22%),
+      linear-gradient(180deg, var(--color-bg) 0%, rgba(6, 11, 18, 0) 18%);
+  }
+
+  .system-session__inner {
     position: relative;
     z-index: 1;
   }
 
-  .product-system__copy {
+  .system-session__head {
     display: grid;
-    grid-template-columns: minmax(0, 0.82fr) minmax(320px, 0.78fr);
+    grid-template-columns: minmax(0, 0.86fr) minmax(320px, 0.74fr);
     gap: clamp(1.5rem, 5vw, 5rem);
     align-items: end;
   }
 
-  .product-system__copy h2 {
+  .system-session__head h2 {
     margin: 0;
     color: #fff;
     font-family: var(--font-display);
-    font-size: clamp(2.8rem, 4vw, 4.05rem);
+    font-size: clamp(2.7rem, 3.7vw, 3.95rem);
     font-weight: 900;
-    line-height: 1.01;
+    line-height: 1.02;
     letter-spacing: 0;
     text-wrap: balance;
+    text-shadow: 0 18px 70px rgba(0, 0, 0, 0.48);
   }
 
-  html[lang="zh"] .product-system__copy h2 {
+  html[lang="zh"] .system-session__head h2 {
     font-family: var(--font-display-zh);
     line-height: 1.08;
-    word-break: normal;
-    overflow-wrap: anywhere;
   }
 
-  .product-system__copy h2 span {
+  .system-session__head h2 span {
     display: block;
-    max-width: 100%;
   }
 
-  .product-system__copy > p:last-child {
+  .system-session__head > p {
     margin: 0 0 0.35rem;
-    max-width: 540px;
-    color: rgba(232, 237, 243, 0.76);
-    font-size: 1.08rem;
+    max-width: 560px;
+    color: rgba(232, 237, 243, 0.78);
+    font-size: 1.05rem;
     line-height: 1.66;
   }
 
-  .product-system__grid {
+  .system-session__grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.08fr) minmax(420px, 0.92fr);
-    gap: clamp(1.2rem, 3vw, 2.5rem);
+    grid-template-columns: minmax(360px, 0.86fr) minmax(0, 1.14fr);
+    gap: clamp(1.1rem, 3vw, 2.25rem);
     align-items: start;
-    margin-top: clamp(2.5rem, 5vw, 4.5rem);
+    margin-top: clamp(1.45rem, 3vw, 2.25rem);
   }
 
-  .product-system__media,
-  .product-system__card {
+  .system-session__pillars {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1px;
+    align-content: start;
     border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(6, 11, 18, 0.62);
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .system-pillar {
+    min-height: 118px;
+    padding: clamp(0.85rem, 1.55vw, 1.08rem);
+    background: rgba(3, 7, 12, 0.72);
+    backdrop-filter: blur(14px);
+    scroll-margin-top: 96px;
+  }
+
+  .system-pillar span {
+    display: block;
+    color: rgba(45, 212, 191, 0.94);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .system-pillar h3 {
+    margin: 0.52rem 0 0;
+    color: #fff;
+    font-size: 1.02rem;
+    font-weight: 850;
+    line-height: 1.22;
+  }
+
+  .system-pillar p {
+    margin: 0.42rem 0 0;
+    color: rgba(232, 237, 243, 0.68);
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .system-session__panel {
+    overflow: hidden;
+    margin: 0;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    background: rgba(6, 11, 18, 0.64);
     box-shadow: 0 22px 80px rgba(0, 0, 0, 0.34);
     backdrop-filter: blur(14px);
   }
 
-  .product-system__media {
-    overflow: hidden;
-    margin: 0;
-    min-height: 100%;
-    border-radius: 8px;
-  }
-
   .training-panel {
-    min-height: 460px;
+    min-height: 0;
     display: grid;
     grid-template-rows: auto 1fr auto;
     padding: clamp(1rem, 2vw, 1.4rem);
@@ -200,11 +293,11 @@ const cards = isZh ? [
 
   .training-panel__map {
     display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-template-columns: repeat(14, minmax(0, 1fr));
     gap: 0.55rem;
     align-content: center;
-    min-height: 270px;
-    padding: clamp(1.3rem, 3vw, 2.2rem) 0;
+    min-height: 205px;
+    padding: clamp(0.9rem, 1.6vw, 1.35rem) 0;
   }
 
   .training-panel__map i {
@@ -230,7 +323,7 @@ const cards = isZh ? [
   }
 
   .training-panel__rows div {
-    padding: 0.85rem 1rem;
+    padding: 0.65rem 0.85rem;
     background: rgba(3, 7, 12, 0.66);
   }
 
@@ -251,68 +344,48 @@ const cards = isZh ? [
     100% { opacity: 1; transform: translateY(-2px); }
   }
 
-  .product-system__cards {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
-  }
-
-  .product-system__card {
-    min-height: 188px;
-    padding: clamp(1.1rem, 2vw, 1.45rem);
-    border-radius: 8px;
-  }
-
-  .product-system__card span {
-    display: block;
-    color: rgba(45, 212, 191, 0.94);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-  }
-
-  .product-system__card h3 {
-    margin: 0.7rem 0 0;
-    color: #fff;
-    font-size: 1.08rem;
-    font-weight: 800;
-    line-height: 1.25;
-  }
-
-  .product-system__card p {
-    margin: 0.5rem 0 0;
-    color: rgba(232, 237, 243, 0.68);
-    font-size: 0.92rem;
-    line-height: 1.58;
-  }
-
-  @media (max-width: 900px) {
-    .product-system__copy {
-      grid-template-columns: 1fr;
-      gap: 1.05rem;
+  @media (max-width: 980px) {
+    .system-session {
+      display: block;
+      min-height: auto;
+      padding: clamp(4.5rem, 12vw, 6rem) 0;
     }
 
-    .product-system__copy h2 {
-      font-size: 2.18rem;
+    .system-session__media {
+      height: 44vh;
+      min-height: 260px;
+      object-position: center top;
+      mask-image: linear-gradient(180deg, black 0%, transparent 100%);
+    }
+
+    .system-session__shade {
+      background:
+        linear-gradient(180deg, rgba(3, 7, 12, 0.16) 0%, var(--color-bg) 42%, var(--color-bg) 100%),
+        linear-gradient(0deg, var(--color-bg) 0%, rgba(6, 11, 18, 0) 34%);
+    }
+
+    .system-session__head,
+    .system-session__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .system-session__head {
+      gap: 1.05rem;
+      padding-top: 33vh;
+    }
+
+    .system-session__head h2 {
+      font-size: 2.25rem;
       line-height: 1.08;
     }
 
-    .product-system__copy > p:last-child {
+    .system-session__head > p {
       margin: 0;
       font-size: 0.98rem;
       line-height: 1.58;
     }
 
-    .product-system__grid {
-      grid-template-columns: 1fr;
-    }
-
-    .product-system__cards {
-      grid-template-columns: 1fr;
-    }
-
-    .product-system__card {
+    .system-pillar {
       min-height: auto;
     }
 
@@ -326,13 +399,9 @@ const cards = isZh ? [
     }
 
     .training-panel__map {
+      min-height: 0;
       grid-template-columns: repeat(7, minmax(0, 1fr));
     }
-  }
 
-  @media (min-width: 1440px) {
-    .product-system__copy h2 {
-      font-size: 4.15rem;
-    }
   }
 </style>

@@ -3,7 +3,7 @@ import { getLangFromUrl } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const isZh = lang === 'zh';
 
-const heading = isZh ? '为真实水下任务而建' : 'Built for real underwater missions';
+const heading = isZh ? '真实任务' : 'Real Missions';
 
 const cases = isZh ? [
   { icon: '⎔', title: '自主对接', body: '训练机器人在洋流和低能见度条件下精确对接水下坞站。' },
