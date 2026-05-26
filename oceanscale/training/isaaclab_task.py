@@ -8,14 +8,12 @@ Architecture::
 
     Isaac Lab 3 training loop (PPO / SAC / curriculum)
         └── OceanScaleTask(DirectRLEnv)
-            ├── _setup_scene()     → Newton ROV body via InteractiveScene
-            ├── _apply_action()    → Tier1 Fossen hydro → body_f
-            ├── _get_observations  → body state → {"policy": tensor}
-            ├── _get_rewards       → exp distance reward
-            └── _get_dones         → OOB + truncation
-
-    Newton physics step is managed by Isaac Lab's NewtonManager.
-    OceanScale injects Fossen forces into body_f before each solver step.
+            ├── _setup_scene()         → RigidObject ROV + terrain via InteractiveScene
+            ├── _pre_physics_step()    → Tier1 Fossen hydro → wrench buffers
+            ├── _apply_action()        → wrench composer → body forces
+            ├── _get_observations()    → body state → {"policy": tensor}
+            ├── _get_rewards()         → JIT exp distance reward
+            └── _get_dones()           → OOB + truncation
 """
 
 from __future__ import annotations
@@ -36,10 +34,37 @@ ACT_DIM = 6
 _HAS_ISAACLAB = importlib.util.find_spec("isaaclab") is not None
 
 
+# ---------------------------------------------------------------------------
+# Standalone JIT reward — no self, no Isaac Lab dependency
+# ---------------------------------------------------------------------------
+
+@torch.jit.script
+def _compute_reward_jit(
+    pos_error: torch.Tensor,
+    lin_vel: torch.Tensor,
+    prev_action: torch.Tensor,
+    dist_scale: float,
+    vel_weight: float,
+    act_weight: float,
+) -> torch.Tensor:
+    dist = torch.linalg.norm(pos_error, dim=-1)
+    r_dist = torch.exp(-dist / dist_scale)
+    r_vel = -vel_weight * torch.linalg.norm(lin_vel, dim=-1)
+    r_act = -act_weight * torch.linalg.norm(prev_action, dim=-1)
+    return r_dist + r_vel + r_act
+
+
+# ---------------------------------------------------------------------------
+# Isaac Lab 3 native implementation
+# ---------------------------------------------------------------------------
+
 if _HAS_ISAACLAB:
+    import isaaclab.sim as sim_utils
+    from isaaclab.assets import RigidObject, RigidObjectCfg
     from isaaclab.envs import DirectRLEnv, DirectRLEnvCfg
     from isaaclab.scene import InteractiveSceneCfg
     from isaaclab.sim import SimulationCfg
+    from isaaclab.sim.spawners.from_files import GroundPlaneCfg, spawn_ground_plane
     from isaaclab.utils.configclass import configclass
 
     @configclass
@@ -79,6 +104,18 @@ if _HAS_ISAACLAB:
             replicate_physics=True,
             clone_in_fabric=True,
         )
+
+        robot_cfg: RigidObjectCfg = RigidObjectCfg(
+            prim_path="/World/envs/env_.*/Robot",
+            spawn=sim_utils.CuboidCfg(
+                size=(0.457, 0.338, 0.254),
+                rigid_props=sim_utils.RigidBodyPropertiesCfg(),
+            ),
+            init_state=RigidObjectCfg.InitialStateCfg(
+                pos=(0.0, 0.0, -5.0),
+            ),
+        )
+
         ui_window_class_type: type | str | None = None
 
         def __post_init__(self) -> None:
@@ -89,9 +126,10 @@ if _HAS_ISAACLAB:
     class OceanScaleTask(DirectRLEnv):
         """Isaac Lab 3 native underwater ROV environment.
 
-        Injects Fossen 6-DOF hydrodynamics into Newton's body_f array
-        at each substep via _apply_action(). The physics stepping and
-        scene management are handled by Isaac Lab's NewtonManager.
+        Uses the official wrench composer API to inject Fossen 6-DOF
+        hydrodynamics into the simulation. Tier1 forces are computed in
+        _pre_physics_step and applied via permanent_wrench_composer in
+        _apply_action, matching the Quadcopter pattern.
         """
 
         cfg: OceanScaleTaskCfg
@@ -99,6 +137,7 @@ if _HAS_ISAACLAB:
         def __init__(self, cfg: OceanScaleTaskCfg, render_mode: str | None = None, **kwargs: Any):
             super().__init__(cfg, render_mode=render_mode, **kwargs)
 
+            self._body_ids, _ = self._robot.find_bodies(".*")
             self._vehicle = BlueROV2Heavy()
             self._target = torch.tensor(
                 cfg.target_pos, dtype=torch.float32, device=self.device
@@ -140,10 +179,19 @@ if _HAS_ISAACLAB:
                 self.num_envs, dtype=wp.quatf, device=str(self.device),
             )
             self._zero_wrench_kernel = tier1_zero_wrench
-            self._actions_buf: torch.Tensor | None = None
+            # Pre-allocate force/torque buffers for wrench composer
+            self._thrust = torch.zeros(self.num_envs, 1, 3, device=self.device)
+            self._moment = torch.zeros(self.num_envs, 1, 3, device=self.device)
 
         def _setup_scene(self) -> None:
-            pass
+            self._robot = RigidObject(self.cfg.robot_cfg)
+            spawn_ground_plane(prim_path="/World/ground", cfg=GroundPlaneCfg())
+            self.scene.clone_environments(copy_from_source=False)
+            self.scene.filter_collisions(global_prim_paths=[])
+            self.scene.rigid_objects["robot"] = self._robot
+
+            light_cfg = sim_utils.DomeLightCfg(intensity=2000.0, color=(0.75, 0.75, 0.75))
+            light_cfg.func("/World/Light", light_cfg)
 
         def _pre_physics_step(self, actions: torch.Tensor) -> None:
             actions = actions.clamp(-1.0, 1.0)
@@ -161,20 +209,21 @@ if _HAS_ISAACLAB:
 
             self._u_cmd = wp.from_torch(u_cmd.contiguous(), dtype=wp.float32)
 
-        def _apply_action(self) -> None:
-            body_f = self.sim.physics_sim_view.body_f
-            body_qd = self.sim.physics_sim_view.body_qd
+            # Compute Tier1 hydro forces (drag, buoyancy, added mass, thrust)
+            root_vel_w = self._robot.data.root_vel_w.torch
+            body_qd = wp.from_torch(root_vel_w.contiguous(), dtype=wp.spatial_vectorf)
 
             wp.launch(
                 self._zero_wrench_kernel,
                 dim=self.num_envs,
-                inputs=[body_f],
+                inputs=[self._tier1.wrench_buf],
                 device=str(self.device),
             )
 
-            body_q_t = wp.to_torch(self.sim.physics_sim_view.body_q)
+            body_q_t = self._robot.data.root_quat_w.torch
             quat_dst = wp.to_torch(self._quat_buf)
-            quat_dst.copy_(body_q_t[:, 3:7])
+            quat_dst[:, :3].copy_(body_q_t[:, 1:4])
+            quat_dst[:, 3].copy_(body_q_t[:, 0])
 
             self._tier1.compute_wrench(
                 nu=body_qd,
@@ -182,16 +231,26 @@ if _HAS_ISAACLAB:
                 u_cmd=self._u_cmd,
                 dt=self.cfg.physics_dt,
             )
-            self._tier1.write_to_body_f(body_f)
+
+            # Extract force/torque for wrench composer
+            wrench_t = wp.to_torch(self._tier1.wrench_buf).reshape(self.num_envs, 2, 3)
+            self._thrust.copy_(wrench_t[:, 0:1, :])
+            self._moment.copy_(wrench_t[:, 1:2, :])
+
+        def _apply_action(self) -> None:
+            self._robot.permanent_wrench_composer.set_forces_and_torques_index(
+                forces=self._thrust,
+                torques=self._moment,
+                body_ids=self._body_ids,
+                env_ids=None,
+            )
 
         def _get_observations(self) -> dict[str, torch.Tensor]:
-            body_q = wp.to_torch(self.sim.physics_sim_view.body_q)
-            body_qd = wp.to_torch(self.sim.physics_sim_view.body_qd)
-
-            pos = body_q[:, :3]
-            quat = body_q[:, 3:7]
-            lin_vel = body_qd[:, 3:6]
-            ang_vel = body_qd[:, :3]
+            pos = self._robot.data.root_pos_w.torch - self.scene.env_origins
+            quat = self._robot.data.root_quat_w.torch
+            root_vel = self._robot.data.root_vel_w.torch
+            lin_vel = root_vel[:, :3]
+            ang_vel = root_vel[:, 3:6]
             pos_error = self._target - pos
             depth = pos[:, 2:3]
 
@@ -203,18 +262,17 @@ if _HAS_ISAACLAB:
 
         def _get_rewards(self) -> torch.Tensor:
             obs = self._get_observations()["policy"]
-            pos_error = obs[:, :3]
-            lin_vel = obs[:, 7:10]
-
-            dist = torch.linalg.norm(pos_error, dim=-1)
-            r_dist = torch.exp(-dist / self.cfg.reward_distance_scale)
-            r_vel = -self.cfg.reward_velocity_weight * torch.linalg.norm(lin_vel, dim=-1)
-            r_act = -self.cfg.reward_action_weight * torch.linalg.norm(self._prev_action, dim=-1)
-            return r_dist + r_vel + r_act
+            return _compute_reward_jit(
+                pos_error=obs[:, :3],
+                lin_vel=obs[:, 7:10],
+                prev_action=self._prev_action,
+                dist_scale=self.cfg.reward_distance_scale,
+                vel_weight=self.cfg.reward_velocity_weight,
+                act_weight=self.cfg.reward_action_weight,
+            )
 
         def _get_dones(self) -> tuple[torch.Tensor, torch.Tensor]:
-            body_q = wp.to_torch(self.sim.physics_sim_view.body_q)
-            pos = body_q[:, :3]
+            pos = self._robot.data.root_pos_w.torch - self.scene.env_origins
             dist = torch.linalg.norm(self._target - pos, dim=-1)
             terminated = dist > self.cfg.oob_distance
             truncated = self.episode_length_buf >= self.max_episode_length
@@ -224,13 +282,19 @@ if _HAS_ISAACLAB:
             super()._reset_idx(env_ids)
             self._prev_action[env_ids] = 0.0
 
+            root_pose = self._robot.data.default_root_pose.torch[env_ids].clone()
+            root_vel = self._robot.data.default_root_vel.torch[env_ids].clone()
+            root_pose[:, :3] += self.scene.env_origins[env_ids]
             if self.cfg.init_pos_noise > 0:
                 noise = self.cfg.init_pos_noise
-                body_q = wp.to_torch(self.sim.physics_sim_view.body_q)
-                for i in env_ids.tolist():
-                    body_q[i, 0] += torch.empty(1, device=self.device).uniform_(-noise, noise).item()
-                    body_q[i, 1] += torch.empty(1, device=self.device).uniform_(-noise, noise).item()
-                    body_q[i, 2] += torch.empty(1, device=self.device).uniform_(-noise, noise).item()
+                root_pose[:, :3] += torch.empty(
+                    root_pose[:, :3].shape,
+                    device=self.device,
+                    dtype=root_pose.dtype,
+                ).uniform_(-noise, noise)
+
+            self._robot.write_root_pose_to_sim_index(root_pose=root_pose, env_ids=env_ids)
+            self._robot.write_root_velocity_to_sim_index(root_velocity=root_vel, env_ids=env_ids)
 
 else:
 
@@ -267,7 +331,7 @@ else:
         scene: Any = None
 
     class OceanScaleTask:
-        """Placeholder — Isaac Lab 3 is not installed.
+        """Placeholder -- Isaac Lab 3 is not installed.
 
         Use OceanScaleDirectRLEnv from isaaclab_env.py for standalone
         training without Isaac Lab.
