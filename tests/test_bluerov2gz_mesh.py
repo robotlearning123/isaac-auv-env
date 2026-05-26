@@ -1,6 +1,5 @@
 """Tests for BlueROV2 Heavy high-fidelity meshes from clydemcqueen/bluerov2_gz."""
 
-from pathlib import Path
 
 from oceanscale.vehicles.bluerov2 import (
     bluerov2_heavy_gz_mesh_paths,

@@ -57,10 +57,10 @@ class RayDVL:
     @classmethod
     def from_config(
         cls,
-        config: "DVLConfig",
+        config: DVLConfig,
         seabed_mesh: wp.Mesh,
         device: str = "cuda:0",
-    ) -> "RayDVL":
+    ) -> RayDVL:
         """Construct from a real-world DVL hardware config."""
         return cls(
             seabed_mesh=seabed_mesh,

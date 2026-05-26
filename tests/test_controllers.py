@@ -5,14 +5,14 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from oceanscale.controllers.lee_position import (
+    LeePositionConfig,
+    LeePositionController,
+)
 from oceanscale.controllers.pid import (
     CascadedPIDController,
     PIDConfig,
     PIDController,
-)
-from oceanscale.controllers.lee_position import (
-    LeePositionConfig,
-    LeePositionController,
 )
 
 

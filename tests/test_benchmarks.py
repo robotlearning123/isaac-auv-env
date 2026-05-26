@@ -8,12 +8,10 @@ pytestmark = pytest.mark.skipif(
 )
 
 from oceanscale.benchmarks.suite import (
-    STANDARD_BENCHMARKS,
-    run_all_benchmarks,
-    run_benchmark,
-    _make_station_keeping,
     _make_docking,
+    _make_station_keeping,
     _make_waypoint,
+    run_benchmark,
 )
 
 
@@ -27,7 +25,7 @@ def test_run_benchmark_smoke(factory):
 
 
 def test_print_results_smoke(capsys):
-    from oceanscale.benchmarks.suite import print_results, BenchmarkResult
+    from oceanscale.benchmarks.suite import BenchmarkResult, print_results
     fake = [BenchmarkResult(task_name="test", n_envs=2, total_steps=10, wall_time_s=0.1)]
     print_results(fake)
     out = capsys.readouterr().out

@@ -348,7 +348,7 @@ class DockingApproachEnv(gym.Env):
         pos = state["position"]
         quat = state["orientation"]
         lin_vel = state["linear_velocity"]
-        ang_vel = state["angular_velocity"]
+        _ang_vel = state["angular_velocity"]
 
         # Docking geometry
         diff = self._dock_positions - pos

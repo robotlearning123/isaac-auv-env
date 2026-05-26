@@ -15,7 +15,6 @@ import warp as wp
 
 from oceanscale.rendering.underwater import JERLOV_PRESETS, WaterParams
 
-
 # -- Warp kernels --
 
 @wp.kernel

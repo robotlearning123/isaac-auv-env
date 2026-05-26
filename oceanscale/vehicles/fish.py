@@ -6,8 +6,11 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from oceanscale.hydro.mujoco_drag import MuJoCoDragParams
 
 
 @dataclass(frozen=True)
@@ -62,7 +65,7 @@ class TendonFish:
     def magnus_lift(self) -> float:
         return self.fluid_coef[4]
 
-    def mujoco_drag_params(self) -> "MuJoCoDragParams":
+    def mujoco_drag_params(self) -> MuJoCoDragParams:
         from oceanscale.hydro.mujoco_drag import MuJoCoDragParams
 
         return MuJoCoDragParams(

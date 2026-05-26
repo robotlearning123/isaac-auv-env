@@ -6,7 +6,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import ClassVar
 
 import numpy as np
@@ -21,7 +21,7 @@ class PIDConfig:
     kd: np.ndarray
     sat: np.ndarray | None = None
 
-    PRESETS: ClassVar[dict[str, "PIDConfig"]] = {}
+    PRESETS: ClassVar[dict[str, PIDConfig]] = {}
 
     @classmethod
     def rexrov_position(cls) -> PIDConfig:

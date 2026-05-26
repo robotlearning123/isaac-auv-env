@@ -4,14 +4,14 @@ import numpy as np
 import pytest
 
 from oceanscale.vehicles import (
+    VEHICLE_REGISTRY,
     BlueROV2Heavy,
     BlueROV2MarineGym,
     RexROV,
     SlocumGlider,
+    WarpAUV,
     WaveGlider,
     WHOIHybridGlider,
-    WarpAUV,
-    VEHICLE_REGISTRY,
 )
 
 
@@ -73,7 +73,7 @@ class TestVehicleRegistry:
         assert "whoi_hybrid" in VEHICLE_REGISTRY
 
     def test_instantiate_all(self):
-        for name, cls in VEHICLE_REGISTRY.items():
+        for _name, cls in VEHICLE_REGISTRY.items():
             v = cls()
             assert hasattr(v, "name")
 

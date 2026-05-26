@@ -9,27 +9,27 @@ from oceanscale.vehicles.commercial import (
 )
 from oceanscale.vehicles.fish import TendonFish
 from oceanscale.vehicles.fleet import (
+    VEHICLE_REGISTRY,
     RexROV,
     SlocumGlider,
     WaveGlider,
     WHOIHybridGlider,
-    VEHICLE_REGISTRY,
 )
 
 __all__ = [
+    "COMMERCIAL_VEHICLE_REGISTRY",
+    "HUGIN1000",
+    "LAUV",
+    "REMUS100",
+    "VEHICLE_REGISTRY",
     "BlueROV2Heavy",
     "BlueROV2MarineGym",
-    "WarpAUV",
-    "TendonFish",
+    "Girona500",
     "RexROV",
     "SlocumGlider",
-    "WaveGlider",
-    "WHOIHybridGlider",
-    "VEHICLE_REGISTRY",
-    "REMUS100",
-    "Girona500",
-    "LAUV",
-    "HUGIN1000",
     "SparusII",
-    "COMMERCIAL_VEHICLE_REGISTRY",
+    "TendonFish",
+    "WHOIHybridGlider",
+    "WarpAUV",
+    "WaveGlider",
 ]

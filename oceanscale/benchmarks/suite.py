@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import time
-from dataclasses import dataclass, field
-from typing import Any, Callable
+from collections.abc import Callable
+from dataclasses import dataclass
+from typing import Any
 
 import numpy as np
 
@@ -41,7 +42,7 @@ def run_benchmark(
     t0 = time.perf_counter()
     for _ in range(n_steps):
         action = np.zeros((n_envs,) + env.action_space.shape, dtype=np.float32)
-        obs, reward, terminated, truncated, info = env.step(action)
+        _obs, reward, _terminated, _truncated, info = env.step(action)
         if hasattr(reward, "cpu"):
             r = float(reward.cpu().mean())
         elif isinstance(reward, np.ndarray):

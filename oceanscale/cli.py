@@ -193,7 +193,7 @@ def _demo_bluerov2_dock(args: argparse.Namespace) -> None:
 
     import torch
 
-    from oceanscale.envs.docking_env import DockingApproachEnv
+    from oceanscale.envs.docking_env import DockingApproachEnv, DockingApproachEnvCfg
     from oceanscale.training.skrl_trainer import train_skrl_ppo
 
     n_envs = args.n_envs
@@ -202,7 +202,8 @@ def _demo_bluerov2_dock(args: argparse.Namespace) -> None:
     device = args.device
 
     print(f"Creating DockingApproachEnv(n_envs={n_envs})...")
-    env = DockingApproachEnv(n_envs=n_envs, device=device)
+    cfg = DockingApproachEnvCfg(n_envs=n_envs, device=device)
+    env = DockingApproachEnv(cfg)
 
     print(f"Training skrl PPO: {timesteps} steps, {n_envs} envs, device={device}")
     t0 = time.perf_counter()
@@ -228,7 +229,8 @@ def _demo_bluerov2_dock(args: argparse.Namespace) -> None:
         truncated_arr = np.asarray(truncated, dtype=bool)
         newly_done = (terminated_arr | truncated_arr) & ~dones
         if "success" in info:
-            successes += int(np.sum(info["success"][newly_done]))
+            success_arr = np.asarray(info["success"], dtype=bool)
+            successes += int(np.sum(success_arr[newly_done]))
         episode_count += int(np.sum(newly_done))
         dones = terminated_arr | truncated_arr
 

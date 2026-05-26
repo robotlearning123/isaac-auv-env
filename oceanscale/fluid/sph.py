@@ -73,7 +73,7 @@ def _compute_density(
     tid = wp.tid()
     i = wp.hash_grid_point_id(grid, tid)
     xi = pos[i]
-    rho = float(0.0)
+    rho = 0.0
     neighbors = wp.hash_grid_query(grid, xi, 2.0 * h)
     for j in neighbors:
         rij = xi - pos[j]
@@ -104,8 +104,8 @@ def _compute_forces(
     vi = vel[i]
     rhoi = density[i]
     Pi = _tait_eos(rhoi, rho0, B, gamma)
-    fp = wp.vec3(float(0.0), float(0.0), float(0.0))
-    fv = wp.vec3(float(0.0), float(0.0), float(0.0))
+    fp = wp.vec3(0.0, 0.0, 0.0)
+    fv = wp.vec3(0.0, 0.0, 0.0)
     neighbors = wp.hash_grid_query(grid, xi, 2.0 * h)
     for j in neighbors:
         if j == i:

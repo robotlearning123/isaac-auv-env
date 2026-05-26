@@ -1,7 +1,6 @@
 """Tests for OceanSim domain randomization."""
 
 import numpy as np
-import pytest
 import warp as wp
 
 from oceanscale.sim import OceanSim, OceanSimConfig

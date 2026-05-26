@@ -30,12 +30,12 @@ def _single(model, z, vz=0.0, h=1.0, vol=0.01):
 
 class TestSubmersionFraction:
     def test_fully_submerged(self, model):
-        buoy, drag, _friction = _single(model, z=-5.0)
+        buoy, _drag, _friction = _single(model, z=-5.0)
         expected_buoy = 1025.0 * 9.81 * 0.01
         assert buoy[0, 2] == pytest.approx(expected_buoy, rel=1e-4)
 
     def test_fully_above_water(self, model):
-        buoy, drag, _friction = _single(model, z=5.0)
+        buoy, _drag, _friction = _single(model, z=5.0)
         assert buoy[0, 2] == pytest.approx(0.0, abs=1e-6)
 
     def test_half_submerged(self, model):
@@ -84,7 +84,7 @@ class TestSubmersionBatch:
         velocities = np.zeros((3, 3), dtype=np.float32)
         heights = np.array([1.0, 2.0, 1.0], dtype=np.float32)
         volumes = np.array([0.01, 0.01, 0.01], dtype=np.float32)
-        buoy, drag, _friction = model.compute(positions, velocities, heights, volumes)
+        buoy, _drag, _friction = model.compute(positions, velocities, heights, volumes)
 
         assert buoy[0, 2] > 0.0
         assert buoy[1, 2] > 0.0

@@ -1,10 +1,9 @@
 """Tests for TendonFish biomimetic vehicle and fishsim-validated coefficients."""
 
-import numpy as np
 import pytest
 
-from oceanscale.vehicles.fish import TendonFish
 from oceanscale.hydro.mujoco_drag import MuJoCoDragParams
+from oceanscale.vehicles.fish import TendonFish
 
 
 class TestTendonFish:

@@ -74,6 +74,13 @@ _DEFAULT_CFG: dict[str, Any] = dict(
 )
 
 
+def _to_numpy(x: Any) -> np.ndarray:
+    """Convert torch tensor or numpy array to numpy."""
+    if isinstance(x, torch.Tensor):
+        return x.detach().cpu().numpy()
+    return np.asarray(x)
+
+
 def train_skrl_ppo(
     env: Any,
     total_timesteps: int = 100_000,
@@ -89,7 +96,7 @@ def train_skrl_ppo(
 
     obs_space = env.observation_space
     act_space = env.action_space
-    n_envs = env.n_envs
+    n_envs = getattr(env, "n_envs", None) or env.num_envs
 
     policy = cast(_Policy, _Policy(obs_space, act_space, dev).to(dev))
     value = cast(_Value, _Value(obs_space, act_space, dev).to(dev))
@@ -130,13 +137,13 @@ def train_skrl_ppo(
         for _ in range(rollout):
             actions, logp = _act(obs)
             vals = _get_value(obs)
-            mb_obs.append(obs.copy())
-            mb_act.append(actions.copy())
+            mb_obs.append(_to_numpy(obs).copy())
+            mb_act.append(_to_numpy(actions).copy())
             mb_logp.append(logp)
             mb_val.append(vals.cpu().numpy())
             obs, reward, terminated, truncated, _ = env.step(actions)
-            mb_rew.append(reward.astype(np.float32))
-            mb_done.append((terminated | truncated).astype(np.float32))
+            mb_rew.append(_to_numpy(reward).astype(np.float32))
+            mb_done.append((_to_numpy(terminated) | _to_numpy(truncated)).astype(np.float32))
             total += n_envs
 
         # GAE
