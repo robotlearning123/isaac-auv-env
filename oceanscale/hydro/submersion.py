@@ -28,8 +28,10 @@ def partial_submersion_kernel(
     water_density: wp.float32,
     gravity: wp.float32,
     drag_coeff: wp.float32,
+    ground_friction: wp.float32,
     buoyancy_out: wp.array(dtype=wp.vec3f),
     drag_out: wp.array(dtype=wp.vec3f),
+    friction_out: wp.array(dtype=wp.vec3f),
 ):
     i = wp.tid()
     pos = positions[i]
@@ -54,6 +56,14 @@ def partial_submersion_kernel(
         drag_scale * speed_sq_z,
     )
 
+    air_frac = 1.0 - frac
+    friction_scale = -ground_friction * air_frac
+    friction_out[i] = wp.vec3f(
+        friction_scale * vel[0],
+        friction_scale * vel[1],
+        0.0,
+    )
+
 
 @dataclass
 class PartialSubmersionConfig:
@@ -63,6 +73,7 @@ class PartialSubmersionConfig:
     water_density: float = 1025.0
     gravity: float = 9.81
     drag_coeff: float = 1.0
+    ground_friction: float = 0.0
 
 
 class PartialSubmersion:
@@ -86,8 +97,8 @@ class PartialSubmersion:
         velocities: np.ndarray,
         link_heights: np.ndarray,
         link_volumes: np.ndarray,
-    ) -> tuple[np.ndarray, np.ndarray]:
-        """Compute buoyancy and drag for each link based on submersion.
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Compute buoyancy, drag, and ground friction for each link.
 
         Args:
             positions: (N, 3) link center positions.
@@ -98,6 +109,7 @@ class PartialSubmersion:
         Returns:
             buoyancy: (N, 3) buoyancy force vectors (z-up).
             drag: (N, 3) quadratic drag force vectors.
+            friction: (N, 3) ground friction (proportional to air fraction).
         """
         n = len(positions)
         pos_wp = wp.array(positions.astype(np.float32), dtype=wp.vec3f, device=self.device)
@@ -106,6 +118,7 @@ class PartialSubmersion:
         v_wp = wp.array(link_volumes.astype(np.float32), dtype=wp.float32, device=self.device)
         buoy = wp.zeros(n, dtype=wp.vec3f, device=self.device)
         drag = wp.zeros(n, dtype=wp.vec3f, device=self.device)
+        friction = wp.zeros(n, dtype=wp.vec3f, device=self.device)
 
         wp.launch(
             partial_submersion_kernel,
@@ -119,10 +132,12 @@ class PartialSubmersion:
                 wp.float32(self.cfg.water_density),
                 wp.float32(self.cfg.gravity),
                 wp.float32(self.cfg.drag_coeff),
+                wp.float32(self.cfg.ground_friction),
                 buoy,
                 drag,
+                friction,
             ],
             device=self.device,
         )
 
-        return buoy.numpy(), drag.numpy()
+        return buoy.numpy(), drag.numpy(), friction.numpy()

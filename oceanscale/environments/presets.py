@@ -21,6 +21,9 @@ class TerrainType(Enum):
     ABYSSAL_PLAIN = "abyssal_plain"
     ICE_CEILING = "ice_ceiling"
     CONCRETE = "concrete"
+    MANGROVE_ROOT = "mangrove_root"
+    BEACH_SLOPE = "beach_slope"
+    TIDAL_ROCK = "tidal_rock"
 
 
 class WaterType(Enum):
@@ -81,6 +84,10 @@ class EnvironmentConfig:
     # Lighting
     ambient_light: float = 0.3
     sun_penetration_depth: float = 20.0
+
+    # Amphibious (water-land transition)
+    ground_friction: float = 0.0
+    is_amphibious: bool = False
 
 
 # ---------------------------------------------------------------------------
@@ -206,4 +213,90 @@ def OpenOceanEnv() -> EnvironmentConfig:
         obstacle_types=[],
         ambient_light=0.5,
         sun_penetration_depth=30.0,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Amphibious environments (water-land transition)
+# ---------------------------------------------------------------------------
+
+
+def ShallowShoreEnv() -> EnvironmentConfig:
+    """Shallow shore with beach slope — amphibious water-land transition."""
+    return EnvironmentConfig(
+        name="shallow_shore",
+        description="Sloping beach for amphibious robots crossing the waterline",
+        min_depth=0.0,
+        max_depth=5.0,
+        water_surface_z=0.0,
+        water_type=WaterType.JERLOV_5C,
+        temperature_c=22.0,
+        salinity_psu=33.0,
+        density_kg_m3=1022.0,
+        sound_speed_m_s=1510.0,
+        visibility_m=3.0,
+        terrain_type=TerrainType.BEACH_SLOPE,
+        terrain_size_m=50.0,
+        terrain_roughness=0.15,
+        current=CurrentProfile(surface_speed=0.1, bottom_speed=0.02, turbulence_intensity=0.03),
+        n_obstacles=3,
+        obstacle_types=["rock", "driftwood"],
+        ambient_light=0.7,
+        sun_penetration_depth=3.0,
+        ground_friction=8.0,
+        is_amphibious=True,
+    )
+
+
+def MangroveEnv() -> EnvironmentConfig:
+    """Mangrove swamp — shallow, turbid, root obstacles, amphibious."""
+    return EnvironmentConfig(
+        name="mangrove",
+        description="Mangrove swamp with submerged roots and tidal water level",
+        min_depth=0.0,
+        max_depth=3.0,
+        water_surface_z=0.0,
+        water_type=WaterType.JERLOV_9C,
+        temperature_c=28.0,
+        salinity_psu=20.0,
+        density_kg_m3=1012.0,
+        sound_speed_m_s=1505.0,
+        visibility_m=0.5,
+        terrain_type=TerrainType.MANGROVE_ROOT,
+        terrain_size_m=30.0,
+        terrain_roughness=0.9,
+        current=CurrentProfile(surface_speed=0.05, bottom_speed=0.01, turbulence_intensity=0.01),
+        n_obstacles=40,
+        obstacle_types=["mangrove_root", "submerged_log", "mud_bank"],
+        ambient_light=0.3,
+        sun_penetration_depth=1.0,
+        ground_friction=12.0,
+        is_amphibious=True,
+    )
+
+
+def TidalPoolEnv() -> EnvironmentConfig:
+    """Rocky tidal pool — shallow, periodic water level, amphibious."""
+    return EnvironmentConfig(
+        name="tidal_pool",
+        description="Rocky tidal pool with periodic water level changes",
+        min_depth=0.0,
+        max_depth=2.0,
+        water_surface_z=0.0,
+        water_type=WaterType.JERLOV_II,
+        temperature_c=16.0,
+        salinity_psu=35.0,
+        density_kg_m3=1025.0,
+        sound_speed_m_s=1490.0,
+        visibility_m=8.0,
+        terrain_type=TerrainType.TIDAL_ROCK,
+        terrain_size_m=15.0,
+        terrain_roughness=0.7,
+        current=CurrentProfile(surface_speed=0.15, bottom_speed=0.05, turbulence_intensity=0.02),
+        n_obstacles=15,
+        obstacle_types=["tide_rock", "kelp", "anemone"],
+        ambient_light=0.6,
+        sun_penetration_depth=2.0,
+        ground_friction=10.0,
+        is_amphibious=True,
     )
