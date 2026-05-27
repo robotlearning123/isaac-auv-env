@@ -179,7 +179,7 @@ The 256+ OOM was because all bodies lived in `world=-1` → MuJoCo treated them 
 - USD scene authoring beyond pxr import — deferred to v0.1.x
 - BVH-based sonar ray casting (Warp) — v0.2
 - Newton worlds / per-env replication API — needs investigation
-- ROS 2 Jazzy bridge — deferred
+- ROS 2 Jazzy bridge — implemented (oceanscale.ros2 module, requires system rclpy)
 
 ---
 

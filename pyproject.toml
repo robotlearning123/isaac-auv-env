@@ -73,6 +73,10 @@ sensors = [
     # DVL, IMU, pressure models use only torch (already a base dep).
     # Placeholder extra for future sensor-specific deps (e.g., acoustic ray-tracing libs).
 ]
+ros2 = [
+    # rclpy is installed via ROS2 (apt install ros-${ROS_DISTRO}-rclpy)
+    # This extra exists for documentation and future non-ROS2 helper deps.
+]
 
 [build-system]
 requires = ["setuptools>=75.0", "wheel"]
