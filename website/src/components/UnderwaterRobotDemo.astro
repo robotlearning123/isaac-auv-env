@@ -4,22 +4,20 @@ import { getLangFromUrl } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const isZh = lang === 'zh';
 
-const videoSrc = '/videos/oceanscale-underwater-robot-demo.mp4';
-const posterSrc = '/images/oceanscale-underwater-robot-demo.png';
-const manifestHref = '/demo/underwater_robot_demo_manifest.json';
-
+const videoSrc = '/videos/oceanscale-evidence-training-motion.mp4';
+const posterSrc = '/images/oceanscale-bg-evidence-validation.png';
 const copy = isZh
   ? {
       eyebrow: '验证',
-      titleLines: ['仿真验证'],
-      body: '基于水下机器人动力学模型的对接任务，视频、轨迹与验证证据来自同一次仿真输出。',
-      videoAria: '水下机器人对接任务仿真验证视频',
+      titleLines: ['从一次任务到', '成千上万次实验'],
+      body: '同一个机器人模型、同一组海况参数、同一套任务目标，可以在虚拟海洋中反复运行、比较和复盘。验证不再只依赖少数昂贵的现场机会。',
+      videoAria: '水下机器人虚拟海洋任务验证视频',
     }
   : {
       eyebrow: 'Validation',
-      titleLines: ['Simulation Proof'],
-      body: 'A docking mission based on an underwater robot dynamics model, with video, trajectory, and verification evidence saved from the same simulation output.',
-      videoAria: 'Simulation proof video of an underwater robot docking mission',
+      titleLines: ['From one mission', 'to thousands of experiments'],
+      body: 'The same robot model, ocean conditions, and task goals can be run, compared, and replayed repeatedly in the virtual ocean. Validation is no longer limited to a few expensive field opportunities.',
+      videoAria: 'Virtual ocean validation video for an underwater robot mission',
     };
 ---
 
@@ -40,12 +38,12 @@ const copy = isZh
         src={videoSrc}
         poster={posterSrc}
         aria-label={copy.videoAria}
+        data-background-video
         muted
         loop
         autoplay
         playsinline
-        controls
-        preload="metadata"
+        preload="auto"
       >
         <source src={videoSrc} type="video/mp4" />
       </video>
@@ -59,7 +57,7 @@ const copy = isZh
     position: relative;
     overflow: hidden;
     scroll-margin-top: 92px;
-    padding: clamp(96px, 12vw, 156px) 0 clamp(72px, 10vw, 132px);
+    padding: clamp(136px, 13vw, 176px) 0 clamp(72px, 10vw, 132px);
     background: #04101a;
     color: var(--color-text);
     border-top: 1px solid rgba(180, 216, 206, 0.14);
@@ -106,7 +104,7 @@ const copy = isZh
   }
 
   .robot-demo__title {
-    max-width: 13ch;
+    max-width: 17ch;
     margin: 0;
     font-family: var(--font-display);
     font-size: clamp(2.7rem, 4.4vw, 4.35rem);
@@ -124,7 +122,7 @@ const copy = isZh
   }
 
   html[lang="zh"] .robot-demo__title {
-    max-width: 12ch;
+    max-width: 16ch;
     font-family: var(--font-display-zh);
     line-height: 1.08;
   }

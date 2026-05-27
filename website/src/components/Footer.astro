@@ -2,8 +2,8 @@
 import { getLangFromUrl } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const tagline = lang === 'zh'
-  ? '水下机器人的虚拟海洋'
-  : 'A virtual ocean for underwater robots';
+  ? '面向水下机器人的海洋仿真基础设施'
+  : 'The ocean simulator for underwater robotics';
 ---
 <footer class="relative z-10 border-t border-[var(--color-border)] bg-[var(--color-surface)]">
   <div class="max-w-[1320px] mx-auto px-5 md:px-8 py-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">

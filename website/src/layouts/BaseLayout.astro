@@ -44,25 +44,78 @@ const lang = getLangFromUrl(Astro.url);
     <script is:inline>
       document.addEventListener('DOMContentLoaded', function() {
         var reveals = document.querySelectorAll('.reveal');
-        if (!reveals.length) return;
-        reveals.forEach(function(el) {
-          el.style.animation = 'none';
-          el.style.opacity = '0';
-          el.style.transform = 'translateY(24px)';
-          el.style.transition = 'opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1)';
-          var delay = el.getAttribute('data-delay');
-          if (delay) el.style.transitionDelay = (parseInt(delay) * 0.1) + 's';
-        });
-        var observer = new IntersectionObserver(function(entries) {
-          entries.forEach(function(entry) {
-            if (entry.isIntersecting) {
-              entry.target.style.opacity = '1';
-              entry.target.style.transform = 'translateY(0)';
-              observer.unobserve(entry.target);
-            }
+        if (reveals.length) {
+          reveals.forEach(function(el) {
+            el.style.animation = 'none';
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(24px)';
+            el.style.transition = 'opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1)';
+            var delay = el.getAttribute('data-delay');
+            if (delay) el.style.transitionDelay = (parseInt(delay) * 0.1) + 's';
           });
-        }, { threshold: 0.08 });
-        reveals.forEach(function(el) { observer.observe(el); });
+          var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+              if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+              }
+            });
+          }, { threshold: 0.08 });
+          reveals.forEach(function(el) { observer.observe(el); });
+        }
+
+        var backgroundVideos = Array.prototype.slice.call(document.querySelectorAll('video[data-background-video]'));
+        if (!backgroundVideos.length) return;
+
+        function videoIsNearViewport(video) {
+          var rect = video.getBoundingClientRect();
+          var margin = Math.max(window.innerHeight * 0.75, 360);
+          return rect.bottom >= -margin && rect.top <= window.innerHeight + margin;
+        }
+
+        function playBackgroundVideo(video) {
+          video.muted = true;
+          video.defaultMuted = true;
+          video.playsInline = true;
+          video.preload = 'auto';
+          var promise = video.play();
+          if (promise && typeof promise.catch === 'function') {
+            promise.catch(function() {});
+          }
+        }
+
+        backgroundVideos.forEach(function(video) {
+          video.setAttribute('muted', '');
+          video.setAttribute('playsinline', '');
+          video.setAttribute('webkit-playsinline', '');
+          video.addEventListener('loadeddata', function() {
+            if (videoIsNearViewport(video)) playBackgroundVideo(video);
+          }, { once: true });
+        });
+
+        if ('IntersectionObserver' in window) {
+          var videoObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+              if (entry.isIntersecting) playBackgroundVideo(entry.target);
+            });
+          }, { rootMargin: '360px 0px', threshold: 0.01 });
+          backgroundVideos.forEach(function(video) { videoObserver.observe(video); });
+        } else {
+          backgroundVideos.forEach(playBackgroundVideo);
+        }
+
+        document.addEventListener('visibilitychange', function() {
+          if (document.hidden) return;
+          backgroundVideos.forEach(function(video) {
+            if (videoIsNearViewport(video)) playBackgroundVideo(video);
+          });
+        });
+        window.addEventListener('pageshow', function() {
+          backgroundVideos.forEach(function(video) {
+            if (videoIsNearViewport(video)) playBackgroundVideo(video);
+          });
+        });
       });
     </script>
   </body>

@@ -6,28 +6,52 @@ const isZh = lang === 'zh';
 const copy = isZh
   ? {
       label: '解决方案',
-      titleLines: ['海试前的仿真基础设施'],
-      body: 'OceanScale 面向水下机器人构建仿真技术栈：物理内核、海洋环境、机器人接口、任务生成和训练评估在同一个可扩展运行时中协同工作。',
-      briefTitle: '技术栈细节',
-      briefBody: '从底层物理到上层训练评估，每一层都围绕水下机器人真实海洋环境验证设计。',
-      flow: [
-        ['内核', 'GPU 物理内核', '六自由度动力学、浮力/阻力、推进器响应、接触碰撞和机械臂载荷。'],
-        ['世界', '海洋与传感器', '海流场、能见度、海底地形、声呐/相机噪声、定位漂移和通信延迟。'],
-        ['接口', '机器人与任务 API', 'AUV/ROV、推进器、机械臂、任务目标和约束统一接入。'],
-        ['管线', '训练评估管线', '并行环境、策略采样、失败回放、轨迹日志、指标统计和门控报告。'],
+      titleLines: ['虚拟海洋'],
+      body: 'OceanScale 把水动力学、海洋环境、传感器、机器人接口和训练评估管线放进同一个 GPU 原生运行时，围绕真实海洋环境完成大规模训练、测试、失败回放与验证。',
+      inputLabel: '输入',
+      coreLabel: 'GPU 原生运行时',
+      outputLabel: '输出',
+      coreTitle: 'Virtual Ocean Runtime',
+      inputs: [
+        ['机器人模型', 'AUV / ROV / 滑翔机 / 机械臂'],
+        ['真实海况', '洋流、能见度、地形、扰动'],
+        ['任务目标', '对接、保持、巡检、搜寻'],
+      ],
+      layers: [
+        ['物理内核', '六自由度动力学、浮力、阻力、推进器响应'],
+        ['海洋环境', '海流场、浑浊度、地形、传感器退化'],
+        ['机器人接口', '控制策略、任务 API、批量环境'],
+        ['评估管线', '轨迹日志、失败回放、版本对比'],
+      ],
+      outputs: [
+        ['并行实验', '成千上万组可复现任务'],
+        ['失败复盘', '把真实任务条件带回仿真'],
+        ['验证指标', '收敛、稳定性、鲁棒性和风险边界'],
       ],
     }
   : {
       label: 'Solution',
-      titleLines: ['Simulation infrastructure before sea trials'],
-      body: 'OceanScale builds a simulation stack for underwater robots: physics core, ocean worlds, robot interfaces, mission generation, training, and evaluation working together in one scalable runtime.',
-      briefTitle: 'Tech stack details',
-      briefBody: 'From low-level physics to training evaluation, every layer is designed for underwater robot validation in real ocean conditions.',
-      flow: [
-        ['Core', 'GPU physics core', '6-DoF dynamics, buoyancy/drag, thruster response, contact, and manipulator payloads.'],
-        ['World', 'Ocean and sensors', 'Current fields, visibility, seafloor terrain, sonar/camera noise, localization drift, and latency.'],
-        ['API', 'Robot and mission API', 'Unified interfaces for AUVs/ROVs, thrusters, manipulators, objectives, and constraints.'],
-        ['Pipeline', 'Training evaluation pipeline', 'Parallel environments, policy sampling, failure replay, trajectory logs, metrics, and gate reports.'],
+      titleLines: ['Virtual Ocean'],
+      body: 'OceanScale brings hydrodynamics, ocean environments, sensors, robot interfaces, and training/evaluation pipelines into one GPU-native runtime for large-scale training, testing, failure replay, and real-ocean validation.',
+      inputLabel: 'Inputs',
+      coreLabel: 'GPU-native runtime',
+      outputLabel: 'Outputs',
+      coreTitle: 'Virtual Ocean Runtime',
+      inputs: [
+        ['Robot Models', 'AUVs / ROVs / gliders / manipulators'],
+        ['Ocean Conditions', 'Current, visibility, terrain, disturbance'],
+        ['Mission Goals', 'Docking, holding, inspection, search'],
+      ],
+      layers: [
+        ['Physics Core', '6-DoF dynamics, buoyancy, drag, thruster response'],
+        ['Ocean Field', 'Currents, turbidity, terrain, sensor degradation'],
+        ['Robot Interface', 'Control policies, task APIs, batched environments'],
+        ['Evaluation Pipeline', 'Trajectory logs, failure replay, version comparison'],
+      ],
+      outputs: [
+        ['Parallel Experiments', 'Thousands of reproducible mission runs'],
+        ['Failure Replay', 'Bring real mission conditions back into simulation'],
+        ['Validation Metrics', 'Convergence, stability, robustness, risk boundary'],
       ],
     };
 ---
@@ -35,11 +59,13 @@ const copy = isZh
 <section id="solution" class="system-session">
   <video
     class="system-session__media"
+    data-background-video
+    aria-hidden="true"
     autoplay
     muted
     loop
     playsinline
-    preload="metadata"
+    preload="auto"
     poster="/images/oceanscale-bg-solution-virtual-ocean.png"
   >
     <source src="/videos/oceanscale-solution-training-motion.mp4" type="video/mp4" />
@@ -57,18 +83,41 @@ const copy = isZh
       <p>{copy.body}</p>
     </div>
 
-    <div class="system-session__grid">
-      <div class="solution-brief reveal" data-delay="1">
-        <div class="solution-brief__intro">
-          <h3>{copy.briefTitle}</h3>
-          <p>{copy.briefBody}</p>
-        </div>
-        <div class="solution-flow">
-          {copy.flow.map(([index, title, body]) => (
-            <div class="solution-flow__item">
-              <span>{index}</span>
+    <div class="system-session__grid reveal" data-delay="1">
+      <div class="runtime-figure">
+        <div class="runtime-stream runtime-stream--input">
+          <p>{copy.inputLabel}</p>
+          {copy.inputs.map(([title, body]) => (
+            <div class="runtime-node">
               <strong>{title}</strong>
-              <p>{body}</p>
+              <span>{body}</span>
+            </div>
+          ))}
+        </div>
+
+        <div class="runtime-orbit">
+          <div class="runtime-orbit__ring runtime-orbit__ring--outer" aria-hidden="true"></div>
+          <div class="runtime-orbit__ring runtime-orbit__ring--inner" aria-hidden="true"></div>
+          <div class="runtime-orbit__content">
+            <span>{copy.coreLabel}</span>
+            <strong>{copy.coreTitle}</strong>
+            <div class="runtime-layer-list">
+              {copy.layers.map(([title, body]) => (
+                <div>
+                  <strong>{title}</strong>
+                  <span>{body}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div class="runtime-stream runtime-stream--output">
+          <p>{copy.outputLabel}</p>
+          {copy.outputs.map(([title, body]) => (
+            <div class="runtime-node">
+              <strong>{title}</strong>
+              <span>{body}</span>
             </div>
           ))}
         </div>
@@ -155,89 +204,168 @@ const copy = isZh
 
   .system-session__grid {
     display: block;
-    width: min(100%, 920px);
+    width: min(100%, 1120px);
     margin-top: clamp(1.7rem, 4vw, 3.4rem);
   }
 
-  .solution-brief {
+  .runtime-figure {
+    position: relative;
     display: grid;
-    gap: 0;
-    grid-template-columns: 1fr;
-    max-width: 920px;
+    grid-template-columns: minmax(190px, 0.78fr) minmax(390px, 1.55fr) minmax(210px, 0.9fr);
+    gap: clamp(1rem, 2vw, 1.35rem);
+    align-items: center;
+    max-width: 1120px;
+    min-height: 23rem;
+    padding: clamp(1rem, 1.8vw, 1.35rem);
     border: 1px solid rgba(255, 255, 255, 0.12);
-    border-left: 1px solid rgba(45, 212, 191, 0.62);
     background:
-      linear-gradient(90deg, rgba(3, 7, 12, 0.78), rgba(3, 7, 12, 0.38)),
-      radial-gradient(circle at 78% 18%, rgba(45, 212, 191, 0.12), transparent 36%);
+      linear-gradient(135deg, rgba(3, 7, 12, 0.82), rgba(3, 7, 12, 0.48)),
+      radial-gradient(circle at 50% 40%, rgba(45, 212, 191, 0.16), transparent 52%);
     backdrop-filter: blur(14px);
   }
 
-  .solution-brief h3 {
-    margin: 0;
-    color: #fff;
-    font-size: clamp(1.45rem, 2.35vw, 2.05rem);
-    font-weight: 850;
-    line-height: 1.12;
-  }
-
-  .solution-brief__intro {
-    padding: clamp(1rem, 1.8vw, 1.35rem) clamp(1rem, 1.8vw, 1.35rem) clamp(0.9rem, 1.6vw, 1.15rem);
-  }
-
-  .solution-brief__intro > p {
-    margin: 0.7rem 0 0;
-    max-width: 600px;
-    color: rgba(232, 237, 243, 0.72);
-    font-size: 1rem;
-    line-height: 1.64;
-  }
-
-  .solution-flow {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1px;
-    background: rgba(255, 255, 255, 0.12);
-  }
-
-  .solution-flow__item {
+  .runtime-stream {
     position: relative;
     display: grid;
-    align-content: start;
-    min-height: 11.4rem;
-    padding: clamp(0.9rem, 1.45vw, 1.15rem);
+    grid-template-rows: auto repeat(3, 1fr);
+    gap: 0.7rem;
+    min-width: 0;
+    z-index: 2;
+  }
+
+  .runtime-stream--input::after,
+  .runtime-stream--output::before {
+    content: "";
+    position: absolute;
+    top: 52%;
+    width: clamp(1.2rem, 2.4vw, 2.1rem);
+    height: 1px;
+    background: linear-gradient(90deg, rgba(45, 212, 191, 0), rgba(45, 212, 191, 0.82));
+  }
+
+  .runtime-stream--input::after {
+    right: calc(clamp(1rem, 2vw, 1.35rem) * -1);
+  }
+
+  .runtime-stream--output::before {
+    left: calc(clamp(1rem, 2vw, 1.35rem) * -1);
+    transform: rotate(180deg);
+  }
+
+  .runtime-stream > p,
+  .runtime-orbit__content > span {
+    margin: 0;
+    color: rgba(45, 212, 191, 0.95);
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .runtime-node {
+    border: 1px solid rgba(255, 255, 255, 0.13);
     background: rgba(3, 7, 12, 0.68);
+    display: grid;
+    align-content: center;
+    min-height: 5.2rem;
+    padding: 0.78rem 0.85rem;
     backdrop-filter: blur(10px);
   }
 
-  .solution-flow__item:not(:last-child)::after {
+  .runtime-node strong,
+  .runtime-layer-list strong {
+    color: #fff;
+    font-size: 0.92rem;
+    line-height: 1.18;
+  }
+
+  .runtime-node span,
+  .runtime-layer-list span {
+    display: block;
+    margin-top: 0.42rem;
+    color: rgba(232, 237, 243, 0.62);
+    font-size: 0.76rem;
+    line-height: 1.42;
+  }
+
+  .runtime-orbit {
+    position: relative;
+    min-width: 0;
+    min-height: 20rem;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid rgba(45, 212, 191, 0.22);
+    border-radius: 999px;
+    background:
+      radial-gradient(circle at 50% 48%, rgba(45, 212, 191, 0.24), transparent 28%),
+      radial-gradient(circle at 50% 48%, rgba(45, 212, 191, 0.1), transparent 56%),
+      linear-gradient(135deg, rgba(4, 23, 28, 0.84), rgba(3, 7, 12, 0.72));
+    box-shadow:
+      inset 0 0 0 1px rgba(45, 212, 191, 0.12),
+      inset 0 0 80px rgba(45, 212, 191, 0.08),
+      0 30px 80px rgba(0, 0, 0, 0.26);
+  }
+
+  .runtime-orbit::before {
     content: "";
     position: absolute;
-    top: 1.38rem;
-    right: 0.78rem;
-    width: 1.35rem;
+    inset: 50% auto auto 50%;
+    width: 145%;
     height: 1px;
-    background: rgba(45, 212, 191, 0.7);
+    background: linear-gradient(90deg, transparent, rgba(45, 212, 191, 0.58), transparent);
+    transform: translate(-50%, -50%) rotate(-13deg);
+    opacity: 0.82;
   }
 
-  .solution-flow__item span {
-    color: rgba(45, 212, 191, 0.9);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
+  .runtime-orbit__ring {
+    position: absolute;
+    border: 1px solid rgba(45, 212, 191, 0.18);
+    border-radius: 50%;
+    pointer-events: none;
   }
 
-  .solution-flow__item strong {
-    margin-top: 0.65rem;
+  .runtime-orbit__ring--outer {
+    inset: 8%;
+  }
+
+  .runtime-orbit__ring--inner {
+    inset: 23%;
+    border-color: rgba(255, 255, 255, 0.13);
+  }
+
+  .runtime-orbit__content {
+    position: relative;
+    z-index: 1;
+    width: min(82%, 25rem);
+    padding: clamp(1.05rem, 2vw, 1.4rem);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(3, 7, 12, 0.72);
+    backdrop-filter: blur(14px);
+  }
+
+  .runtime-orbit__content > strong {
+    display: block;
+    margin-top: 0.7rem;
     color: #fff;
-    font-size: 1rem;
-    line-height: 1.2;
+    font-family: var(--font-mono);
+    font-size: clamp(1rem, 1.6vw, 1.22rem);
+    letter-spacing: 0.02em;
   }
 
-  .solution-flow__item p {
-    margin: 0.65rem 0 0;
-    color: rgba(232, 237, 243, 0.66);
-    font-size: 0.84rem;
-    line-height: 1.52;
+  .runtime-layer-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.62rem;
+    margin-top: 1.05rem;
+  }
+
+  .runtime-layer-list div {
+    min-height: 5.15rem;
+    padding: 0.78rem;
+    border-left: 1px solid rgba(45, 212, 191, 0.52);
+    background: rgba(3, 7, 12, 0.48);
   }
 
   @media (max-width: 980px) {
@@ -281,21 +409,40 @@ const copy = isZh
       line-height: 1.58;
     }
 
-    .solution-brief {
-      border-left: 0;
-      background: rgba(3, 7, 12, 0.56);
-    }
-
-    .solution-flow {
+    .runtime-figure {
       grid-template-columns: 1fr;
-    }
-
-    .solution-flow__item {
+      gap: 0.9rem;
+      padding: 0.9rem;
+      background: rgba(3, 7, 12, 0.62);
       min-height: 0;
     }
 
-    .solution-flow__item:not(:last-child)::after {
+    .runtime-stream--input::after,
+    .runtime-stream--output::before {
       display: none;
+    }
+
+    .runtime-stream {
+      grid-template-rows: auto;
+    }
+
+    .runtime-orbit {
+      min-height: 0;
+      border-radius: 0;
+      padding: 0;
+    }
+
+    .runtime-orbit__content {
+      width: 100%;
+    }
+
+    .runtime-layer-list {
+      grid-template-columns: 1fr;
+    }
+
+    .runtime-node,
+    .runtime-layer-list div {
+      min-height: 0;
     }
 
   }

@@ -3,18 +3,26 @@ import { getLangFromUrl } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const isZh = lang === 'zh';
 
-const tagline = isZh
-  ? '水下机器人的虚拟海洋'
-  : 'A virtual ocean for underwater robots';
+const copy = isZh
+  ? {
+      subtitle: '面向水下机器人的海洋仿真基础设施',
+      body: '用可控、可复现、可扩展的虚拟海洋，加速水下机器人的研发、测试、验证与部署迭代。',
+    }
+  : {
+      subtitle: 'The ocean simulator for underwater robotics',
+      body: 'A controllable, reproducible virtual ocean that accelerates development, testing, validation, and deployment iteration for underwater robots.',
+    };
 ---
 <section class="home-hero relative min-h-screen overflow-hidden bg-[var(--color-bg)]">
   <video
     class="home-hero__video"
+    data-background-video
+    aria-hidden="true"
     autoplay
     muted
     loop
     playsinline
-    preload="metadata"
+    preload="auto"
     poster="/images/oceanscale-hero-bg-keyframe.png"
   >
     <source src="/videos/oceanscale-hero-training-motion.mp4" type="video/mp4" />
@@ -24,7 +32,8 @@ const tagline = isZh
 
   <div class="home-hero__content reveal">
     <h1>OceanScale</h1>
-    <p>{tagline}</p>
+    <p class="home-hero__subtitle">{copy.subtitle}</p>
+    <p class="home-hero__body">{copy.body}</p>
   </div>
 </section>
 
@@ -72,9 +81,9 @@ const tagline = isZh
     text-shadow: 0 18px 80px rgba(0, 0, 0, 0.5);
   }
 
-  .home-hero__content p {
+  .home-hero__subtitle {
     margin: clamp(1rem, 2vw, 1.4rem) 0 0;
-    max-width: 620px;
+    max-width: 760px;
     color: rgba(255, 255, 255, 0.9);
     font-size: 2rem;
     font-weight: 650;
@@ -83,11 +92,23 @@ const tagline = isZh
     text-shadow: 0 12px 50px rgba(0, 0, 0, 0.55);
   }
 
+  .home-hero__body {
+    margin: 0.95rem 0 0;
+    max-width: 680px;
+    color: rgba(235, 242, 247, 0.76);
+    font-size: 1.16rem;
+    font-weight: 500;
+    line-height: 1.58;
+    letter-spacing: 0;
+    text-shadow: 0 12px 46px rgba(0, 0, 0, 0.58);
+  }
+
   html[lang="zh"] .home-hero__content h1 {
     font-family: var(--font-display);
   }
 
-  html[lang="zh"] .home-hero__content p {
+  html[lang="zh"] .home-hero__subtitle,
+  html[lang="zh"] .home-hero__body {
     font-family: var(--font-display-zh);
   }
 
@@ -117,10 +138,16 @@ const tagline = isZh
       max-width: calc(100vw - 2.5rem);
     }
 
-    .home-hero__content p {
+    .home-hero__subtitle {
       font-size: 1.35rem;
       max-width: calc(100vw - 2.5rem);
       line-height: 1.2;
+    }
+
+    .home-hero__body {
+      font-size: 1rem;
+      line-height: 1.58;
+      max-width: calc(100vw - 2.5rem);
     }
   }
 
@@ -129,8 +156,12 @@ const tagline = isZh
       font-size: 8.75rem;
     }
 
-    .home-hero__content p {
+    .home-hero__subtitle {
       font-size: 2.25rem;
+    }
+
+    .home-hero__body {
+      font-size: 1.22rem;
     }
   }
 
@@ -139,7 +170,7 @@ const tagline = isZh
       font-size: 5.75rem;
     }
 
-    .home-hero__content p {
+    .home-hero__subtitle {
       font-size: 1.6rem;
     }
   }

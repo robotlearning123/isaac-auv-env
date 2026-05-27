@@ -4,40 +4,46 @@ const lang = getLangFromUrl(Astro.url);
 const isZh = lang === 'zh';
 
 const heading = isZh ? '任务场景' : 'Mission Domains';
-const kicker = isZh ? '应用' : 'Mission Domains';
+const kicker = isZh ? '应用' : 'Applications';
+const body = isZh
+  ? '覆盖水下机器人研发中最昂贵、最难复现的任务条件。'
+  : 'Focused on the expensive, hard-to-reproduce conditions that slow underwater robotics development.';
 
 const cases = isZh ? [
-  { icon: '⎔', title: '自主对接', body: '在洋流、低能见度和定位误差下训练对接策略。' },
-  { icon: '◎', title: '定点保持', body: '让机器人在扰动海况中保持位置、姿态和作业稳定性。' },
-  { icon: '⇢', title: '巡检测量', body: '沿复杂水下结构训练自主导航、避障和数据采集。' },
-  { icon: '◐', title: '结构检修', body: '在复杂设备附近学习接近、避障、固定姿态和镜头对位。' },
-  { icon: '◉', title: '目标搜寻', body: '在低能见度和遮挡环境中，训练快速扩散搜寻与回报策略。' },
-  { icon: '⬢', title: '物体回收', body: '让机械臂/抓手在潮流和定位漂移下完成多阶段抓取与回传。' },
+  { icon: '⎔', title: '自主对接', body: '在洋流、低能见度和定位误差下验证对接策略。' },
+  { icon: '◎', title: '定点保持', body: '验证机器人在扰动海况中的位置、姿态和作业稳定性。' },
+  { icon: '⇢', title: '巡检测量', body: '沿管线、海底结构和复杂地形验证导航与数据采集。' },
+  { icon: '◐', title: '结构作业', body: '在近距离设备环境中验证接近、避障、姿态保持和机械臂动作。' },
+  { icon: '◉', title: '目标搜寻', body: '在遮挡、浑浊和不完整观测下验证搜索与回传策略。' },
+  { icon: '⬢', title: '部署复盘', body: '把真实任务中的失败条件带回虚拟海洋，形成下一轮迭代。' },
 ] : [
-  { icon: '⎔', title: 'Autonomous Docking', body: 'Train docking policies under current, low visibility, and localization error.' },
-  { icon: '◎', title: 'Station Keeping', body: 'Hold position, attitude, and operational stability in disturbed ocean conditions.' },
-  { icon: '⇢', title: 'Inspection & Survey', body: 'Train autonomous navigation, obstacle avoidance, and data collection along complex underwater structures.' },
-  { icon: '◐', title: 'Maintenance', body: 'Train approach, obstacle avoidance, and alignment behaviors for close-in structure work.' },
-  { icon: '◉', title: 'Search', body: 'Train robust search patterns and return policies under occlusion and visibility loss.' },
-  { icon: '⬢', title: 'Recovery', body: 'Train grasp-and-recover workflows for manipulators under flow and localization drift.' },
+  { icon: '⎔', title: 'Autonomous Docking', body: 'Validate docking strategies under current, low visibility, and localization error.' },
+  { icon: '◎', title: 'Station Keeping', body: 'Validate position, attitude, and operational stability in disturbed ocean conditions.' },
+  { icon: '⇢', title: 'Inspection & Survey', body: 'Validate navigation and data collection along pipelines, seabed structures, and complex terrain.' },
+  { icon: '◐', title: 'Close-Range Work', body: 'Validate approach, obstacle avoidance, pose holding, and manipulator actions near equipment.' },
+  { icon: '◉', title: 'Target Search', body: 'Validate search and return policies under occlusion, turbidity, and partial observation.' },
+  { icon: '⬢', title: 'Deployment Replay', body: 'Bring failure conditions from real missions back into the virtual ocean for the next iteration.' },
 ];
 ---
 <section id="usecases" class="relative py-24 lg:py-32 usecases-section">
   <video
     class="usecases__media"
+    data-background-video
+    aria-hidden="true"
     autoplay
     muted
     loop
     playsinline
-    preload="metadata"
-    poster="/images/oceanscale-bg-evidence-validation.png"
+    preload="auto"
+    poster="/images/oceanscale-usecases-mission-domains-poster.png"
   >
-    <source src="/videos/bluerov2-demo.mp4" type="video/mp4" />
+    <source src="/videos/oceanscale-challenge-training-motion.mp4" type="video/mp4" />
   </video>
   <div class="usecases__shade"></div>
   <div class="os-container relative z-10">
     <p class="uc-kicker">{kicker}</p>
     <h2 class="os-h2 uc-heading">{heading}</h2>
+    <p class="uc-body">{body}</p>
 
     <div class="uc-grid">
       {cases.map((c) => (
@@ -107,12 +113,24 @@ const cases = isZh ? [
 
   .uc-heading {
     font-size: clamp(1.75rem, 3.5vw, 2.75rem) !important;
-    margin-bottom: 3rem !important;
+    margin-bottom: 1rem !important;
   }
 
   html[lang="zh"] .uc-heading {
     font-family: var(--font-display-zh);
     word-break: keep-all;
+  }
+
+  .uc-body {
+    max-width: 600px;
+    margin: 0 0 3rem;
+    color: rgba(232, 237, 243, 0.72);
+    font-size: 1.02rem;
+    line-height: 1.65;
+  }
+
+  html[lang="zh"] .uc-body {
+    font-family: var(--font-display-zh);
   }
 
   .uc-grid {
@@ -125,7 +143,8 @@ const cases = isZh ? [
     padding: 1.75rem;
     border: 1px solid var(--color-border);
     border-radius: 8px;
-    background: linear-gradient(135deg, rgba(10, 16, 24, 0.8), rgba(6, 11, 18, 0.9));
+    background:
+      linear-gradient(135deg, rgba(10, 16, 24, 0.74), rgba(6, 11, 18, 0.88));
     transition: border-color 0.3s;
   }
 

@@ -7,7 +7,7 @@ const content = isZh ? {
   label: '挑战',
   title: '真实海洋不是训练场',
   titleLines: ['真实海洋不是', '训练场'],
-  body: '每一次下海都受天气、船期、人员、海况、布放装备和硬件风险限制。一次失败，往往意味着重新出船、重新布放，再等待下一轮有效数据。',
+  body: '每一次真实海洋验证都受天气、船期、人员、海况、布放装备和硬件风险限制。水下机器人的迭代周期，被海洋节奏锁住。',
   stats: [
     ['天气窗口', '不可控'],
     ['船与人员', '按天计费'],
@@ -15,9 +15,9 @@ const content = isZh ? {
   ],
 } : {
   label: 'Challenge',
-  title: 'The ocean is not just a training loop',
-  titleLines: ['The ocean is not', 'just a training loop'],
-  body: 'Every field test is gated by weather, vessels, crew, currents, deployment gear, and hardware risk. One failed run can mean rebooking, redeploying, and waiting weeks for the next useful dataset.',
+  title: 'The ocean is not a training ground',
+  titleLines: ['The ocean is not', 'a training ground'],
+  body: 'Every real-ocean validation run is gated by weather, vessels, crew, currents, deployment gear, and hardware risk. The iteration cycle for underwater robots is locked to the pace of the ocean.',
   stats: [
     ['Weather windows', 'uncontrolled'],
     ['Vessels + crew', 'day-rate cost'],
@@ -28,11 +28,13 @@ const content = isZh ? {
 <section id="vision" class="cinematic-section cinematic-section--left">
   <video
     class="cinematic-section__media"
+    data-background-video
+    aria-hidden="true"
     autoplay
     muted
     loop
     playsinline
-    preload="metadata"
+    preload="auto"
     poster="/images/oceanscale-challenge-storm-seatrial-poster.jpg"
   >
     <source src="/videos/oceanscale-challenge-storm-seatrial.mp4" type="video/mp4" />
