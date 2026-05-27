@@ -28,8 +28,6 @@ dependencies = [
     "tqdm>=4.66",
     "rich>=13",
     "gymnasium>=1.2.3",
-    # legacy — kept for demo compat; prefer skrl for new code
-    "stable-baselines3>=2.5",
     "imageio>=2.34",
     "imageio-ffmpeg>=0.5",
     "matplotlib>=3.9",
@@ -58,7 +56,6 @@ rl = [
     # legacy alias — RL deps moved to base in v0.1 so demo works after default install
     # kept for back-compat with the legacy [rl] extra name
     "gymnasium>=0.29",
-    "stable-baselines3>=2.5",
     "imageio>=2.34",
     "imageio-ffmpeg>=0.5",
     "matplotlib>=3.9",

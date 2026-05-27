@@ -29,14 +29,10 @@ def _version(args: argparse.Namespace) -> None:
     print(f"oceanscale {__version__}")
 
 
-def _resolve_hover_checkpoint(data: Path) -> tuple[str, Path] | None:
+def _resolve_hover_checkpoint(data: Path) -> Path | None:
     skrl_path = data / "bluerov2_skrl_policy.pt"
     if skrl_path.exists():
-        return "skrl", skrl_path
-
-    sb3_path = data / "bluerov2_station_keep_final.zip"
-    if sb3_path.exists():
-        return "sb3", sb3_path
+        return skrl_path
 
     return None
 
@@ -52,29 +48,20 @@ def _demo_bluerov2_hover(args: argparse.Namespace) -> None:
 
     if checkpoint is None:
         print(f"Pretrained model not found in {data}", file=sys.stderr)
-        print(
-            "Expected bluerov2_skrl_policy.pt or bluerov2_station_keep_final.zip.", file=sys.stderr
-        )
+        print("Expected bluerov2_skrl_policy.pt.", file=sys.stderr)
         print("Run 'oceanscale train bluerov2-hover' first.", file=sys.stderr)
         sys.exit(1)
 
     env = ROVEnv(n_envs=1, device=args.device, sensor_noise_std=0.0)
 
-    checkpoint_kind, model_path = checkpoint
+    model_path = checkpoint
     dev = torch.device(args.device if torch.cuda.is_available() else "cpu")
-    policy: Any
-    if checkpoint_kind == "skrl":
-        from oceanscale.training.skrl_trainer import _Policy
+    from oceanscale.training.skrl_trainer import _Policy
 
-        policy = cast(Any, _Policy)(env.observation_space, env.action_space, dev).to(dev)
-        policy.load_state_dict(torch.load(str(model_path), map_location=dev, weights_only=True))
-        policy.eval()
-        print(f"Using skrl checkpoint: {model_path}")
-    else:
-        from stable_baselines3 import PPO
-
-        policy = PPO.load(str(model_path), device="cpu")
-        print(f"Using bundled SB3 checkpoint: {model_path}")
+    policy: Any = cast(Any, _Policy)(env.observation_space, env.action_space, dev).to(dev)
+    policy.load_state_dict(torch.load(str(model_path), map_location=dev, weights_only=True))
+    policy.eval()
+    print(f"Using skrl checkpoint: {model_path}")
 
     render_mp4 = args.render_mp4
     cinematic = getattr(args, "cinematic", False)
@@ -97,13 +84,10 @@ def _demo_bluerov2_hover(args: argparse.Namespace) -> None:
 
     total_reward = 0.0
     for step in range(env.max_episode_steps):
-        if checkpoint_kind == "skrl":
-            t = torch.as_tensor(obs, dtype=torch.float32, device=dev)
-            with torch.no_grad():
-                action, _ = policy.compute({"observations": t}, "")
-            action_np = action.cpu().numpy()
-        else:
-            action_np, _ = policy.predict(obs, deterministic=True)
+        t = torch.as_tensor(obs, dtype=torch.float32, device=dev)
+        with torch.no_grad():
+            action, _ = policy.compute({"observations": t}, "")
+        action_np = action.cpu().numpy()
 
         if exporter is not None:
             assert env.state_curr.body_q is not None
@@ -147,18 +131,6 @@ def _train_bluerov2_hover(args: argparse.Namespace) -> None:
     import torch
 
     from oceanscale.rov_env import ROVEnv
-
-    if getattr(args, "legacy", False):
-        from stable_baselines3 import PPO
-
-        print("WARNING: --legacy uses SB3 CPU trainer (deprecated)")
-        env = ROVEnv(n_envs=args.n_envs, device=args.device, sensor_noise_std=0.02)
-        model = PPO("MlpPolicy", env, n_steps=128, batch_size=256, verbose=1, device=args.device)
-        model.learn(total_timesteps=args.total)
-        Path(args.checkpoint_dir).mkdir(parents=True, exist_ok=True)
-        model.save(str(Path(args.checkpoint_dir) / "bluerov2_sb3_model"))
-        print(f"Legacy model saved to {args.checkpoint_dir}/bluerov2_sb3_model.zip")
-        return
 
     from oceanscale.training.skrl_trainer import train_skrl_ppo
 
@@ -225,11 +197,12 @@ def _demo_bluerov2_dock(args: argparse.Namespace) -> None:
             mean, _ = cast(Any, policy.compute)({"observations": t}, role="")
         obs, _reward, terminated, truncated, info = env.step(mean.cpu().numpy())
 
-        terminated_arr = np.asarray(terminated, dtype=bool)
-        truncated_arr = np.asarray(truncated, dtype=bool)
+        terminated_arr = np.asarray(terminated.cpu() if hasattr(terminated, "cpu") else terminated, dtype=bool)
+        truncated_arr = np.asarray(truncated.cpu() if hasattr(truncated, "cpu") else truncated, dtype=bool)
         newly_done = (terminated_arr | truncated_arr) & ~dones
         if "success" in info:
-            success_arr = np.asarray(info["success"], dtype=bool)
+            s = info["success"]
+            success_arr = np.asarray(s.cpu() if hasattr(s, "cpu") else s, dtype=bool)
             successes += int(np.sum(success_arr[newly_done]))
         episode_count += int(np.sum(newly_done))
         dones = terminated_arr | truncated_arr
@@ -332,11 +305,6 @@ def _build_parser() -> argparse.ArgumentParser:
     train_parser.add_argument("--seed", type=int, default=42, help="Random seed")
     train_parser.add_argument(
         "--checkpoint-dir", type=str, default="checkpoints", dest="checkpoint_dir"
-    )
-    train_parser.add_argument(
-        "--legacy",
-        action="store_true",
-        help="Use legacy SB3 trainer (deprecated, will be removed in v0.2)",
     )
     train_parser.add_argument("--render-mp4", type=str, default=None, help="Render after train")
 

@@ -1,6 +1,5 @@
-"""SB3-compatible VecEnv wrappers for GPU-batched environments.
+"""VecEnv wrappers for GPU-batched environments.
 
-BatchedVecEnv wraps a batched ROVEnv (n_envs>1) as an SB3-compatible VecEnv.
 OceanScaleVecEnv wraps NewtonEnv as a gymnasium.vector.VectorEnv.
 """
 
@@ -17,68 +16,6 @@ from oceanscale.newton_env import NewtonEnv
 FloatArray = NDArray[np.float32]
 BoolArray = NDArray[np.bool_]
 AnyArray = NDArray[Any]
-
-
-class BatchedVecEnv:
-    """Wraps a batched ROVEnv as SB3-compatible VecEnv.
-
-    Inherits from SB3's VecEnv ABC to pass isinstance checks.
-    """
-
-    num_envs: int
-    observation_space: gym.Space[Any]
-    action_space: gym.Space[Any]
-    render_mode: str | None
-
-    def __init__(self, env: Any) -> None:
-        from stable_baselines3.common.vec_env import VecEnv
-
-        self.env = env
-        self.render_mode = cast(str | None, getattr(env, "render_mode", None))
-        self.__class__ = type("BatchedVecEnv", (type(self), VecEnv), dict(self.__class__.__dict__))
-        cast(Any, VecEnv).__init__(self, env.n_envs, env.observation_space, env.action_space)
-
-        self._buf_actions: FloatArray | None = None
-
-    def reset(self, **kwargs: Any) -> FloatArray:
-        obs, _info = self.env.reset(**kwargs)
-        return cast(FloatArray, obs)
-
-    def step_async(self, actions: Any) -> None:
-        self._buf_actions = cast(FloatArray, np.asarray(actions, dtype=np.float32))
-
-    def step_wait(self) -> tuple[FloatArray, FloatArray, BoolArray, list[dict[str, Any]]]:
-        if self._buf_actions is None:
-            raise RuntimeError("step_async must be called before step_wait")
-        obs, reward, terminated, truncated, info = self.env.step(self._buf_actions)
-        obs = cast(FloatArray, obs)
-        reward = cast(FloatArray, reward)
-        terminated = cast(BoolArray, terminated)
-        truncated = cast(BoolArray, truncated)
-        info = cast(dict[str, Any], info)
-        done = terminated | truncated
-        infos = [
-            dict(info, _terminated=bool(terminated[i]), _truncated=bool(truncated[i]))
-            for i in range(self.num_envs)
-        ]
-        return obs, reward, done, infos
-
-    def get_attr(self, attr: str, indices: Any = None) -> list[Any]:
-        if attr == "render_mode":
-            return [self.render_mode] * self.num_envs
-        return [getattr(self.env, attr)] * self.num_envs
-
-    def close(self) -> None:
-        self.env.close()
-
-    def env_is_wrapped(self, wrapper_class: Any, indices: Any = None) -> list[bool]:
-        return [False] * self.num_envs
-
-    def seed(self, seed: int | None = None) -> None:
-        pass
-
-    def render(self) -> None:
-        pass
 
 
 class OceanScaleVecEnv(gym.vector.VectorEnv[FloatArray, FloatArray, AnyArray]):
