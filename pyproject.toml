@@ -82,7 +82,7 @@ build-backend = "setuptools.build_meta"
 include = ["oceanscale*"]
 
 [tool.setuptools.package-data]
-oceanscale = ["data/*.zip", "data/*.npz", "assets/*.usda"]
+oceanscale = ["data/*.npz", "assets/*.usda"]
 
 [tool.uv]
 index-strategy = "unsafe-best-match"

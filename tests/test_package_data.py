@@ -14,14 +14,12 @@ def _package_data_patterns() -> list[str]:
 
 
 def test_supported_data_artifacts_exist() -> None:
-    assert (DATA_DIR / "bluerov2_station_keep_final.zip").is_file()
     assert (DATA_DIR / "vec_normalize.npz").is_file()
 
 
 def test_pyproject_packages_supported_data_artifacts() -> None:
     patterns = _package_data_patterns()
 
-    assert "data/*.zip" in patterns
     assert "data/*.npz" in patterns
 
 
