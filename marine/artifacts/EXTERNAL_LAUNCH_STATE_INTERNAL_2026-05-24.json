@@ -1,0 +1,227 @@
+{
+  "approvals_required_to_fix": [],
+  "checks": {
+    "historical_publish_pypi": {
+      "command": [
+        "gh",
+        "run",
+        "list",
+        "--workflow",
+        "Publish to PyPI",
+        "--limit",
+        "5",
+        "--json",
+        "databaseId,status,conclusion,displayTitle,workflowName,event,createdAt,url"
+      ],
+      "exit_code": 0,
+      "parse_error": "",
+      "runs": [
+        {
+          "conclusion": "failure",
+          "createdAt": "2026-05-24T15:21:34Z",
+          "databaseId": 26365095288,
+          "displayTitle": "feat(website): default language English, Chinese at /zh/ (#42)",
+          "event": "push",
+          "status": "completed",
+          "url": "https://github.com/robotlearning123/oceanscale/actions/runs/26365095288",
+          "workflowName": "Publish to PyPI"
+        },
+        {
+          "conclusion": "failure",
+          "createdAt": "2026-05-24T15:18:47Z",
+          "databaseId": 26365033803,
+          "displayTitle": "fix(website): remove install terminals, Colab link, strip to essentia\u2026",
+          "event": "push",
+          "status": "completed",
+          "url": "https://github.com/robotlearning123/oceanscale/actions/runs/26365033803",
+          "workflowName": "Publish to PyPI"
+        },
+        {
+          "conclusion": "failure",
+          "createdAt": "2026-05-24T15:16:30Z",
+          "databaseId": 26364982919,
+          "displayTitle": "fix(website): remove stats strip, replace AUV/ROV with underwater rob\u2026",
+          "event": "push",
+          "status": "completed",
+          "url": "https://github.com/robotlearning123/oceanscale/actions/runs/26364982919",
+          "workflowName": "Publish to PyPI"
+        },
+        {
+          "conclusion": "failure",
+          "createdAt": "2026-05-24T15:12:42Z",
+          "databaseId": 26364899278,
+          "displayTitle": "fix(website): restore v0.0.19 video-hero design from e85e84a (#39)",
+          "event": "push",
+          "status": "completed",
+          "url": "https://github.com/robotlearning123/oceanscale/actions/runs/26364899278",
+          "workflowName": "Publish to PyPI"
+        },
+        {
+          "conclusion": "failure",
+          "createdAt": "2026-05-24T15:09:12Z",
+          "databaseId": 26364819240,
+          "displayTitle": "fix(website): revert to v0.0.19 video-background design (#38)",
+          "event": "push",
+          "status": "completed",
+          "url": "https://github.com/robotlearning123/oceanscale/actions/runs/26364819240",
+          "workflowName": "Publish to PyPI"
+        }
+      ],
+      "stderr": "",
+      "workflow": "Publish to PyPI"
+    },
+    "public_pypi_policy": {
+      "oidc_publish_permission": false,
+      "public_publish_action": false,
+      "public_publish_enabled": false,
+      "public_pypi_environment": false,
+      "status": "green",
+      "tag_trigger": false
+    },
+    "pypi_availability": {
+      "available": false,
+      "command": [
+        "uvx",
+        "--from",
+        "pip",
+        "pip",
+        "index",
+        "versions",
+        "oceanscale"
+      ],
+      "exit_code": 1,
+      "package": "oceanscale",
+      "stderr": "ERROR: No matching distribution found for oceanscale\n",
+      "stdout": ""
+    },
+    "release_deploy": {
+      "command": [
+        "gh",
+        "run",
+        "list",
+        "--workflow",
+        "Release Deploy",
+        "--limit",
+        "5",
+        "--json",
+        "databaseId,status,conclusion,displayTitle,workflowName,event,createdAt,url"
+      ],
+      "exit_code": 0,
+      "parse_error": "",
+      "runs": [
+        {
+          "conclusion": "success",
+          "createdAt": "2026-05-24T15:21:34Z",
+          "databaseId": 26365095318,
+          "displayTitle": "feat(website): default language English, Chinese at /zh/ (#42)",
+          "event": "push",
+          "status": "completed",
+          "url": "https://github.com/robotlearning123/oceanscale/actions/runs/26365095318",
+          "workflowName": "Release Deploy"
+        },
+        {
+          "conclusion": "success",
+          "createdAt": "2026-05-24T15:18:47Z",
+          "databaseId": 26365033796,
+          "displayTitle": "fix(website): remove install terminals, Colab link, strip to essentia\u2026",
+          "event": "push",
+          "status": "completed",
+          "url": "https://github.com/robotlearning123/oceanscale/actions/runs/26365033796",
+          "workflowName": "Release Deploy"
+        },
+        {
+          "conclusion": "success",
+          "createdAt": "2026-05-24T15:16:30Z",
+          "databaseId": 26364982903,
+          "displayTitle": "fix(website): remove stats strip, replace AUV/ROV with underwater rob\u2026",
+          "event": "push",
+          "status": "completed",
+          "url": "https://github.com/robotlearning123/oceanscale/actions/runs/26364982903",
+          "workflowName": "Release Deploy"
+        },
+        {
+          "conclusion": "success",
+          "createdAt": "2026-05-24T15:12:42Z",
+          "databaseId": 26364899291,
+          "displayTitle": "fix(website): restore v0.0.19 video-hero design from e85e84a (#39)",
+          "event": "push",
+          "status": "completed",
+          "url": "https://github.com/robotlearning123/oceanscale/actions/runs/26364899291",
+          "workflowName": "Release Deploy"
+        },
+        {
+          "conclusion": "success",
+          "createdAt": "2026-05-24T15:09:12Z",
+          "databaseId": 26364819228,
+          "displayTitle": "fix(website): revert to v0.0.19 video-background design (#38)",
+          "event": "push",
+          "status": "completed",
+          "url": "https://github.com/robotlearning123/oceanscale/actions/runs/26364819228",
+          "workflowName": "Release Deploy"
+        }
+      ],
+      "stderr": "",
+      "workflow": "Release Deploy"
+    },
+    "release_policy": {
+      "automatic_tag_deploy": false,
+      "manual_dispatch": true,
+      "status": "green"
+    },
+    "workflow_runner_policy": {
+      "matches": [
+        {
+          "forbidden_fragments": [],
+          "line": 16,
+          "path": ".github/workflows/compat-matrix.yml",
+          "text": "runs-on: oceanscale-arc"
+        },
+        {
+          "forbidden_fragments": [],
+          "line": 35,
+          "path": ".github/workflows/compat-matrix.yml",
+          "text": "runs-on: oceanscale-arc"
+        },
+        {
+          "forbidden_fragments": [],
+          "line": 59,
+          "path": ".github/workflows/compat-matrix.yml",
+          "text": "runs-on: oceanscale-arc"
+        },
+        {
+          "forbidden_fragments": [],
+          "line": 83,
+          "path": ".github/workflows/compat-matrix.yml",
+          "text": "runs-on: oceanscale-arc"
+        },
+        {
+          "forbidden_fragments": [],
+          "line": 12,
+          "path": ".github/workflows/publish-pypi.yml",
+          "text": "runs-on: oceanscale-arc"
+        },
+        {
+          "forbidden_fragments": [],
+          "line": 18,
+          "path": ".github/workflows/release.yml",
+          "text": "runs-on: oceanscale-arc"
+        }
+      ],
+      "status": "green",
+      "violations": []
+    }
+  },
+  "generated_at": "2026-05-24T17:48:47.246144Z",
+  "public_launch": false,
+  "repository": "/home/robot/workspace/46-marine",
+  "scope": "internal_alpha_readiness",
+  "status": {
+    "overall_public_launch_pipeline": "deferred_not_public",
+    "public_pypi_policy": "green",
+    "public_pypi_publish": "deferred_not_public",
+    "pypi_availability": "deferred_not_public",
+    "release_deploy": "deferred_manual_only",
+    "release_policy": "green",
+    "workflow_runner_policy": "green"
+  }
+}
