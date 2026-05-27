@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OceanScale 全项目审查报告 — 2026-05-26</title>
+<style>
+  :root { --bg: #0d1117; --card: #161b22; --border: #30363d; --text: #e6edf3; --muted: #8b949e; --green: #3fb950; --red: #f85149; --yellow: #d29922; --blue: #58a6ff; --purple: #bc8cff; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 2rem; max-width: 1200px; margin: 0 auto; }
+  h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+  h2 { font-size: 1.3rem; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); color: var(--blue); }
+  h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; color: var(--purple); }
+  .subtitle { color: var(--muted); margin-bottom: 2rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0; }
+  .stat { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem; text-align: center; }
+  .stat .num { font-size: 2rem; font-weight: 700; }
+  .stat .label { font-size: 0.85rem; color: var(--muted); margin-top: 0.3rem; }
+  .green .num { color: var(--green); }
+  .yellow .num { color: var(--yellow); }
+  .red .num { color: var(--red); }
+  .blue .num { color: var(--blue); }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; background: var(--card); border-radius: 8px; overflow: hidden; }
+  th, td { padding: 0.7rem 1rem; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+  th { background: #1c2128; color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
+  tr:last-child td { border-bottom: none; }
+  .badge { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+  .badge-pass { background: rgba(63,185,80,0.15); color: var(--green); }
+  .badge-fail { background: rgba(248,81,73,0.15); color: var(--red); }
+  .badge-warn { background: rgba(210,153,34,0.15); color: var(--yellow); }
+  .badge-fix { background: rgba(88,166,255,0.15); color: var(--blue); }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem; margin: 1rem 0; }
+  .card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem; }
+  .card-header .icon { font-size: 1.2rem; }
+  code { background: rgba(110,118,129,0.2); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.85rem; font-family: 'SF Mono', Consolas, monospace; }
+  pre { background: #0d1117; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; font-size: 0.85rem; line-height: 1.5; margin: 0.5rem 0; }
+  .fix-block { border-left: 3px solid var(--blue); padding-left: 1rem; margin: 0.5rem 0; }
+  .summary-row { display: flex; gap: 2rem; flex-wrap: wrap; margin: 1rem 0; }
+  .summary-col { flex: 1; min-width: 280px; }
+  ul { padding-left: 1.5rem; margin: 0.5rem 0; }
+  li { margin: 0.3rem 0; font-size: 0.9rem; }
+  .footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.8rem; text-align: center; }
+  .timeline { position: relative; padding-left: 2rem; margin: 1rem 0; }
+  .timeline::before { content: ''; position: absolute; left: 0.5rem; top: 0; bottom: 0; width: 2px; background: var(--border); }
+  .timeline-item { position: relative; margin-bottom: 1.5rem; }
+  .timeline-item::before { content: ''; position: absolute; left: -1.65rem; top: 0.5rem; width: 10px; height: 10px; border-radius: 50%; background: var(--green); }
+  .timeline-item.warn::before { background: var(--yellow); }
+  .timeline-item .time { font-size: 0.8rem; color: var(--muted); }
+  .timeline-item .desc { font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<h1>OceanScale 全项目审查报告</h1>
+<p class="subtitle">分支: <code>chore/isaac6-oceanscale-baseline</code> + 工作树 <code>launch-v0.1.0</code> &mdash; 2026-05-26</p>
+
+<!-- ===== 总览 ===== -->
+<h2>1. 总览</h2>
+<div class="grid">
+  <div class="stat green"><div class="num">1075</div><div class="label">主仓库测试通过</div></div>
+  <div class="stat green"><div class="num">349</div><div class="label">工作树测试通过</div></div>
+  <div class="stat green"><div class="num">0</div><div class="label">测试失败</div></div>
+  <div class="stat blue"><div class="num">6</div><div class="label">已修复 Bug</div></div>
+  <div class="stat green"><div class="num">44</div><div class="label">公共导出验证</div></div>
+  <div class="stat green"><div class="num">PASS</div><div class="label">安全扫描</div></div>
+</div>
+
+<!-- ===== 审查流程 ===== -->
+<h2>2. 审查流程</h2>
+<p>采用 <strong>8 个并行代理</strong> 交叉验证，覆盖以下维度：</p>
+<div class="grid">
+  <div class="card"><div class="card-header"><span class="icon">[源码]</span> 源码审查</div><code>oceanscale/</code> 下 24 个变更文件，逐文件检查逻辑错误、类型安全、API 一致性</div>
+  <div class="card"><div class="card-header"><span class="icon">[测试]</span> 测试审查</div><code>tests/</code> 下 20 个变更文件，检查断言覆盖率、always-pass 模式、import 隔离</div>
+  <div class="card"><div class="card-header"><span class="icon">[文档]</span> 文档审查</div><code>RISKS.md</code> / <code>ROADMAP.md</code> 暂存+未暂存变更的一致性检查</div>
+  <div class="card"><div class="card-header"><span class="icon">[导出]</span> 导出一致性</div>5 个 <code>__init__.py</code> 的 44 个公共符号全部解析到真实定义</div>
+  <div class="card"><div class="card-header"><span class="icon">[Git]</span> 工作树/分支状态</div>3 个工作树、PR #65 状态、6 个 stash 检查</div>
+  <div class="card"><div class="card-header"><span class="icon">[安全]</span> 安全扫描</div>敏感信息、硬编码凭证、TODO/FIXME、私有 IP 扫描</div>
+  <div class="card"><div class="card-header"><span class="icon">[物理]</span> 物理正确性</div>rov_env.py (+415 行) 四元数旋转、Fossen 阻力、NaN 防护</div>
+  <div class="card"><div class="card-header"><span class="icon">[内核]</span> Warp 内核</div>tier1.py / tier1_kernels.py 线程索引、原子操作、数值稳定性</div>
+</div>
+
+<!-- ===== 主仓库审查结果 ===== -->
+<h2>3. 主仓库审查结果</h2>
+
+<h3>3.1 源码变更 (24 文件)</h3>
+<table>
+<tr><th>文件</th><th>变更类型</th><th>状态</th></tr>
+<tr><td><code>controllers/__init__.py</code></td><td>import 字母排序</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td><code>sensors/__init__.py</code></td><td>import 字母排序</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td><code>vehicles/__init__.py</code></td><td>import 字母排序</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td><code>envs/__init__.py</code></td><td>import 字母排序</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td><code>rendering/__init__.py</code></td><td>import 字母排序</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td><code>training/skrl_trainer.py</code></td><td>+<code>_to_numpy</code> 辅助函数, <code>n_envs</code> 回退</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td><code>cli.py</code></td><td>使用 <code>DockingApproachEnvCfg</code> 数据类</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td><code>vehicles/fish.py</code></td><td><code>MuJoCoDragParams</code> 移至 TYPE_CHECKING</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>其他 16 文件</td><td>移除未使用 import、<code>_</code> 前缀未使用变量</td><td><span class="badge badge-pass">PASS</span></td></tr>
+</table>
+
+<h3>3.2 测试变更 (20 文件)</h3>
+<table>
+<tr><th>变更类别</th><th>涉及文件数</th><th>状态</th></tr>
+<tr><td>import 字母排序</td><td>8</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>移除未使用 import</td><td>10</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>未使用变量 <code>_</code> 前缀</td><td>4</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>空行规范化</td><td>2</td><td><span class="badge badge-pass">PASS</span></td></tr>
+</table>
+<p>未删除任何断言，覆盖率未降低，无 always-pass 模式。</p>
+
+<h3>3.3 导出一致性</h3>
+<table>
+<tr><th>包</th><th>公共符号数</th><th>状态</th></tr>
+<tr><td><code>vehicles/__init__.py</code></td><td>14</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td><code>sensors/__init__.py</code></td><td>20</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td><code>controllers/__init__.py</code></td><td>5</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td><code>envs/__init__.py</code></td><td>3</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td><code>rendering/__init__.py</code></td><td>2</td><td><span class="badge badge-pass">PASS</span></td></tr>
+</table>
+<p><strong>44 个公共符号全部解析到真实定义，零悬空导出。</strong></p>
+
+<h3>3.4 已修复 Bug</h3>
+<div class="card">
+  <div class="card-header"><span class="badge badge-fix">FIX</span> RISKS.md R18 重复字段</div>
+  <p>R18 条目包含重复的 <code>Impact</code> 和 <code>Fallback</code> 行（新旧版本未清理）。</p>
+  <div class="fix-block">移除了旧的 "3.11 downgrade" / "python-3.11 group" 行，保留新的 "broken env resolution" 行。</div>
+</div>
+
+<!-- ===== 工作树审查结果 ===== -->
+<h2>4. 工作树 (launch-v0.1.0) 审查结果</h2>
+
+<h3>4.1 新增包结构</h3>
+<table>
+<tr><th>包</th><th>模块数</th><th>导出数</th><th>状态</th></tr>
+<tr><td><code>oceanscale/envs/</code></td><td>3</td><td>0 (空 __init__)</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td><code>oceanscale/sensors/</code></td><td>3</td><td>3</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td><code>oceanscale/training/</code></td><td>1</td><td>1</td><td><span class="badge badge-pass">PASS</span></td></tr>
+</table>
+<p>三个包互相无交叉 import，完全独立。</p>
+
+<h3>4.2 物理内核审查</h3>
+<table>
+<tr><th>检查项</th><th>结果</th></tr>
+<tr><td>四元数旋转 (<code>_rotate_to_world_torch</code>, <code>_rotate_to_body_torch</code>)</td><td><span class="badge badge-pass">PASS</span> xyzw 约定正确</td></tr>
+<tr><td><code>torch.asin</code> 输入钳位 [-1, 1]</td><td><span class="badge badge-pass">PASS</span> 无 NaN 风险</td></tr>
+<tr><td><code>nan_to_num</code> 防护</td><td><span class="badge badge-pass">PASS</span> 观测值安全</td></tr>
+<tr><td>Tier-1 阻力对角 Fossen 模型</td><td><span class="badge badge-pass">PASS</span> <code>F_i = -(D_lin + D_quad*|v_i|) * v_i</code></td></tr>
+<tr><td>洋流随机化 (球面均匀采样)</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>Warp 内核线程索引 / 原子操作</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>数值稳定性 (除零、NaN 传播)</td><td><span class="badge badge-pass">PASS</span></td></tr>
+</table>
+
+<h3>4.3 测试质量审查</h3>
+<table>
+<tr><th>测试文件</th><th>断言质量</th><th>状态</th></tr>
+<tr><td><code>test_docking_env.py</code></td><td>奖励有界性、初始距离范围、趋近方向</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td><code>test_energy_conservation.py</code></td><td>KE 守恒 (相对误差 &lt;0.1%)、机械能守恒 (&lt;1%)</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td><code>test_param_fidelity.py</code></td><td><code>xfail(strict=True)</code> 记录已知失配</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td><code>test_sensors.py</code></td><td>形状检查、确定性、DVL 恒等四元数</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td><code>test_tier1_autograd.py</code></td><td>6 个内核 Warp vs PyTorch 自动微分交叉验证</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td><code>test_tier1_determinism.py</code></td><td>3 次运行 bit-identical (<code>assert_array_equal</code>)</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td><code>test_tier1_smoke.py</code></td><td>浮力数值断言</td><td><span class="badge badge-fix">已修复</span></td></tr>
+<tr><td><code>test_tier1_throughput.py</code></td><td>8192 环境 &ge;100k steps/s</td><td><span class="badge badge-warn">需 GPU</span></td></tr>
+</table>
+
+<h3>4.4 pyproject.toml 验证</h3>
+<table>
+<tr><th>检查项</th><th>结果</th></tr>
+<tr><td>版本号</td><td><code>0.1.0-alpha</code> <span class="badge badge-fix">VERSION 已同步</span></td></tr>
+<tr><td>uv.lock 一致性</td><td><span class="badge badge-pass">PASS</span> 159 包解析一致</td></tr>
+<tr><td>依赖冲突</td><td><span class="badge badge-pass">PASS</span> 无版本范围冲突</td></tr>
+<tr><td>GPU 重依赖移至可选 extras</td><td><span class="badge badge-pass">PASS</span> usd-core, cupy, jax &rarr; [viz], [bench]</td></tr>
+</table>
+
+<!-- ===== 已修复 Bug 详情 ===== -->
+<h2>5. 已修复 Bug 详情</h2>
+
+<div class="card">
+  <div class="card-header"><span class="badge badge-fix">FIX 1</span> <code>test_tier1_smoke.py:123-126</code> — 断言被包装为元组，永远不会执行</div>
+<pre><span style="color:#f85149">- (
+-     np.testing.assert_allclose(fz, expected, rtol=0.05),
+-     (f"net z-force {fz} should be approx B-W={expected:.3f}"),
+- )</span>
+<span style="color:#3fb950">+ np.testing.assert_allclose(fz, expected, rtol=0.05,
++     err_msg=f"net z-force {fz} should be approx B-W={expected:.3f}")</span></pre>
+</div>
+
+<div class="card">
+  <div class="card-header"><span class="badge badge-fix">FIX 2</span> <code>tier1.py:263</code> — np.zeros 形状与 wp.vec3f 不匹配</div>
+<pre><span style="color:#f85149">- np.zeros((self.n_envs, 3), dtype=np.float32)</span>
+<span style="color:#3fb950">+ np.zeros(self.n_envs, dtype=np.dtype(("f4", 3)))</span></pre>
+</div>
+
+<div class="card">
+  <div class="card-header"><span class="badge badge-fix">FIX 3</span> <code>VERSION</code> — 版本号未同步 (0.0.2 &rarr; 0.1.0-alpha)</div>
+<pre><span style="color:#f85149">- 0.0.2</span>
+<span style="color:#3fb950">+ 0.1.0-alpha</span></pre>
+</div>
+
+<div class="card">
+  <div class="card-header"><span class="badge badge-fix">FIX 4</span> <code>sb3_vs_skrl_ppo.py</code> — eval_reward 跨 episode 累积错误 + CPU-only 问题</div>
+<p>SB3 仅支持 CPU，不是公平的 GPU vs CPU 对比。已移除该 benchmark。skrl 训练已由 <code>oceanscale/training/skrl_trainer.py</code> 覆盖。</p>
+</div>
+
+<div class="card">
+  <div class="card-header"><span class="badge badge-fix">FIX 5</span> 4 个 benchmark 在无 GPU 环境 import 崩溃</div>
+<p><code>cuda_lowlevel_metrics.py</code>、<code>jacobi_stencil_bench.py</code>、<code>newton_underwater_bench.py</code> 在模块级别调用 <code>wp.init()</code>，无 GPU 时直接崩溃。已添加 <code>is_cuda_available()</code> 守卫，给出清晰错误信息。</p>
+</div>
+
+<div class="card">
+  <div class="card-header"><span class="badge badge-fix">FIX 6</span> <code>RISKS.md</code> R18 重复 Impact/Fallback 字段</div>
+<p>R18 条目包含新旧两版 Impact 和 Fallback 行。已移除旧版 "3.11 downgrade" 行。</p>
+</div>
+
+<!-- ===== 安全扫描 ===== -->
+<h2>6. 安全扫描</h2>
+<table>
+<tr><th>检查项</th><th>主仓库</th><th>工作树</th></tr>
+<tr><td>敏感信息 (password/secret/token/api_key)</td><td><span class="badge badge-pass">PASS</span></td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>硬编码凭证 (sk-/ghp_/xoxb-/AKIA)</td><td><span class="badge badge-pass">PASS</span></td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>TODO/FIXME/HACK 标记</td><td><span class="badge badge-pass">PASS</span></td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>私有 IP 地址</td><td><span class="badge badge-pass">PASS</span></td><td><span class="badge badge-pass">PASS</span></td></tr>
+</table>
+
+<!-- ===== Git 状态 ===== -->
+<h2>7. Git 状态</h2>
+
+<h3>7.1 工作树</h3>
+<table>
+<tr><th>路径</th><th>分支</th><th>最新提交</th></tr>
+<tr><td>主仓库</td><td><code>chore/isaac6-oceanscale-baseline</code></td><td><code>f28244d</code> chore: lint cleanup + fix RISKS.md R18</td></tr>
+<tr><td><code>46-marine-v020</code></td><td><code>feat/website-v020-design-polish</code></td><td><code>fa9c160</code></td></tr>
+<tr><td><code>.claude/worktrees/launch-v0.1.0</code></td><td><code>worktree-launch-v0.1.0</code></td><td><code>dbab007</code> feat: v0.1.0-alpha launch prep</td></tr>
+</table>
+
+<h3>7.2 PR 状态</h3>
+<table>
+<tr><th>PR</th><th>标题</th><th>状态</th><th>检查</th></tr>
+<tr><td>#65</td><td>docs: record Isaac 6 OceanScale baseline</td><td>OPEN</td><td>Cloudflare Pages <span class="badge badge-pass">PASS</span> CodeRabbit <span class="badge badge-pass">PASS</span></td></tr>
+</table>
+
+<h3>7.3 Stash (6 个)</h3>
+<table>
+<tr><th>索引</th><th>分支</th><th>描述</th></tr>
+<tr><td>0</td><td><code>feat/isaaclab-official-pattern</code></td><td>Isaac Lab 3 官方模式</td></tr>
+<tr><td>1</td><td><code>feat/integration-marinegym-oceansim</code></td><td>Isaac Lab env docstring 对齐</td></tr>
+<tr><td>2-3</td><td><code>main</code></td><td>旧合并点</td></tr>
+<tr><td>4</td><td><code>feat/v0.6-net-new-2026-05-21</code></td><td>暂停的会前工作</td></tr>
+<tr><td>5</td><td><code>feat/oceanscale-website-v0.1.0</code></td><td>设计审查临时存储</td></tr>
+</table>
+
+<!-- ===== 仍存在的已知问题 ===== -->
+<h2>8. 仍存在的已知问题</h2>
+<table>
+<tr><th>问题</th><th>严重程度</th><th>位置</th><th>说明</th></tr>
+<tr><td><code>step()</code> 混合返回类型</td><td><span class="badge badge-warn">中</span></td><td><code>rov_env.py</code></td><td>当 <code>gpu_obs=True</code> 时，obs 返回 numpy 但 reward/terminated/truncated 返回 torch.Tensor</td></tr>
+<tr><td><code>reward_weights</code> 参数被忽略</td><td><span class="badge badge-warn">低</span></td><td><code>rov_env.py</code></td><td>构造函数接受该参数但权重被硬编码 (0.5/0.3/0.2)</td></tr>
+<tr><td><code>step</code> / <code>step_torch</code> 逻辑重复</td><td><span class="badge badge-warn">低</span></td><td><code>rov_env.py</code></td><td>~80 行相同逻辑重复，未来 bug 修复需改两处</td></tr>
+<tr><td><code>thruster_gain</code> 字段未使用</td><td><span class="badge badge-warn">低</span></td><td><code>tier1.py</code></td><td>在 <code>RandomizationRanges</code> 中定义但 <code>randomize_coeffs()</code> 未采样</td></tr>
+<tr><td>Throughput 测试依赖硬件</td><td><span class="badge badge-warn">低</span></td><td><code>test_tier1_throughput.py</code></td><td>&ge;100k steps/s 门限在非 RTX 5090 上会失败</td></tr>
+</table>
+
+<!-- ===== 提交历史 ===== -->
+<h2>9. 本次审查提交记录</h2>
+<div class="timeline">
+  <div class="timeline-item">
+    <div class="time">f28244d</div>
+    <div class="desc"><strong>chore: lint cleanup + fix RISKS.md R18 duplicate fields</strong><br>47 文件, +248/-330 行 &mdash; 主仓库 import 清理 + RISKS 修复</div>
+  </div>
+  <div class="timeline-item">
+    <div class="time">dacb209</div>
+    <div class="desc"><strong>feat: v0.1.0-alpha launch prep — envs, sensors, training, benchmarks</strong><br>44 文件, +7813/-384 行 &mdash; 工作树全部暂存工作 + bug 修复</div>
+  </div>
+  <div class="timeline-item">
+    <div class="time">dbab007</div>
+    <div class="desc"><strong>chore: remove sb3_vs_skrl_ppo benchmark (SB3 is CPU-only)</strong><br>1 文件, -248 行 &mdash; 移除不公平对比 benchmark</div>
+  </div>
+</div>
+
+<div class="footer">
+  OceanScale 全项目审查报告 &mdash; 由 8 个并行 AI 代理交叉验证生成 &mdash; 2026-05-26
+</div>
+
+</body>
+</html>
