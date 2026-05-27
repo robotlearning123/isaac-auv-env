@@ -120,7 +120,5 @@ def test_tier1_neutral_buoyancy_at_rest(tier1) -> None:
     W = 11.4 * 9.81
     B = 1025.0 * 0.0113459 * 9.81
     expected = B - W  # positive: floats up
-    (
-        np.testing.assert_allclose(fz, expected, rtol=0.05),
-        (f"net z-force {fz} should be approx B-W={expected:.3f} (positive = floats up)"),
-    )
+    np.testing.assert_allclose(fz, expected, rtol=0.05,
+        err_msg=f"net z-force {fz} should be approx B-W={expected:.3f} (positive = floats up)")
