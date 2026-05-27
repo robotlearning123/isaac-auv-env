@@ -19,7 +19,7 @@ See `../LAYOUT.md` §1 for the full directory tree.
 - NumPy >= 1.26, SciPy >= 1.13
 - Gymnasium >= 1.2
 
-**No Isaac Sim dependency.** Isaac Sim and Isaac Lab are referenced for context, not required for any code path.
+**No Isaac Sim dependency in the core package.** Isaac Sim 6 and Isaac Lab 3 are the main validation lane for OceanScale, but they remain in a separate Isaac validation environment. Core package code must continue to import and run without Isaac packages installed unless the user deliberately enters the Isaac lane.
 
 ## Conventions
 
@@ -32,6 +32,7 @@ See `../LAYOUT.md` §1 for the full directory tree.
 ## Testing
 
 ```bash
+uv python pin 3.12
 uv run pytest tests/ -v                          # full test suite
 uv run pytest tests/ -v -m "not gpu"             # CPU-only subset
 uv run pytest tests/hydro/test_tier1_autograd.py # specific test
@@ -50,14 +51,15 @@ uv run mypy oceanscale/
 ## CLI surface
 
 ```bash
-oceanscale demo bluerov2-hover --render-mp4 demo.mp4
-oceanscale train bluerov2-hover --total 1000000 --n_envs 4
-oceanscale --version
+uv run oceanscale demo bluerov2-hover --device cpu
+uv run oceanscale demo bluerov2-hover --device cuda --render-mp4 demo.mp4
+uv run oceanscale train bluerov2-hover --total 1000000 --n_envs 4 --device cuda
+uv run oceanscale --version
 ```
 
 ## What NOT to do
 
-- Do not add Isaac Sim as a dependency.
+- Do not add Isaac Sim as a core package dependency.
 - Do not modify `state.body_q` directly outside the integrator.
 - Do not add `print()` statements.
 - Do not add features beyond the assigned task.

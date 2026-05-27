@@ -9,11 +9,9 @@ import os
 import select
 import signal
 import subprocess
-import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
-
 
 DEFAULT_ROOT = Path("/mnt/storage/isaacsim-6.0-official")
 DEFAULT_SIM = DEFAULT_ROOT / "sources" / "IsaacSim-develop"

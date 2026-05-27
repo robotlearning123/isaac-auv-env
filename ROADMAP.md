@@ -1,23 +1,23 @@
 # OceanScale Roadmap
 
-**Status:** Active. Version 0.0.x identity-reset baseline. Last revised 2026-05-22.
-**Scheduling:** All dates are tentative. Items marked *exploratory* are not yet committed and may change or be dropped.
-**Authority:** This file owns scheduling and sequencing. See cross-reference table at the end for which doc owns what.
+Items marked *exploratory* are not yet committed and may change or be dropped.
 
 ---
 
-## v0.0.x — Near-term (Q3–Q4 2026, tentative)
+## v0.1 -- Near-term
 
 Identity-reset baseline. Ship a credible v0.1 SDK with one vehicle, one task, and honest benchmarks.
 
 ### SDK and tooling
 
-- [x] Agent-native repo (per-tool configs: `.codex/`, `.gemini/`, `.cursor/`, `.github/copilot-instructions.md`)
-- [x] `POSITIONING.md` v1.1 locked as brand law
+- [x] Agent-native repo (per-tool configs)
+- [x] `POSITIONING.md` locked as brand law
 - [x] `ARCHITECTURE.md` technical proposal
 - [x] Tag-driven Cloudflare Pages deployment pipeline
-- [ ] PyPI publish workflow verified end-to-end (`.github/workflows/publish-pypi.yml` exists, untested at release)
-- [ ] Newton + Warp install path verified on Colab T4 (documented, not yet confirmed)
+- [x] Source install path verified from the repo
+- [ ] PyPI publish workflow verified end-to-end
+- [ ] Newton + Warp install path verified on Colab T4
+- [x] Isaac Sim 6 / Isaac Lab 3 validation lane verified locally
 
 ### BlueROV2 stabilization
 
@@ -26,11 +26,11 @@ Identity-reset baseline. Ship a credible v0.1 SDK with one vehicle, one task, an
 - [x] PPO hover policy converges (explained_variance 0.901 at 1M steps)
 - [x] Headless MP4 renderer (single-panel + cinematic 4-panel)
 - [x] CLI entry point: `oceanscale demo bluerov2-hover`
-- [ ] Lateral drift in hover eval (~0.41m over 33s) — v0.2 target
+- [ ] Lateral drift in hover eval (~0.41m over 33s) -- v0.2 target
 
 ### Benchmarks and validation
 
-- [x] OceanScale vs PyBullet apples-to-apples benchmark (10.49x at n=64, RTX 5090)
+- [x] OceanScale vs PyBullet apples-to-apples benchmark (10.49x at n=64)
 - [x] NVIDIA ecosystem benchmark matrix (28 scripts)
 - [ ] Sim-to-real validation with physical BlueROV2 (needs hardware partner)
 
@@ -40,31 +40,26 @@ Identity-reset baseline. Ship a credible v0.1 SDK with one vehicle, one task, an
 - [x] Demo section with install command, Colab badge, benchmark table
 - [ ] Replace placeholder video with real render at release tag
 
-### Customer discovery
-
-- [ ] 5–10 customer interviews with underwater robotics operators
-- [ ] 2-page operator/VC brief shipped (`docs/v0.1_brief.md` exists, needs interview input)
-
 ### Shipping criteria for v0.1
 
-1. `pip install oceanscale && oceanscale demo bluerov2-hover` works on RTX 5090
+1. Source install plus `uv run oceanscale demo bluerov2-hover` works on supported GPUs
 2. Benchmark table on website matches reproducible `benchmarks/RESULTS.md`
-3. At least 3 customer interviews completed
-4. CHANGELOG entry + version tag
+3. CHANGELOG entry + version tag
+4. Public PyPI release remains a separate gate until the publish workflow is verified end-to-end
 
 ---
 
-## v0.x — Medium-term (2027, tentative)
+## v0.x -- Medium-term
 
-Expand from one vehicle and one task to a multi-vehicle, multi-environment platform. Items here derive from `ARCHITECTURE.md` §9 roadmap and `POSITIONING.md` §4 tier hierarchy.
+Expand from one vehicle and one task to a multi-vehicle, multi-environment platform.
 
-### Vehicles (ARCHITECTURE.md §7.1)
+### Vehicles
 
 - [ ] BlueROV2 Heavy (exploratory)
 - [ ] IVER3-class AUV (exploratory)
 - [ ] REMUS-class AUV (exploratory)
 
-### Environments and physics (ARCHITECTURE.md §5)
+### Environments and physics
 
 - [ ] Tier-1 Fossen stabilization (lateral drift fix, thruster wash coupling)
 - [ ] Tier-2 SPH fluid model for manipulator/thruster wakes (exploratory, gated on throughput)
@@ -72,7 +67,7 @@ Expand from one vehicle and one task to a multi-vehicle, multi-environment platf
 - [ ] Time-varying current fields
 - [ ] Domain randomization toolkit (mass, inertia, currents, turbidity, sensor noise)
 
-### Sensors (ARCHITECTURE.md §6)
+### Sensors
 
 - [ ] Forward-looking sonar (Warp BVH ray cast)
 - [ ] Sidescan and multibeam sonar
@@ -80,7 +75,7 @@ Expand from one vehicle and one task to a multi-vehicle, multi-environment platf
 - [ ] DVL (4-beam Doppler, bottom-lock / water-track)
 - [ ] Acoustic modem (BELLHOP wrapper)
 
-### RL and benchmark tasks (ARCHITECTURE.md §7.2, §8)
+### RL and benchmark tasks
 
 - [ ] Station-keeping under current + wave
 - [ ] Pipe / cable following with sonar
@@ -89,57 +84,38 @@ Expand from one vehicle and one task to a multi-vehicle, multi-environment platf
 - [ ] Bathymetric survey with sidescan
 - [ ] ONNX export for every benchmark policy
 
-### Throughput targets (ARCHITECTURE.md §8)
+### Throughput targets (single GPU)
 
-| Task | Target (single RTX 5090) | Status |
-|------|--------------------------|--------|
+| Task | Target | Status |
+|------|--------|--------|
 | Station-keep, tier-0 | >=600k FPS | exploratory |
 | Pipe-follow, tier-1 + sonar | >=80k FPS | exploratory |
 | Multi-AUV MARL, tier-1 + comms | >=25k FPS | exploratory |
 | Manipulator FSI, tier-2 | >=5k FPS | exploratory |
 
-### Release milestones (from ARCHITECTURE.md §9)
-
-| Version | Scope | Effort estimate |
-|---------|-------|-----------------|
-| v0.2 | Tier-1 Fossen stabilization, DVL, sonar v1, DR toolkit, MarineGym task parity | 6–8 weeks |
-| v0.3 | Free-surface waves, currents, vision pass, sidescan, ONNX export | 8–10 weeks |
-| v0.4 | Multi-agent, acoustic comms, MARL benchmarks, tether, manipulator FSI tier-2 | 8–10 weeks |
-| v0.5 | Public release + paper; throughput targets met | 4–6 weeks |
-
 ---
 
-## vN — Long-term (>2027, exploratory)
+## vN -- Long-term (exploratory)
 
-Directions that depend on evidence not yet available. Promotion gates from `POSITIONING.md` §4 and §9 apply.
+Directions that depend on evidence not yet available. Promotion gates from `POSITIONING.md` apply.
 
-### Tier-2: ocean world model (POSITIONING.md §4, §9.2)
+### Tier-2: ocean world model
 
 **Promotion gate:** a shipped demo shows the learned layer improving simulator fidelity or transfer, with a public benchmark against a relevant non-learned baseline.
 
-- [ ] Evidence: learned layer demonstrably improves fidelity or sim-to-real transfer
-- [ ] Evidence: public benchmark vs non-learned baseline
-- [ ] Promote "ocean world model" to homepage (POSITIONING.md §4 tier-2 row)
-
-Until the gate is met, the world model stays "one click below the homepage" (POSITIONING.md §4). Technical exploration is fine; public positioning as a world-model company is not.
-
-### Tier-3: ocean foundation model (POSITIONING.md §4)
+### Tier-3: ocean foundation model
 
 **Promotion gate:** (a) data scale evidence, (b) model trained at meaningful parameter scale, (c) distribution leverage.
 
-- [ ] Evidence: data pipeline at scale
-- [ ] Evidence: model trained and evaluated
-- [ ] Evidence: distribution leverage demonstrated
+Until these gates are met, these remain in research phase.
 
-Until all three hold, "ocean foundation model" is research-note / private-deck only, with explicit distinction from tier-2 (POSITIONING.md §4, §8).
+### Scope expansion
 
-### Scope expansion (POSITIONING.md §9.1)
-
-Current scope: underwater robotics (AUVs, ROVs). Expansion to broader marine robotics revisited when all three hold:
+Current scope: underwater robotics (AUVs, ROVs). Expansion to broader marine robotics revisited when:
 
 1. The same simulator primitive clearly serves underwater and surface systems
-2. At least two serious commercial conversations pull toward USVs or broader autonomy
-3. The category can expand without reviving banned language (POSITIONING.md §8)
+2. At least two serious conversations pull toward USVs or broader autonomy
+3. The category can expand without diluting focus
 
 ---
 
@@ -147,15 +123,8 @@ Current scope: underwater robotics (AUVs, ROVs). Expansion to broader marine rob
 
 | Domain | Owner | Content |
 |--------|-------|---------|
-| Vision, category, scope, voice, lexicon, banned words, tier hierarchy, promotion gates | `POSITIONING.md` | Brand law. Downstream docs derive from it. |
-| Technical architecture, physics tiers, sensor design, RL frontend, throughput targets | `ARCHITECTURE.md` | Engineering proposal. §9 has version-level scope. |
-| Scheduling, sequencing, shipping criteria, status tracking | `ROADMAP.md` (this file) | What ships when. Marks tentative vs committed. |
-| Version history, per-release changes | `CHANGELOG.md` | Keep-a-Changelog format. Ground truth for what shipped. |
-| Current priorities, blockers, session state | `HANDOFF.md` | Operational. Updated each session. |
-| Visual identity, color, typography | `DESIGN.md` | Visual brand law. |
-
----
-
-## Changelog
-
-- **2026-05-22** — Initial draft. Near-term items from `CHANGELOG.md` (unreleased + v0.0.1). Medium-term from `ARCHITECTURE.md` §9. Long-term from `POSITIONING.md` §4 and §9. All dates tentative.
+| Vision, category, scope, voice, lexicon | `POSITIONING.md` | Brand law |
+| Technical architecture, physics tiers, sensor design | `ARCHITECTURE.md` | Engineering proposal |
+| Scheduling, sequencing, shipping criteria | `ROADMAP.md` (this file) | What ships when |
+| Version history, per-release changes | `CHANGELOG.md` | What shipped |
+| Visual identity, color, typography | `DESIGN.md` | Visual brand law |

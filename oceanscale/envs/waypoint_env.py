@@ -335,7 +335,7 @@ class WaypointFollowingEnv(gym.Env[Any, Any]):
         self._step_count += 1
 
         # -- Waypoint advancement (vectorized) --
-        pos, quat, vel = self._get_body_state()
+        pos, _quat, vel = self._get_body_state()
         targets = self._current_targets()
 
         self._wp_just_reached[:] = False

@@ -127,7 +127,7 @@ ADR log. Each record: date, status, context, options considered, decision, ratio
 ## ADR-007 — Newton + Warp stack, no Isaac Sim dependency
 
 **Date:** Pre-2026-05-22 (decision crystallized 2026-05-15, confirmed 2026-05-21)
-**Status:** Accepted
+**Status:** Superseded by ADR-013 on 2026-05-26
 
 **Context:** OceanScale needs a GPU-native physics stack. NVIDIA's ecosystem offers Newton/Warp (lightweight) and Isaac Sim (heavyweight, full-featured).
 
@@ -141,7 +141,29 @@ ADR log. Each record: date, status, context, options considered, decision, ratio
 
 **Rationale:** Source: `ARCHITECTURE.md` §3 (tech stack rationale), `STATUS.md` §Decision (LOCKED 2026-05-15). SolverSemiImplicit achieves 221 M env-steps/s at 8192 envs on RTX 5090 — 2200× margin over the 100k target. Isaac Sim install friction is a known v0.1 risk (project_v01_product_shape memory: "Isaac Sim install friction → v0.1 must NOT depend on Isaac Sim").
 
-**Consequences:** `pip install oceanscale` pulls Newton + Warp + SB3 only. Isaac Sim / Isaac Lab integration deferred to v0.2+. MuJoCo-Warp remains available as an alternative solver when richer physics is needed.
+**Historical consequences:** At the time, the intended package install pulled Newton + Warp + SB3 only, with Isaac Sim / Isaac Lab deferred to v0.2+. This is not current install guidance; use the source install and Isaac 6 verifier docs linked in ADR-013.
+
+**Supersession note:** Keep this ADR for historical context. The project direction changed on 2026-05-26: OceanScale is now NVIDIA ecosystem-first, with Isaac Sim 6 / Isaac Lab 3 as the main validation lane. The implementation still preserves the useful part of ADR-007 by keeping Isaac packages out of the default OceanScale `.venv`.
+
+---
+
+## ADR-013 — Isaac Sim 6 ecosystem as main validation lane
+
+**Date:** 2026-05-26
+**Status:** Accepted
+
+**Context:** OceanScale is the ocean layer in the NVIDIA robotics simulation ecosystem. The project now needs a clear new-user path for Isaac Sim 6, Isaac Lab 3, Newton, Warp, CUDA, and PyTorch without overwriting older Isaac installs or contaminating the core OceanScale development environment.
+
+**Options considered:**
+1. Install Isaac Sim 6 and Isaac Lab 3 directly into the default OceanScale `.venv`
+2. Keep OceanScale core standalone and treat Isaac as future work
+3. Use a dedicated Isaac validation environment side-by-side with the OceanScale core env
+
+**Decision:** Isaac Sim 6 and Isaac Lab 3 are the main NVIDIA ecosystem validation lane for OceanScale. The canonical setup uses a separate Isaac validation venv and retained official source checkouts. The OceanScale core package remains source-installable from this repo and keeps Isaac packages out of the default `.venv` unless deliberately creating a combined experiment.
+
+**Rationale:** Isaac Sim 6 / Isaac Lab 3 establish the robot-learning and simulation ecosystem target. Keeping envs separate prevents Isaac package pins from downgrading or overwriting the Newton/Warp stack used by OceanScale core. Retaining source checkouts supports API inspection, patch triage, and future source builds while the pip Isaac Sim runtime remains the practical validation path.
+
+**Consequences:** New users should follow `docs/getting-started.md` for source install and `docs/isaac6-isaaclab3-install.md` for the Isaac lane. Public PyPI release is not claimed until the publish workflow is verified end-to-end. The OceanScale gate is the native Isaac 6 / Isaac Lab 3 verifier, not a full sweep of all upstream Isaac demos.
 
 ---
 

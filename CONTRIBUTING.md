@@ -19,6 +19,7 @@ Before any contribution:
 ```bash
 git clone https://github.com/robotlearning123/oceanscale.git
 cd oceanscale
+uv python pin 3.12
 uv sync --extra dev          # Python deps (CUDA 12.8+)
 cd website && pnpm install   # website deps
 ```
@@ -46,7 +47,7 @@ refactor(scope): short summary
 
 - Run tests after every code change. Fix failures before committing.
 - Bug fix: failing test first, then fix.
-- Python: `uv run pytest tests/ -v`  (1066+ tests)
+- Python: `uv run pytest tests/ -v`
 - Website: `cd website && pnpm build` (build-time check)
 
 ## Project structure
@@ -65,7 +66,7 @@ oceanscale/
   propulsion/         # T200 thruster, buoyancy engine, flapping fin
   benchmarks/         # GPU kernel throughput suite
 website/              # Astro 6 + Tailwind v4 landing page
-tests/                # 1066+ tests
+tests/                # test suite
 ```
 
 ## Pull request checklist

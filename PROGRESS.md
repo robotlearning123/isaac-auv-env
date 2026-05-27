@@ -1,6 +1,20 @@
 # OceanScale Progress
 
-Live snapshot. Refreshed per session. Last refresh 2026-05-22.
+Historical snapshot. The 2026-05-22 content below is retained for context and is not the current source of truth.
+
+Current source-of-truth docs:
+
+- `README.md` for the source quickstart.
+- `docs/README.md` for the documentation map.
+- `docs/verification.md` for the customer/new-user verification runbook.
+- `docs/isaac6-isaaclab3-install.md` for the Isaac Sim 6 / Isaac Lab 3 lane.
+- `DECISIONS.md` ADR-013 for the current Isaac 6 validation-lane decision.
+- `STATUS.md` current addendum for the latest status boundary.
+
+Current version identity: `0.1.0-alpha` in `VERSION` and `pyproject.toml`.
+Public PyPI publishing is not verified end-to-end yet; use the source install path.
+
+---
 
 ## 1. Identity
 

@@ -53,6 +53,7 @@ class TestStubWithoutIsaacLab:
 class TestDirectRLEnv:
     def test_inherits_directrl(self):
         from isaaclab.envs import DirectRLEnv
+
         from oceanscale.training.isaaclab_task import OceanScaleTask
         assert issubclass(OceanScaleTask, DirectRLEnv)
 
@@ -66,6 +67,7 @@ class TestDirectRLEnv:
 
     def test_cfg_is_directrl_ready(self):
         from isaaclab.envs import DirectRLEnvCfg
+
         from oceanscale.training.isaaclab_task import OceanScaleTaskCfg
 
         cfg = OceanScaleTaskCfg(num_envs=2, physics_dt=1 / 120, decimation=3)

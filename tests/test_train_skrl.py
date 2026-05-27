@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import torch
 import pytest
+import torch
 
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA required")

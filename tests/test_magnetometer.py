@@ -1,6 +1,5 @@
 """Tests for magnetometer sensor."""
 
-import math
 
 import numpy as np
 

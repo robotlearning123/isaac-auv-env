@@ -98,7 +98,7 @@ class TestReset:
         for _ in range(20):
             sim.step(np.ones(6))
         obs_before = sim._observe()
-        pos_env0_before = obs_before["position"][0].copy()
+        _pos_env0_before = obs_before["position"][0].copy()
         sim.reset_envs(np.array([0, 2]))
         obs_after = sim._observe()
         np.testing.assert_allclose(obs_after["position"][0], [0, 0, -5], atol=0.1)

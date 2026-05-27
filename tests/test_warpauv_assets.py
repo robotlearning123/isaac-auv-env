@@ -1,6 +1,5 @@
 """Tests for WarpAUV vehicle config and USD asset."""
 
-from pathlib import Path
 
 import numpy as np
 

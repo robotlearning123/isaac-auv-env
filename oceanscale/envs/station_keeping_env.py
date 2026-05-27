@@ -15,7 +15,6 @@ from typing import Any
 import gymnasium as gym
 import numpy as np
 import torch
-import warp as wp
 from gymnasium import spaces
 
 from oceanscale.sim import OceanConfig, OceanSim, OceanSimConfig

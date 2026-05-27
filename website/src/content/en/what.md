@@ -15,7 +15,7 @@ capabilities:
     title: "Fossen dynamics"
     body: "6-DoF hydrodynamics with IMU, DVL, and depth/pressure stubs."
   - metric: null
-    metricLabel: "Newton + Warp"
+    metricLabel: "Isaac Sim 6 + Isaac Lab 3"
     title: "Robotics ecosystem"
-    body: "Newton, Warp, OpenUSD, and Gymnasium interfaces (Isaac Sim: future integration path)."
+    body: "OceanScale is the ocean layer in the NVIDIA robotics simulation ecosystem, with Isaac Sim 6 and Isaac Lab 3 as the validation lane."
 ---

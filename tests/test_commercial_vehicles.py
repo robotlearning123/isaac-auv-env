@@ -1,15 +1,15 @@
 """Tests for commercial AUV/ROV vehicle configurations."""
 
 import pytest
+
 from oceanscale.vehicles import (
+    COMMERCIAL_VEHICLE_REGISTRY,
+    HUGIN1000,
+    LAUV,
     REMUS100,
     Girona500,
-    LAUV,
-    HUGIN1000,
     SparusII,
-    COMMERCIAL_VEHICLE_REGISTRY,
 )
-
 
 VEHICLES = [REMUS100, Girona500, LAUV, HUGIN1000, SparusII]
 
