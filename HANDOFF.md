@@ -1,5 +1,11 @@
 # Session Handoff — 2026-05-26 (session 6)
 
+## Current addendum — Isaac 6 docs and verification
+
+The current new-user path is documented in `docs/README.md`, `docs/getting-started.md`, `docs/verification.md`, and `docs/isaac6-isaaclab3-install.md`. OceanScale is using Isaac Sim 6 / Isaac Lab 3 as the main validation lane, with a separate Isaac validation venv so Isaac package pins do not overwrite the OceanScale Newton/Warp core environment. Public PyPI publishing is not verified; use the source install path.
+
+Latest local Isaac baseline verifier evidence: `/mnt/storage/isaacsim-6.0-official/logs/oceanscale-latest-isaac-baseline-2026-05-26-125621/summary.json`.
+
 ## What shipped since last handoff
 
 Four PRs merged (#55–#59):

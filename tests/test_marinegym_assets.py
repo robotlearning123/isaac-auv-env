@@ -1,9 +1,6 @@
 """Tests for MarineGym BlueROV asset integration."""
-from pathlib import Path
 
-import numpy as np
 import pytest
-import yaml
 
 
 def test_bluerov_usd_exists():
@@ -15,6 +12,7 @@ def test_bluerov_usd_exists():
 
 def test_bluerov_usd_valid():
     from pxr import Usd
+
     from oceanscale.vehicles.bluerov2 import _marinegym_asset_dir
     stage = Usd.Stage.Open(str(_marinegym_asset_dir() / "BlueROV.usd"))
     assert stage is not None
@@ -26,6 +24,7 @@ def test_bluerov_usd_valid():
 
 def test_bluerov_usd_has_rotors():
     from pxr import Usd
+
     from oceanscale.vehicles.bluerov2 import _marinegym_asset_dir
     stage = Usd.Stage.Open(str(_marinegym_asset_dir() / "BlueROV.usd"))
     for i in range(6):

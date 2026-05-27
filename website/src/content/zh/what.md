@@ -15,7 +15,7 @@ capabilities:
     title: "海洋物理"
     body: "6-DoF 水动力,并包含 IMU、DVL 与深度/压力 stub。"
   - metric: null
-    metricLabel: "Newton + Warp"
+    metricLabel: "Isaac Sim 6 + Isaac Lab 3"
     title: "机器人生态"
-    body: "Newton、Warp、OpenUSD 与 Gymnasium 接口（Isaac Sim：未来集成路径）。"
+    body: "OceanScale 是 NVIDIA 机器人仿真生态中的海洋层，Isaac Sim 6 与 Isaac Lab 3 是当前验证线。"
 ---

@@ -1,55 +1,82 @@
 # OceanScale
 
-GPU-native ocean simulation infrastructure for underwater robotics. Fossen 6-DOF dynamics on Newton + Warp, vectorized RL training, reproducible benchmarks on commodity GPU.
+The ocean simulator for underwater robotics.
+
+OceanScale is the ocean layer in the NVIDIA robotics simulation ecosystem: Isaac Sim 6, Isaac Lab 3, Newton, Warp, CUDA, and PyTorch. Lightwheel is the reference peer for robots on land; OceanScale builds the ocean physics, environments, and underwater sensor layer for AUVs and ROVs.
 
 ## Why OceanScale?
 
-- **GPU-native physics** — Newton + Warp CUDA kernels, not CPU loops. 17K env-steps/s at n=64 on a single RTX 5090.
-- **RL-ready** — Gymnasium-compatible `ROVEnv` with `BatchedVecEnv`, PPO converges out of the box.
-- **Validated** — Tier-1 hydrodynamics matched against von Benzon 2022 BlueROV2 reference model (6-DOF, cross-coupling damping, full Coriolis).
+- **NVIDIA-native ocean physics** — Newton + Warp CUDA kernels, not CPU loops.
+- **Isaac 6 ecosystem baseline** — Isaac Sim 6 and Isaac Lab 3 are the main simulation and training-integration targets.
+- **RL-ready** — Gymnasium-compatible `ROVEnv` with `BatchedVecEnv`; PPO runs from the repo.
+- **Validated** — Tier-1 hydrodynamics matched against von Benzon 2022 BlueROV2 reference model; benchmark docs state the current cross-coupling boundary explicitly.
 
-## Quickstart
+## NVIDIA Isaac 6 Ecosystem
+
+OceanScale is fully based on the NVIDIA Isaac 6 ecosystem for simulation and training integration. The canonical local setup keeps the Isaac validation environment side-by-side with the OceanScale core development environment so Isaac package pins do not overwrite the Newton/Warp stack used by OceanScale core.
+
+Use [docs/isaac6-isaaclab3-install.md](docs/isaac6-isaaclab3-install.md) for the full install, source checkout, verification, and reproduction procedure.
+
+## Quickstart From Source
+
+PyPI publishing is not verified yet. For a new user, use the source path:
 
 ```bash
-pip install oceanscale
-oceanscale demo bluerov2-hover --render-mp4 demo.mp4
+git clone https://github.com/robotlearning123/oceanscale.git
+cd oceanscale
+uv python pin 3.12
+uv sync --extra dev
+uv run oceanscale --help
+uv run oceanscale demo bluerov2-hover --device cpu
+```
+
+For a CUDA run with MP4 output:
+
+```bash
+uv run oceanscale demo bluerov2-hover --device cuda --render-mp4 demo.mp4
 ```
 
 Train a policy:
 
 ```bash
-oceanscale train bluerov2-hover --total 1000000 --n_envs 4
+uv run oceanscale train bluerov2-hover --total 1000000 --n_envs 4 --device cuda
 ```
+
+## Verification
+
+Use [docs/verification.md](docs/verification.md) as the customer/new-user runbook for proving the source install, CLI, first demo, focused tests, and Isaac Sim 6 / Isaac Lab 3 validation lane.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/robotlearning123/oceanscale/blob/main/notebooks/bluerov2_hover_colab.ipynb)
 
-## Benchmark: OceanScale vs PyBullet
+## Benchmark
 
-BlueROV2 hover task, 30K steps, RTX 5090, zero policy. Full methodology in [`benchmarks/RESULTS.md`](benchmarks/RESULTS.md).
+Current launch-standardized OceanScale-only benchmark on RTX 5090. Full methodology in [`benchmarks/RESULTS.md`](benchmarks/RESULTS.md).
 
-| Config | Throughput (steps/s) | 1M steps | Speedup |
-|--------|---------------------|----------|---------|
-| PyBullet n=1 | 1,661 | 603 s | 1.0x |
-| OceanScale n=16 | 5,076 | 197 s | 3.1x |
-| OceanScale n=64 | 17,427 | 57 s | **10.5x** |
+| Envs | Env-steps/s | Bench steps |
+| ---: | ---: | ---: |
+| 1 | 1,326 | 200 |
+| 64 | 85,824 | 200 |
+| 256 | 303,206 | 200 |
+| 1024 | 1,272,106 | 200 |
+| 4096 | 4,588,922 | 200 |
 
-OceanScale's advantage is parallelism, not per-step latency. Below n=8, PyBullet wins on wall-clock. For RL with vectorized environments, OceanScale at n>=16 delivers the speedup.
+The older PyBullet comparison is also documented in [`benchmarks/RESULTS.md`](benchmarks/RESULTS.md): OceanScale at n=64 reached 17,427 env-steps/s on the matched BlueROV2 hover benchmark, 10.49x over single-env PyBullet. Keep these two benchmark tables separate.
 
-## Status (v0.0.2 alpha)
+## Status (v0.1 alpha)
 
 **Works:**
 - BlueROV2 6-DOF dynamics (Fossen + von Benzon 2022)
-- PPO hover training (1M steps, EV ~0.9, depth target to 0.7mm)
+- Bundled BlueROV2 hover demo and PPO training path
 - Vectorized environments (BatchedVecEnv + VecNormalize)
 - Headless MP4 export (simple + cinematic modes)
-- pip-installable CLI + Colab notebook
+- Source-installable CLI + Colab notebook
+- Isaac Sim 6 / Isaac Lab 3 validation lane passing locally
 
 **Known limitations:**
-- Hover policy drifts horizontally over a full episode (~0.41m after 33s)
-- No contact / collision handling
-- No multi-vehicle scenarios
-- No docking / manipulation tasks
-- Visual rendering is matplotlib-based 2D
+- Bundled hover demo is a CLI smoke and checkpoint-loading path, not a policy-quality release gate
+- Contact, docking, station-keeping, waypoint, and multi-vehicle code paths exist but are not yet long-horizon release gates
+- Isaac Sim 6 / Isaac Lab 3 validation is passing locally, but the full official Isaac demo sweep is not required for OceanScale readiness
+- Omniverse RTX rendering is not a public OceanScale release surface yet
 - No sim-to-real transfer validation
 
 ## Setup (developer)

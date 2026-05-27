@@ -1,4 +1,21 @@
-# Version Pinning Plan — v0.1.0
+# Version Pinning Plan
+
+## Current addendum — 2026-05-26
+
+This file began as the 2026-05-15 v0.1.0 planning note. The active install and verification path is now:
+
+- Python 3.12 for the canonical Isaac lane.
+- OceanScale core: Newton 1.2.0, Warp 1.13.0, Torch cu128.
+- Isaac validation lane: Isaac Sim 6 / Isaac Lab 3 in a separate venv.
+- Source install from this repo; public PyPI publishing is not verified yet.
+- Full setup: `docs/isaac6-isaaclab3-install.md`.
+- Customer verification: `docs/verification.md`.
+
+The historical plan below is retained for context only. Do not use its Isaac Sim 5.1 / Isaac-deferred wording as current guidance.
+
+---
+
+# Historical Version Pinning Plan — v0.1.0
 
 **Date:** 2026-05-15  
 **Scope:** Pinned version specification for the v0.1.0 dev environment. Plan only — no installs yet. Translates directly into `pyproject.toml` when implementation phase starts.
@@ -75,12 +92,9 @@ Per chat answer:
 - skrl deferred to v0.2 when JAX/Warp backend support matters.
 - PureJaxRL/Stoix deferred until JAX track opens.
 
-### 2.7 Isaac Sim / Isaac Lab: **deferred to v0.2**
+### 2.7 Isaac Sim / Isaac Lab: **historical, superseded**
 
-- Isaac Sim 6.0 is Early Dev (source build) — too heavy for v0.1 smoke tests.
-- Isaac Lab 3.0 Beta is source-build only.
-- v0.1 will use **Newton standalone** (without Isaac Sim) — Newton can step physics, render via its own viewer, sufficient for kernel-level development.
-- **v0.2 milestone gate**: install Isaac Sim 5.1 (pip) for first end-to-end env test; revisit 6.0 source-build at v0.3 once GA timing is clearer.
+This section is superseded by `docs/isaac6-isaaclab3-install.md` and ADR-013 in `DECISIONS.md`. The current main lane is Isaac Sim 6 / Isaac Lab 3 in a separate validation venv.
 
 ### 2.8 USD tooling: `usd-core >=25.11`
 

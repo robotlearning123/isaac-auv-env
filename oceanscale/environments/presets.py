@@ -10,8 +10,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 
-import numpy as np
-
 
 class TerrainType(Enum):
     FLAT_SAND = "flat_sand"

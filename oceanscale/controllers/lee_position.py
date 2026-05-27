@@ -21,7 +21,7 @@ class LeePositionConfig:
     attitude_gain: np.ndarray
     angular_rate_gain: np.ndarray
 
-    PRESETS: ClassVar[dict[str, "LeePositionConfig"]] = {}
+    PRESETS: ClassVar[dict[str, LeePositionConfig]] = {}
 
     @classmethod
     def bluerov_heavy(cls) -> LeePositionConfig:

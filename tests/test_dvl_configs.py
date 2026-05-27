@@ -6,9 +6,8 @@ import warp as wp
 
 from oceanscale.sensors.dvl_configs import (
     ALL_DVL_CONFIGS,
-    DVLConfig,
-    NORTEK_DVL1000_300,
     NORTEK_DVL500_300,
+    NORTEK_DVL1000_300,
     SONARDYNE_SYRINX,
     TELEDYNE_EXPLORER,
     TELEDYNE_PATHFINDER,

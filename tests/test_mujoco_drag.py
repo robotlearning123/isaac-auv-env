@@ -84,7 +84,7 @@ class TestMuJoCoDragClass:
         )
         vel = wp.array(np.array([[0.5, 0.0, 0.0]], dtype=np.float32), dtype=wp.vec3, device="cuda:0")
         angvel = wp.zeros(1, dtype=wp.vec3, device="cuda:0")
-        f, t = drag.compute(vel, angvel)
+        f, _t = drag.compute(vel, angvel)
         assert f.numpy()[0, 0] < 0
 
     def test_batch_envs(self):
@@ -96,7 +96,7 @@ class TestMuJoCoDragClass:
         )
         vel = wp.array(np.random.randn(n, 3).astype(np.float32), dtype=wp.vec3, device="cuda:0")
         angvel = wp.zeros(n, dtype=wp.vec3, device="cuda:0")
-        f, t = drag.compute(vel, angvel)
+        f, _t = drag.compute(vel, angvel)
         assert f.numpy().shape == (n, 3)
 
     def test_seawater_params(self):
@@ -183,7 +183,7 @@ class TestLiftForces:
         )
         vel = wp.array(np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]], dtype=np.float32), dtype=wp.vec3, device="cuda:0")
         angvel = wp.array(np.array([[0.0, 0.0, 1.0], [0.0, 0.0, 1.0]], dtype=np.float32), dtype=wp.vec3, device="cuda:0")
-        f, t = drag.compute(vel, angvel)
+        f, _t = drag.compute(vel, angvel)
         assert f.numpy().shape == (2, 3)
         assert np.any(np.abs(f.numpy()) > 0)
 

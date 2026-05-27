@@ -6,7 +6,6 @@ import warp as wp
 
 from oceanscale.sim import (
     MultiVehicleConfig,
-    OceanConfig,
     OceanSim,
     OceanSimConfig,
     VehicleSpec,

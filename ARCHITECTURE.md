@@ -5,7 +5,7 @@
 
 ---
 
-## Stack (current v0.0.2)
+## Stack (current v0.1 alpha)
 
 | Layer | Choice | Version |
 |-------|--------|---------|
@@ -14,7 +14,8 @@
 | Simulation orchestrator | OceanSim — single step() for physics + hydro + ocean + sensors | (internal) |
 | Fluid simulation | Multi-fidelity ladder: Grid / SPH (WCSPH) / MPM / Volume | (internal) |
 | RL framework | Stable-Baselines3 (PPO baseline) | >=2.5 |
-| Isaac Lab integration | DirectRLEnv 3 native + standalone fallback | >=1.2.3 |
+| Isaac ecosystem baseline | Isaac Sim 6 + Isaac Lab 3 validation lane | 6.0 / 3.x |
+| Isaac Lab integration | DirectRLEnv 3 native + standalone fallback | 3.x |
 | Vectorization | Custom BatchedVecEnv on top of Newton tensors | (internal) |
 | Renderer (current) | matplotlib Agg + imageio-ffmpeg (headless MP4) | (internal) |
 | Hydrodynamics | Fossen 6-DOF + MuJoCo drag/lift + distributed drag + partial submersion | (internal) |
@@ -23,12 +24,12 @@
 | Controllers | PID, NL-PID, Lee geometric, sliding mode | (internal) |
 | Validation reference | von Benzon 2022 6-DOF BlueROV2 port | (internal) |
 | Benchmarks | GPU kernel throughput suite | (internal) |
-| Python | CPython | 3.12 or 3.13 |
+| Python | CPython | 3.12 for the Isaac lane; 3.13 only for core-only experiments |
 | CUDA | NVIDIA | 12.8+ |
 | GPU | Reference platform | RTX 5090 |
 | License | Apache-2.0 | — |
 
-**Explicitly NOT yet shipping**: Isaac Sim 6.0 rendering layer (installing, blocked on GA), Omniverse RTX camera capture, BELLHOP, Gaussian-Splat scene capture, world-model layer. These are documented in ARCHITECTURE_PROPOSAL_2026-05-15.md as future ambitions.
+**Explicitly NOT yet shipping**: Omniverse RTX camera capture as a public OceanScale release surface, BELLHOP, Gaussian-Splat scene capture, world-model layer, or a public PyPI release. Isaac Sim 6 / Isaac Lab 3 is the main NVIDIA ecosystem validation lane and is documented in `docs/isaac6-isaaclab3-install.md`.
 
 ---
 
@@ -39,8 +40,8 @@ OceanScale is structured as a tiered hierarchy. Only Tier 1 ships today.
 | Tier | Concept | Status |
 |------|---------|--------|
 | 1 | Ocean simulator (GPU-native Newton + Warp + Fossen hydrodynamics) | Shipping |
-| 2 | Ocean world model (learned dynamics layer) | Future; not in v0.0.2 |
-| 3 | Ocean foundation model (data + model + distribution leverage) | Research target; not in v0.0.2 |
+| 2 | Ocean world model (learned dynamics layer) | Future; not in v0.1 |
+| 3 | Ocean foundation model (data + model + distribution leverage) | Research target; not in v0.1 |
 
 ---
 
@@ -146,16 +147,16 @@ Additional fluid modules: `wave.py` (ocean wave field), `wave_fft.py` (FFT spect
 - Standalone Isaac Lab env (`training/isaaclab_env.py`) — runs without Isaac Sim
 - WarpAUV pretrained checkpoint
 - CLI: `oceanscale demo bluerov2-hover`, `oceanscale demo underwater-mvp`, `oceanscale train bluerov2-hover`
-- 1066 tests passing on RTX 5090
+- Test suite covers the current core, sensor, vehicle, environment, and Isaac-facing paths; use `docs/verification.md` for current commands
 
 ### Benchmarks
 - `oceanscale/benchmarks/suite.py` — GPU kernel throughput benchmarking framework
 
 ---
 
-## What does NOT ship in v0.0.2
+## What does NOT ship in v0.1
 
-Per ADR-007 (`DECISIONS.md`): no Isaac Sim / Isaac Lab hard dependency (both are optional). Per POSITIONING.md §4 promotion thresholds: no world-model layer claim (Tier 2) and no foundation-model claim (Tier 3) in public surfaces.
+OceanScale is NVIDIA ecosystem-first, with Isaac Sim 6 / Isaac Lab 3 as the main validation lane. The core Python package still keeps Isaac packages out of the default `.venv` for reproducibility and to avoid overwriting the Newton/Warp stack. Per POSITIONING.md §4 promotion thresholds: no world-model layer claim (Tier 2) and no foundation-model claim (Tier 3) in public surfaces.
 
 Future tier promotions are gated on:
 - Tier 2 → homepage: shipped learned-dynamics demo with public benchmark vs classical baseline (`POSITIONING.md` §9.2)
@@ -169,7 +170,7 @@ Future tier promotions are gated on:
 - `DESIGN.md` — visual brand law
 - `STACK.md` — tech stack decisions and rationale
 - `pyproject.toml` — authoritative dependency manifest
-- `DECISIONS.md` — ADRs (especially ADR-007 on Isaac Sim removal)
+- `DECISIONS.md` — ADRs (especially ADR-013 on the Isaac Sim 6 validation lane)
 - `ARCHITECTURE_PROPOSAL_2026-05-15.md` — original aspirational architecture (archived)
 
 ---
@@ -178,4 +179,4 @@ Future tier promotions are gated on:
 
 - **2026-05-23 v1** — Initial current-state architecture. Replaces the 2026-05-15 architecture proposal which was archived to ARCHITECTURE_PROPOSAL_2026-05-15.md.
 - **2026-05-25 v2** — Massive integration session: 10 robots, 7 environments, 9 DVL configs, ImagingSonar, UW rendering, T200 thruster, MuJoCo drag+lift, distributed drag, partial submersion, controllers, domain randomization. Sources: MarineGym, OceanSim, isaac-auv-env, UUV Simulator, DAVE, SMARC, fishsim, bluerov2_gz. Tests: 730→922.
-- **2026-05-26 v3** — OceanSim unified orchestrator, Isaac Lab 3 DirectRLEnv native, WCSPH fluid solver, underwater camera sensor, multibeam echo sounder, task environments (docking/station-keeping/waypoint), fluid fidelity ladder (5 levels), benchmarks suite. Tests: 922→1066.
+- **2026-05-26 v3** — OceanSim unified orchestrator, Isaac Lab 3 DirectRLEnv native, WCSPH fluid solver, underwater camera sensor, multibeam echo sounder, task environments (docking/station-keeping/waypoint), fluid fidelity ladder (5 levels), benchmarks suite. Current verification commands live in `docs/verification.md`.

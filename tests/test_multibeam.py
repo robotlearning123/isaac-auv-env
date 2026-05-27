@@ -5,7 +5,7 @@ import warp as wp
 
 wp.init()
 
-from oceanscale.sensors.multibeam import MultibeamSonar, MultibeamConfig
+from oceanscale.sensors.multibeam import MultibeamConfig, MultibeamSonar
 
 
 def _make_mesh(device="cuda:0"):

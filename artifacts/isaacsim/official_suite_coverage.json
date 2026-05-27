@@ -2,33 +2,36 @@
   "inventory_path": "/home/robot/workspace/46-marine/artifacts/isaacsim/official_suite_inventory.json",
   "logs_root": "/mnt/storage/isaacsim-6.0-official/logs",
   "total_entrypoints": 2099,
-  "total_summary_records": 198,
-  "matched_summary_records": 198,
+  "total_summary_records": 283,
+  "matched_summary_records": 283,
   "unmatched_summary_records": [],
   "counts": {
     "by_suite_status": {
-      "isaaclab:failed": 11,
-      "isaaclab:passed": 17,
-      "isaaclab:uncovered": 1864,
-      "isaacsim:failed": 8,
-      "isaacsim:passed": 79,
-      "isaacsim:uncovered": 120
+      "isaaclab:failed": 16,
+      "isaaclab:passed": 34,
+      "isaaclab:uncovered": 1842,
+      "isaacsim:failed": 16,
+      "isaacsim:passed": 110,
+      "isaacsim:uncovered": 81
     },
     "by_runnable_class_status": {
-      "asset_or_network_dependent:failed": 6,
-      "asset_or_network_dependent:passed": 14,
-      "asset_or_network_dependent:uncovered": 140,
+      "asset_or_network_dependent:failed": 9,
+      "asset_or_network_dependent:passed": 17,
+      "asset_or_network_dependent:uncovered": 134,
       "bounded_expected_timeout:failed": 7,
-      "bounded_expected_timeout:passed": 11,
-      "bounded_expected_timeout:uncovered": 32,
-      "gui_or_patch_headless:failed": 6,
-      "gui_or_patch_headless:passed": 42,
-      "gui_or_patch_headless:uncovered": 45,
-      "headless_candidate:passed": 25,
-      "headless_candidate:uncovered": 1315,
-      "interactive_or_device_dependent:uncovered": 127,
-      "long_runtime:passed": 1,
-      "long_runtime:uncovered": 246,
+      "bounded_expected_timeout:passed": 25,
+      "bounded_expected_timeout:uncovered": 18,
+      "gui_or_patch_headless:failed": 8,
+      "gui_or_patch_headless:passed": 55,
+      "gui_or_patch_headless:uncovered": 30,
+      "headless_candidate:failed": 5,
+      "headless_candidate:passed": 36,
+      "headless_candidate:uncovered": 1299,
+      "interactive_or_device_dependent:failed": 1,
+      "interactive_or_device_dependent:uncovered": 126,
+      "long_runtime:failed": 2,
+      "long_runtime:passed": 8,
+      "long_runtime:uncovered": 237,
       "optional_extra_blocked_or_long:uncovered": 63,
       "requires_ros2:passed": 3,
       "requires_ros2:uncovered": 16
@@ -43,12 +46,13 @@
       "isaacsim.core.experimental.api:failed": 2,
       "isaacsim.core.experimental.api:passed": 7,
       "isaacsim.core.experimental.api:uncovered": 1,
-      "isaacsim.cortex.framework:uncovered": 6,
+      "isaacsim.cortex.framework:failed": 2,
+      "isaacsim.cortex.framework:uncovered": 4,
       "isaacsim.replicator.behavior:uncovered": 1,
       "isaacsim.replicator.domain_randomization:uncovered": 1,
-      "isaacsim.replicator.examples:passed": 9,
-      "isaacsim.replicator.examples:uncovered": 5,
-      "isaacsim.replicator.experimental.domain_randomization:uncovered": 1,
+      "isaacsim.replicator.examples:passed": 12,
+      "isaacsim.replicator.examples:uncovered": 2,
+      "isaacsim.replicator.experimental.domain_randomization:passed": 1,
       "isaacsim.replicator.grasping:uncovered": 1,
       "isaacsim.robot.experimental.manipulators:uncovered": 4,
       "isaacsim.robot.manipulators:passed": 8,
@@ -67,30 +71,32 @@
       "isaacsim.sensors.physx:passed": 1,
       "isaacsim.sensors.rtx:failed": 1,
       "isaacsim.sensors.rtx:passed": 7,
-      "isaacsim.simulation_app:passed": 3,
-      "isaacsim.simulation_app:uncovered": 3,
-      "lab_benchmark:uncovered": 15,
-      "lab_demo/arl_robot_1.py:uncovered": 1,
+      "isaacsim.simulation_app:passed": 6,
+      "lab_benchmark:failed": 2,
+      "lab_benchmark:passed": 3,
+      "lab_benchmark:uncovered": 10,
+      "lab_demo/arl_robot_1.py:passed": 1,
       "lab_demo/arms.py:passed": 1,
-      "lab_demo/bin_packing.py:uncovered": 1,
-      "lab_demo/bipeds.py:uncovered": 1,
-      "lab_demo/deformables.py:uncovered": 1,
+      "lab_demo/bin_packing.py:failed": 1,
+      "lab_demo/bipeds.py:passed": 1,
+      "lab_demo/deformables.py:passed": 1,
       "lab_demo/h1_locomotion.py:uncovered": 1,
-      "lab_demo/hands.py:uncovered": 1,
+      "lab_demo/hands.py:passed": 1,
       "lab_demo/haply_teleoperation.py:uncovered": 1,
-      "lab_demo/markers.py:uncovered": 1,
-      "lab_demo/multi_asset.py:uncovered": 1,
+      "lab_demo/markers.py:passed": 1,
+      "lab_demo/multi_asset.py:failed": 1,
       "lab_demo/pick_and_place.py:uncovered": 1,
-      "lab_demo/procedural_terrain.py:uncovered": 1,
+      "lab_demo/procedural_terrain.py:passed": 1,
       "lab_demo/quadcopter.py:failed": 1,
       "lab_demo/quadrupeds.py:passed": 1,
       "lab_demo/sensors:failed": 1,
-      "lab_demo/sensors:passed": 1,
-      "lab_demo/sensors:uncovered": 7,
-      "lab_environment:passed": 1,
-      "lab_environment:uncovered": 9,
+      "lab_demo/sensors:passed": 4,
+      "lab_demo/sensors:uncovered": 4,
+      "lab_environment:passed": 6,
+      "lab_environment:uncovered": 4,
       "lab_imitation_learning:uncovered": 12,
-      "lab_reinforcement_learning:uncovered": 38,
+      "lab_reinforcement_learning:failed": 1,
+      "lab_reinforcement_learning:uncovered": 37,
       "lab_source_test:uncovered": 370,
       "lab_tool:uncovered": 19,
       "lab_tutorial/00_sim:failed": 1,
@@ -106,63 +112,73 @@
       "lab_tutorial/05_controllers:failed": 1,
       "lab_tutorial/05_controllers:passed": 1,
       "lab_tutorial/06_deploy:uncovered": 1,
-      "omni.kit.app:uncovered": 1,
-      "omni.kit.asset_converter:uncovered": 1,
+      "omni.kit.app:failed": 1,
+      "omni.kit.asset_converter:passed": 1,
       "other:uncovered": 1381,
-      "standalone_benchmark:passed": 1,
-      "standalone_benchmark:uncovered": 18,
-      "standalone_replicator:uncovered": 11,
+      "standalone_benchmark:passed": 4,
+      "standalone_benchmark:uncovered": 15,
+      "standalone_replicator:failed": 1,
+      "standalone_replicator:uncovered": 10,
       "standalone_testing/doc_snippets:uncovered": 1,
-      "standalone_testing/isaacsim.benchmark.services:uncovered": 1,
+      "standalone_testing/isaacsim.benchmark.services:passed": 1,
       "standalone_testing/isaacsim.core.api:failed": 2,
-      "standalone_testing/isaacsim.core.api:uncovered": 4,
-      "standalone_testing/isaacsim.cortex.framework:uncovered": 1,
-      "standalone_testing/isaacsim.replicator.examples:uncovered": 1,
+      "standalone_testing/isaacsim.core.api:passed": 4,
+      "standalone_testing/isaacsim.cortex.framework:passed": 1,
+      "standalone_testing/isaacsim.replicator.examples:passed": 1,
       "standalone_testing/isaacsim.robot.manipulators.examples.franka:uncovered": 1,
       "standalone_testing/isaacsim.ros2.bridge:passed": 2,
       "standalone_testing/isaacsim.ros2.bridge:uncovered": 2,
       "standalone_testing/isaacsim.sensors.experimental.physics:passed": 1,
       "standalone_testing/isaacsim.sensors.physics:passed": 1,
-      "standalone_testing/isaacsim.simulation_app:passed": 3,
-      "standalone_testing/isaacsim.simulation_app:uncovered": 8,
-      "standalone_testing/isaacsim.test.docstring:uncovered": 1,
-      "standalone_testing/omni.replicator.agent:uncovered": 1,
+      "standalone_testing/isaacsim.simulation_app:failed": 1,
+      "standalone_testing/isaacsim.simulation_app:passed": 9,
+      "standalone_testing/isaacsim.simulation_app:uncovered": 1,
+      "standalone_testing/isaacsim.test.docstring:passed": 1,
+      "standalone_testing/omni.replicator.agent:passed": 1,
       "standalone_testing/omni.syntheticdata:uncovered": 1,
-      "standalone_testing/python_sh:uncovered": 4,
-      "standalone_testing/validation:uncovered": 3,
-      "standalone_tutorial:uncovered": 2
+      "standalone_testing/python_sh:failed": 2,
+      "standalone_testing/python_sh:passed": 2,
+      "standalone_testing/validation:failed": 1,
+      "standalone_testing/validation:passed": 1,
+      "standalone_testing/validation:uncovered": 1,
+      "standalone_tutorial:passed": 2
     },
     "by_signal_status": {
-      "asset_conversion_or_file_asset:failed": 10,
-      "asset_conversion_or_file_asset:passed": 59,
-      "asset_conversion_or_file_asset:uncovered": 281,
-      "benchmark:passed": 1,
-      "benchmark:uncovered": 65,
-      "gui_default:failed": 6,
-      "gui_default:passed": 42,
-      "gui_default:uncovered": 50,
-      "long_running_loop:failed": 15,
-      "long_running_loop:passed": 43,
-      "long_running_loop:uncovered": 115,
+      "asset_conversion_or_file_asset:failed": 14,
+      "asset_conversion_or_file_asset:passed": 82,
+      "asset_conversion_or_file_asset:uncovered": 254,
+      "benchmark:failed": 2,
+      "benchmark:passed": 8,
+      "benchmark:uncovered": 56,
+      "gui_default:failed": 8,
+      "gui_default:passed": 55,
+      "gui_default:uncovered": 35,
+      "long_running_loop:failed": 17,
+      "long_running_loop:passed": 61,
+      "long_running_loop:uncovered": 95,
       "mimic_or_imitation:uncovered": 67,
-      "newton:passed": 1,
-      "newton:uncovered": 359,
-      "remote_or_nucleus_asset:failed": 12,
-      "remote_or_nucleus_asset:passed": 41,
-      "remote_or_nucleus_asset:uncovered": 205,
-      "replicator_sdg:failed": 3,
-      "replicator_sdg:passed": 13,
-      "replicator_sdg:uncovered": 73,
+      "newton:failed": 2,
+      "newton:passed": 5,
+      "newton:uncovered": 353,
+      "remote_or_nucleus_asset:failed": 15,
+      "remote_or_nucleus_asset:passed": 53,
+      "remote_or_nucleus_asset:uncovered": 190,
+      "replicator_sdg:failed": 4,
+      "replicator_sdg:passed": 21,
+      "replicator_sdg:uncovered": 64,
       "ros2:passed": 3,
       "ros2:uncovered": 16,
-      "sensor_or_camera:failed": 12,
-      "sensor_or_camera:passed": 51,
-      "sensor_or_camera:uncovered": 467,
-      "teleoperation:uncovered": 127,
-      "test:failed": 2,
-      "test:passed": 7,
-      "test:uncovered": 406,
-      "training_or_rl:uncovered": 221
+      "sensor_or_camera:failed": 15,
+      "sensor_or_camera:passed": 68,
+      "sensor_or_camera:uncovered": 447,
+      "teleoperation:failed": 1,
+      "teleoperation:uncovered": 126,
+      "test:failed": 6,
+      "test:passed": 25,
+      "test:uncovered": 384,
+      "training_or_rl:failed": 1,
+      "training_or_rl:passed": 1,
+      "training_or_rl:uncovered": 219
     }
   },
   "entrypoints": [
@@ -1004,9 +1020,20 @@
         "gui_default"
       ],
       "suggested_strategy": "prefer official --test/--headless path or run with DISPLAY/streaming",
-      "clean_status": "uncovered",
+      "clean_status": "failed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "cortex_command_api_smoke",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/api/isaacsim.cortex.framework/example_command_api_main.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r29-cortex-mobility/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r29-cortex-mobility/cortex_command_api_smoke.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/api/isaacsim.cortex.framework/example_command_api_main.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -1046,9 +1073,20 @@
         "gui_default"
       ],
       "suggested_strategy": "prefer official --test/--headless path or run with DISPLAY/streaming",
-      "clean_status": "uncovered",
+      "clean_status": "failed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "cortex_franka_simple_decider_smoke",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/api/isaacsim.cortex.framework/franka_examples_main.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r29-cortex-mobility/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r29-cortex-mobility/cortex_franka_simple_decider_smoke.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/api/isaacsim.cortex.framework/franka_examples_main.py --behavior simple_decider_network"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -1097,9 +1135,20 @@
         "sensor_or_camera"
       ],
       "suggested_strategy": "run in bounded headless smoke batch with marker/exit checks",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "replicator_cosmos_writer_simple",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/api/isaacsim.replicator.examples/cosmos_writer_simple.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r27-core-replicator-cortex/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r27-core-replicator-cortex/replicator_cosmos_writer_simple.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/api/isaacsim.replicator.examples/cosmos_writer_simple.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -1190,9 +1239,20 @@
         "sensor_or_camera"
       ],
       "suggested_strategy": "prefer official --test/--headless path or run with DISPLAY/streaming",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "replicator_motion_blur_small",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/api/isaacsim.replicator.examples/motion_blur.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r28-tutorials-motion-dr/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r28-tutorials-motion-dr/replicator_motion_blur_small.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/api/isaacsim.replicator.examples/motion_blur.py --delta_times None --samples_per_pixel 8 --motion_blur_subsamples 2"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -1498,9 +1558,20 @@
         "replicator_sdg"
       ],
       "suggested_strategy": "prefer official --test/--headless path or run with DISPLAY/streaming",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "replicator_subscribers_and_events",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/api/isaacsim.replicator.examples/subscribers_and_events.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r27-core-replicator-cortex/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r27-core-replicator-cortex/replicator_subscribers_and_events.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/api/isaacsim.replicator.examples/subscribers_and_events.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -1516,9 +1587,20 @@
         "replicator_sdg"
       ],
       "suggested_strategy": "prefer official --test/--headless path or run with DISPLAY/streaming",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "replicator_experimental_domain_randomization_small",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/api/isaacsim.replicator.experimental.domain_randomization/randomization_demo.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r28-tutorials-motion-dr/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r28-tutorials-motion-dr/replicator_experimental_domain_randomization_small.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/api/isaacsim.replicator.experimental.domain_randomization/randomization_demo.py --env-url none --num-envs 2 --reset-interval 10 --max-frames 20"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -3332,9 +3414,20 @@
         "remote_or_nucleus_asset"
       ],
       "suggested_strategy": "prefer official --test/--headless path or run with DISPLAY/streaming",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "simulation_app_change_resolution_test",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/api/isaacsim.simulation_app/change_resolution.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/simulation_app_change_resolution_test.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/api/isaacsim.simulation_app/change_resolution.py --test"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -3346,9 +3439,20 @@
         "long_running_loop"
       ],
       "suggested_strategy": "run with PYTHONUNBUFFERED and marker-based expected-timeout",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "simulation_app_constant_fps",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/api/isaacsim.simulation_app/constant_fps.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/simulation_app_constant_fps.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/api/isaacsim.simulation_app/constant_fps.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -3421,9 +3525,20 @@
       "runnable_class": "headless_candidate",
       "signals": [],
       "suggested_strategy": "run in bounded headless smoke batch with marker/exit checks",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "simulation_app_livestream_expected_timeout",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/api/isaacsim.simulation_app/livestream.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-livestream-r1/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-livestream-r1/simulation_app_livestream_expected_timeout.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/api/isaacsim.simulation_app/livestream.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -3461,9 +3576,30 @@
         "asset_conversion_or_file_asset"
       ],
       "suggested_strategy": "run in bounded headless smoke batch with marker/exit checks",
-      "clean_status": "uncovered",
+      "clean_status": "failed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "omni_kit_app_framework",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/api/omni.kit.app/app_framework.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/omni_kit_app_framework.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/api/omni.kit.app/app_framework.py"
+        },
+        {
+          "name": "omni_kit_app_framework",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/api/omni.kit.app/app_framework.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r25-rechecks-pythonsh-validation/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r25-rechecks-pythonsh-validation/omni_kit_app_framework.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/api/omni.kit.app/app_framework.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -3477,9 +3613,20 @@
         "sensor_or_camera"
       ],
       "suggested_strategy": "run with PYTHONUNBUFFERED and marker-based expected-timeout",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "asset_converter_triangle_obj",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/api/omni.kit.asset_converter/asset_usd_converter.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-asset-converter-r1/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-asset-converter-r1/asset_converter_triangle_obj.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/api/omni.kit.asset_converter/asset_usd_converter.py --folders /mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-asset-converter-r1/work/asset_converter_triangle_obj/obj_input --max-models 1"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -3494,9 +3641,20 @@
         "sensor_or_camera"
       ],
       "suggested_strategy": "run as bounded benchmark/training subset with max_iterations/timeout",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "benchmark_camera_tiny",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/benchmarks/benchmark_camera.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r30-benchmark-minimal/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r30-benchmark-minimal/benchmark_camera_tiny.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/benchmarks/benchmark_camera.py --num-cameras 1 --resolution 64 64 --num-frames 3 --backend-type JSONFileMetrics"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -3510,9 +3668,20 @@
         "remote_or_nucleus_asset"
       ],
       "suggested_strategy": "run as bounded benchmark/training subset with max_iterations/timeout",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "benchmark_core_world_minimal",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/benchmarks/benchmark_core_world.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r30-benchmark-minimal/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r30-benchmark-minimal/benchmark_core_world_minimal.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/benchmarks/benchmark_core_world.py --num-envs 1 --backend-type JSONFileMetrics"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -3553,9 +3722,20 @@
         "sensor_or_camera"
       ],
       "suggested_strategy": "run as bounded benchmark/training subset with max_iterations/timeout",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "benchmark_physx_lidar_tiny",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/benchmarks/benchmark_physx_lidar.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r30-benchmark-minimal/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r30-benchmark-minimal/benchmark_physx_lidar_tiny.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/benchmarks/benchmark_physx_lidar.py --num-sensors 1 --num-frames 3 --backend-type JSONFileMetrics"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -3918,9 +4098,20 @@
         "replicator_sdg"
       ],
       "suggested_strategy": "run in bounded headless smoke batch with marker/exit checks",
-      "clean_status": "uncovered",
+      "clean_status": "failed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "mobility_gen_replay_empty_input",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/replicator/mobility_gen/replay_directory.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r29-cortex-mobility/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r29-cortex-mobility/mobility_gen_replay_empty_input.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/replicator/mobility_gen/replay_directory.py --input /mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r29-cortex-mobility/work/mobility_gen_replay_empty_input/empty_recordings --output /mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r29-cortex-mobility/work/mobility_gen_replay_empty_input/replays"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4018,9 +4209,20 @@
         "test"
       ],
       "suggested_strategy": "run as bounded benchmark/training subset with max_iterations/timeout",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "benchmark_no_rendering_test",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/isaacsim.benchmark.services/test_no_rendering.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r30-benchmark-minimal/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r30-benchmark-minimal/benchmark_no_rendering_test.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/isaacsim.benchmark.services/test_no_rendering.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4062,9 +4264,20 @@
         "test"
       ],
       "suggested_strategy": "prefer official --test/--headless path or run with DISPLAY/streaming",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "testing_core_api_delete_in_contact",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/isaacsim.core.api/test_delete_in_contact.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r27-core-replicator-cortex/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r27-core-replicator-cortex/testing_core_api_delete_in_contact.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/isaacsim.core.api/test_delete_in_contact.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4078,9 +4291,20 @@
         "test"
       ],
       "suggested_strategy": "prefer official --test/--headless path or run with DISPLAY/streaming",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "testing_core_api_hello_world",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/isaacsim.core.api/test_hello_world.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r27-core-replicator-cortex/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r27-core-replicator-cortex/testing_core_api_hello_world.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/isaacsim.core.api/test_hello_world.py --test"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4095,9 +4319,20 @@
         "test"
       ],
       "suggested_strategy": "prefer official --test/--headless path or run with DISPLAY/streaming",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "testing_core_api_save_stage",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/isaacsim.core.api/test_save_stage.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r27-core-replicator-cortex/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r27-core-replicator-cortex/testing_core_api_save_stage.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/isaacsim.core.api/test_save_stage.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4139,9 +4374,20 @@
         "test"
       ],
       "suggested_strategy": "prefer official --test/--headless path or run with DISPLAY/streaming",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "testing_core_api_xform_prim_view",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/isaacsim.core.api/test_xform_prim_view.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r27-core-replicator-cortex/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r27-core-replicator-cortex/testing_core_api_xform_prim_view.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/isaacsim.core.api/test_xform_prim_view.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4154,9 +4400,20 @@
         "test"
       ],
       "suggested_strategy": "prefer official --test/--headless path or run with DISPLAY/streaming",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "testing_cortex_bringup",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/isaacsim.cortex.framework/cortex_bringup_test.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r27-core-replicator-cortex/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r27-core-replicator-cortex/testing_cortex_bringup.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/isaacsim.cortex.framework/cortex_bringup_test.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4171,9 +4428,20 @@
         "test"
       ],
       "suggested_strategy": "prefer official --test/--headless path or run with DISPLAY/streaming",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "replicator_ar_capture_pipeline_cpu",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/isaacsim.replicator.examples/ar_capture_pipeline.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r27-core-replicator-cortex/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r27-core-replicator-cortex/replicator_ar_capture_pipeline_cpu.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/isaacsim.replicator.examples/ar_capture_pipeline.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4437,9 +4705,20 @@
         "test"
       ],
       "suggested_strategy": "pre-cache assets and record network/cache state before marking stable",
-      "clean_status": "uncovered",
+      "clean_status": "failed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "simulation_app_config",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/isaacsim.simulation_app/test_config.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r26-fabric-config-path/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r26-fabric-config-path/simulation_app_config.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/isaacsim.simulation_app/test_config.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4453,9 +4732,20 @@
         "test"
       ],
       "suggested_strategy": "pre-cache assets and record network/cache state before marking stable",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "simulation_app_fabric_frame_delay",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/isaacsim.simulation_app/test_fabric_frame_delay.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r26-fabric-config-path/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r26-fabric-config-path/simulation_app_fabric_frame_delay.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/isaacsim.simulation_app/test_fabric_frame_delay.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4526,9 +4816,20 @@
         "test"
       ],
       "suggested_strategy": "run in bounded headless smoke batch with marker/exit checks",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "simulation_app_frame_delay_256",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/isaacsim.simulation_app/test_frame_delay.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/simulation_app_frame_delay_256.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/isaacsim.simulation_app/test_frame_delay.py --resolution 256x256"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4541,9 +4842,40 @@
         "test"
       ],
       "suggested_strategy": "run in bounded headless smoke batch with marker/exit checks",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "simulation_app_headless_no_rendering",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/isaacsim.simulation_app/test_headless_no_rendering.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r-next-runtime-basics/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r-next-runtime-basics/simulation_app_headless_no_rendering.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/isaacsim.simulation_app/test_headless_no_rendering.py"
+        },
+        {
+          "name": "simulation_app_headless_no_rendering",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/isaacsim.simulation_app/test_headless_no_rendering.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/simulation_app_headless_no_rendering.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/isaacsim.simulation_app/test_headless_no_rendering.py"
+        },
+        {
+          "name": "simulation_app_headless_no_rendering",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/isaacsim.simulation_app/test_headless_no_rendering.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r31-runtime-basics-recheck/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r31-runtime-basics-recheck/simulation_app_headless_no_rendering.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/isaacsim.simulation_app/test_headless_no_rendering.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4556,9 +4888,20 @@
         "test"
       ],
       "suggested_strategy": "run with PYTHONUNBUFFERED and marker-based expected-timeout",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "simulation_app_multiprocess",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/isaacsim.simulation_app/test_multiprocess.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/simulation_app_multiprocess.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/isaacsim.simulation_app/test_multiprocess.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4626,9 +4969,50 @@
         "test"
       ],
       "suggested_strategy": "run in bounded headless smoke batch with marker/exit checks",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "simulation_app_ovd",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/isaacsim.simulation_app/test_ovd.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r-next-runtime-basics/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r-next-runtime-basics/simulation_app_ovd.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/isaacsim.simulation_app/test_ovd.py"
+        },
+        {
+          "name": "simulation_app_ovd",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/isaacsim.simulation_app/test_ovd.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/simulation_app_ovd.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/isaacsim.simulation_app/test_ovd.py"
+        },
+        {
+          "name": "simulation_app_ovd",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/isaacsim.simulation_app/test_ovd.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r25-rechecks-pythonsh-validation/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r25-rechecks-pythonsh-validation/simulation_app_ovd.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/isaacsim.simulation_app/test_ovd.py --ovd=/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r25-rechecks-pythonsh-validation/work/simulation_app_ovd"
+        },
+        {
+          "name": "simulation_app_ovd",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/isaacsim.simulation_app/test_ovd.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r31-runtime-basics-recheck/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r31-runtime-basics-recheck/simulation_app_ovd.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/isaacsim.simulation_app/test_ovd.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4714,9 +5098,20 @@
         "test"
       ],
       "suggested_strategy": "prefer official --test/--headless path or run with DISPLAY/streaming",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "simulation_app_viewport_ready",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/isaacsim.simulation_app/test_viewport_ready.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/simulation_app_viewport_ready.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/isaacsim.simulation_app/test_viewport_ready.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4728,9 +5123,20 @@
         "test"
       ],
       "suggested_strategy": "run in bounded headless smoke batch with marker/exit checks",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "docstring_standalone_doctest",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/isaacsim.test.docstring/standalone_doctest.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/docstring_standalone_doctest.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/isaacsim.test.docstring/standalone_doctest.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4744,9 +5150,20 @@
         "test"
       ],
       "suggested_strategy": "run in bounded headless smoke batch with marker/exit checks",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "replicator_agent_scripting",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/omni.replicator.agent/test_scripting.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r27-core-replicator-cortex/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r27-core-replicator-cortex/replicator_agent_scripting.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/omni.replicator.agent/test_scripting.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4775,9 +5192,40 @@
         "test"
       ],
       "suggested_strategy": "run in bounded headless smoke batch with marker/exit checks",
-      "clean_status": "uncovered",
+      "clean_status": "failed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "python_sh_import_scipy",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/python_sh/import_scipy.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r-next-runtime-basics/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r-next-runtime-basics/python_sh_import_scipy.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/python_sh/import_scipy.py"
+        },
+        {
+          "name": "python_sh_import_scipy",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/python_sh/import_scipy.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/python_sh_import_scipy.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/python_sh/import_scipy.py"
+        },
+        {
+          "name": "python_sh_import_scipy",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/python_sh/import_scipy.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r31-runtime-basics-recheck/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r31-runtime-basics-recheck/python_sh_import_scipy.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/python_sh/import_scipy.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4789,9 +5237,40 @@
         "test"
       ],
       "suggested_strategy": "run in bounded headless smoke batch with marker/exit checks",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "python_sh_import_sys",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/python_sh/import_sys.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r-next-runtime-basics/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r-next-runtime-basics/python_sh_import_sys.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/python_sh/import_sys.py"
+        },
+        {
+          "name": "python_sh_import_sys",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/python_sh/import_sys.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r24-simulation-app-tests/python_sh_import_sys.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/python_sh/import_sys.py"
+        },
+        {
+          "name": "python_sh_import_sys",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/python_sh/import_sys.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r31-runtime-basics-recheck/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r31-runtime-basics-recheck/python_sh_import_sys.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/python_sh/import_sys.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4803,9 +5282,40 @@
         "test"
       ],
       "suggested_strategy": "run in bounded headless smoke batch with marker/exit checks",
-      "clean_status": "uncovered",
+      "clean_status": "failed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "python_sh_import_torch",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/python_sh/import_torch.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r-next-runtime-basics/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r-next-runtime-basics/python_sh_import_torch.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/python_sh/import_torch.py"
+        },
+        {
+          "name": "python_sh_import_torch",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/python_sh/import_torch.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r25-rechecks-pythonsh-validation/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r25-rechecks-pythonsh-validation/python_sh_import_torch.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/python_sh/import_torch.py"
+        },
+        {
+          "name": "python_sh_import_torch",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/python_sh/import_torch.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r31-runtime-basics-recheck/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r31-runtime-basics-recheck/python_sh_import_torch.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/python_sh/import_torch.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4817,9 +5327,40 @@
         "test"
       ],
       "suggested_strategy": "run in bounded headless smoke batch with marker/exit checks",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "python_sh_path_length",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/python_sh/path_length.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r-next-runtime-basics/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r-next-runtime-basics/python_sh_path_length.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/python_sh/path_length.py"
+        },
+        {
+          "name": "python_sh_path_length",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/python_sh/path_length.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r26-fabric-config-path/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r26-fabric-config-path/python_sh_path_length.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/python_sh/path_length.py"
+        },
+        {
+          "name": "python_sh_path_length",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/python_sh/path_length.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r31-runtime-basics-recheck/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r31-runtime-basics-recheck/python_sh_path_length.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/python_sh/path_length.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4847,9 +5388,20 @@
         "test"
       ],
       "suggested_strategy": "run in bounded headless smoke batch with marker/exit checks",
-      "clean_status": "uncovered",
+      "clean_status": "failed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "validation_docstring_coverage_json",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/validation/test_docstring_coverage.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-docstring-r1/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-docstring-r1/validation_docstring_coverage_json.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/validation/test_docstring_coverage.py --json"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4861,9 +5413,40 @@
         "test"
       ],
       "suggested_strategy": "run in bounded headless smoke batch with marker/exit checks",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "validation_extension_count_headless",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/validation/test_extension_count.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r-next-runtime-basics/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r-next-runtime-basics/validation_extension_count_headless.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/validation/test_extension_count.py --no-window"
+        },
+        {
+          "name": "validation_extension_count_no_window",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/validation/test_extension_count.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r25-rechecks-pythonsh-validation/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r25-rechecks-pythonsh-validation/validation_extension_count_no_window.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/validation/test_extension_count.py --no-window"
+        },
+        {
+          "name": "validation_extension_count_headless",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/testing/validation/test_extension_count.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r31-runtime-basics-recheck/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r31-runtime-basics-recheck/validation_extension_count_headless.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/testing/validation/test_extension_count.py --no-window"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4875,9 +5458,20 @@
         "gui_default"
       ],
       "suggested_strategy": "prefer official --test/--headless path or run with DISPLAY/streaming",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "tutorial_getting_started",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/tutorials/getting_started.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r28-tutorials-motion-dr/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r28-tutorials-motion-dr/tutorial_getting_started.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/tutorials/getting_started.py"
+        }
+      ]
     },
     {
       "suite": "isaacsim",
@@ -4892,9 +5486,20 @@
         "sensor_or_camera"
       ],
       "suggested_strategy": "prefer official --test/--headless path or run with DISPLAY/streaming",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "tutorial_getting_started_robot",
+          "suite": "isaacsim",
+          "relative_path": "source/standalone_examples/tutorials/getting_started_robot.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r28-tutorials-motion-dr/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaacsim-standalone-smokes-2026-05-25-r28-tutorials-motion-dr/tutorial_getting_started_robot.log",
+          "command": "/mnt/storage/isaacsim-6.0-official/venv-isaacsim-strict/bin/python /mnt/storage/isaacsim-6.0-official/sources/IsaacSim-develop/source/standalone_examples/tutorials/getting_started_robot.py"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -4925,9 +5530,20 @@
         "training_or_rl"
       ],
       "suggested_strategy": "run as bounded benchmark/training subset with max_iterations/timeout",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "benchmark_hydra_resolve_cartpole_direct",
+          "suite": "isaaclab",
+          "relative_path": "scripts/benchmarks/benchmark_hydra_resolve.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r33-bench-io/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r33-bench-io/benchmark_hydra_resolve_cartpole_direct.log",
+          "command": "./isaaclab.sh -p scripts/benchmarks/benchmark_hydra_resolve.py --iterations 1 --warmup 0 --case cartpole_direct:Isaac-Cartpole-Direct-v0:: --benchmark_backend summary --output_path /mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r33-bench-io/work/benchmark_hydra_resolve_cartpole_direct/hydra_resolve"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -4939,9 +5555,20 @@
         "benchmark"
       ],
       "suggested_strategy": "run as bounded benchmark/training subset with max_iterations/timeout",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "benchmark_lazy_export_cartpole_direct",
+          "suite": "isaaclab",
+          "relative_path": "scripts/benchmarks/benchmark_lazy_export.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r33-bench-io/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r33-bench-io/benchmark_lazy_export_cartpole_direct.log",
+          "command": "./isaaclab.sh -p scripts/benchmarks/benchmark_lazy_export.py --iterations 1 --tasks Isaac-Cartpole-Direct-v0"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -5015,9 +5642,20 @@
         "benchmark"
       ],
       "suggested_strategy": "run as bounded benchmark/training subset with max_iterations/timeout",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "benchmark_startup_cartpole_direct",
+          "suite": "isaaclab",
+          "relative_path": "scripts/benchmarks/benchmark_startup.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r33-bench-io/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r33-bench-io/benchmark_startup_cartpole_direct.log",
+          "command": "./isaaclab.sh -p scripts/benchmarks/benchmark_startup.py --task Isaac-Cartpole-Direct-v0 --num_envs 4 --headless --benchmark_backend summary --output_path /mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r33-bench-io/work/benchmark_startup_cartpole_direct/startup --top_n 5"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -5030,9 +5668,20 @@
         "newton"
       ],
       "suggested_strategy": "run as bounded benchmark/training subset with max_iterations/timeout",
-      "clean_status": "uncovered",
+      "clean_status": "failed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "benchmark_view_comparison_tiny",
+          "suite": "isaaclab",
+          "relative_path": "scripts/benchmarks/benchmark_view_comparison.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r35-newton-frameview/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r35-newton-frameview/benchmark_view_comparison_tiny.log",
+          "command": "./isaaclab.sh -p scripts/benchmarks/benchmark_view_comparison.py --num_envs 4 --num_iterations 2 --backends usd fabric newton --headless"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -5045,9 +5694,20 @@
         "newton"
       ],
       "suggested_strategy": "run as bounded benchmark/training subset with max_iterations/timeout",
-      "clean_status": "uncovered",
+      "clean_status": "failed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "benchmark_xform_prim_view_tiny",
+          "suite": "isaaclab",
+          "relative_path": "scripts/benchmarks/benchmark_xform_prim_view.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r35-newton-frameview/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r35-newton-frameview/benchmark_xform_prim_view_tiny.log",
+          "command": "./isaaclab.sh -p scripts/benchmarks/benchmark_xform_prim_view.py --num_envs 4 --num_iterations 2 --headless"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -5137,9 +5797,20 @@
         "long_running_loop"
       ],
       "suggested_strategy": "run with PYTHONUNBUFFERED and marker-based expected-timeout",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "demo_arl_robot_1",
+          "suite": "isaaclab",
+          "relative_path": "scripts/demos/arl_robot_1.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r32-demos-sensors/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r32-demos-sensors/demo_arl_robot_1.log",
+          "command": "./isaaclab.sh -p scripts/demos/arl_robot_1.py --headless"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -5192,9 +5863,20 @@
         "sensor_or_camera"
       ],
       "suggested_strategy": "pre-cache assets and record network/cache state before marking stable",
-      "clean_status": "uncovered",
+      "clean_status": "failed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "demo_bin_packing",
+          "suite": "isaaclab",
+          "relative_path": "scripts/demos/bin_packing.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r36-demos-state-machines/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r36-demos-state-machines/demo_bin_packing.log",
+          "command": "./isaaclab.sh -p scripts/demos/bin_packing.py --num_envs 2 --headless --viz none"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -5207,9 +5889,20 @@
         "sensor_or_camera"
       ],
       "suggested_strategy": "run with PYTHONUNBUFFERED and marker-based expected-timeout",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "demo_bipeds",
+          "suite": "isaaclab",
+          "relative_path": "scripts/demos/bipeds.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r32-demos-sensors/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r32-demos-sensors/demo_bipeds.log",
+          "command": "./isaaclab.sh -p scripts/demos/bipeds.py --headless --viz none"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -5225,9 +5918,40 @@
         "sensor_or_camera"
       ],
       "suggested_strategy": "pre-cache assets and record network/cache state before marking stable",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "demo_deformables_newton",
+          "suite": "isaaclab",
+          "relative_path": "scripts/demos/deformables.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-develop-official-smokes-2026-05-25-r37-core/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-develop-official-smokes-2026-05-25-r37-core/demo_deformables_newton.log",
+          "command": "./isaaclab.sh -p scripts/demos/deformables.py --backend newton --headless --viz none"
+        },
+        {
+          "name": "demo_deformables_physx",
+          "suite": "isaaclab",
+          "relative_path": "scripts/demos/deformables.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r36-demos-state-machines/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r36-demos-state-machines/demo_deformables_physx.log",
+          "command": "./isaaclab.sh -p scripts/demos/deformables.py --backend physx --headless --viz none"
+        },
+        {
+          "name": "demo_deformables_newton",
+          "suite": "isaaclab",
+          "relative_path": "scripts/demos/deformables.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r36-demos-state-machines/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r36-demos-state-machines/demo_deformables_newton.log",
+          "command": "./isaaclab.sh -p scripts/demos/deformables.py --backend newton --headless --viz none"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -5258,9 +5982,20 @@
         "sensor_or_camera"
       ],
       "suggested_strategy": "run with PYTHONUNBUFFERED and marker-based expected-timeout",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "demo_hands",
+          "suite": "isaaclab",
+          "relative_path": "scripts/demos/hands.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r32-demos-sensors/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r32-demos-sensors/demo_hands.log",
+          "command": "./isaaclab.sh -p scripts/demos/hands.py --headless --viz none"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -5293,9 +6028,20 @@
         "sensor_or_camera"
       ],
       "suggested_strategy": "pre-cache assets and record network/cache state before marking stable",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "demo_markers",
+          "suite": "isaaclab",
+          "relative_path": "scripts/demos/markers.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r36-demos-state-machines/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r36-demos-state-machines/demo_markers.log",
+          "command": "./isaaclab.sh -p scripts/demos/markers.py --headless --viz none"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -5310,9 +6056,20 @@
         "sensor_or_camera"
       ],
       "suggested_strategy": "pre-cache assets and record network/cache state before marking stable",
-      "clean_status": "uncovered",
+      "clean_status": "failed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "demo_multi_asset",
+          "suite": "isaaclab",
+          "relative_path": "scripts/demos/multi_asset.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r36-demos-state-machines/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r36-demos-state-machines/demo_multi_asset.log",
+          "command": "./isaaclab.sh -p scripts/demos/multi_asset.py --num_envs 4 --headless --viz none"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -5340,9 +6097,20 @@
         "sensor_or_camera"
       ],
       "suggested_strategy": "run with PYTHONUNBUFFERED and marker-based expected-timeout",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "demo_procedural_terrain",
+          "suite": "isaaclab",
+          "relative_path": "scripts/demos/procedural_terrain.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r32-demos-sensors/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r32-demos-sensors/demo_procedural_terrain.log",
+          "command": "./isaaclab.sh -p scripts/demos/procedural_terrain.py --color_scheme none --headless --viz none"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -5498,9 +6266,20 @@
         "sensor_or_camera"
       ],
       "suggested_strategy": "run with PYTHONUNBUFFERED and marker-based expected-timeout",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "demo_sensor_frame_transformer",
+          "suite": "isaaclab",
+          "relative_path": "scripts/demos/sensors/frame_transformer_sensor.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r32-demos-sensors/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r32-demos-sensors/demo_sensor_frame_transformer.log",
+          "command": "./isaaclab.sh -p scripts/demos/sensors/frame_transformer_sensor.py --num_envs 1 --headless --viz none"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -5513,9 +6292,20 @@
         "sensor_or_camera"
       ],
       "suggested_strategy": "run with PYTHONUNBUFFERED and marker-based expected-timeout",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "demo_sensor_imu",
+          "suite": "isaaclab",
+          "relative_path": "scripts/demos/sensors/imu_sensor.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r32-demos-sensors/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r32-demos-sensors/demo_sensor_imu.log",
+          "command": "./isaaclab.sh -p scripts/demos/sensors/imu_sensor.py --num_envs 1 --headless --viz none"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -5562,9 +6352,20 @@
         "sensor_or_camera"
       ],
       "suggested_strategy": "run with PYTHONUNBUFFERED and marker-based expected-timeout",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "demo_sensor_pva",
+          "suite": "isaaclab",
+          "relative_path": "scripts/demos/sensors/pva_sensor.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r32-demos-sensors/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r32-demos-sensors/demo_sensor_pva.log",
+          "command": "./isaaclab.sh -p scripts/demos/sensors/pva_sensor.py --num_envs 1 --headless --viz none"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -5639,9 +6440,30 @@
       "runnable_class": "headless_candidate",
       "signals": [],
       "suggested_strategy": "run in bounded headless smoke batch with marker/exit checks",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "env_export_io_cartpole_direct",
+          "suite": "isaaclab",
+          "relative_path": "scripts/environments/export_IODescriptors.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r33-bench-io/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r33-bench-io/env_export_io_cartpole_direct.log",
+          "command": "./isaaclab.sh -p scripts/environments/export_IODescriptors.py --task Isaac-Cartpole-Direct-v0 --output_dir /mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r33-bench-io/work/env_export_io_cartpole_direct/io_descriptors"
+        },
+        {
+          "name": "env_export_io_cartpole_manager",
+          "suite": "isaaclab",
+          "relative_path": "scripts/environments/export_IODescriptors.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r34-io-manager/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r34-io-manager/env_export_io_cartpole_manager.log",
+          "command": "./isaaclab.sh -p scripts/environments/export_IODescriptors.py --task Isaac-Cartpole-v0 --output_dir /mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r34-io-manager/work/env_export_io_cartpole_manager/io_descriptors"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -5654,6 +6476,16 @@
       "clean_status": "passed",
       "patched_status": "uncovered",
       "runs": [
+        {
+          "name": "env_list_cartpole",
+          "suite": "isaaclab",
+          "relative_path": "scripts/environments/list_envs.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r31-env-rl-verify/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r31-env-rl-verify/env_list_cartpole.log",
+          "command": "./isaaclab.sh -p scripts/environments/list_envs.py --keyword Cartpole"
+        },
         {
           "name": "list_envs_cartpole",
           "suite": "isaaclab",
@@ -5687,9 +6519,20 @@
         "newton"
       ],
       "suggested_strategy": "run with PYTHONUNBUFFERED and marker-based expected-timeout",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "env_random_cartpole_direct",
+          "suite": "isaaclab",
+          "relative_path": "scripts/environments/random_agent.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r31-env-rl-verify/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r31-env-rl-verify/env_random_cartpole_direct.log",
+          "command": "./isaaclab.sh -p scripts/environments/random_agent.py --task Isaac-Cartpole-Direct-v0 --num_envs 4 --headless"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -5701,9 +6544,20 @@
         "long_running_loop"
       ],
       "suggested_strategy": "run with PYTHONUNBUFFERED and marker-based expected-timeout",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "state_machine_lift_cube_sm",
+          "suite": "isaaclab",
+          "relative_path": "scripts/environments/state_machine/lift_cube_sm.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r36-demos-state-machines/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r36-demos-state-machines/state_machine_lift_cube_sm.log",
+          "command": "./isaaclab.sh -p scripts/environments/state_machine/lift_cube_sm.py --num_envs 2 --headless"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -5746,9 +6600,20 @@
         "long_running_loop"
       ],
       "suggested_strategy": "run with PYTHONUNBUFFERED and marker-based expected-timeout",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "state_machine_open_cabinet_sm",
+          "suite": "isaaclab",
+          "relative_path": "scripts/environments/state_machine/open_cabinet_sm.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r36-demos-state-machines/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r36-demos-state-machines/state_machine_open_cabinet_sm.log",
+          "command": "./isaaclab.sh -p scripts/environments/state_machine/open_cabinet_sm.py --num_envs 2 --headless"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -5796,9 +6661,30 @@
         "newton"
       ],
       "suggested_strategy": "run with PYTHONUNBUFFERED and marker-based expected-timeout",
-      "clean_status": "uncovered",
+      "clean_status": "passed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "env_zero_cartpole_direct",
+          "suite": "isaaclab",
+          "relative_path": "scripts/environments/zero_agent.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-develop-official-smokes-2026-05-25-r37-core/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-develop-official-smokes-2026-05-25-r37-core/env_zero_cartpole_direct.log",
+          "command": "./isaaclab.sh -p scripts/environments/zero_agent.py --task Isaac-Cartpole-Direct-v0 --num_envs 4 --headless"
+        },
+        {
+          "name": "env_zero_cartpole_direct",
+          "suite": "isaaclab",
+          "relative_path": "scripts/environments/zero_agent.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r31-env-rl-verify/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r31-env-rl-verify/env_zero_cartpole_direct.log",
+          "command": "./isaaclab.sh -p scripts/environments/zero_agent.py --task Isaac-Cartpole-Direct-v0 --num_envs 4 --headless"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -6378,9 +7264,20 @@
         "training_or_rl"
       ],
       "suggested_strategy": "manual/device validation with explicit hardware or websocket setup",
-      "clean_status": "uncovered",
+      "clean_status": "failed",
       "patched_status": "uncovered",
-      "runs": []
+      "runs": [
+        {
+          "name": "rsl_rl_train_cartpole_direct_1_iter",
+          "suite": "isaaclab",
+          "relative_path": "scripts/reinforcement_learning/rsl_rl/train.py",
+          "passed": false,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r31-env-rl-verify/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r31-env-rl-verify/rsl_rl_train_cartpole_direct_1_iter.log",
+          "command": "./isaaclab.sh -p scripts/reinforcement_learning/rsl_rl/train.py --task Isaac-Cartpole-Direct-v0 --num_envs 4 --max_iterations 1 --headless"
+        }
+      ]
     },
     {
       "suite": "isaaclab",
@@ -6869,6 +7766,26 @@
           "relative_path": "scripts/tutorials/00_sim/create_empty.py",
           "passed": true,
           "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-develop-official-smokes-2026-05-25-r37-core/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-develop-official-smokes-2026-05-25-r37-core/tutorial_00_create_empty.log",
+          "command": "./isaaclab.sh -p scripts/tutorials/00_sim/create_empty.py --headless"
+        },
+        {
+          "name": "tutorial_00_create_empty",
+          "suite": "isaaclab",
+          "relative_path": "scripts/tutorials/00_sim/create_empty.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r31-env-rl-verify/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r31-env-rl-verify/tutorial_00_create_empty.log",
+          "command": "./isaaclab.sh -p scripts/tutorials/00_sim/create_empty.py --headless"
+        },
+        {
+          "name": "tutorial_00_create_empty",
+          "suite": "isaaclab",
+          "relative_path": "scripts/tutorials/00_sim/create_empty.py",
+          "passed": true,
+          "source_variant": "clean",
           "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/official-smokes-2026-05-25/summary.json",
           "log_path": "/mnt/storage/isaacsim-6.0-official/logs/official-smokes-2026-05-25/tutorial_00_create_empty.log",
           "command": "./isaaclab.sh -p scripts/tutorials/00_sim/create_empty.py --viz none"
@@ -6889,6 +7806,16 @@
       "clean_status": "passed",
       "patched_status": "uncovered",
       "runs": [
+        {
+          "name": "tutorial_00_launch_app",
+          "suite": "isaaclab",
+          "relative_path": "scripts/tutorials/00_sim/launch_app.py",
+          "passed": true,
+          "source_variant": "clean",
+          "summary_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r31-env-rl-verify/summary.json",
+          "log_path": "/mnt/storage/isaacsim-6.0-official/logs/isaaclab-official-smokes-2026-05-25-r31-env-rl-verify/tutorial_00_launch_app.log",
+          "command": "./isaaclab.sh -p scripts/tutorials/00_sim/launch_app.py --headless --width 320 --height 240"
+        },
         {
           "name": "tutorial_00_launch_app",
           "suite": "isaaclab",

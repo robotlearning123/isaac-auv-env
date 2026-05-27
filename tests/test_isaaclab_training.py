@@ -7,7 +7,6 @@ surface: batched tensors, partial reset, decimation, reward/done.
 
 from __future__ import annotations
 
-import numpy as np
 import pytest
 import torch
 

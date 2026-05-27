@@ -13,11 +13,9 @@ kernels. Supports multiple Jerlov water type presets.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
 
 import numpy as np
 import warp as wp
-
 
 # ---------------------------------------------------------------------------
 # Warp helper functions

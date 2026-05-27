@@ -55,7 +55,7 @@ pnpm preview      # preview production build locally
 Production deploys are **tag-driven**. Push to `main` = preview only. Tag `v0.x.x` + push triggers production via `.github/workflows/release.yml`.
 
 ```bash
-git tag v0.0.2 && git push --tags    # triggers production deploy
+git tag v0.1.0 && git push --tags    # triggers production deploy after metadata/release docs agree
 ```
 
 ## Cloudflare Pages project

@@ -1,4 +1,29 @@
-# Real-Status Snapshot — 2026-05-15
+# Real-Status Snapshot
+
+## Current addendum — 2026-05-26
+
+The 2026-05-15 snapshot below is historical. Current new-user and Isaac ecosystem setup lives in:
+
+- `README.md`
+- `docs/README.md`
+- `docs/getting-started.md`
+- `docs/verification.md`
+- `docs/isaac6-isaaclab3-install.md`
+- `DECISIONS.md` ADR-013
+
+Current direction:
+
+- OceanScale is the ocean layer in the NVIDIA robotics simulation ecosystem.
+- Isaac Sim 6 and Isaac Lab 3 are the main validation lane.
+- The default OceanScale development environment remains separate from the Isaac validation environment so package pins do not overwrite the Newton/Warp core stack.
+- Source install from the repo is the current supported user path.
+- Version identity is `0.1.0-alpha` in `VERSION`, `pyproject.toml`, and `website/package.json`; CLI prints the normalized Python version `0.1.0a0`.
+- Public PyPI release is not claimed until the publish workflow is verified end-to-end.
+- The OceanScale gate is the native Isaac 6 / Isaac Lab 3 verifier, not a full sweep of all upstream Isaac demos.
+
+---
+
+## Historical snapshot — 2026-05-15
 
 Hardware: **RTX 5090 32 GB Blackwell (sm_120)** + Intel i9-14900K + 62 GB RAM, Ubuntu 24.04, driver 580.95.05, CUDA toolkit 12.8.
 
