@@ -131,7 +131,6 @@ def _train_bluerov2_hover(args: argparse.Namespace) -> None:
     import torch
 
     from oceanscale.rov_env import ROVEnv
-
     from oceanscale.training.skrl_trainer import train_skrl_ppo
 
     checkpoint_dir = Path(args.checkpoint_dir)
@@ -308,7 +307,329 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     train_parser.add_argument("--render-mp4", type=str, default=None, help="Render after train")
 
+    # eval subcommand
+    eval_parser = subparsers.add_parser("eval", help="Evaluation commands")
+    eval_sub = eval_parser.add_subparsers(dest="eval_command")
+
+    # eval robustness-profile
+    profile_parser = eval_sub.add_parser(
+        "robustness-profile", help="Generate evaluation profile definition"
+    )
+    profile_parser.add_argument(
+        "--episodes-per-case", type=int, default=20, help="Episodes per evaluation case"
+    )
+    profile_parser.add_argument("--seed", type=int, default=42, help="Random seed")
+    profile_parser.add_argument("--output-json", type=str, default=None, help="Output JSON path")
+    profile_parser.add_argument(
+        "--output-md", type=str, default=None, help="Output Markdown path"
+    )
+
+    # eval robustness-run
+    run_parser = eval_sub.add_parser("robustness-run", help="Run evaluation cases")
+    run_parser.add_argument(
+        "--episodes-per-case", type=int, default=20, help="Episodes per evaluation case"
+    )
+    run_parser.add_argument(
+        "--task", type=str, default="station-keeping", help="Task name"
+    )
+    run_parser.add_argument("--case-limit", type=int, default=None, help="Max cases to run")
+    run_parser.add_argument(
+        "--action-mode",
+        type=str,
+        default="zero",
+        help="Action mode (zero, proportional, damped)",
+    )
+    run_parser.add_argument(
+        "--steps-per-episode", type=int, default=10, help="Steps per episode"
+    )
+    run_parser.add_argument("--device", type=str, default="cpu", help="Device")
+    run_parser.add_argument("--output-jsonl", type=str, default=None, help="Output JSONL path")
+    run_parser.add_argument(
+        "--summary-json", type=str, default=None, help="Summary JSON path"
+    )
+
+    # eval robustness-report
+    report_parser = eval_sub.add_parser(
+        "robustness-report", help="Generate report from JSONL records"
+    )
+    report_parser.add_argument(
+        "--input-jsonl", type=str, required=True, help="Input JSONL path"
+    )
+    report_parser.add_argument(
+        "--output-json", type=str, default=None, help="Output report JSON path"
+    )
+    report_parser.add_argument(
+        "--output-md", type=str, default=None, help="Output report Markdown path"
+    )
+
+    # eval robustness-suite
+    suite_parser = eval_sub.add_parser(
+        "robustness-suite", help="Run evaluation suite across tasks and action modes"
+    )
+    suite_parser.add_argument(
+        "--tasks", nargs="+", required=True, help="Task names"
+    )
+    suite_parser.add_argument(
+        "--action-modes", nargs="+", required=True, help="Action modes"
+    )
+    suite_parser.add_argument(
+        "--episodes-per-case", type=int, default=20, help="Episodes per evaluation case"
+    )
+    suite_parser.add_argument("--case-limit", type=int, default=None, help="Max cases per run")
+    suite_parser.add_argument(
+        "--steps-per-episode", type=int, default=10, help="Steps per episode"
+    )
+    suite_parser.add_argument("--device", type=str, default="cpu", help="Device")
+    suite_parser.add_argument(
+        "--output-dir", type=str, default=None, help="Output directory"
+    )
+
     return parser
+
+
+def _eval_robustness_profile(args: argparse.Namespace) -> None:
+    from oceanscale.evaluation import (
+        profile_to_dict,
+        profile_to_markdown,
+        underwater_robustness_profile,
+    )
+
+    profile = underwater_robustness_profile(
+        episodes_per_case=args.episodes_per_case,
+        seed=args.seed,
+    )
+    data = profile_to_dict(profile)
+
+    if args.output_json:
+        out = Path(args.output_json)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(data, indent=2), encoding="utf-8")
+        print(f"Profile JSON saved to {args.output_json}")
+
+    if args.output_md:
+        out = Path(args.output_md)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        md = profile_to_markdown(profile)
+        out.write_text(md, encoding="utf-8")
+        print(f"Profile Markdown saved to {args.output_md}")
+
+
+def _eval_robustness_run(
+    args: argparse.Namespace,
+    *,
+    evaluate_case: object | None = None,
+) -> None:
+    from oceanscale.evaluation import (
+        CaseEvaluator,
+        collect_run_metadata,
+        records_to_jsonl,
+        run_evaluation_profile,
+        summarize_evaluation_run,
+        underwater_robustness_profile,
+    )
+
+    profile = underwater_robustness_profile(
+        episodes_per_case=args.episodes_per_case,
+        seed=42,
+    )
+
+    run_metadata = collect_run_metadata(
+        task_name=args.task,
+        action_mode=args.action_mode,
+        device=args.device,
+        steps_per_episode=args.steps_per_episode,
+        profile_name=profile.name,
+        profile_seed=profile.seed,
+        episodes_per_case=args.episodes_per_case,
+        case_limit=args.case_limit,
+    )
+
+    if evaluate_case is None:
+        from oceanscale.evaluation import resolve_case_evaluator
+
+        evaluate_case = resolve_case_evaluator(
+            args.task,
+            action_mode=args.action_mode,
+            steps_per_episode=args.steps_per_episode,
+            device=args.device,
+        )
+
+    records = run_evaluation_profile(
+        profile,
+        task_name=args.task,
+        evaluate_case=cast(CaseEvaluator, evaluate_case),
+        case_limit=args.case_limit,
+        action_mode=args.action_mode,
+        run_metadata=run_metadata,
+    )
+
+    if args.output_jsonl:
+        out = Path(args.output_jsonl)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(records_to_jsonl(records), encoding="utf-8")
+        print(f"Records JSONL saved to {args.output_jsonl}")
+
+    if args.summary_json:
+        summary = summarize_evaluation_run(
+            profile,
+            records,
+            task_name="station-keeping",
+            action_mode=args.action_mode,
+            run_metadata=run_metadata,
+        )
+        out = Path(args.summary_json)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+        print(f"Summary JSON saved to {args.summary_json}")
+
+
+def _eval_robustness_report(args: argparse.Namespace) -> None:
+    from oceanscale.evaluation import (
+        evaluation_records_from_jsonl,
+        evaluation_report_to_markdown,
+        summarize_evaluation_records,
+    )
+
+    jsonl_text = Path(args.input_jsonl).read_text(encoding="utf-8")
+    loaded = evaluation_records_from_jsonl(jsonl_text)
+    report = summarize_evaluation_records(loaded)
+
+    if args.output_json:
+        out = Path(args.output_json)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(report, indent=2), encoding="utf-8")
+        print(f"Report JSON saved to {args.output_json}")
+
+    if args.output_md:
+        out = Path(args.output_md)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        md = evaluation_report_to_markdown(report)
+        out.write_text(md, encoding="utf-8")
+        print(f"Report Markdown saved to {args.output_md}")
+
+
+def _eval_robustness_suite(
+    args: argparse.Namespace,
+    *,
+    evaluate_case_factory: object | None = None,
+) -> None:
+    from oceanscale.evaluation import (
+        GENESIS_WORLD_REFERENCE,
+        CaseEvaluator,
+        collect_run_metadata,
+        evaluation_report_to_markdown,
+        records_to_jsonl,
+        run_evaluation_profile,
+        summarize_evaluation_run,
+        underwater_robustness_profile,
+    )
+
+    profile = underwater_robustness_profile(
+        episodes_per_case=args.episodes_per_case,
+        seed=42,
+    )
+
+    output_dir = Path(args.output_dir) if args.output_dir else Path("eval_suite_output")
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    artifacts = []
+    for task_name in args.tasks:
+        for action_mode in args.action_modes:
+            run_metadata = collect_run_metadata(
+                task_name=task_name,
+                action_mode=action_mode,
+                device=args.device,
+                steps_per_episode=args.steps_per_episode,
+                profile_name=profile.name,
+                profile_seed=profile.seed,
+                episodes_per_case=args.episodes_per_case,
+                case_limit=args.case_limit,
+            )
+
+            if evaluate_case_factory is not None:
+                evaluate_case = cast(
+                    CaseEvaluator,
+                    cast(object, evaluate_case_factory)(task_name, action_mode),
+                )
+            else:
+                from oceanscale.evaluation import resolve_case_evaluator
+
+                evaluate_case = resolve_case_evaluator(
+                    task_name,
+                    action_mode=action_mode,
+                    steps_per_episode=args.steps_per_episode,
+                    device=args.device,
+                )
+
+            records = run_evaluation_profile(
+                profile,
+                task_name=task_name,
+                evaluate_case=evaluate_case,
+                case_limit=args.case_limit,
+                action_mode=action_mode,
+                run_metadata=run_metadata,
+            )
+
+            slug = f"{task_name}_{action_mode}"
+            records_path = output_dir / f"{slug}_records.jsonl"
+            summary_path = output_dir / f"{slug}_summary.json"
+            report_json_path = output_dir / f"{slug}_report.json"
+            report_md_path = output_dir / f"{slug}_report.md"
+
+            records_path.write_text(records_to_jsonl(records), encoding="utf-8")
+
+            summary = summarize_evaluation_run(
+                profile,
+                records,
+                task_name=task_name,
+                action_mode=action_mode,
+                run_metadata=run_metadata,
+            )
+            summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+
+            report = summarize_evaluation_run(
+                profile,
+                records,
+                task_name=task_name,
+                action_mode=action_mode,
+                run_metadata=run_metadata,
+            )
+            report_json_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+            report_md_path.write_text(
+                evaluation_report_to_markdown(report), encoding="utf-8"
+            )
+
+            artifacts.append(
+                {
+                    "task_name": task_name,
+                    "action_mode": action_mode,
+                    "case_count": len(records),
+                    "status_counts": dict(
+                        {r.status: sum(1 for x in records if x.status == r.status) for r in records}
+                    )
+                    if records
+                    else {},
+                    "records_jsonl": records_path.name,
+                    "summary_json": summary_path.name,
+                    "report_json": report_json_path.name,
+                    "report_md": report_md_path.name,
+                }
+            )
+
+    manifest = {
+        "suite_type": "underwater_robustness_suite",
+        "profile": profile.name,
+        "tasks": list(args.tasks),
+        "action_modes": list(args.action_modes),
+        "case_limit": args.case_limit,
+        "steps_per_episode": args.steps_per_episode,
+        "source_reference": GENESIS_WORLD_REFERENCE,
+        "artifacts": artifacts,
+    }
+    (output_dir / "manifest.json").write_text(
+        json.dumps(manifest, indent=2), encoding="utf-8"
+    )
+    print(f"Suite manifest saved to {output_dir / 'manifest.json'}")
 
 
 def main() -> None:
@@ -329,6 +650,17 @@ def main() -> None:
     elif args.command == "train":
         if args.task == "bluerov2-hover":
             _train_bluerov2_hover(args)
+    elif args.command == "eval":
+        if args.eval_command == "robustness-profile":
+            _eval_robustness_profile(args)
+        elif args.eval_command == "robustness-run":
+            _eval_robustness_run(args)
+        elif args.eval_command == "robustness-report":
+            _eval_robustness_report(args)
+        elif args.eval_command == "robustness-suite":
+            _eval_robustness_suite(args)
+        else:
+            parser.parse_args(["eval", "--help"])
     else:
         parser.print_help()
         sys.exit(1)
