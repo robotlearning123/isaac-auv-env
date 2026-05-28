@@ -1,0 +1,137 @@
+# REMUS 100 AUV hydrodynamic parameters
+# Source: cybergalactic/PythonVehicleSimulator remus100.py
+# Reference: Allen et al. 2000, Fossen 2021 §8.4.2
+# License: MIT (study reference, not vendored)
+# Pinned: commit c717e073d7a839dcb5956cf20c595132f1fa249a
+
+name: REMUS100
+type: auv
+description: Cylinder-shaped AUV, tail rudder + stern planes + propeller
+length: 1.6
+diameter: 0.19
+mass: 31.029385
+
+# Center of gravity/buoyancy relative to CO (body frame)
+r_bg: [0.0, 0.0, 0.02]
+r_bb: [0.0, 0.0, 0.0]
+
+# Weight and buoyancy (neutrally buoyant)
+W: 304.398267
+B: 304.398267
+
+# Rigid body mass matrix (6×6, expressed in CO)
+# Computed from prolate spheroid: m = 4/3 * pi * rho * a * b^2
+# Hmtrx(r_bg) transform applied from CG to CO
+MRB:
+  - [31.02938498, 0.0, 0.0, 0.0, 0.62058770, 0.0]
+  - [0.0, 31.02938498, 0.0, -0.62058770, 0.0, 0.0]
+  - [0.0, 0.0, 31.02938498, 0.0, 0.0, 0.0]
+  - [0.0, -0.62058770, 0.0, 0.12442783, 0.0, 0.0]
+  - [0.62058770, 0.0, 0.0, 0.0, 4.04018107, 0.0]
+  - [0.0, 0.0, 0.0, 0.0, 0.0, 4.02776932]
+
+# Added mass matrix (6×6, diagonal, Lamb's k-factors)
+# k1 = alpha_0/(2-alpha_0) ≈ 0.027 (axial)
+# k2 = beta_0/(2-beta_0) ≈ 0.949 (transverse)
+# k_prime ≈ 0.851 (rotational)
+# MA_44 = r44 * Ix, r44 = 0.3
+MA:
+  - [0.83890859, 0.0, 0.0, 0.0, 0.0, 0.0]
+  - [0.0, 29.43763662, 0.0, 0.0, 0.0, 0.0]
+  - [0.0, 0.0, 29.43763662, 0.0, 0.0, 0.0]
+  - [0.0, 0.0, 0.0, 0.03360482, 0.0, 0.0]
+  - [0.0, 0.0, 0.0, 0.0, 3.42621011, 0.0]
+  - [0.0, 0.0, 0.0, 0.0, 0.0, 3.42621011]
+
+# Total system mass matrix M = MRB + MA
+M:
+  - [31.86829357, 0.0, 0.0, 0.0, 0.62058770, 0.0]
+  - [0.0, 60.46702159, 0.0, -0.62058770, 0.0, 0.0]
+  - [0.0, 0.0, 60.46702159, 0.0, 0.0, 0.0]
+  - [0.0, -0.62058770, 0.0, 0.15803266, 0.0, 0.0]
+  - [0.62058770, 0.0, 0.0, 0.0, 7.46639119, 0.0]
+  - [0.0, 0.0, 0.0, 0.0, 0.0, 7.45397943]
+
+# Low-speed linear damping (diagonal)
+# D[i,i] = M[i,i]/T for surge/sway/heave/yaw
+# D[3,3] = M[3,3] * 2*zeta_roll*w_roll
+# D[4,4] = M[4,4] * 2*zeta_pitch*w_pitch
+# Note: surge/sway damping vanishes at high speed: D *= exp(-3*U_r)
+damping:
+  T_surge: 20.0
+  T_sway: 20.0
+  T_heave: 20.0
+  T_yaw: 1.0
+  zeta_roll: 0.3
+  zeta_pitch: 0.8
+  w_roll: 6.206727
+  w_pitch: 0.902985
+  D_diagonal: [1.593415, 3.023351, 3.023351, 0.588519, 10.787267, 7.453979]
+
+# Actuator configuration
+actuators:
+  # Propeller (single-screw, 3 blades, blade-area ratio 0.718)
+  # KT/KQ from Wagningen series via MSS toolbox
+  propeller:
+    D_prop: 0.14
+    t_prop: 0.1
+    KT_0: 0.4566
+    KQ_0: 0.0700
+    KT_max: 0.1798
+    KQ_max: 0.0312
+    Ja_max: 0.6632
+    nMax: 1525  # rpm
+    T_n: 1.0
+
+  # Tail rudder (port + starboard combined)
+  rudder:
+    S_fin: 0.00665
+    CL_delta: 0.5
+    A_total: 0.0133
+    x_pos: -0.8
+    deltaMax: 0.2618
+    T_delta: 0.1
+
+  # Stern planes (port + starboard combined)
+  stern_planes:
+    S_fin: 0.00665
+    CL_delta: 0.7
+    A_total: 0.0133
+    x_pos: -0.8
+    deltaMax: 0.2618
+    T_delta: 0.1
+
+# Hydrodynamic drag model
+drag:
+  S: 0.2128
+  CD_0: 0.055960
+  Cd_body: 0.42
+  rho: 1026
+
+# Control parameters (for reference)
+control:
+  heading_autopilot:
+    type: integral_SMC
+    K_nomoto: 0.25
+    T_nomoto: 1.0
+    lam: 0.1
+    phi_b: 0.1
+    K_d: 0.5
+    K_sigma: 0.05
+    wn_d: 0.1
+    zeta_d: 1.0
+    r_max: 0.0873
+
+  depth_autopilot:
+    type: successive_loop_closure
+    Kp_z: 0.1
+    T_z: 100.0
+    Kp_theta: 5.0
+    Kd_theta: 2.0
+    Ki_theta: 0.3
+    K_w: 5.0
+    wn_d_z: 0.02
+
+citations:
+  - "Allen et al. 2000, OCEANS MTS/IEEE, doi:10.1109/OCEANS.2000.882209"
+  - "Fossen 2021, Handbook of Marine Craft Hydrodynamics and Motion Control, 2nd ed., Wiley"
