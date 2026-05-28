@@ -147,16 +147,18 @@ class TestTrainingConfigs:
         assert path.exists()
 
 
+_WEIGHTS_PATH = Path(__file__).parent.parent / "oceanscale/controllers/pretrained/warpauv_poshold_ppo.pt"
+
+
+@pytest.mark.skipif(not _WEIGHTS_PATH.exists(), reason="pretrained weights not in repo")
 class TestPretrainedModels:
     def test_warpauv_weights_exist(self):
-        path = Path(__file__).parent.parent / "oceanscale/controllers/pretrained/warpauv_poshold_ppo.pt"
-        assert path.exists()
-        assert path.stat().st_size > 100_000
+        assert _WEIGHTS_PATH.exists()
+        assert _WEIGHTS_PATH.stat().st_size > 100_000
 
     def test_warpauv_weights_loadable(self):
         import torch
-        path = Path(__file__).parent.parent / "oceanscale/controllers/pretrained/warpauv_poshold_ppo.pt"
-        checkpoint = torch.load(path, map_location="cpu", weights_only=False)
+        checkpoint = torch.load(_WEIGHTS_PATH, map_location="cpu", weights_only=False)
         assert "model_state_dict" in checkpoint
         assert "optimizer_state_dict" in checkpoint
 

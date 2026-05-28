@@ -251,6 +251,13 @@ class BlueROV2MarineGym:
             "coBM": self.coBM,
         }
 
+    def tier1_kwargs(self) -> dict[str, Any]:
+        """Return kwargs dict for Tier1 constructor."""
+        return {
+            "n_thrusters": self.n_thrusters,
+            "max_thrust": self.max_thrust,
+        }
+
     def rotor_config(self) -> dict[str, Any]:
         """Return rotor configuration for T200 thruster model."""
         return {
