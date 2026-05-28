@@ -1683,7 +1683,7 @@ requires-dist = [
     { name = "warp-lang", extras = ["torch-cu12"], specifier = ">=1.13.0,<2.0" },
     { name = "warp-nn", specifier = ">=0.2.0" },
 ]
-provides-extras = ["dev", "rl", "bench", "viz", "sensors"]
+provides-extras = ["dev", "rl", "bench", "viz", "sensors", "ros2"]
 
 [[package]]
 name = "omegaconf"

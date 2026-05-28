@@ -75,6 +75,17 @@ Expand from one vehicle and one task to a multi-vehicle, multi-environment platf
 - [ ] DVL (4-beam Doppler, bottom-lock / water-track)
 - [ ] Acoustic modem (BELLHOP wrapper)
 
+### ROS2 integration
+
+- [x] ROS2 bridge module (oceanscale.ros2) — publish vehicle state, sensors, TF, clock
+- [x] Twist command subscriber (cmd_vel → 6-DOF action)
+- [x] Emergency stop subscriber
+- [x] Standalone CLI entry point (scripts/ros2_bridge.py)
+- [x] ROS2 launch file utilities
+- [x] 54 unit tests (mocked rclpy, no system ROS2 required)
+- [x] External ROS2 graph validation — 25/25 real rclpy tests on Ubuntu 24.04 + Jazzy
+- [ ] Isaac Sim 6.0 ROS2 bridge integration test
+
 ### RL and benchmark tasks
 
 - [ ] Station-keeping under current + wave

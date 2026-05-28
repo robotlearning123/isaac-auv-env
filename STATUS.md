@@ -173,13 +173,16 @@ The 256+ OOM was because all bodies lived in `world=-1` → MuJoCo treated them 
 - SolverMuJoCo has CPU memory ceiling at ~hundreds of independent bodies (host-side `mj_stackAlloc`).
 - Newton JIT compile takes ~30 s on first cold load (lots of kernels); cached compilation < 100 ms after.
 
+✅ **Verified with real ROS2 Jazzy (Ubuntu 24.04)**
+- ROS 2 Jazzy bridge — 25/25 real rclpy tests pass (messages, publishers, subscribers)
+- rclpy via apt (`ros-jazzy-ros-base` + `ros-jazzy-rclpy`), Python 3.12
+
 ❌ **Not yet tested / unknown**
 - Isaac Lab 3.0 — deferred to v0.2 (source build)
 - Isaac Sim 5.1 — deferred (large install)
 - USD scene authoring beyond pxr import — deferred to v0.1.x
 - BVH-based sonar ray casting (Warp) — v0.2
 - Newton worlds / per-env replication API — needs investigation
-- ROS 2 Jazzy bridge — deferred
 
 ---
 

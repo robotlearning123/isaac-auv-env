@@ -103,7 +103,46 @@ The verifier writes a timestamped directory under `$ISAAC_ROOT/logs/`. The most 
 /mnt/storage/isaacsim-6.0-official/logs/oceanscale-latest-isaac-baseline-2026-05-26-125621/summary.json
 ~~~
 
-## 6. Documentation Checks
+## 6. ROS2 Bridge Verification
+
+The ROS2 bridge requires a system ROS2 installation. It is optional — OceanScale core works without it.
+
+### Install ROS2 Jazzy (Ubuntu 24.04)
+
+~~~bash
+sudo apt install -y ros-jazzy-ros-base ros-jazzy-rclpy
+source /opt/ros/jazzy/setup.bash
+~~~
+
+### Verify rclpy
+
+~~~bash
+python3.12 -c "import rclpy; rclpy.init(); rclpy.shutdown(); print('rclpy OK')"
+~~~
+
+### Run mock-based tests (no ROS2 required)
+
+~~~bash
+uv run pytest tests/test_ros2_bridge.py -v
+~~~
+
+Expected: 54/54 pass.
+
+### Verify with real ROS2 types
+
+~~~bash
+source /opt/ros/jazzy/setup.bash
+PYTHONPATH=. python3.12 -c "
+from oceanscale.ros2.messages import pose_from_obs, pressure_from_obs
+import numpy as np
+obs = {'position': np.array([0,0,-5], dtype=np.float32), 'orientation': np.array([0,0,0,1], dtype=np.float32)}
+print('pose:', pose_from_obs(obs).pose.position.z)
+print('pressure:', round(pressure_from_obs(obs).fluid_pressure, 0), 'Pa')
+print('ROS2 bridge OK')
+"
+~~~
+
+## 7. Documentation Checks
 
 For documentation-only edits, run:
 

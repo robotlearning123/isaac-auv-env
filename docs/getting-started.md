@@ -76,6 +76,21 @@ uv run pytest tests/ -q
 
 Use [`verification.md`](verification.md) for the complete customer/new-user checklist and expected outputs.
 
+## ROS2 bridge (optional)
+
+OceanScale includes an optional ROS2 bridge for streaming simulation data into the ROS2 ecosystem. Requires a system ROS2 installation.
+
+```bash
+# Install ROS2 Jazzy (Ubuntu 24.04)
+sudo apt install -y ros-jazzy-ros-base ros-jazzy-rclpy
+source /opt/ros/jazzy/setup.bash
+
+# Run the bridge
+python scripts/ros2_bridge.py --namespace /oceanscale --rate 100
+```
+
+The bridge publishes vehicle state, sensor data, TF transforms, and sim clock. See `oceanscale/ros2/` for the full API.
+
 ## Where to read next
 
 | Document | What it covers |
