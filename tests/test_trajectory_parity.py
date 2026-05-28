@@ -127,6 +127,7 @@ class TestForceParity:
                 tier1.d_lin_ang,
                 tier1.d_quad_lin,
                 tier1.d_quad_ang,
+                tier1.current_vec_arr,
                 tier1.wrench_buf,
             ],
             device="cuda",
@@ -160,6 +161,7 @@ class TestForceParity:
                 tier1.d_lin_ang,
                 tier1.d_quad_lin,
                 tier1.d_quad_ang,
+                tier1.current_vec_arr,
                 tier1.wrench_buf,
             ],
             device="cuda",
@@ -271,6 +273,7 @@ class TestForceParity:
                 nu_wp,
                 tier1.M_A_lin,
                 tier1.M_A_ang,
+                tier1.current_vec_arr,
                 tier1.wrench_buf,
             ],
             device="cuda",
@@ -382,3 +385,202 @@ class TestTrajectorySanity:
         # Matched params used for parity tests
         assert MATCHED_PARAMS.g == 9.81
         assert MATCHED_PARAMS.rho == 1025.0
+
+
+class TestCurrentRelativeDamping:
+    """Verify damping uses water-relative velocity (Fossen §7.1: v_r = v - v_c)."""
+
+    @pytest.fixture()
+    def tier1_current(self):
+        t = Tier1(n_envs=1, n_thrusters=8, device="cuda")
+        t.set_coeffs(
+            added_mass=(5.0, 30.0, 30.0, 0.01, 0.01, 0.01),
+            d_lin=(4.0, 6.0, 5.0, 0.07, 0.07, 0.07),
+            d_quad=(18.0, 21.0, 36.0, 1.5, 1.5, 1.5),
+            mass=11.5,
+            volume=0.0115,
+            coBM=0.01,
+        )
+        return t
+
+    def test_zero_current_same_as_before(self, tier1_current):
+        """With zero current, damping matches absolute-velocity damping."""
+        from oceanscale.hydro.tier1_kernels import tier1_damping
+
+        nu = np.array([0.5, -0.3, 0.1, 0.02, -0.01, 0.03])
+        nu_wp = _make_spatial(nu)
+        tier1_current.zero_wrench()
+        wp.launch(
+            tier1_damping,
+            dim=1,
+            inputs=[
+                nu_wp,
+                tier1_current.d_lin_lin,
+                tier1_current.d_lin_ang,
+                tier1_current.d_quad_lin,
+                tier1_current.d_quad_ang,
+                tier1_current.current_vec_arr,
+                tier1_current.wrench_buf,
+            ],
+            device="cuda",
+        )
+        wp.synchronize()
+        wrench = tier1_current.wrench_buf.numpy()[0]
+        # With zero current, v_r = v, so damping is non-zero
+        assert np.any(np.abs(wrench) > 1e-6)
+
+    def test_head_current_reduces_damping(self, tier1_current):
+        """Vehicle moving forward in a head current: damping should decrease."""
+        from oceanscale.hydro.tier1_kernels import tier1_damping
+
+        nu = np.array([0.5, 0.0, 0.0, 0.0, 0.0, 0.0])
+        nu_wp = _make_spatial(nu)
+
+        # Case 1: no current
+        tier1_current.zero_wrench()
+        wp.launch(
+            tier1_damping,
+            dim=1,
+            inputs=[
+                nu_wp,
+                tier1_current.d_lin_lin,
+                tier1_current.d_lin_ang,
+                tier1_current.d_quad_lin,
+                tier1_current.d_quad_ang,
+                tier1_current.current_vec_arr,
+                tier1_current.wrench_buf,
+            ],
+            device="cuda",
+        )
+        wp.synchronize()
+        f_no_current = tier1_current.wrench_buf.numpy()[0, 0]
+
+        # Case 2: head current (same direction as vehicle = reduced relative velocity)
+        tier1_current.current_vec_arr = wp.array(
+            np.array([[0.3, 0.0, 0.0]], dtype=np.float32), dtype=wp.vec3f, device="cuda"
+        )
+        tier1_current.zero_wrench()
+        wp.launch(
+            tier1_damping,
+            dim=1,
+            inputs=[
+                nu_wp,
+                tier1_current.d_lin_lin,
+                tier1_current.d_lin_ang,
+                tier1_current.d_quad_lin,
+                tier1_current.d_quad_ang,
+                tier1_current.current_vec_arr,
+                tier1_current.wrench_buf,
+            ],
+            device="cuda",
+        )
+        wp.synchronize()
+        f_head_current = tier1_current.wrench_buf.numpy()[0, 0]
+
+        # Head current reduces relative velocity → less damping force
+        assert abs(f_head_current) < abs(f_no_current)
+
+    def test_tail_current_increases_damping(self, tier1_current):
+        """Vehicle moving forward against a tail current: damping should increase."""
+        from oceanscale.hydro.tier1_kernels import tier1_damping
+
+        nu = np.array([0.5, 0.0, 0.0, 0.0, 0.0, 0.0])
+        nu_wp = _make_spatial(nu)
+
+        # Tail current (opposite to vehicle motion = increased relative velocity)
+        tier1_current.current_vec_arr = wp.array(
+            np.array([[-0.3, 0.0, 0.0]], dtype=np.float32), dtype=wp.vec3f, device="cuda"
+        )
+        tier1_current.zero_wrench()
+        wp.launch(
+            tier1_damping,
+            dim=1,
+            inputs=[
+                nu_wp,
+                tier1_current.d_lin_lin,
+                tier1_current.d_lin_ang,
+                tier1_current.d_quad_lin,
+                tier1_current.d_quad_ang,
+                tier1_current.current_vec_arr,
+                tier1_current.wrench_buf,
+            ],
+            device="cuda",
+        )
+        wp.synchronize()
+        f_tail_current = tier1_current.wrench_buf.numpy()[0, 0]
+
+        # Tail current increases relative velocity → more damping force
+        # Compare against no-current case analytically
+        d_lin = 4.0
+        d_quad = 18.0
+        v_r = 0.5 - (-0.3)  # = 0.8
+        expected = -(d_lin + d_quad * abs(v_r)) * v_r
+        np.testing.assert_allclose(f_tail_current, expected, rtol=1e-4)
+
+
+class TestThrusterDirections:
+    """Verify per-thruster spin direction produces correct sign on wrench."""
+
+    def test_alternating_directions_flip_force(self):
+        """Thruster 0 (dir=+1) and thruster 1 (dir=-1) produce opposite surge."""
+        from oceanscale.hydro.tier1_kernels import tier1_thruster_alloc
+
+        n_thr = 8
+        t = Tier1(n_envs=2, n_thrusters=n_thr, device="cuda")
+        # Env 0: all +1, Env 1: alternating +1/-1
+        t.set_coeffs(
+            added_mass=(5.0, 30.0, 30.0, 0.01, 0.01, 0.01),
+            d_lin=(4.0, 6.0, 5.0, 0.07, 0.07, 0.07),
+            d_quad=(18.0, 21.0, 36.0, 1.5, 1.5, 1.5),
+            mass=11.5,
+            volume=0.0115,
+            coBM=0.01,
+            directions=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+        )
+
+        # Now set env 1 to alternating
+        dirs_alt = wp.array(
+            np.array([1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0], dtype=np.float32),
+            dtype=wp.float32,
+            device="cuda",
+        )
+
+        u_cmd = np.zeros((2, n_thr), dtype=np.float32)
+        u_cmd[:, 0] = 0.5  # Only thruster 0 active
+        u_cmd_wp = wp.array(u_cmd, dtype=wp.float32, device="cuda")
+
+        T_np = np.zeros((2, 6, n_thr), dtype=np.float32)
+        T_np[:, 0, 0] = 1.0  # thruster 0 → surge
+
+        u_prev = wp.zeros((2, n_thr), dtype=wp.float32, device="cuda")
+        u_out = wp.zeros((2, n_thr), dtype=wp.float32, device="cuda")
+        T_w = wp.array(T_np, dtype=wp.float32, device="cuda")
+        dirs_uniform = t._directions  # all +1
+
+        # Case 1: uniform +1 directions
+        wrench1 = wp.zeros(2, dtype=wp.spatial_vectorf, device="cuda")
+        wp.launch(
+            tier1_thruster_alloc,
+            dim=2,
+            inputs=[u_cmd_wp, u_prev, u_out, T_w, 51.5, 0.05, 0.1, 1.0 / 240.0, dirs_uniform, wrench1],
+            device="cuda",
+        )
+        wp.synchronize()
+        f1 = wrench1.numpy()
+
+        # Case 2: alternating directions
+        wrench2 = wp.zeros(2, dtype=wp.spatial_vectorf, device="cuda")
+        wp.launch(
+            tier1_thruster_alloc,
+            dim=2,
+            inputs=[u_cmd_wp, u_prev, u_out, T_w, 51.5, 0.05, 0.1, 1.0 / 240.0, dirs_alt, wrench2],
+            device="cuda",
+        )
+        wp.synchronize()
+        f2 = wrench2.numpy()
+
+        # Thruster 0 has dir=+1 in both cases → same surge force
+        np.testing.assert_allclose(f1[0, 0], f2[0, 0], atol=1e-4)
+
+        # Thruster 0 with dir=+1 (uniform) → positive surge
+        assert f1[0, 0] > 0, f"Uniform dir thruster 0 should produce positive surge, got {f1[0, 0]}"

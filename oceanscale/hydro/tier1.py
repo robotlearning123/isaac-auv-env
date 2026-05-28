@@ -111,6 +111,10 @@ class Tier1:
         # Thruster low-pass state
         self.u_eff_prev = wp.zeros((n_envs, n_thrusters), dtype=wp.float32, device=device)
         self.u_eff_out = wp.zeros((n_envs, n_thrusters), dtype=wp.float32, device=device)
+        # Default: all thrusters spin forward (+1)
+        self._directions = wp.array(
+            np.ones(n_thrusters, dtype=np.float32), dtype=wp.float32, device=device
+        )
 
         # Coefficient slots (filled by set_coeffs)
         self.M_A_lin: Any | None = None
@@ -134,6 +138,7 @@ class Tier1:
         volume: float,
         coBM: float,
         T_matrix: list[list[float]] | None = None,
+        directions: list[float] | tuple[float, ...] | None = None,
     ) -> None:
         """Broadcast scalar/6-tuple coefs to all envs.
 
@@ -179,6 +184,16 @@ class Tier1:
             )
             T = np.tile(T_arr, (n, 1, 1))
         self.T_matrix = wp.array(T, dtype=wp.float32, device=self.device)
+
+        if directions is not None:
+            d = np.array(directions, dtype=np.float32)
+            assert len(d) == self.n_thrusters, f"directions length {len(d)} != n_thrusters {self.n_thrusters}"
+            self._directions = wp.array(d, dtype=wp.float32, device=self.device)
+
+        # Initialize current_vec to zeros (no current by default)
+        self.current_vec_arr = wp.array(
+            np.zeros((n, 3), dtype=np.float32), dtype=wp.vec3f, device=self.device
+        )
 
         # Store base values for domain randomization
         self._base_coeffs: dict[str, Any] = {
@@ -323,7 +338,7 @@ class Tier1:
             device=self.device,
         )
 
-        # Damping
+        # Damping (uses water-relative velocity: v_r = v - v_current)
         wp.launch(
             tier1_damping,
             dim=self.n_envs,
@@ -333,6 +348,7 @@ class Tier1:
                 self.d_lin_ang,
                 self.d_quad_lin,
                 self.d_quad_ang,
+                self.current_vec_arr,
                 self.wrench_buf,
             ],
             device=self.device,
@@ -342,7 +358,7 @@ class Tier1:
         wp.launch(
             tier1_coriolis_a,
             dim=self.n_envs,
-            inputs=[nu, self.M_A_lin, self.M_A_ang, self.wrench_buf],
+            inputs=[nu, self.M_A_lin, self.M_A_ang, self.current_vec_arr, self.wrench_buf],
             device=self.device,
         )
 
@@ -362,7 +378,7 @@ class Tier1:
             device=self.device,
         )
 
-        # Thruster allocation
+        # Thruster allocation (with per-thruster spin direction)
         wp.launch(
             tier1_thruster_alloc,
             dim=self.n_envs,
@@ -375,6 +391,7 @@ class Tier1:
                 self.deadband,
                 self.tau_lag,
                 dt,
+                self._directions,
                 self.wrench_buf,
             ],
             device=self.device,

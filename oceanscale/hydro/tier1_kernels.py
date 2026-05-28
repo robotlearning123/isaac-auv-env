@@ -44,24 +44,29 @@ def tier1_damping(
     d_lin_ang: wp.array(dtype=wp.vec3f),  # (n_envs,) linear-damping angular part
     d_quad_lin: wp.array(dtype=wp.vec3f),  # (n_envs,) quadratic-damping linear part
     d_quad_ang: wp.array(dtype=wp.vec3f),  # (n_envs,) quadratic-damping angular part
+    current_vec: wp.array(dtype=wp.vec3f),  # (n_envs,) ocean current in body frame
     wrench: wp.array(dtype=wp.spatial_vectorf),  # (n_envs,) output, ACCUMULATED
 ) -> None:
     i = wp.tid()
     v = nu[i]
     v_lin = wp.spatial_top(v)  # (vx, vy, vz)
     v_ang = wp.spatial_bottom(v)  # (p, q, r)
+    vc = current_vec[i]
+    # Fossen §7.1: damping acts on water-relative velocity v_r = v - v_c
+    vr_lin = wp.vec3f(v_lin[0] - vc[0], v_lin[1] - vc[1], v_lin[2] - vc[2])
+    vr_ang = v_ang  # current doesn't induce angular velocity
     dll = d_lin_lin[i]
     dla = d_lin_ang[i]
     dql = d_quad_lin[i]
     dqa = d_quad_ang[i]
 
-    # Diagonal damping
-    f0 = -(dll[0] + dql[0] * wp.abs(v_lin[0])) * v_lin[0]
-    f1 = -(dll[1] + dql[1] * wp.abs(v_lin[1])) * v_lin[1]
-    f2 = -(dll[2] + dql[2] * wp.abs(v_lin[2])) * v_lin[2]
-    f3 = -(dla[0] + dqa[0] * wp.abs(v_ang[0])) * v_ang[0]
-    f4 = -(dla[1] + dqa[1] * wp.abs(v_ang[1])) * v_ang[1]
-    f5 = -(dla[2] + dqa[2] * wp.abs(v_ang[2])) * v_ang[2]
+    # Diagonal damping on water-relative velocity
+    f0 = -(dll[0] + dql[0] * wp.abs(vr_lin[0])) * vr_lin[0]
+    f1 = -(dll[1] + dql[1] * wp.abs(vr_lin[1])) * vr_lin[1]
+    f2 = -(dll[2] + dql[2] * wp.abs(vr_lin[2])) * vr_lin[2]
+    f3 = -(dla[0] + dqa[0] * wp.abs(vr_ang[0])) * vr_ang[0]
+    f4 = -(dla[1] + dqa[1] * wp.abs(vr_ang[1])) * vr_ang[1]
+    f5 = -(dla[2] + dqa[2] * wp.abs(vr_ang[2])) * vr_ang[2]
     # cross-coupling disabled in v0.1 — coefficients not independently identified
     # (see YAW_CROSSCOUPLING_ANALYSIS.md)
     # # axis 1 (sway) + axis 5 (yaw): F_sway -= D_quad[1] * |r| * r ;  F_yaw -= D_quad[5] * |v| * v
@@ -83,22 +88,27 @@ def tier1_coriolis_a(
     nu: wp.array(dtype=wp.spatial_vectorf),
     M_A_lin: wp.array(dtype=wp.vec3f),  # diag entries of M_A linear block
     M_A_ang: wp.array(dtype=wp.vec3f),  # diag entries of M_A angular block
+    current_vec: wp.array(dtype=wp.vec3f),  # (n_envs,) ocean current in body frame
     wrench: wp.array(dtype=wp.spatial_vectorf),
 ) -> None:
     i = wp.tid()
     v = nu[i]
     v_lin = wp.spatial_top(v)
     v_ang = wp.spatial_bottom(v)
+    vc = current_vec[i]
+    # Fossen §7.1: Coriolis acts on water-relative velocity v_r = v - v_c
+    vr_lin = wp.vec3f(v_lin[0] - vc[0], v_lin[1] - vc[1], v_lin[2] - vc[2])
+    vr_ang = v_ang  # current doesn't induce angular velocity
     ml = M_A_lin[i]
     ma = M_A_ang[i]
-    # ab = M_A · ν  (block-diagonal mul)
-    ab_lin = wp.vec3f(ml[0] * v_lin[0], ml[1] * v_lin[1], ml[2] * v_lin[2])
-    ab_ang = wp.vec3f(ma[0] * v_ang[0], ma[1] * v_ang[1], ma[2] * v_ang[2])
-    # C(ν)·ν via Fossen §6.3 (diagonal M_A simplification):
-    # F_lin = -ab_lin × ω
-    # M_ang = -(ab_lin × v + ab_ang × ω)
-    f_lin = -wp.cross(ab_lin, v_ang)
-    f_ang = -(wp.cross(ab_lin, v_lin) + wp.cross(ab_ang, v_ang))
+    # ab = M_A · ν_r  (block-diagonal mul)
+    ab_lin = wp.vec3f(ml[0] * vr_lin[0], ml[1] * vr_lin[1], ml[2] * vr_lin[2])
+    ab_ang = wp.vec3f(ma[0] * vr_ang[0], ma[1] * vr_ang[1], ma[2] * vr_ang[2])
+    # C(ν_r)·ν_r via Fossen §6.3 (diagonal M_A simplification):
+    # F_lin = -ab_lin × ω_r
+    # M_ang = -(ab_lin × v_r + ab_ang × ω_r)
+    f_lin = -wp.cross(ab_lin, vr_ang)
+    f_ang = -(wp.cross(ab_lin, vr_lin) + wp.cross(ab_ang, vr_ang))
     f = wp.spatial_vector(f_lin, f_ang)
     wp.atomic_add(wrench, i, f)
 
@@ -159,6 +169,7 @@ def tier1_thruster_alloc(
     deadband: wp.float32,  # |u| below this → 0
     tau_lag: wp.float32,  # 1st-order time-constant (seconds)
     dt: wp.float32,  # timestep
+    directions: wp.array(dtype=wp.float32),  # (n_thrusters,) spin direction +1 or -1
     wrench: wp.array(dtype=wp.spatial_vectorf),
 ) -> None:
     i = wp.tid()
@@ -185,8 +196,8 @@ def tier1_thruster_alloc(
         u_prev_k = u_eff_prev[i, k]
         u_eff_k = u_prev_k + alpha * (u_raw - u_prev_k)
         u_eff_out[i, k] = u_eff_k
-        # Convert effective throttle to thrust force (N)
-        f_k = u_eff_k * max_thrust
+        # Convert effective throttle to thrust force (N), with spin direction
+        f_k = directions[k] * u_eff_k * max_thrust
         # Apply allocation: each thruster contributes to wrench columns
         fx = fx + T_matrix[i, 0, k] * f_k
         fy = fy + T_matrix[i, 1, k] * f_k

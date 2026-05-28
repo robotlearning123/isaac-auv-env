@@ -151,7 +151,8 @@ def test_zero_range_no_change(tier1_64) -> None:
 
     np.testing.assert_array_equal(tier1_64.M_A_lin.numpy(), ma_before)
     np.testing.assert_array_equal(tier1_64.mass_arr.numpy(), m_before)
-    assert tier1_64.current_vec_arr is None
+    assert tier1_64.current_vec_arr is not None
+    np.testing.assert_allclose(tier1_64.current_vec_arr.numpy(), 0.0, atol=1e-7)
 
 
 # ── current_speed domain randomization tests ──

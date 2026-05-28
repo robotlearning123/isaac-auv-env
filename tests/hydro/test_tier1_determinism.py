@@ -97,6 +97,7 @@ def test_determinism_individual_kernels() -> None:
     u_cmd_w = wp.array(u_cmd_np, dtype=wp.float32, device="cuda")
     u_prev_w = wp.zeros((n, 8), dtype=wp.float32, device="cuda")
     T_w = wp.array(T_np, dtype=wp.float32, device="cuda")
+    current_w = wp.array(np.zeros((n, 3), dtype=np.float32), dtype=wp.vec3f, device="cuda")
 
     def _run_three(kernel, inputs):
         outs = []
@@ -110,8 +111,8 @@ def test_determinism_individual_kernels() -> None:
     # added_mass — source: tier1_kernels.py:17-33
     for name, kernel, inputs in [
         ("added_mass", tier1_added_mass, [nu_w, ma_lin_w, ma_ang_w]),
-        ("damping", tier1_damping, [nu_w, dll_w, dla_w, dql_w, dqa_w]),
-        ("coriolis_a", tier1_coriolis_a, [nu_w, ma_lin_w, ma_ang_w]),
+        ("damping", tier1_damping, [nu_w, dll_w, dla_w, dql_w, dqa_w, current_w]),
+        ("coriolis_a", tier1_coriolis_a, [nu_w, ma_lin_w, ma_ang_w, current_w]),
         (
             "restoring",
             tier1_restoring,
@@ -130,6 +131,7 @@ def test_determinism_individual_kernels() -> None:
         np.testing.assert_array_equal(outs[1], outs[2], err_msg=f"{name}: run 1 != run 2")
 
     # thruster_alloc needs u_eff_out as extra output — source: tier1_kernels.py:147-196
+    dirs_w = wp.array(np.ones(8, dtype=np.float32), dtype=wp.float32, device="cuda")
     outs_ta = []
     for _ in range(3):
         wrench = wp.zeros(n, dtype=wp.spatial_vectorf, device="cuda")
@@ -146,6 +148,7 @@ def test_determinism_individual_kernels() -> None:
                 0.05,
                 0.1,
                 1.0 / 240.0,
+                dirs_w,
                 wrench,
             ],
             device="cuda",

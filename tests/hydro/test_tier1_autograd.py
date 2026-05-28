@@ -205,6 +205,7 @@ def test_damping_autograd_at_unit_velocity() -> None:
     dla = wp.array(np.tile(d_lin[3:], (n, 1)), dtype=wp.vec3f, device="cuda")
     dql = wp.array(np.tile(d_quad[:3], (n, 1)), dtype=wp.vec3f, device="cuda")
     dqa = wp.array(np.tile(d_quad[3:], (n, 1)), dtype=wp.vec3f, device="cuda")
+    current_z = wp.array(np.zeros((n, 3), dtype=np.float32), dtype=wp.vec3f, device="cuda")
 
     nu_np = np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0]], dtype=np.float32)
     nu = wp.array(nu_np, dtype=wp.spatial_vectorf, device="cuda", requires_grad=True)
@@ -212,7 +213,7 @@ def test_damping_autograd_at_unit_velocity() -> None:
 
     tape = wp.Tape()
     with tape:
-        wp.launch(tier1_damping, dim=n, inputs=[nu, dll, dla, dql, dqa, wrench], device="cuda")
+        wp.launch(tier1_damping, dim=n, inputs=[nu, dll, dla, dql, dqa, current_z, wrench], device="cuda")
     wrench.grad = wp.array(
         np.ones((1, 6), dtype=np.float32),
         dtype=wp.spatial_vectorf,
@@ -310,6 +311,7 @@ def test_coriolis_a_autograd_vs_torch() -> None:
                 nu_w,
                 wp.array(ma_lin_np, dtype=wp.vec3f, device="cuda"),
                 wp.array(ma_ang_np, dtype=wp.vec3f, device="cuda"),
+                wp.array(np.zeros((n, 3), dtype=np.float32), dtype=wp.vec3f, device="cuda"),
                 wrench,
             ],
             device="cuda",
@@ -366,6 +368,7 @@ def test_damping_full_jacobian_vs_torch() -> None:
                 wp.array(dla_np, dtype=wp.vec3f, device="cuda"),
                 wp.array(dql_np, dtype=wp.vec3f, device="cuda"),
                 wp.array(dqa_np, dtype=wp.vec3f, device="cuda"),
+                wp.array(np.zeros((n, 3), dtype=np.float32), dtype=wp.vec3f, device="cuda"),
                 wrench,
             ],
             device="cuda",
@@ -495,6 +498,7 @@ def test_thruster_alloc_autograd_vs_torch() -> None:
                 deadband,
                 tau_lag,
                 dt,
+                wp.array(np.ones(n_thr, dtype=np.float32), dtype=wp.float32, device="cuda"),
                 wrench,
             ],
             device="cuda",
