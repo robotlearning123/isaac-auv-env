@@ -9,3 +9,19 @@ def train_skrl_ppo(*args: Any, **kwargs: Any) -> Any:
     return _train_skrl_ppo(*args, **kwargs)
 
 __all__ = ["train_skrl_ppo"]
+
+from oceanscale.training.marinegym_dr import (
+    FlowDisturbance,
+    MarineGymBodyDR,
+    MarineGymDRConfig,
+    MarineGymRotorDR,
+    PayloadDisturbance,
+)
+
+__all__ += [
+    "FlowDisturbance",
+    "MarineGymBodyDR",
+    "MarineGymDRConfig",
+    "MarineGymRotorDR",
+    "PayloadDisturbance",
+]

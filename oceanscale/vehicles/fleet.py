@@ -64,6 +64,15 @@ class RexROV:
         with open(path) as f:
             return yaml.safe_load(f)
 
+    def available_controllers(self) -> list[str]:
+        ctrl_dir = _asset_path("rexrov", "controllers")
+        if not ctrl_dir.exists():
+            return []
+        return sorted(p.stem for p in ctrl_dir.glob("*.yaml"))
+
+    def load_controller(self, name: str) -> dict[str, Any]:
+        return self.controller_params(name)
+
 
 @dataclass(frozen=True)
 class SlocumGlider:
@@ -123,6 +132,46 @@ class WHOIHybridGlider:
     @staticmethod
     def sdf_path() -> Path:
         return _asset_path("gliders", "whoi_hybrid", "model.sdf")
+
+
+@dataclass(frozen=True)
+class VehicleHydroConfig:
+    """Generic vehicle hydrodynamic config loaded from YAML.
+
+    Compatible with UUV Simulator hydro_params.yaml format:
+    mass, inertial, cog, cob, volume, Ma, linear_damping, quad_damping, density.
+    """
+
+    name: str
+    mass: float
+    volume: float
+    added_mass: tuple[float, ...]
+    linear_damping: tuple[float, ...]
+    quadratic_damping: tuple[float, ...]
+    cog: tuple[float, float, float] = (0.0, 0.0, 0.0)
+    cob: tuple[float, float, float] = (0.0, 0.0, 0.0)
+    density: float = 1025.0
+
+    @classmethod
+    def from_yaml(cls, path: str | Path) -> VehicleHydroConfig:
+        with open(path) as f:
+            d = yaml.safe_load(f)
+        ma = d.get("Ma", d.get("added_mass", [0] * 6))
+        if isinstance(ma[0], (list, tuple)):
+            ma = [row[i] for i, row in enumerate(ma)]
+        ld = d.get("linear_damping", [0] * 6)
+        qd = d.get("quad_damping", d.get("quadratic_damping", [0] * 6))
+        return cls(
+            name=d.get("model", Path(path).parent.stem),
+            mass=float(d["mass"]),
+            volume=float(d.get("volume", 0.0)),
+            added_mass=tuple(float(x) for x in ma),
+            linear_damping=tuple(float(x) for x in ld),
+            quadratic_damping=tuple(float(x) for x in qd),
+            cog=tuple(float(x) for x in d.get("cog", [0, 0, 0])),
+            cob=tuple(float(x) for x in d.get("cob", [0, 0, 0])),
+            density=float(d.get("density", 1025.0)),
+        )
 
 
 VEHICLE_REGISTRY: dict[str, type] = {

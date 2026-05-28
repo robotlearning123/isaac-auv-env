@@ -182,3 +182,64 @@ class OceanCurrentField:
         if height_above_bottom >= 5.0:
             return 1.0
         return math.log(height_above_bottom / Z0_ROUGHNESS) / math.log(5.0 / Z0_ROUGHNESS)
+
+    @classmethod
+    def uniform(cls, speed: float = 0.3, direction: float = 0.0, **kw) -> OceanCurrentField:
+        """Uniform constant current."""
+        return cls(tidal_amplitude=0.0, s2_amplitude=0.0, wind_speed=0.0,
+                   background_speed=speed, background_direction=direction,
+                   turbulence_intensity=0.0, **kw)
+
+    @classmethod
+    def tidal(cls, amplitude: float = 0.5, direction: float = 0.0, **kw) -> OceanCurrentField:
+        """Tidal M2+S2 dominant current."""
+        return cls(tidal_amplitude=amplitude, tidal_direction=direction,
+                   wind_speed=0.0, turbulence_intensity=0.02, **kw)
+
+    @classmethod
+    def storm(cls, wind_speed: float = 15.0, wind_dir: float = 0.0, **kw) -> OceanCurrentField:
+        """Storm conditions with strong wind-driven Ekman + tidal."""
+        return cls(tidal_amplitude=0.8, wind_speed=wind_speed, wind_direction=wind_dir,
+                   background_speed=0.3, turbulence_intensity=0.1, **kw)
+
+    @classmethod
+    def deep_sea(cls, seabed_depth: float = 200.0, **kw) -> OceanCurrentField:
+        """Deep sea with weak currents and thick Ekman layer."""
+        return cls(tidal_amplitude=0.1, wind_speed=3.0, background_speed=0.05,
+                   seabed_depth=seabed_depth, ekman_depth=100.0,
+                   turbulence_intensity=0.01, **kw)
+
+    @classmethod
+    def shear(cls, surface_speed: float = 0.5, direction: float = 0.0,
+              wind_speed: float = 8.0, **kw) -> OceanCurrentField:
+        """Shear current that varies with depth via wind-driven Ekman spiral."""
+        return cls(tidal_amplitude=0.0, s2_amplitude=0.0,
+                   wind_speed=wind_speed, wind_direction=direction,
+                   background_speed=surface_speed, background_direction=direction,
+                   turbulence_intensity=0.01, **kw)
+
+    @classmethod
+    def turbulent(cls, base_speed: float = 0.2, direction: float = 0.0,
+                  turbulence_intensity: float = 0.15, **kw) -> OceanCurrentField:
+        """Turbulent current: steady base flow with strong random perturbation."""
+        return cls(tidal_amplitude=0.0, s2_amplitude=0.0, wind_speed=0.0,
+                   background_speed=base_speed, background_direction=direction,
+                   turbulence_intensity=turbulence_intensity, **kw)
+
+    @classmethod
+    def harbor(cls, **kw) -> OceanCurrentField:
+        """Harbor conditions: strong tidal, shallow, noisy."""
+        return cls(tidal_amplitude=0.8, s2_amplitude=0.3, wind_speed=5.0,
+                   background_speed=0.15, seabed_depth=15.0,
+                   turbulence_intensity=0.08, **kw)
+
+
+CURRENT_PRESETS = {
+    "uniform": OceanCurrentField.uniform,
+    "shear": OceanCurrentField.shear,
+    "tidal": OceanCurrentField.tidal,
+    "turbulent": OceanCurrentField.turbulent,
+    "storm": OceanCurrentField.storm,
+    "deep_sea": OceanCurrentField.deep_sea,
+    "harbor": OceanCurrentField.harbor,
+}
