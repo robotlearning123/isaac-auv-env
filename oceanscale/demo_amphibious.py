@@ -13,6 +13,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import json
 import math
 import time
 from dataclasses import dataclass, field
@@ -348,6 +349,7 @@ class AmphibiousDemoConfig:
     wave_period: float = 6.0
     current_speed: float = 0.15
     use_cpg: bool = True
+    trajectory_json: str | None = None
 
 
 @dataclass
@@ -857,19 +859,22 @@ class AmphibiousDemo:
 class AmphibiousVideoRenderer:
     """Cinematic video renderer for the amphibious demo.
 
-    Renders a side-view (x-z plane) with:
-    - Terrain profile (beach → slope → seabed)
-    - Water surface line
-    - Robot trail with mode-colored segments
-    - Phase label and telemetry HUD
-    - Phase transition markers
+    Side-view (x-z plane) with:
+    - Detailed terrain (sand gradients, rocks)
+    - Animated water surface with waves
+    - Coral reef geometry at inspection zone
+    - Quadruped robot with articulated legs (walk) / thruster glow (swim)
+    - Particle system: bubbles underwater, splash at surface crossing
+    - Fading trail with mode-colored segments
+    - Rich HUD: velocity, distance, progress bar, blend factor
+    - Intro title card + mission summary outro
     """
 
     def __init__(
         self,
         output_path: str,
         fps: int = 50,
-        figsize: tuple[float, float] = (16, 8),
+        figsize: tuple[float, float] = (16, 9),
         dpi: int = 120,
     ):
         self.output_path = Path(output_path)
@@ -878,15 +883,26 @@ class AmphibiousVideoRenderer:
         self.dpi = dpi
         self._frames: list[np.ndarray] = []
         self._positions: list[np.ndarray] = []
+        self._velocities: list[np.ndarray] = []
         self._modes: list[int] = []
         self._telemetry: list[dict] = []
         self._phase_markers: list[tuple[int, str]] = []
         self._current_target: np.ndarray = np.zeros(3)
+        self._current_phase: str = ""
+        self._phase_names: list[str] = []
+        # Particle system
+        self._bubbles: list[dict] = []
+        self._splashes: list[dict] = []
+        self._last_sub_frac: float = 0.0
+        self._total_steps: int = 0
 
     def record_frame(self, obs: dict, target: np.ndarray, phase_name: str) -> None:
         """Record one frame."""
         self._current_target = target.copy()
+        self._current_phase = phase_name
         self._positions.append(obs["position"].copy())
+        vel = obs.get("linear_velocity", np.zeros(3))
+        self._velocities.append(vel[:3].copy())
         self._modes.append(obs["mode"])
         self._telemetry.append(
             {
@@ -894,12 +910,652 @@ class AmphibiousVideoRenderer:
                 "sub_frac": obs["submerged_fraction"],
                 "time": obs["time"],
                 "mode": obs["mode_name"],
+                "contact": obs.get("contact_force", 0.0),
+                "blend": obs.get("blend_factor", 0.0),
+                "vel_x": float(vel[0]),
+                "vel_z": float(vel[2]),
+                "step": obs.get("step_count", 0),
+                "pos": obs["position"].copy(),
+                "target": target.copy(),
+                "phase": phase_name,
             }
         )
+        self._update_particles(obs)
+        self._total_steps = max(self._total_steps, obs.get("step_count", 0))
 
     def mark_phase(self, phase_name: str) -> None:
         """Mark a phase transition."""
         self._phase_markers.append((len(self._positions), phase_name))
+        self._phase_names.append(phase_name)
+
+    def _update_particles(self, obs: dict) -> None:
+        """Update bubble and splash particles."""
+        dt = 0.02
+        pos = obs["position"]
+        sub_frac = obs["submerged_fraction"]
+        mode = obs["mode"]
+
+        # Spawn bubbles when underwater
+        if mode == 1 and sub_frac > 0.5:
+            if np.random.random() < 0.3:
+                self._bubbles.append(
+                    {
+                        "x": pos[0] + np.random.uniform(-0.2, 0.2),
+                        "z": pos[2] + np.random.uniform(-0.1, 0.1),
+                        "vx": np.random.uniform(-0.02, 0.02),
+                        "vz": np.random.uniform(0.02, 0.08),
+                        "life": 0.0,
+                        "max_life": np.random.uniform(0.5, 2.0),
+                        "size": np.random.uniform(0.01, 0.04),
+                    }
+                )
+
+        # Spawn splash when crossing water surface
+        if abs(sub_frac - self._last_sub_frac) > 0.05 and abs(pos[2]) < 0.3:
+            for _ in range(15):
+                angle = np.random.uniform(0.1, math.pi - 0.1)
+                speed = np.random.uniform(0.1, 0.5)
+                self._splashes.append(
+                    {
+                        "x": pos[0] + np.random.uniform(-0.1, 0.1),
+                        "z": 0.0,
+                        "vx": math.cos(angle) * speed * np.random.choice([-1, 1]),
+                        "vz": math.sin(angle) * speed,
+                        "life": 0.0,
+                        "max_life": np.random.uniform(0.3, 0.8),
+                    }
+                )
+        self._last_sub_frac = sub_frac
+
+        # Update bubbles
+        new_bubbles = []
+        for b in self._bubbles:
+            b["life"] += dt
+            b["x"] += b["vx"]
+            b["z"] += b["vz"]
+            b["vz"] *= 0.99
+            if b["life"] < b["max_life"] and b["z"] < 0.0:
+                new_bubbles.append(b)
+        self._bubbles = new_bubbles[-50:]
+
+        # Update splashes
+        new_splashes = []
+        for s in self._splashes:
+            s["life"] += dt
+            s["x"] += s["vx"]
+            s["z"] += s["vz"]
+            s["vz"] -= 0.5 * dt  # gravity
+            if s["life"] < s["max_life"]:
+                new_splashes.append(s)
+        self._splashes = new_splashes[-30:]
+
+    def _terrain_height(self, x: float) -> float:
+        if x <= 2.0:
+            return 0.5
+        elif x <= 6.0:
+            return 0.5 - 0.25 * (x - 2.0)
+        else:
+            return -0.5
+
+    def _draw_terrain(self, ax, x_arr, z_arr, x_left, x_right):
+        """Draw terrain with sand gradient and rock details."""
+        import matplotlib.pyplot as plt
+
+        mask = (x_arr >= x_left - 1) & (x_arr <= x_right + 1)
+        xm, zm = x_arr[mask], z_arr[mask]
+
+        ax.fill_between(xm, zm, -5.0, color="#2a1f14", alpha=0.9, zorder=2)
+        ax.fill_between(xm, zm, zm - 0.15, color="#c2a36e", alpha=0.4, zorder=3)
+        ax.plot(xm, zm, color="#8B7355", linewidth=2.5, zorder=4)
+
+        # Rock details
+        np.random.seed(42)
+        for rx in np.arange(x_left, x_right, 0.8):
+            rz = self._terrain_height(rx)
+            if rx > 3.0:
+                rsize = 0.06 + 0.04 * np.sin(rx * 7.3)
+                rock = plt.Circle(
+                    (rx, rz - 0.02), rsize, color="#5a4a3a", alpha=0.5, zorder=4
+                )
+                ax.add_patch(rock)
+
+    def _draw_coral_reef(self, ax, x_center):
+        """Draw coral reef formations at inspection zone (x~7-8)."""
+        import matplotlib.pyplot as plt
+
+        if abs(x_center - 7.5) > 6:
+            return
+
+        coral_colors = [
+            "#ff6b6b",
+            "#ffa07a",
+            "#ff69b4",
+            "#ff4500",
+            "#dc143c",
+            "#ff7f50",
+        ]
+        seabed_z = -0.5
+
+        np.random.seed(123)
+        for i in range(12):
+            cx = 6.5 + i * 0.25
+            cz = seabed_z
+
+            h = 0.15 + 0.1 * np.sin(i * 2.1)
+            ax.plot(
+                [cx, cx],
+                [cz, cz + h],
+                color=coral_colors[i % len(coral_colors)],
+                linewidth=3,
+                alpha=0.8,
+                zorder=5,
+            )
+
+            for bx in [-0.05, 0, 0.05]:
+                bh = h * (0.6 + 0.4 * np.sin(i * 1.7 + bx * 10))
+                ax.plot(
+                    [cx, cx + bx],
+                    [cz + h * 0.5, cz + bh],
+                    color=coral_colors[(i + 1) % len(coral_colors)],
+                    linewidth=2,
+                    alpha=0.7,
+                    zorder=5,
+                )
+
+            ax.plot(
+                cx,
+                cz + h,
+                "o",
+                color=coral_colors[i % len(coral_colors)],
+                markersize=4,
+                alpha=0.9,
+                zorder=6,
+            )
+
+    def _draw_water(self, ax, x_left, x_right, frame_idx):
+        """Draw animated water surface with waves."""
+        x_water = np.linspace(x_left - 1, x_right + 1, 300)
+        wave = 0.05 * np.sin(x_water * 2.0 + frame_idx * 0.08) + 0.03 * np.sin(
+            x_water * 5.0 - frame_idx * 0.12
+        )
+
+        ax.fill_between(
+            x_water, wave, -5.0, color="#0c4a6e", alpha=0.35, zorder=1
+        )
+        ax.fill_between(
+            x_water, wave, wave - 0.3, color="#1e6a9e", alpha=0.2, zorder=1
+        )
+
+        ax.plot(x_water, wave, color="#7dd3fc", linewidth=2.5, alpha=0.8, zorder=7)
+        ax.plot(x_water, wave, color="#bae6fd", linewidth=1.0, alpha=0.4, zorder=7)
+
+        # Underwater light rays
+        if x_right > 2.0:
+            for j in range(4):
+                rx = x_left + (x_right - x_left) * (j + 0.5) / 4
+                if rx > 2.0:
+                    ray_alpha = 0.06 + 0.03 * np.sin(frame_idx * 0.05 + j)
+                    ax.fill_between(
+                        [rx - 0.1, rx + 0.1],
+                        [0.0, 0.0],
+                        [-3.0, -3.0],
+                        color="#bae6fd",
+                        alpha=ray_alpha,
+                        zorder=1,
+                    )
+
+        # Underwater particulates
+        if x_right > 2.0:
+            np.random.seed(frame_idx % 100)
+            n_particles = 20
+            px = np.random.uniform(max(x_left, 2.0), x_right, n_particles)
+            pz = np.random.uniform(-3.0, -0.1, n_particles)
+            px += 0.3 * np.sin(frame_idx * 0.02 + pz)
+            sizes = np.random.uniform(0.5, 2.0, n_particles)
+            ax.scatter(px, pz, s=sizes, color="#94a3b8", alpha=0.15, zorder=2)
+
+    def _draw_robot_walk(self, ax, pos, frame_idx):
+        """Draw robot as quadruped with articulated walking legs."""
+        import matplotlib.pyplot as plt
+
+        bx, bz = float(pos[0]), float(pos[2])
+        body_w, body_h = 0.30, 0.10
+
+        body = plt.Rectangle(
+            (bx - body_w / 2, bz - body_h / 2),
+            body_w,
+            body_h,
+            color="#f59e0b",
+            alpha=0.95,
+            zorder=10,
+            linewidth=1,
+            edgecolor="#d97706",
+        )
+        ax.add_patch(body)
+
+        head = plt.Circle(
+            (bx + body_w / 2 + 0.04, bz + 0.02),
+            0.05,
+            color="#fbbf24",
+            alpha=0.95,
+            zorder=11,
+        )
+        ax.add_patch(head)
+        ax.plot(
+            bx + body_w / 2 + 0.06,
+            bz + 0.03,
+            "o",
+            color="#1a1a2e",
+            markersize=2,
+            zorder=12,
+        )
+
+        # Antenna
+        ax.plot(
+            [bx + body_w / 4, bx + body_w / 4],
+            [bz + body_h / 2, bz + body_h / 2 + 0.08],
+            color="#d97706",
+            linewidth=1.5,
+            zorder=11,
+        )
+        ax.plot(
+            bx + body_w / 4,
+            bz + body_h / 2 + 0.08,
+            "o",
+            color="#22c55e",
+            markersize=3,
+            zorder=12,
+        )
+
+        # Four articulated legs with trot gait
+        leg_offsets = [-0.12, -0.04, 0.04, 0.12]
+        phase_offsets = [0, math.pi, math.pi, 0]
+
+        for _idx, (lx, ph) in enumerate(zip(leg_offsets, phase_offsets)):
+            swing = math.sin(frame_idx * 0.15 + ph) * 0.06
+            hip_x = bx + lx
+            hip_z = bz - body_h / 2
+            knee_x = hip_x + swing * 0.5
+            knee_z = hip_z - 0.06
+            foot_x = hip_x + swing
+            foot_z = hip_z - 0.12
+
+            ax.plot(
+                [hip_x, knee_x],
+                [hip_z, knee_z],
+                color="#d97706",
+                linewidth=2.5,
+                solid_capstyle="round",
+                zorder=9,
+            )
+            ax.plot(
+                [knee_x, foot_x],
+                [knee_z, foot_z],
+                color="#b45309",
+                linewidth=2,
+                solid_capstyle="round",
+                zorder=9,
+            )
+            ax.plot(
+                foot_x, foot_z, "s", color="#92400e", markersize=3, zorder=9
+            )
+
+    def _draw_robot_swim(self, ax, pos, frame_idx):
+        """Draw robot as underwater vehicle with thruster indicators."""
+        import matplotlib.pyplot as plt
+        from matplotlib.patches import FancyBboxPatch
+
+        bx, bz = float(pos[0]), float(pos[2])
+        body_w, body_h = 0.30, 0.10
+
+        body = FancyBboxPatch(
+            (bx - body_w / 2, bz - body_h / 2),
+            body_w,
+            body_h,
+            boxstyle="round,pad=0.02",
+            color="#2563eb",
+            alpha=0.95,
+            zorder=10,
+            linewidth=1,
+            edgecolor="#3b82f6",
+        )
+        ax.add_patch(body)
+
+        # Sensor dome
+        dome = plt.Circle(
+            (bx + body_w / 2 - 0.02, bz),
+            0.04,
+            color="#60a5fa",
+            alpha=0.9,
+            zorder=11,
+        )
+        ax.add_patch(dome)
+        ax.plot(
+            bx + body_w / 2 - 0.02,
+            bz,
+            "o",
+            color="#22d3ee",
+            markersize=3,
+            alpha=0.6 + 0.4 * abs(math.sin(frame_idx * 0.1)),
+            zorder=12,
+        )
+
+        # Thruster pods
+        thruster_positions = [
+            (bx - body_w / 2 - 0.03, bz + 0.04, "H"),
+            (bx - body_w / 2 - 0.03, bz - 0.04, "H"),
+            (bx + body_w / 4, bz + body_h / 2 + 0.02, "V"),
+            (bx - body_w / 4, bz + body_h / 2 + 0.02, "V"),
+        ]
+
+        for tx, tz, ttype in thruster_positions:
+            if ttype == "H":
+                housing = plt.Rectangle(
+                    (tx - 0.03, tz - 0.02),
+                    0.06,
+                    0.04,
+                    color="#1e40af",
+                    alpha=0.9,
+                    zorder=10,
+                )
+            else:
+                housing = plt.Rectangle(
+                    (tx - 0.02, tz - 0.01),
+                    0.04,
+                    0.03,
+                    color="#1e40af",
+                    alpha=0.9,
+                    zorder=10,
+                )
+            ax.add_patch(housing)
+
+            glow_alpha = 0.3 + 0.3 * abs(math.sin(frame_idx * 0.2))
+            if ttype == "H":
+                wash_x = tx - 0.08 - 0.03 * abs(math.sin(frame_idx * 0.15))
+                ax.plot(
+                    wash_x,
+                    tz,
+                    ">",
+                    color="#7dd3fc",
+                    markersize=5,
+                    alpha=glow_alpha,
+                    zorder=9,
+                )
+                for wx in range(3):
+                    wake_x = wash_x - 0.03 * (wx + 1)
+                    wake_alpha = glow_alpha * (1 - wx * 0.3)
+                    ax.plot(
+                        [wake_x, wake_x],
+                        [tz - 0.02, tz + 0.02],
+                        color="#7dd3fc",
+                        linewidth=1,
+                        alpha=wake_alpha,
+                        zorder=8,
+                    )
+            else:
+                wash_z = tz + 0.05
+                ax.plot(
+                    tx,
+                    wash_z,
+                    "^",
+                    color="#7dd3fc",
+                    markersize=4,
+                    alpha=glow_alpha,
+                    zorder=9,
+                )
+
+    def _draw_bubbles(self, ax, x_left, x_right):
+        """Draw bubble particles."""
+        import matplotlib.pyplot as plt
+
+        for b in self._bubbles:
+            if b["x"] < x_left - 1 or b["x"] > x_right + 1:
+                continue
+            alpha = max(0, 1.0 - b["life"] / b["max_life"]) * 0.6
+            circle = plt.Circle(
+                (b["x"], b["z"]),
+                b["size"],
+                fill=False,
+                color="#bae6fd",
+                alpha=alpha,
+                linewidth=1,
+                zorder=8,
+            )
+            ax.add_patch(circle)
+
+    def _draw_splashes(self, ax, x_left, x_right):
+        """Draw splash particles."""
+        for s in self._splashes:
+            if s["x"] < x_left - 1 or s["x"] > x_right + 1:
+                continue
+            alpha = max(0, 1.0 - s["life"] / s["max_life"]) * 0.8
+            ax.plot(
+                s["x"],
+                s["z"],
+                "o",
+                color="#e0f2fe",
+                markersize=2,
+                alpha=alpha,
+                zorder=8,
+            )
+
+    def _draw_trail(self, ax, positions, modes, frame_idx):
+        """Draw fading trail."""
+        if frame_idx < 2:
+            return
+
+        max_trail = 200
+        start = max(0, frame_idx - max_trail)
+        trail_x = positions[start : frame_idx + 1, 0]
+        trail_z = positions[start : frame_idx + 1, 2]
+        trail_m = modes[start : frame_idx + 1]
+
+        n_seg = len(trail_x) - 1
+        for j in range(n_seg):
+            age = (n_seg - j) / n_seg
+            alpha = max(0.05, 0.7 * (1 - age))
+            color = "#34d399" if trail_m[j + 1] == 0 else "#38bdf8"
+            ax.plot(
+                trail_x[j : j + 2],
+                trail_z[j : j + 2],
+                color=color,
+                linewidth=max(1, 3 * (1 - age)),
+                alpha=alpha,
+                zorder=6,
+            )
+
+    def _draw_target(self, ax, target, pos, frame_idx):
+        """Draw animated target marker."""
+        import matplotlib.pyplot as plt
+
+        tx, tz = float(target[0]), float(target[2])
+
+        pulse = 0.1 + 0.03 * math.sin(frame_idx * 0.1)
+        ring = plt.Circle(
+            (tx, tz),
+            pulse,
+            fill=False,
+            color="#f472b6",
+            linewidth=2,
+            alpha=0.6,
+            zorder=9,
+        )
+        ax.add_patch(ring)
+
+        ax.plot(
+            tx,
+            tz,
+            "+",
+            color="#f472b6",
+            markersize=12,
+            markeredgewidth=2,
+            alpha=0.9,
+            zorder=9,
+        )
+
+        dist = np.linalg.norm(
+            np.array([tx, tz]) - np.array([float(pos[0]), float(pos[2])])
+        )
+        if dist > 0.3:
+            ax.plot(
+                [float(pos[0]), tx],
+                [float(pos[2]), tz],
+                "--",
+                color="#f472b6",
+                linewidth=1,
+                alpha=0.3,
+                zorder=5,
+            )
+            mid_x = (float(pos[0]) + tx) / 2
+            mid_z = (float(pos[2]) + tz) / 2
+            ax.text(
+                mid_x,
+                mid_z + 0.15,
+                f"{dist:.1f}m",
+                color="#f472b6",
+                fontsize=8,
+                ha="center",
+                alpha=0.7,
+                zorder=12,
+            )
+
+    def _draw_hud(self, ax, t, pos, target, frame_idx, n_frames, phase_name):
+        """Draw rich HUD overlay."""
+        import matplotlib.pyplot as plt
+
+        mode = 0 if t["mode"] == "walk" else 1
+        mode_str = "WALKING" if mode == 0 else "SWIMMING"
+        mode_color = "#f59e0b" if mode == 0 else "#38bdf8"
+
+        dist = np.linalg.norm(t["pos"] - t["target"])
+        speed = math.sqrt(t.get("vel_x", 0) ** 2 + t.get("vel_z", 0) ** 2)
+
+        hud_lines = [
+            "OceanScale — Amphibious Robot Dog",
+            "",
+            f"Phase: {phase_name}",
+            f"Mode:  {mode_str}",
+            f"Depth: {t['depth']:.2f} m    Speed: {speed:.2f} m/s",
+            f"Submerged: {t['sub_frac']:.0%}    Blend: {t.get('blend', 0):.2f}",
+            f"Contact: {t.get('contact', 0):.1f} N    Target: {dist:.1f} m",
+            f"Time: {t['time']:.1f} s",
+        ]
+        hud_text = "\n".join(hud_lines)
+        ax.text(
+            0.02,
+            0.98,
+            hud_text,
+            transform=ax.transAxes,
+            color="#e2e8f0",
+            fontsize=9,
+            fontfamily="monospace",
+            verticalalignment="top",
+            bbox=dict(
+                boxstyle="round,pad=0.4",
+                facecolor="#111827",
+                edgecolor="#1e293b",
+                alpha=0.92,
+            ),
+            zorder=20,
+        )
+
+        # Mode indicator (top-right)
+        ax.text(
+            0.98,
+            0.98,
+            mode_str,
+            transform=ax.transAxes,
+            color=mode_color,
+            fontsize=16,
+            fontweight="bold",
+            fontfamily="monospace",
+            ha="right",
+            va="top",
+            bbox=dict(
+                boxstyle="round,pad=0.3",
+                facecolor="#111827",
+                edgecolor=mode_color,
+                alpha=0.92,
+            ),
+            zorder=20,
+        )
+
+        # Mission progress bar using axes-transformed rectangle
+        progress = min(1.0, frame_idx / max(1, n_frames - 1))
+        bar_left = 0.1
+        bar_right = 0.9
+        bar_width = bar_right - bar_left
+        bar_y = 0.04
+        bar_h = 0.015
+
+        # Background bar
+        bg_rect = plt.Rectangle(
+            (bar_left, bar_y - bar_h),
+            bar_width,
+            bar_h * 2,
+            transform=ax.transAxes,
+            color="#1e293b",
+            alpha=0.8,
+            zorder=19,
+            clip_on=False,
+        )
+        ax.add_patch(bg_rect)
+
+        # Progress fill
+        if progress > 0:
+            fill_rect = plt.Rectangle(
+                (bar_left, bar_y - bar_h),
+                bar_width * progress,
+                bar_h * 2,
+                transform=ax.transAxes,
+                color=mode_color,
+                alpha=0.6,
+                zorder=19,
+                clip_on=False,
+            )
+            ax.add_patch(fill_rect)
+
+        ax.text(
+            0.5,
+            bar_y,
+            f"Mission Progress: {progress:.0%}",
+            transform=ax.transAxes,
+            color="#e2e8f0",
+            fontsize=8,
+            ha="center",
+            va="center",
+            fontfamily="monospace",
+            zorder=20,
+        )
+
+    def _draw_phase_transition(self, ax, positions, frame_idx):
+        """Draw phase transition flash."""
+        for step_idx, pname in self._phase_markers:
+            if step_idx <= frame_idx and step_idx > frame_idx - 25:
+                alpha = 0.3 * (1 - (frame_idx - step_idx) / 25)
+                ax.axvline(
+                    x=positions[step_idx, 0],
+                    color="#f472b6",
+                    linewidth=2,
+                    alpha=alpha,
+                    linestyle="-",
+                    zorder=15,
+                )
+                if frame_idx - step_idx < 15:
+                    ax.text(
+                        0.5,
+                        0.5,
+                        f">>> {pname} <<<",
+                        transform=ax.transAxes,
+                        color="#f472b6",
+                        fontsize=18,
+                        fontweight="bold",
+                        ha="center",
+                        va="center",
+                        alpha=alpha * 2,
+                        fontfamily="monospace",
+                        zorder=20,
+                    )
 
     def close(self, title: str = "OceanScale — Amphibious Robot Dog Demo") -> Path:
         """Render all frames and write MP4."""
@@ -907,7 +1563,7 @@ class AmphibiousVideoRenderer:
 
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
-        from matplotlib.patches import FancyBboxPatch, Polygon
+        from matplotlib.patches import FancyBboxPatch
 
         try:
             import imageio.v3 as iio
@@ -922,22 +1578,81 @@ class AmphibiousVideoRenderer:
         n_frames = len(positions)
 
         # Pre-compute terrain
-        x_terrain = np.linspace(-1, 20, 200)
-        z_terrain = np.array(
-            [
-                (
-                    0.5
-                    if x <= 2.0
-                    else (0.5 - 0.25 * (x - 2.0) if x <= 6.0 else -0.5)
-                )
-                for x in x_terrain
-            ]
-        )
+        x_terrain = np.linspace(-2, 22, 400)
+        z_terrain = np.array([self._terrain_height(x) for x in x_terrain])
 
         fig, ax = plt.subplots(figsize=self.figsize, facecolor="#0a0e17")
-        ax.set_facecolor("#0a0e17")
 
-        # Render frames
+        # === TITLE CARD (3 seconds) ===
+        title_frames = int(3 * self.fps)
+        for tf in range(title_frames):
+            ax.clear()
+            ax.set_facecolor("#0a0e17")
+            ax.set_xlim(0, 1)
+            ax.set_ylim(0, 1)
+            ax.axis("off")
+
+            fade_in = min(1.0, tf / (self.fps * 0.5))
+
+            ax.text(
+                0.5,
+                0.7,
+                "OCEANSCALE",
+                transform=ax.transAxes,
+                color="#38bdf8",
+                fontsize=32,
+                fontweight="bold",
+                fontfamily="monospace",
+                ha="center",
+                va="center",
+                alpha=fade_in,
+            )
+
+            ax.text(
+                0.5,
+                0.58,
+                title,
+                transform=ax.transAxes,
+                color="#e2e8f0",
+                fontsize=16,
+                fontfamily="monospace",
+                ha="center",
+                va="center",
+                alpha=fade_in * 0.8,
+            )
+
+            if tf > self.fps * 0.5:
+                brief_alpha = min(
+                    1.0, (tf - self.fps * 0.5) / (self.fps * 0.5)
+                )
+                brief = (
+                    "MISSION BRIEFING\n"
+                    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+                    "Objective: Beach entry -> Reef inspection -> Return\n"
+                    "Vehicle: Quadruped Amphibious Robot Dog (25 kg)\n"
+                    "Propulsion: 4 legs (walk) + 8 thrusters (swim)\n"
+                    "Control: FARMS-inspired CPG gait controller"
+                )
+                ax.text(
+                    0.5,
+                    0.32,
+                    brief,
+                    transform=ax.transAxes,
+                    color="#94a3b8",
+                    fontsize=11,
+                    fontfamily="monospace",
+                    ha="center",
+                    va="center",
+                    alpha=brief_alpha * 0.7,
+                    linespacing=1.5,
+                )
+
+            fig.canvas.draw()
+            buf = fig.canvas.buffer_rgba()
+            frame = np.asarray(buf)[:, :, :3].copy()
+            self._frames.append(frame)
+
+        # === MAIN FRAMES ===
         for i in range(n_frames):
             ax.clear()
             ax.set_facecolor("#0a0e17")
@@ -946,219 +1661,106 @@ class AmphibiousVideoRenderer:
             mode = modes[i]
             t = self._telemetry[i]
 
-            # Viewport follows robot
-            x_center = pos[0]
+            x_center = float(pos[0])
             x_range = 10.0
-            ax.set_xlim(x_center - x_range / 2, x_center + x_range / 2)
+            x_left = x_center - x_range / 2
+            x_right = x_center + x_range / 2
+            ax.set_xlim(x_left, x_right)
             ax.set_ylim(-4.5, 2.5)
 
-            # Draw terrain
-            mask = (x_terrain >= x_center - x_range / 2 - 1) & (
-                x_terrain <= x_center + x_range / 2 + 1
-            )
-            ax.fill_between(
-                x_terrain[mask],
-                z_terrain[mask],
-                -5.0,
-                color="#1a2332",
-                alpha=0.8,
-            )
-            ax.plot(
-                x_terrain[mask],
-                z_terrain[mask],
-                color="#2d4a5e",
-                linewidth=2,
-            )
+            # Draw layers (back to front)
+            self._draw_water(ax, x_left, x_right, i)
+            self._draw_terrain(ax, x_terrain, z_terrain, x_left, x_right)
+            self._draw_coral_reef(ax, x_center)
+            self._draw_trail(ax, positions, modes, i)
+            self._draw_target(ax, self._current_target, pos, i)
+            self._draw_bubbles(ax, x_left, x_right)
+            self._draw_splashes(ax, x_left, x_right)
 
-            # Water surface
-            water_left = x_center - x_range / 2 - 1
-            water_right = x_center + x_range / 2 + 1
-            ax.axhline(
-                y=0.0,
-                color="#38bdf8",
-                linewidth=2,
-                alpha=0.6,
-                linestyle="--",
-            )
-            # Water fill
-            ax.fill_between(
-                [water_left, water_right],
-                [0.0, 0.0],
-                [-5.0, -5.0],
-                color="#0c4a6e",
-                alpha=0.3,
-            )
-
-            # Trail
-            if i > 1:
-                trail_x = positions[: i + 1, 0]
-                trail_z = positions[: i + 1, 2]
-                trail_modes = modes[: i + 1]
-                for j in range(1, len(trail_x)):
-                    color = "#34d399" if trail_modes[j] == 0 else "#38bdf8"
-                    ax.plot(
-                        trail_x[j - 1 : j + 1],
-                        trail_z[j - 1 : j + 1],
-                        color=color,
-                        linewidth=2,
-                        alpha=0.5,
-                    )
-
-            # Robot body
-            robot_color = "#f59e0b" if mode == 0 else "#38bdf8"
-            body_w, body_h = 0.4, 0.15
-            rect = plt.Rectangle(
-                (pos[0] - body_w / 2, pos[1] - body_h / 2),
-                body_w,
-                body_h,
-                angle=0,
-                color=robot_color,
-                alpha=0.9,
-                zorder=10,
-            )
-            ax.add_patch(rect)
-
-            # Legs (walking mode)
             if mode == 0:
-                for lx in [-0.12, 0.12]:
-                    ax.plot(
-                        [pos[0] + lx, pos[0] + lx],
-                        [pos[1] - body_h / 2, pos[1] - body_h / 2 - 0.12],
-                        color="#f59e0b",
-                        linewidth=3,
-                        alpha=0.7,
-                    )
+                self._draw_robot_walk(ax, pos, i)
+            else:
+                self._draw_robot_swim(ax, pos, i)
 
-            # Propellers (swimming mode)
-            if mode == 1:
-                for px in [-0.15, 0.15]:
-                    ax.plot(
-                        pos[0] + px,
-                        pos[1],
-                        marker="o",
-                        markersize=6,
-                        color="#38bdf8",
-                        alpha=0.8,
-                    )
-
-            # Target marker
-            ax.plot(
-                self._current_target[0],
-                self._current_target[2],
-                marker="x",
-                markersize=10,
-                color="#f472b6",
-                markeredgewidth=2,
+            self._draw_phase_transition(ax, positions, i)
+            self._draw_hud(
+                ax, t, pos, self._current_target, i, n_frames, t["phase"]
             )
 
-            # Phase transition markers
-            for step_idx, pname in self._phase_markers:
-                if step_idx <= i and step_idx > i - 50:
-                    ax.axvline(
-                        x=positions[step_idx, 0],
-                        color="#f472b6",
-                        linewidth=1,
-                        alpha=0.5,
-                        linestyle=":",
-                    )
-
-            # HUD
-            mode_str = "WALKING" if mode == 0 else "SWIMMING"
-            mode_color = "#f59e0b" if mode == 0 else "#38bdf8"
-            hud_text = (
-                f"OceanScale — Amphibious Robot Dog\n"
-                f"Phase: {mode_str}  |  "
-                f"Depth: {t['depth']:.2f}m  |  "
-                f"Submerged: {t['sub_frac']:.0%}  |  "
-                f"Time: {t['time']:.1f}s"
-            )
-            ax.text(
-                0.02,
-                0.98,
-                hud_text,
-                transform=ax.transAxes,
-                color="#e2e8f0",
-                fontsize=10,
-                fontfamily="monospace",
-                verticalalignment="top",
-                bbox=dict(
-                    boxstyle="round,pad=0.3",
-                    facecolor="#111827",
-                    edgecolor="#1e293b",
-                    alpha=0.9,
-                ),
-            )
-
-            # Mode indicator
-            ax.text(
-                0.98,
-                0.98,
-                mode_str,
-                transform=ax.transAxes,
-                color=mode_color,
-                fontsize=14,
-                fontweight="bold",
-                fontfamily="monospace",
-                ha="right",
-                va="top",
-                bbox=dict(
-                    boxstyle="round,pad=0.3",
-                    facecolor="#111827",
-                    edgecolor=mode_color,
-                    alpha=0.9,
-                ),
-            )
-
-            # Labels
             ax.set_xlabel("Distance (m)", color="#94a3b8", fontsize=10)
             ax.set_ylabel("Depth (m)", color="#94a3b8", fontsize=10)
             ax.tick_params(colors="#64748b", labelsize=8)
             for spine in ax.spines.values():
                 spine.set_color("#1e293b")
-
-            # Grid
-            ax.grid(True, alpha=0.1, color="#64748b")
+            ax.grid(True, alpha=0.08, color="#64748b")
 
             fig.canvas.draw()
             buf = fig.canvas.buffer_rgba()
             frame = np.asarray(buf)[:, :, :3].copy()
             self._frames.append(frame)
 
-        # Title card (2 seconds)
-        title_frames = int(2 * self.fps)
-        for _ in range(title_frames):
+        # === MISSION SUMMARY (3 seconds) ===
+        summary_frames = int(3 * self.fps)
+        total_dist = float(
+            np.sum(np.linalg.norm(np.diff(positions, axis=0), axis=1))
+        )
+        max_depth = float(-np.min(positions[:, 2]))
+        phases_completed = len(self._phase_markers)
+
+        for sf in range(summary_frames):
             ax.clear()
             ax.set_facecolor("#0a0e17")
             ax.set_xlim(0, 1)
             ax.set_ylim(0, 1)
             ax.axis("off")
+
+            fade_in = min(1.0, sf / (self.fps * 0.5))
+
             ax.text(
                 0.5,
-                0.55,
-                title,
+                0.8,
+                "MISSION COMPLETE",
                 transform=ax.transAxes,
-                color="#38bdf8",
-                fontsize=20,
+                color="#34d399",
+                fontsize=28,
                 fontweight="bold",
                 fontfamily="monospace",
                 ha="center",
                 va="center",
+                alpha=fade_in,
             )
-            ax.text(
-                0.5,
-                0.4,
-                "Walk → Swim → Return\nMulti-Domain Ocean Simulation",
-                transform=ax.transAxes,
-                color="#94a3b8",
-                fontsize=14,
-                fontfamily="monospace",
-                ha="center",
-                va="center",
-            )
+
+            if sf > self.fps * 0.3:
+                detail_alpha = min(
+                    1.0, (sf - self.fps * 0.3) / (self.fps * 0.5)
+                )
+                summary = (
+                    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+                    f"Distance Traveled:  {total_dist:.1f} m\n"
+                    f"Maximum Depth:      {max_depth:.1f} m\n"
+                    f"Phases Completed:   {phases_completed}\n"
+                    f"Mission Duration:   {t['time']:.1f} s\n"
+                    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+                    "OceanScale — The Ocean Simulator"
+                )
+                ax.text(
+                    0.5,
+                    0.45,
+                    summary,
+                    transform=ax.transAxes,
+                    color="#e2e8f0",
+                    fontsize=13,
+                    fontfamily="monospace",
+                    ha="center",
+                    va="center",
+                    alpha=detail_alpha * 0.8,
+                    linespacing=1.6,
+                )
+
             fig.canvas.draw()
             buf = fig.canvas.buffer_rgba()
             frame = np.asarray(buf)[:, :, :3].copy()
-            self._frames.insert(0, frame)
+            self._frames.append(frame)
 
         plt.close(fig)
 
@@ -1201,6 +1803,7 @@ def run_amphibious_demo(config: AmphibiousDemoConfig | None = None) -> dict:
     rewards: list[float] = []
     mode_transitions: list[tuple[float, str]] = []
     phase_results: list[dict] = []
+    trajectory_frames: list[dict] = []
     t_start = time.time()
 
     # Run mission
@@ -1241,6 +1844,23 @@ def run_amphibious_demo(config: AmphibiousDemoConfig | None = None) -> dict:
             r = compute_reward(pos, target)
             rewards.append(r)
             phase_rewards.append(r)
+
+            trajectory_frames.append(
+                {
+                    "t": float(obs["time"]),
+                    "pos": [float(obs["position"][i]) for i in range(3)],
+                    "quat": [float(obs["orientation"][i]) for i in range(4)],
+                    "mode": int(obs["mode"]),
+                    "mode_name": obs["mode_name"],
+                    "sub_frac": float(obs["submerged_fraction"]),
+                    "blend": float(obs.get("blend_factor", 0.0)),
+                    "contact": float(obs.get("contact_force", 0.0)),
+                    "vel": [float(obs["linear_velocity"][i]) for i in range(3)],
+                    "target": [float(target[i]) for i in range(3)],
+                    "phase": phase.name,
+                    "step": step_idx,
+                }
+            )
 
             if renderer:
                 renderer.record_frame(obs, target, phase.name)
@@ -1314,6 +1934,21 @@ def run_amphibious_demo(config: AmphibiousDemoConfig | None = None) -> dict:
         },
     }
 
+    result["trajectory_json"] = None
+    if trajectory_frames and cfg.trajectory_json:
+        traj_data = {
+            "fps": 50,
+            "dt": cfg.dt,
+            "total_frames": len(trajectory_frames),
+            "vehicle": result["vehicle"],
+            "frames": trajectory_frames,
+        }
+        Path(cfg.trajectory_json).parent.mkdir(parents=True, exist_ok=True)
+        with open(cfg.trajectory_json, "w") as f:
+            json.dump(traj_data, f)
+        result["trajectory_json"] = str(cfg.trajectory_json)
+        print(f"  Trajectory exported: {cfg.trajectory_json} ({len(trajectory_frames)} frames)")
+
     return result
 
 
@@ -1337,6 +1972,10 @@ def main() -> None:
     parser.add_argument(
         "--no-cpg", action="store_true", help="Disable CPG, use legacy PD controller"
     )
+    parser.add_argument(
+        "--trajectory-json", type=str, default=None,
+        help="Export per-frame trajectory to JSON for Isaac Sim rendering",
+    )
     args = parser.parse_args()
 
     config = AmphibiousDemoConfig(
@@ -1348,6 +1987,7 @@ def main() -> None:
         wave_height=args.wave_height,
         current_speed=args.current_speed,
         use_cpg=not args.no_cpg,
+        trajectory_json=args.trajectory_json,
     )
 
     result = run_amphibious_demo(config)
@@ -1387,6 +2027,9 @@ def main() -> None:
 
     if result.get("render_mp4"):
         print(f"\n  Video: {result['render_mp4']}")
+
+    if result.get("trajectory_json"):
+        print(f"  Trajectory: {result['trajectory_json']}")
 
     print("\n" + "=" * 60)
 
