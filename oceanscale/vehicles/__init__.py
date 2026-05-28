@@ -1,3 +1,4 @@
+from oceanscale.vehicles.amphibious import AmphibiousRobotDog
 from oceanscale.vehicles.bluerov2 import BlueROV2Heavy, BlueROV2MarineGym, WarpAUV
 from oceanscale.vehicles.commercial import (
     COMMERCIAL_VEHICLE_REGISTRY,
@@ -17,6 +18,7 @@ from oceanscale.vehicles.fleet import (
 )
 
 __all__ = [
+    "AmphibiousRobotDog",
     "COMMERCIAL_VEHICLE_REGISTRY",
     "HUGIN1000",
     "LAUV",
