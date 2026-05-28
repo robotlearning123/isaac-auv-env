@@ -10,7 +10,10 @@
 
 from __future__ import annotations
 
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass
+from importlib.resources import files
+from pathlib import Path
 
 
 @dataclass(frozen=True)
@@ -215,3 +218,80 @@ def get_dvl_config(name: str) -> DVLConfig:
         available = ", ".join(sorted(ALL_DVL_CONFIGS))
         raise KeyError(f"Unknown DVL config {name!r}. Available: {available}")
     return ALL_DVL_CONFIGS[name]
+
+
+def _sdf_dir() -> Path:
+    return Path(str(files("oceanscale.assets").joinpath("sensors", "dvl_configs")))
+
+
+def list_sdf_configs() -> list[str]:
+    """List available DVL SDF config files."""
+    d = _sdf_dir()
+    if not d.exists():
+        return []
+    return sorted(p.stem for p in d.glob("*.sdf"))
+
+
+def load_from_sdf(name: str) -> DVLConfig:
+    """Parse a DVL SDF file from assets/sensors/dvl_configs/ and return DVLConfig.
+
+    Args:
+        name: SDF filename stem, e.g. "nortek_dvl500_300".
+    """
+    sdf_path = _sdf_dir() / f"{name}.sdf"
+    if not sdf_path.exists():
+        raise FileNotFoundError(f"SDF config not found: {sdf_path}")
+
+    tree = ET.parse(sdf_path)
+    root = tree.getroot()
+
+    ns = {"sdf": "http://sdformat.org/schemas/root.xsd"}
+    model = root.find(".//model") or root.find(".//sdf:model", ns)
+
+    def _text(elem, tag, default=""):
+        child = elem.find(tag)
+        if child is not None and child.text:
+            return child.text.strip()
+        return default
+
+    model_name = model.get("name", name) if model is not None else name
+
+    link = model.find("link") if model is not None else None
+    sensor = link.find("sensor") if link is not None else None
+    plugin = sensor.find("plugin") if sensor is not None else None
+
+    update_rate = float(_text(plugin, "updateRateHZ", "8.0")) if plugin is not None else 8.0
+    noise_sigma = float(_text(plugin, "gaussianNoiseBeamVel", "0.005")) if plugin is not None else 0.005
+    min_range = float(_text(plugin, "minRange", "0.2")) if plugin is not None else 0.2
+    max_range = float(_text(plugin, "maxRange", "200.0")) if plugin is not None else 200.0
+    beam_angle = float(_text(plugin, "beamAngleDeg", "25.0")) if plugin is not None else 25.0
+
+    inertial = link.find("inertial") if link is not None else None
+    mass_kg = float(_text(inertial, "mass", "0.0")) if inertial is not None else 0.0
+
+    collision = link.find("collision") if link is not None else None
+    geom = collision.find("geometry/cylinder") if collision is not None else None
+    if geom is not None:
+        radius = float(_text(geom, "radius", "0")) * 2000
+        length = float(_text(geom, "length", "0")) * 1000
+        dims = (radius, radius, length)
+    else:
+        dims = (0.0, 0.0, 0.0)
+
+    freq = 1000.0 if "dvl1000" in name else 500.0 if "dvl500" in name else 600.0
+
+    return DVLConfig(
+        name=model_name,
+        manufacturer="Nortek",
+        frequency_khz=freq,
+        max_range_m=max_range,
+        min_range_m=min_range,
+        beam_angle_deg=beam_angle,
+        n_beams=4,
+        velocity_accuracy_m_s=0.001,
+        max_velocity_m_s=10.0,
+        update_rate_hz=update_rate,
+        noise_sigma=noise_sigma,
+        mass_kg=mass_kg,
+        dimensions_mm=dims,
+    )

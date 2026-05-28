@@ -357,3 +357,13 @@ class OceanWaveField:
     def step(self, dt: float = 1.0 / 60.0) -> None:
         """Advance wave field time."""
         self.time += dt
+
+
+WAVE_PRESETS: dict[str, dict] = {
+    "calm": {"wave_height": 0.3, "wave_period": 10.0, "spectrum": "pm"},
+    "moderate": {"wave_height": 1.0, "wave_period": 8.0, "spectrum": "jonswap"},
+    "rough": {"wave_height": 2.5, "wave_period": 6.0, "spectrum": "jonswap"},
+    "storm": {"wave_height": 4.0, "wave_period": 5.0, "spectrum": "jonswap", "n_components": 32},
+    "swell": {"wave_height": 1.5, "wave_period": 14.0, "spectrum": "pm"},
+    "harbor_chop": {"wave_height": 0.5, "wave_period": 4.0, "spectrum": "jonswap", "water_depth": 10.0},
+}

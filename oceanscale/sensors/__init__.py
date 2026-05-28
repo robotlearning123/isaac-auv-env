@@ -2,7 +2,7 @@
 
 from oceanscale.sensors.acoustic_modem import AcousticModem, AcousticModemConfig
 from oceanscale.sensors.dvl import DVLSensor
-from oceanscale.sensors.dvl_configs import DVLConfig
+from oceanscale.sensors.dvl_configs import DVLConfig, get_dvl_config, list_sdf_configs, load_from_sdf
 from oceanscale.sensors.imaging_sonar import ImagingSonar, ImagingSonarConfig
 from oceanscale.sensors.imu import IMUSensor
 from oceanscale.sensors.magnetometer import Magnetometer, MagnetometerConfig
@@ -31,6 +31,9 @@ __all__ = [
     "PressureSensor",
     "RayDVL",
     "RaySonar",
+    "get_dvl_config",
+    "list_sdf_configs",
+    "load_from_sdf",
     "SideScanSonar",
     "SideScanSonarConfig",
     "USBLConfig",
