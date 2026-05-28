@@ -278,11 +278,21 @@ def load_from_sdf(name: str) -> DVLConfig:
     else:
         dims = (0.0, 0.0, 0.0)
 
-    freq = 1000.0 if "dvl1000" in name else 500.0 if "dvl500" in name else 600.0
+    freq = 1000.0 if "dvl1000" in name else 500.0 if "dvl500" in name else None
+    if freq is None:
+        raise ValueError(
+            f"Cannot determine DVL frequency from name {name!r}. "
+            f"Expected 'dvl1000' or 'dvl500' in filename."
+        )
+
+    mfr = "Nortek" if "nortek" in model_name.lower() else \
+          "Teledyne" if "teledyne" in model_name.lower() else \
+          "Sonardyne" if "sonardyne" in model_name.lower() else \
+          "Unknown"
 
     return DVLConfig(
         name=model_name,
-        manufacturer="Nortek",
+        manufacturer=mfr,
         frequency_khz=freq,
         max_range_m=max_range,
         min_range_m=min_range,
