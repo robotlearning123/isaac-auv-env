@@ -264,7 +264,13 @@ if _HAS_ISAACLAB:
             self._effort = actions.abs()
 
             root_vel_w = self._robot.data.root_vel_w.torch
-            body_qd = wp.from_torch(root_vel_w.contiguous(), dtype=wp.spatial_vectorf)
+            quat_w = self._robot.data.root_quat_w.torch  # (w,x,y,z)
+
+            from oceanscale.marinegym_compat.math import quat_rotate_inverse
+            lin_vel_b = quat_rotate_inverse(quat_w, root_vel_w[:, :3])
+            ang_vel_b = quat_rotate_inverse(quat_w, root_vel_w[:, 3:6])
+            body_vel = torch.cat([ang_vel_b, lin_vel_b], dim=-1)  # wp.spatial_vectorf: [ω; v]
+            body_qd = wp.from_torch(body_vel.contiguous(), dtype=wp.spatial_vectorf)
 
             wp.launch(
                 self._zero_wrench_kernel,

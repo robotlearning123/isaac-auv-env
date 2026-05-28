@@ -109,12 +109,14 @@ class VehicleStatePublisher:
         self,
         node: rclpy.node.Node,
         namespace: str = "/oceanscale/vehicle",
-        frame_id: str = "base_link",
+        frame_id: str = "odom",
+        child_frame_id: str = "base_link",
     ) -> None:
         _ensure_rclpy()
         self._node = node
         self._namespace = namespace.rstrip("/")
         self._frame_id = frame_id
+        self._child_frame_id = child_frame_id
 
         Odometry = _msgs_nav["Odometry"]
         PoseStamped = _msgs_geo["PoseStamped"]
@@ -155,7 +157,7 @@ class VehicleStatePublisher:
         # -- Odometry --
         odom = _msgs_nav["Odometry"]()
         odom.header = header
-        odom.child_frame_id = self._frame_id
+        odom.child_frame_id = self._child_frame_id
         odom.pose.pose.position.x = float(pos[0])
         odom.pose.pose.position.y = float(pos[1])
         odom.pose.pose.position.z = float(pos[2])
@@ -249,7 +251,12 @@ class SensorPublisher:
         # -- DVL --
         dvl = sensors.get("dvl")
         if dvl is not None:
-            vel = np.asarray(dvl[env_idx] if hasattr(dvl, "__getitem__") else dvl, dtype=np.float64)
+            if isinstance(dvl, dict):
+                vel = np.asarray(dvl.get("velocity", [0.0, 0.0, 0.0]), dtype=np.float64)
+            elif isinstance(dvl, np.ndarray) and dvl.ndim > 1:
+                vel = np.asarray(dvl[env_idx], dtype=np.float64)
+            else:
+                vel = np.asarray(dvl, dtype=np.float64)
             msg = _msgs_geo["TwistStamped"]()
             msg.header = header
             msg.twist.linear.x = float(vel[0])
@@ -260,9 +267,10 @@ class SensorPublisher:
         # -- Sonar --
         sonar = sensors.get("sonar")
         if sonar is not None:
-            rng = np.asarray(
-                sonar[env_idx] if hasattr(sonar, "__getitem__") else sonar, dtype=np.float64
-            )
+            if isinstance(sonar, np.ndarray) and sonar.ndim > 1:
+                rng = np.asarray(sonar[env_idx], dtype=np.float64)
+            else:
+                rng = np.asarray(sonar, dtype=np.float64)
             msg = _msgs_sensor["Range"]()
             msg.header = header
             msg.radiation_type = 0  # ULTRASOUND

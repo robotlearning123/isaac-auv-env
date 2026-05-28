@@ -70,7 +70,9 @@ def main() -> None:
     from oceanscale.sim import OceanSimConfig
     from oceanscale.vehicles import BlueROV2Heavy
 
-    sim_config = OceanSimConfig(vehicle=BlueROV2Heavy())
+    vehicle_map = {"bluerov2_heavy": BlueROV2Heavy}
+    vehicle_cls = vehicle_map.get(args.vehicle_name, BlueROV2Heavy)
+    sim_config = OceanSimConfig(vehicle=vehicle_cls())
     config = OceanROS2BridgeConfig(
         sim_config=sim_config,
         namespace=args.namespace,

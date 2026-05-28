@@ -150,9 +150,13 @@ class T200Thruster:
         # --- RPM-to-force curve (T200 polynomial fit) ---
         # Positive RPM:  F = 4.7368e-7 * rpm^2 - 1.9275e-4 * rpm + 8.4452e-2
         # Negative RPM:  F = -3.8442e-7 * rpm^2 - 1.6186e-4 * rpm - 3.9139e-2
+        # Constants from polynomial fit kept — removing them introduces a sign
+        # flip near ±407 RPM. The small offset at RPM=0 (±0.08 N) is negligible
+        # for an 11.5 kg vehicle and only matters when throttle dead zone drives
+        # target RPM to exactly zero.
         rpm_sq = new_rpm * new_rpm
         raw_force = torch.where(
-            new_rpm > 0,
+            new_rpm >= 0,
             4.7368e-7 * rpm_sq - 1.9275e-4 * new_rpm + 8.4452e-2,
             -3.8442e-7 * rpm_sq - 1.6186e-4 * new_rpm - 3.9139e-2,
         )
