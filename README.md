@@ -1,129 +1,131 @@
-# OceanScale
+# Learning to Swim: Reinforcement Learning for 6-DOF Control of Thruster-driven Autonomous Underwater Vehicles
 
-The ocean simulator for underwater robotics.
+![Overview](./imgs/qual-overview.png)
 
-OceanScale is the ocean layer in the NVIDIA robotics simulation ecosystem: Isaac Sim 6, Isaac Lab 3, Newton, Warp, CUDA, and PyTorch. Lightwheel is the reference peer for robots on land; OceanScale builds the ocean physics, environments, and underwater sensor layer for AUVs and ROVs.
+Links: [arxiv paper](https://arxiv.org/abs/2410.00120)
 
-## Why OceanScale?
-
-- **NVIDIA-native ocean physics** — Newton + Warp CUDA kernels, not CPU loops.
-- **Isaac 6 ecosystem baseline** — Isaac Sim 6 and Isaac Lab 3 are the main simulation and training-integration targets.
-- **RL-ready** — Gymnasium-compatible `ROVEnv` with `BatchedVecEnv`; PPO runs from the repo.
-- **Validated** — Tier-1 hydrodynamics matched against von Benzon 2022 BlueROV2 reference model; benchmark docs state the current cross-coupling boundary explicitly.
-
-## NVIDIA Isaac 6 Ecosystem
-
-OceanScale is fully based on the NVIDIA Isaac 6 ecosystem for simulation and training integration. The canonical local setup keeps the Isaac validation environment side-by-side with the OceanScale core development environment so Isaac package pins do not overwrite the Newton/Warp stack used by OceanScale core.
-
-Use [docs/isaac6-isaaclab3-install.md](docs/isaac6-isaaclab3-install.md) for the full install, source checkout, verification, and reproduction procedure.
-
-## Quickstart From Source
-
-PyPI publishing is not verified yet. For a new user, use the source path:
-
-```bash
-git clone https://github.com/robotlearning123/oceanscale.git
-cd oceanscale
-uv python pin 3.12
-uv sync --extra dev
-uv run oceanscale --help
-uv run oceanscale demo bluerov2-hover --device cpu
+**Note: you are recommended to not be in a conda environment when setting up and running Isaac Sim.** If you are in an environment, you can run:
+```
+conda deactivate
 ```
 
-For a CUDA run with MP4 output:
+To install, requires IsaacSim v4.5.0 and IsaacLab v2.2.0:
+- Install IsaacSim v4.5.0 (https://docs.isaacsim.omniverse.nvidia.com/4.5.0/installation/download.html)
+  - Download and unzip the archived binaries into a new folder (i.e. "IsaacSim")
 
-```bash
-uv run oceanscale demo bluerov2-hover --device cuda --render-mp4 demo.mp4
+Before installing Isaac Lab, check your operating system version (https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html)
+- Install IsaacLab v2.2.0, for Ubuntu 20.04 (https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/binaries_installation.html#installing-isaac-lab)
+- This installation README has been validated for commit 0d520b2. 
+  ```
+  git clone https://github.com/isaac-sim/IsaacLab.git
+  ```
+
+- Soft link Isaac lab and Isaac sim 
+  ```
+  cd <IsaacLab_Path> 
+  ln -s <IsaacSim_Path> _isaac_sim
+  ```
+
+Install dependencies (assuming Ubuntu here):
+```
+# these dependency are needed by robomimic which is not available on Windows
+sudo apt install cmake build-essential
 ```
 
-Train a policy:
-
-```bash
-uv run oceanscale train bluerov2-hover --total 1000000 --n_envs 4 --device cuda
+Finish installing Isaac Lab:
+```
+<IsaacSim_Path>/kit/python/bin/python3 -m pip install --upgrade pip
+./isaaclab.sh --install # or "./isaaclab.sh -i"
 ```
 
-## Verification
-
-Use [docs/verification.md](docs/verification.md) as the customer/new-user runbook for proving the source install, CLI, first demo, focused tests, and Isaac Sim 6 / Isaac Lab 3 validation lane.
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/robotlearning123/oceanscale/blob/main/notebooks/bluerov2_hover_colab.ipynb)
-
-## Benchmark
-
-Current launch-standardized OceanScale-only benchmark on RTX 5090. Full methodology in [`benchmarks/RESULTS.md`](benchmarks/RESULTS.md).
-
-| Envs | Env-steps/s | Bench steps |
-| ---: | ---: | ---: |
-| 1 | 1,326 | 200 |
-| 64 | 85,824 | 200 |
-| 256 | 303,206 | 200 |
-| 1024 | 1,272,106 | 200 |
-| 4096 | 4,588,922 | 200 |
-
-The older PyBullet comparison is also documented in [`benchmarks/RESULTS.md`](benchmarks/RESULTS.md): OceanScale at n=64 reached 17,427 env-steps/s on the matched BlueROV2 hover benchmark, 10.49x over single-env PyBullet. Keep these two benchmark tables separate.
-
-## Status (v0.1 alpha)
-
-**Works:**
-- BlueROV2 6-DOF dynamics (Fossen + von Benzon 2022)
-- Bundled BlueROV2 hover demo and PPO training path
-- Vectorized environments (BatchedVecEnv + VecNormalize)
-- Headless MP4 export (simple + cinematic modes)
-- Source-installable CLI + Colab notebook
-- Isaac Sim 6 / Isaac Lab 3 validation lane passing locally
-
-**Known limitations:**
-- Bundled hover demo is a CLI smoke and checkpoint-loading path, not a policy-quality release gate
-- Contact, docking, station-keeping, waypoint, and multi-vehicle code paths exist but are not yet long-horizon release gates
-- Isaac Sim 6 / Isaac Lab 3 validation is passing locally, but the full official Isaac demo sweep is not required for OceanScale readiness
-- Omniverse RTX rendering is not a public OceanScale release surface yet
-- No sim-to-real transfer validation
-
-## Setup (developer)
-
-```bash
-git clone https://github.com/robotlearning123/oceanscale.git
-cd oceanscale
-uv sync --extra dev
-uv run pytest tests/ -v
+Verify the installation worked!
+```
+# Option 1: Using the isaaclab.sh executable
+# note: this works for both the bundled python and the virtual environment
+./isaaclab.sh -p scripts/tutorials/00_sim/create_empty.py
 ```
 
-## Repo layout
+- Clone this repository:
 
+  - If using docker container:
+  ```
+  cd <IsaacLab_Path>/source/isaaclab_tasks/isaaclab_tasks/direct/isaac-warpauv-env
+  git clone https://github.com/warplab/isaac-auv-env.git
+  ```
+
+  - If using workstation install:
+  ```
+  git clone https://github.com/warplab/isaac-auv-env.git
+  cd <IsaacLab_Path>/source/isaaclab_tasks/isaaclab_tasks/direct/
+  ln -s <isaac-auv-env_Path> isaac-auv-env
+  ```
+  (Note: if using a workstation install, you can follow the docker instructions as well, but the soft link seems cleaner for local development. Docker is painful when working with links)
+
+To run training:
 ```
-oceanscale/          Python GPU simulation package
-  hydro/             Fossen 6-DOF dynamics + Warp kernels
-  vehicles/          BlueROV2 model
-  envs/              Gymnasium environments
-  sensors/           DVL, IMU, pressure
-  training/          skrl PPO pipeline
-  validation/        Von Benzon 2022 reference
-website/             Astro 6 + Tailwind v4 landing page (Cloudflare Pages)
-benchmarks/          Performance benchmarks
-notebooks/           Colab notebooks
-tests/               Test suite
-docs/                Technical documentation
-```
-
-## Website
-
-Landing page at [oceanscale-web.pages.dev](https://oceanscale-web.pages.dev). Built with Astro 6 + Tailwind v4, deployed to Cloudflare Pages via tag-driven releases.
-
-```bash
-cd website && pnpm install && pnpm dev    # localhost:4321
+./isaaclab.sh -p scripts/reinforcement_learning/rsl_rl/train.py --task Isaac-WarpAUV-Direct-v1 --num_envs 2048
 ```
 
-## License
+Additional notes:
 
-Apache-2.0. See [LICENSE](LICENSE).
+ - To import a URDF file into USD format for IsaacLab, you can first export a ROS xacro file into URDF, and then import that URDF file into the IsaacSim URDFImporter Workflow.
 
-## Citation
+ ```
+ rosrun xacro xacro --inorder -o <output.urdf> <input.xacro>
+ ./isaaclab.sh -p scripts/tools/convert_urdf.py  <input_urdf> <output_usd> --merge-joints --make-instance
+ ```
 
-```bibtex
-@software{oceanscale2026,
-  title = {OceanScale: GPU-Native Underwater Robotics Simulation},
-  author = {OceanScale Team},
-  year = {2026},
-  url = {https://github.com/robotlearning123/oceanscale}
+ - Generally converges in about 400 iterations with 2048 environments and achieves mean total reward ~95-100. Lowering action penalty often helps if there are issues with convergence.
+
+To cite:
+```
+@inproceedings{caiLearningSwimReinforcement2025,
+  title = {Learning to {{Swim}}: {{Reinforcement Learning}} for 6-{{DOF Control}} of {{Thruster-driven Autonomous Underwater Vehicles}}},
+  booktitle = {2025 {{IEEE International Conference}} on {{Robotics}} and {{Automation}} ({{ICRA}})},
+  author = {Cai, Levi and Chang, Kevin and Girdhar, Yogesh},
+  date = {2025},
+  url = {https://arxiv.org/abs/2410.00120},
+  eventtitle = {2025 {{IEEE International Conference}} on {{Robotics}} and {{Automation}} ({{ICRA}})}
 }
+
+```
+
+**Migration from 4.0 to 4.5 notes** <br/>
+First you must rename the API references (https://isaac-sim.github.io/IsaacLab/main/source/refs/migration.html). There is a python script linked on that site that will do this for you; set the correct directory within the script! <br/>
+Then, I needed to explicitly configure the `obervation_space`, `action_space`, and `state_space` variables:
+```[Python]
+observation_space: gym.spaces.Space = gym.spaces.Box(low=-np.inf, high=np.inf, shape=(17,), dtype=np.float64)
+action_space: gym.spaces.Space = gym.spaces.Box(low=-1.0, high=1.0, shape=(6,), dtype=np.float64)
+state_space: gym.spaces.Space = gym.spaces.Box(low=-np.inf, high=np.inf, shape=(17,), dtype=np.float64)
+```
+
+Finally, I had to set `articulation_enabled=False` in `assets/warpauv.py`:
+```
+import isaaclab.sim as sim_utils
+
+from isaaclab.assets import RigidObjectCfg
+
+import os
+USD_PATH = os.path.join(os.path.dirname(__file__), "../data/warpauv/warpauv.usd")
+
+WARPAUV_CFG = RigidObjectCfg(
+    prim_path="{ENV_REGEX_NS}/Robot",
+    spawn=sim_utils.UsdFileCfg(
+        usd_path=USD_PATH,
+        rigid_props=sim_utils.RigidBodyPropertiesCfg(
+            disable_gravity=False,
+            max_depenetration_velocity=10.0,
+            enable_gyroscopic_forces=True,
+        ),
+        articulation_props=sim_utils.ArticulationRootPropertiesCfg(
+            articulation_enabled=False,
+        ),
+
+        copy_from_source=False,
+    ),
+    init_state=RigidObjectCfg.InitialStateCfg(
+        pos=(0.0, 0.0, 5),
+    )
+)
+"""Configuration for the WarpAUV."""
 ```
