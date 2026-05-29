@@ -1,0 +1,7 @@
+mdl 1.8;
+
+// base.mdl — Minimal MDL base module for FloWave assets.
+// Provides ior() wrapper used (or referenced) by water_body.mdl.
+// Standard MDL 1.8 base module subset.
+
+export color ior(uniform float i) = color(i);

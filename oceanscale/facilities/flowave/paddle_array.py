@@ -8,7 +8,8 @@ Architecture:   docs/virtual_flowave_architecture.md §2.2
 
 from __future__ import annotations
 
-from typing import Callable, NamedTuple
+from collections.abc import Callable
+from typing import NamedTuple
 
 import numpy as np
 
@@ -145,7 +146,7 @@ class FlapPaddleArray:
     # 2. Biésel flap transfer function
     # ------------------------------------------------------------------
 
-    def transfer_fn_HS(self, omega: np.ndarray) -> np.ndarray:
+    def transfer_fn_HS(self, omega: np.ndarray) -> np.ndarray:  # noqa: N802
         """Bottom-hinged flap H/S for a given angular-frequency array.
 
         H/S = 4·sinh(kh)·[kh·sinh(kh) − cosh(kh) + 1] / [kh·(sinh(2kh) + 2kh)]
@@ -303,7 +304,7 @@ class FlapPaddleArray:
             theta_j = rng.uniform(0.0, 2.0 * np.pi, size=n_freqs)
 
         # Spectral amplitudes
-        S_j = np.array([spectrum_func(float(w), float(t)) for w, t in zip(omega_j, theta_j)])
+        S_j = np.array([spectrum_func(float(w), float(t)) for w, t in zip(omega_j, theta_j, strict=True)])
 
         # a_j = √(2·S(ω_j,θ_j)·Δω·Δθ)  [report 07 §5.2]
         amp_j = np.sqrt(2.0 * np.maximum(S_j, 0.0) * delta_omega * delta_theta)  # (J,)
@@ -321,7 +322,9 @@ class FlapPaddleArray:
         spatial_phase = k_j[:, np.newaxis] * self.R * np.cos(dangle)  # (J, N)
 
         # Paddle amplitude per component: (a_j / HS_j) broadcast to (J, N)
-        S_nj = (amp_j / HS_j)[:, np.newaxis] * np.cos(spatial_phase + eps_j[:, np.newaxis])  # (J, N)
+        S_nj = (amp_j / HS_j)[:, np.newaxis] * np.cos(
+            spatial_phase + eps_j[:, np.newaxis]
+        )  # (J, N)
 
         def _command_at_t(t: float) -> np.ndarray:
             """Returns shape (N,) paddle surface displacement at time t (m)."""

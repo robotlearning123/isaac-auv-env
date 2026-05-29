@@ -10,7 +10,7 @@ Physics source: Report 01 §3 (reports/research/01_flowave_facility.md)
 
 v1 model: parametric empirical fit for bulk-flow purposes.
   - Single bulk direction vector (28 per-unit directions NOT modelled — v2)
-  - Radial: uniform in r ≤ 5.5 m, Gaussian decay to zero at r = 12.5 m wall
+  - Radial: uniform in r ≤ 5.5 m, Gaussian decay to ~5% of center velocity at r = 12.5 m wall (exp(-((r-r_u)/σ)²) ≈ 0.047)
   - Vertical: linear shear 0 at floor → 1.0 at mid-depth → 0.8 at SWL
   - Time: 5 s low-pass filter on setpoint
   - Turbulence: configurable scalar TI (no real turbulence spectrum — v2)
@@ -74,7 +74,7 @@ class ImpellerArray:
 
         # Radial Gaussian decay: exp(-((r - r_u) / sigma_r)^2)
         # chosen so that at r = basin_radius the value ≈ 0.
-        # With sigma_r = 4.0 m: at r=12.5, r-r_u = 7.0 m → exp(-1.225) ≈ 0.294.
+        # With sigma_r = 4.0 m: at r=12.5, r-r_u = 7.0 m → exp(-(7/4)²) = exp(-3.062) ≈ 0.047.
         # To guarantee near-zero at the wall we use sigma_r = 4.0 m and the
         # wall-clamp is enforced downstream; for r < uniform_radius the factor = 1.
         self._radial_sigma: float = 4.0  # m; per task spec
@@ -117,6 +117,8 @@ class ImpellerArray:
         dt:
             Time step (s).
         """
+        if dt <= 0:
+            raise ValueError(f"dt must be positive, got {dt}")
         alpha = float(dt) / self.lp_tau
         # Clamp to avoid instability if dt > tau
         alpha = min(alpha, 1.0)
@@ -158,7 +160,7 @@ class ImpellerArray:
         radial_weight = np.where(
             r <= self.uniform_radius,
             1.0,
-            np.exp(-((r - self.uniform_radius) / self._radial_sigma) ** 2),
+            np.exp(-(((r - self.uniform_radius) / self._radial_sigma) ** 2)),
         )
 
         # --- Vertical shear weight ---
@@ -187,7 +189,7 @@ class ImpellerArray:
         vel_flat = np.stack([vx, vy, vz], axis=-1)
         return vel_flat.reshape(original_shape)
 
-    def sample_TI(self, xyz: np.ndarray) -> np.ndarray:
+    def sample_TI(self, xyz: np.ndarray) -> np.ndarray:  # noqa: N802
         """Sample turbulence intensity at world-frame points.
 
         TI is linearly interpolated from default_TI at the uniform-core edge

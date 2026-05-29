@@ -17,7 +17,6 @@ import math
 import numpy as np
 from pxr import Usd, UsdGeom
 
-
 _N_IMPELLERS = 28
 
 
@@ -55,12 +54,12 @@ class ImpellerRingUsd:
             # Find the rotateZ_blade op by name
             op = None
             for candidate in xformable.GetOrderedXformOps():
-                if candidate.GetOpName() == "xformOp:rotateZ:_blade":
+                if candidate.GetOpName() == "xformOp:rotateZ_blade":
                     op = candidate
                     break
             if op is None:
                 raise ValueError(
-                    f"xformOp:rotateZ:_blade not found on {drive_path}. "
+                    f"xformOp:rotateZ_blade not found on {drive_path}. "
                     "USD prim may be out of date — re-run build script."
                 )
             self._rotate_ops.append(op)
@@ -103,7 +102,7 @@ class ImpellerRingUsd:
         angles_deg = np.degrees(angles_rad)
         tc = Usd.TimeCode(time) if time is not None else Usd.TimeCode.Default()
 
-        for op, deg in zip(self._rotate_ops, angles_deg):
+        for op, deg in zip(self._rotate_ops, angles_deg, strict=True):
             op.Set(float(deg), tc)
 
         # Keep internal state in sync
@@ -128,9 +127,7 @@ class ImpellerRingUsd:
         """
         rpm_array = np.asarray(rpm_array, dtype=float)
         if rpm_array.shape != (_N_IMPELLERS,):
-            raise ValueError(
-                f"rpm_array must have shape ({_N_IMPELLERS},), got {rpm_array.shape}"
-            )
+            raise ValueError(f"rpm_array must have shape ({_N_IMPELLERS},), got {rpm_array.shape}")
 
         delta = 2.0 * math.pi * (rpm_array / 60.0) * dt
         self._angles_rad = self._angles_rad + delta
@@ -150,7 +147,5 @@ class ImpellerRingUsd:
             Shape (28,) array of blade angles in radians.
         """
         tc = Usd.TimeCode(time) if time is not None else Usd.TimeCode.Default()
-        angles_deg = np.array(
-            [float(op.Get(tc)) for op in self._rotate_ops], dtype=float
-        )
+        angles_deg = np.array([float(op.Get(tc)) for op in self._rotate_ops], dtype=float)
         return np.radians(angles_deg)

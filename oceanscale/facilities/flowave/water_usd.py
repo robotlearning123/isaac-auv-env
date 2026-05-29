@@ -11,6 +11,7 @@ unit-tested without a simulation runtime.
 
 Reference: docs/virtual_flowave_architecture.md §2.5 (A1 coupling arrow), §3.1.
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -19,7 +20,7 @@ from pxr import Gf, Usd, UsdGeom, Vt
 # Grid parameters must match the values used in build_flowave_water.py.
 _SURFACE_N: int = 256
 _SURFACE_HALF: float = 12.0  # metres; covers -12 to +12 on each axis
-_SWL: float = 2.0            # still-water level z, metres
+_SWL: float = 2.0  # still-water level z, metres
 
 
 class WaterSurfaceUsd:
@@ -86,10 +87,9 @@ class WaterSurfaceUsd:
             USD time code.  None → Usd.TimeCode.Default().
         """
         if z_array.shape != (self.vertex_count,):
-            raise ValueError(
-                f"z_array must have shape ({self.vertex_count},); got {z_array.shape}"
-            )
+            raise ValueError(f"z_array must have shape ({self.vertex_count},); got {z_array.shape}")
         xy = self._xy
+        # PERF: replace list comprehension with bulk numpy-to-Vt for 10-100x speedup (see coupling.py)
         pts = [
             Gf.Vec3f(float(xy[k, 0]), float(xy[k, 1]), float(z_array[k]))
             for k in range(self.vertex_count)
