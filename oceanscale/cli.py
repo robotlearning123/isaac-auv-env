@@ -310,6 +310,22 @@ def _flowave_wavegen(args: argparse.Namespace) -> None:
             "n_frames": n_frames,
             "dt": dt,
         }
+    elif args.wave == "spike":
+        # Concentric spike: all paddles fire inward, crests converge to a central
+        # jet at t_focus (the iconic FloWave demo). --height is the focal amplitude.
+        amplitude: float = args.height
+        t_focus: float = args.t_focus
+        synth = paddle_array.synthesize_focused_spike(
+            amplitude=amplitude, t_focus=t_focus, depth=depth
+        )
+        meta = {
+            "wave": "spike",
+            "amplitude": amplitude,
+            "t_focus": t_focus,
+            "depth": depth,
+            "n_frames": n_frames,
+            "dt": dt,
+        }
     else:
         # irregular — JONSWAP Cos2s
         Hs: float = args.hs
@@ -586,9 +602,13 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     wavegen_parser.add_argument(
         "--wave",
-        choices=["regular", "irregular"],
+        choices=["regular", "irregular", "spike"],
         default="regular",
         help="Wave type (default: regular)",
+    )
+    wavegen_parser.add_argument(
+        "--t-focus", type=float, default=3.0, dest="t_focus",
+        help="Spike focus time (s): when converging crests meet at the centre (spike mode)",
     )
     wavegen_parser.add_argument(
         "--height", type=float, default=0.1, dest="height",

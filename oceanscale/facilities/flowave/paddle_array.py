@@ -446,3 +446,91 @@ class FlapPaddleArray:
             return (0.5 * H) * np.cos(kx * x + ky * y - omega * t)
 
         return WaveSynth(paddle_commands=_command_at_t, eta_field=_eta_field)
+
+    # ------------------------------------------------------------------
+    # 6. Concentric spike — axisymmetric time-focused converging wave
+    # ------------------------------------------------------------------
+
+    def synthesize_focused_spike(
+        self,
+        amplitude: float = 0.15,
+        t_focus: float = 3.0,
+        omega_range: tuple[float, float] = (2.0, 6.0),
+        n_freqs: int = 32,
+        depth: float | None = None,
+    ) -> WaveSynth:
+        """Axisymmetric time-focused converging wave — the FloWave "concentric spike".
+
+        All N paddles move IDENTICALLY (axisymmetric, no directional phase), so the
+        whole ring drives inward-converging circular wavefronts.  A band of
+        frequencies is phased so every component crest reaches the basin centre
+        (r = 0) at the same instant t = t_focus, producing a sharp transient
+        central spike ringed by concentric crests — the iconic FloWave demo.
+
+        Interior axisymmetric (regular-at-origin) solution of the Helmholtz
+        equation is the J₀ Fourier-Bessel mode (Hankel would diverge at r=0):
+
+          η(r, t) = Σ_j a_j · J₀(k_j·r) · cos(ω_j·(t − t_focus))
+
+        At (r=0, t=t_focus): J₀(0)=1 and cos(0)=1 for every component, so the
+        packet adds in phase → a focused central elevation ≈ Σ_j a_j = amplitude.
+        Away from the focus in space (J₀ decays, oscillates) or time (components
+        dephase) the elevation drops sharply.
+
+        Citation: Fourier-Bessel / axisymmetric focusing; FloWave concentric-wave
+        demonstration. Biésel inversion of the paddle stroke via transfer_fn_HS.
+
+        Parameters
+        ----------
+        amplitude : float
+            Target focal elevation at (r=0, t=t_focus), metres.
+        t_focus : float
+            Time at which all components focus at the centre, seconds.
+        omega_range : tuple[float, float]
+            (ω_min, ω_max) frequency band of the converging packet, rad/s.
+        n_freqs : int
+            Number of frequency components.
+        depth : float | None
+            Still-water depth (m). If None, uses the array's own depth ``self.h``.
+
+        Returns
+        -------
+        WaveSynth
+            paddle_commands: t → s_n(t), shape (N,) (all paddles equal —
+            axisymmetric); eta_field: (xy, t) → η, shape (M,), axisymmetric in
+            r = hypot(x, y).
+        """
+        from scipy.special import j0
+
+        omega_j = np.linspace(omega_range[0], omega_range[1], n_freqs)  # (J,)
+        # Equal weights so the in-phase central sum equals the target amplitude.
+        a_j = np.full(n_freqs, amplitude / n_freqs)  # (J,)
+
+        # Reuse the class finite-depth physics; per-call depth override without
+        # permanently mutating shared state.
+        prev_h = self.h
+        try:
+            if depth is not None:
+                self.h = float(depth)
+            k_j = self.dispersion(omega_j)  # (J,)
+            HS_j = self.transfer_fn_HS(omega_j)  # (J,)
+        finally:
+            self.h = prev_h
+
+        # Paddle stroke per component (Biésel inversion). All paddles identical.
+        S_j = a_j / HS_j  # (J,)
+
+        def _command_at_t(t: float) -> np.ndarray:
+            """Shape (N,) paddle surface displacement at time t (m); all equal."""
+            s = float(np.sum(S_j * np.cos(omega_j * (t - t_focus))))
+            return np.full(self.N, s)
+
+        def _eta_field(xy: np.ndarray, t: float) -> np.ndarray:
+            """Axisymmetric J₀ converging field η(x,y,t), shape (M,) for xy (M, 2)."""
+            xy = np.asarray(xy, dtype=np.float64)
+            r = np.hypot(xy[:, 0], xy[:, 1])  # (M,)
+            phase = np.cos(omega_j * (t - t_focus))  # (J,)
+            bessel = j0(np.outer(r, k_j))  # (M, J)
+            return bessel @ (a_j * phase)  # (M,)
+
+        return WaveSynth(paddle_commands=_command_at_t, eta_field=_eta_field)
