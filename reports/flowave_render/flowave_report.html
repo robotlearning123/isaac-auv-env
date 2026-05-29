@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OceanScale FloWave — Isaac Sim 6 RTX Wave-Generation Render</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0e1117;
+    color: #c9d1d9;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    padding: 2rem 1rem;
+  }
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  h1 {
+    color: #e6edf3;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  .subtitle {
+    color: #8b949e;
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+  }
+  h2 {
+    color: #e6edf3;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid #21262d;
+  }
+  video, .full-img {
+    width: 100%;
+    border-radius: 6px;
+    display: block;
+  }
+  .frames {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .frames figure {
+    margin: 0;
+  }
+  .frames img {
+    width: 100%;
+    border-radius: 4px;
+    display: block;
+  }
+  .frames figcaption {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #8b949e;
+    margin-top: 0.4rem;
+  }
+  .note {
+    font-size: 0.8rem;
+    color: #8b949e;
+    margin-bottom: 0.5rem;
+    font-style: italic;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+  }
+  th, td {
+    text-align: left;
+    padding: 0.45rem 0.75rem;
+    border-bottom: 1px solid #21262d;
+  }
+  th {
+    color: #8b949e;
+    font-weight: 500;
+    width: 40%;
+  }
+  td {
+    color: #c9d1d9;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.85rem;
+  }
+  .footer-note {
+    margin-top: 2.5rem;
+    padding: 1rem;
+    background: #161b22;
+    border-radius: 6px;
+    border-left: 3px solid #1f6feb;
+    font-size: 0.82rem;
+    color: #8b949e;
+    line-height: 1.65;
+  }
+  @media (max-width: 640px) {
+    .frames {
+      grid-template-columns: 1fr;
+    }
+    h1 { font-size: 1.25rem; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <h1>OceanScale FloWave &mdash; Isaac Sim 6 RTX Wave-Generation Render</h1>
+  <p class="subtitle">Real Isaac Sim 6.0 RTX render of a paddle-driven wave tank (headless, RTX 5090).</p>
+
+  <h2>Wave Animation</h2>
+  <video controls loop muted width="100%">
+    <source src="flowave_tank.mp4" type="video/mp4">
+  </video>
+
+  <h2>Rendered Frames</h2>
+  <p class="note">Red diagonal bands are the wave crests on the water surface.</p>
+  <div class="frames">
+    <figure>
+      <img src="frame_00.png" alt="Frame at t=0.0 s">
+      <figcaption>t = 0.0 s</figcaption>
+    </figure>
+    <figure>
+      <img src="frame_07.png" alt="Frame at t=7.0 s">
+      <figcaption>t = 7.0 s</figcaption>
+    </figure>
+    <figure>
+      <img src="frame_14.png" alt="Frame at t=14.0 s">
+      <figcaption>t = 14.0 s</figcaption>
+    </figure>
+  </div>
+
+  <h2>Wave-Probe Validation</h2>
+  <img class="full-img" src="wave_probes.png" alt="Wave-probe time series and theory table">
+  <p class="note">Surface elevation at three gauges vs first-principles theory.</p>
+
+  <h2>Results</h2>
+  <table>
+    <tr><th>Commanded wave height H</th><td>0.10 m</td></tr>
+    <tr><th>Commanded period T</th><td>2.0 s</td></tr>
+    <tr><th>Dispersion wavenumber k</th><td>1.038 1/m</td></tr>
+    <tr><th>Wavelength L = 2&pi;/k</th><td>6.05 m</td></tr>
+    <tr><th>Dispersion relation</th><td>&omega;&sup2; = g&middot;k&middot;tanh(k&middot;h), h = 2 m, g = 9.81</td></tr>
+    <tr><th>Bi&eacute;sel bottom-hinged flap H/S</th><td>1.073</td></tr>
+    <tr><th>Measured probe peak |&eta;|</th><td>50 mm (= H/2, matches command)</td></tr>
+    <tr><th>Renderer</th><td>Isaac Sim 6.0, RTX RayTracedLighting</td></tr>
+    <tr><th>Render</th><td>headless, RTX 5090, 15 frames @ 1280&times;720</td></tr>
+    <tr><th>Tests</th><td>106 passed (physics + acceptance + no-regression)</td></tr>
+  </table>
+
+  <div class="footer-note">
+    Method: deterministic spectral wavemaking &mdash; Bi&eacute;sel paddle command + linear (Airy) superposition driving the animated USD free surface &mdash; rendered in Isaac Sim 6 RTX. This is a calibration-grade wavemaker, not a causal CFD solve.
+  </div>
+
+</main>
+</body>
+</html>
