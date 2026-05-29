@@ -1,0 +1,295 @@
+#usda 1.0
+(
+    defaultPrim = "Tank"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Tank" (
+    kind = "assembly"
+)
+{
+    def Xform "Impeller"
+    {
+        def Xform "Drive_00" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (9.440265993985804, 1.0636625229814247, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_01" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (8.966891637929493, 3.1376510885740876, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_02" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (8.043879892668699, 5.0543047268956975, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_03" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (6.7175144212722016, 6.717514421272201, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_04" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (5.0543047268956975, 8.043879892668699, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_05" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (3.137651088574088, 8.966891637929493, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_06" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (1.0636625229814252, 9.440265993985804, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_07" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (-1.063662522981424, 9.440265993985804, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_08" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (-3.1376510885740863, 8.966891637929493, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_09" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (-5.054304726895697, 8.0438798926687, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_10" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (-6.717514421272201, 6.7175144212722016, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_11" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (-8.043879892668697, 5.054304726895702, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_12" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (-8.966891637929493, 3.1376510885740885, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_13" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (-9.440265993985804, 1.0636625229814216, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_14" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (-9.440265993985804, -1.0636625229814234, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_15" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (-8.966891637929495, -3.1376510885740823, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_16" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (-8.0438798926687, -5.054304726895697, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_17" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (-6.7175144212722, -6.717514421272203, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_18" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (-5.054304726895698, -8.043879892668699, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_19" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (-3.137651088574089, -8.966891637929491, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_20" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (-1.0636625229814263, -9.440265993985804, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_21" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (1.063662522981423, -9.440265993985804, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_22" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (3.1376510885740774, -8.966891637929495, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_23" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (5.054304726895696, -8.0438798926687, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_24" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (6.7175144212722, -6.717514421272203, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_25" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (8.043879892668699, -5.054304726895699, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_26" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (8.966891637929495, -3.137651088574082, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+
+        def Xform "Drive_27" (
+            kind = "component"
+            prepend references = @./flowave_impeller.usda@</Impeller>
+        )
+        {
+            float xformOp:rotateZ:_blade = 0
+            double3 xformOp:translate = (9.440265993985804, -1.063662522981427, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ:_blade"]
+        }
+    }
+}
+

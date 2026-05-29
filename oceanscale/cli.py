@@ -253,6 +253,198 @@ def _demo_underwater_mvp(args: argparse.Namespace) -> None:
         print(f"Metrics JSON saved to {args.output_json}")
 
 
+def _flowave_wavegen(args: argparse.Namespace) -> None:
+    """Handler for: oceanscale flowave wavegen [...]
+
+    Composes the FloWave tank stage, drives paddles+surface from
+    FlapPaddleArray.synthesize_regular or synthesize_irregular (JONSWAP),
+    attaches WaveProbe gauges, and exports:
+      <out>/flowave_wavegen.usda   — animated USD stage
+      <out>/wave_probes.npz        — eta time series at gauge positions
+    """
+    import importlib.util
+    import math
+
+    import numpy as np
+    from pxr import Usd
+
+    from oceanscale.facilities.flowave.paddle_array import FlapPaddleArray
+    from oceanscale.facilities.flowave.paddle_usd import PaddleRingUsd
+    from oceanscale.facilities.flowave.water_usd import WaterSurfaceUsd
+    from oceanscale.facilities.flowave.wave_probe import WaveProbe
+
+    _hero_path = Path(__file__).parents[1] / "scripts" / "virtual_flowave_hero.py"
+    _spec = importlib.util.spec_from_file_location("virtual_flowave_hero", _hero_path)
+    _hero_mod = importlib.util.module_from_spec(_spec)  # type: ignore[arg-type]
+    _spec.loader.exec_module(_hero_mod)  # type: ignore[union-attr]
+    compose_stage = _hero_mod.compose_stage
+
+    out_dir = Path(args.out)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    depth: float = args.depth
+    direction: float = args.direction  # radians
+    n_frames: int = args.frames
+    dt: float = args.dt
+    particles_enabled: bool = not args.no_particles
+    fps: float = 1.0 / dt
+
+    # ----------------------------------------------------------------
+    # Build paddle array
+    # ----------------------------------------------------------------
+    paddle_array = FlapPaddleArray(R=12.5, N=168, h=depth, hinge_depth=1.9)
+
+    # ----------------------------------------------------------------
+    # Choose wave synthesis mode
+    # ----------------------------------------------------------------
+    if args.wave == "regular":
+        H: float = args.height
+        T: float = args.period
+        synth = paddle_array.synthesize_regular(H=H, T=T, depth=depth, direction=direction)
+        meta: dict = {
+            "wave": "regular",
+            "H": H,
+            "T": T,
+            "depth": depth,
+            "direction": direction,
+            "n_frames": n_frames,
+            "dt": dt,
+        }
+    else:
+        # irregular — JONSWAP Cos2s
+        Hs: float = args.hs
+        Tp: float = args.tp
+        seed: int = getattr(args, "seed", 42)
+
+        def _jonswap(omega: float, theta: float) -> float:
+            if omega <= 0.0:
+                return 0.0
+            g = 9.81
+            omega_p = 2.0 * math.pi / Tp
+            alpha_pm = 5.0 / 16.0 * Hs ** 2 * omega_p ** 4 / g ** 2
+            sigma = 0.07 if omega <= omega_p else 0.09
+            r = math.exp(-((omega - omega_p) ** 2) / (2.0 * sigma ** 2 * omega_p ** 2))
+            S_j = (
+                alpha_pm
+                * g ** 2
+                / omega ** 5
+                * math.exp(-1.25 * (omega_p / omega) ** 4)
+                * 3.3 ** r
+            )
+            dangle = (theta - direction) / 2.0
+            c_s = 2.0 ** 19 * math.factorial(10) ** 2 / (math.pi * math.factorial(20))
+            D = max(c_s * math.cos(dangle) ** 20, 0.0)
+            return S_j * D
+
+        synth = paddle_array.synthesize_irregular(
+            spectrum_func=_jonswap,
+            n_freqs=128,
+            omega_range=(0.3, 8.0),
+            seed=seed,
+        )
+        meta = {
+            "wave": "irregular",
+            "Hs": Hs,
+            "Tp": Tp,
+            "depth": depth,
+            "direction": direction,
+            "n_frames": n_frames,
+            "dt": dt,
+        }
+
+    # ----------------------------------------------------------------
+    # Wave probes: centre + two downstream positions
+    # ----------------------------------------------------------------
+    gauge_xy = np.array(
+        [
+            [0.0, 0.0],    # tank centre
+            [3.0, 0.0],    # 3 m downstream along +x
+            [6.0, 0.0],    # 6 m downstream along +x
+        ],
+        dtype=np.float32,
+    )
+    probe = WaveProbe(gauge_xy)
+
+    # ----------------------------------------------------------------
+    # Compose USD stage
+    # ----------------------------------------------------------------
+    print("Composing USD stage ...")
+    stage = compose_stage()
+    stage.SetStartTimeCode(0.0)
+    stage.SetEndTimeCode(float(n_frames - 1))
+    stage.SetFramesPerSecond(fps)
+    stage.SetTimeCodesPerSecond(fps)
+
+    paddle_ring = PaddleRingUsd(stage, ring_path="/Tank/PaddleRing")
+    water_surface = WaterSurfaceUsd(stage, surface_path="/Tank/Water/Surface")
+
+    # ----------------------------------------------------------------
+    # Marine snow (optional, minimal — author empty instancer)
+    # ----------------------------------------------------------------
+    if particles_enabled:
+        from pxr import UsdGeom, Gf, Vt
+        from oceanscale.facilities.flowave.coupling import _init_particles, _wrap_cylinder
+        import numpy as _np
+        snow_path = "/Tank/MarineSnow"
+        prim = stage.GetPrimAtPath(snow_path)
+        if not prim.IsValid():
+            inst = UsdGeom.PointInstancer.Define(stage, snow_path)
+            proto_path = snow_path + "/Proto"
+            proto = UsdGeom.Sphere.Define(stage, proto_path)
+            proto.GetRadiusAttr().Set(0.003)
+            inst.CreatePrototypesRel().AddTarget(proto_path)
+        snow_instancer = UsdGeom.PointInstancer(stage.GetPrimAtPath(snow_path))
+        rng = _np.random.default_rng(1)
+        particles = _init_particles(rng, 50_000, 12.5, depth)
+
+    # ----------------------------------------------------------------
+    # Simulation loop
+    # ----------------------------------------------------------------
+    _SWL: float = depth
+    for frame in range(n_frames):
+        sim_t = frame * dt
+        usd_t = float(frame)
+
+        # A0 — paddle hinge angles
+        s_n = synth.paddle_commands(sim_t)
+        theta_n = s_n / paddle_array.hinge_depth
+        paddle_ring.set_hinge_angles(theta_n, time=usd_t)
+
+        # A1 — water surface
+        xy = water_surface.xy_grid
+        eta = synth.eta_field(xy, sim_t)
+        z = _SWL + eta
+        water_surface.set_z_values(z, time=usd_t)
+
+        # Wave probe record
+        probe.record(synth.eta_field, sim_t)
+
+        # A2 marine snow (forward-Euler, no impeller — zero velocity)
+        if particles_enabled:
+            from pxr import Usd as _Usd
+            from oceanscale.facilities.flowave.coupling import _wrap_cylinder as _wc
+            particles = _wc(particles, 12.5, depth)
+            positions_vt = Vt.Vec3fArray(
+                [Gf.Vec3f(float(p[0]), float(p[1]), float(p[2])) for p in particles]
+            )
+            tc = _Usd.TimeCode(usd_t)
+            snow_instancer.GetPositionsAttr().Set(positions_vt, tc)
+
+        if frame % 10 == 0:
+            print(f"frame {frame}/{n_frames}  sim_t={sim_t:.3f}s")
+
+    # ----------------------------------------------------------------
+    # Export outputs
+    # ----------------------------------------------------------------
+    usd_path = out_dir / "flowave_wavegen.usda"
+    stage.GetRootLayer().Export(str(usd_path))
+    print(f"Exported USD: {usd_path}")
+
+    npz_path = out_dir / "wave_probes.npz"
+    probe.save_npz(str(npz_path), meta=meta)
+    print(f"Exported wave probes: {npz_path}")
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="oceanscale",
@@ -382,6 +574,57 @@ def _build_parser() -> argparse.ArgumentParser:
     suite_parser.add_argument("--device", type=str, default="cpu", help="Device")
     suite_parser.add_argument(
         "--output-dir", type=str, default=None, help="Output directory"
+    )
+
+    # flowave subcommand
+    flowave_parser = subparsers.add_parser("flowave", help="FloWave tank simulation commands")
+    flowave_sub = flowave_parser.add_subparsers(dest="flowave_command")
+
+    # flowave wavegen
+    wavegen_parser = flowave_sub.add_parser(
+        "wavegen", help="Generate wave field and export animated USD + wave probe data"
+    )
+    wavegen_parser.add_argument(
+        "--wave",
+        choices=["regular", "irregular"],
+        default="regular",
+        help="Wave type (default: regular)",
+    )
+    wavegen_parser.add_argument(
+        "--height", type=float, default=0.1, dest="height",
+        help="Regular wave height H peak-to-trough (m, default 0.1)",
+    )
+    wavegen_parser.add_argument(
+        "--period", type=float, default=2.0, dest="period",
+        help="Regular wave period T (s, default 2.0)",
+    )
+    wavegen_parser.add_argument(
+        "--hs", type=float, default=0.4, dest="hs",
+        help="Significant wave height Hs (m, irregular, default 0.4)",
+    )
+    wavegen_parser.add_argument(
+        "--tp", type=float, default=2.0, dest="tp",
+        help="Peak period Tp (s, irregular, default 2.0)",
+    )
+    wavegen_parser.add_argument(
+        "--depth", type=float, default=2.0, help="Water depth (m, default 2.0)"
+    )
+    wavegen_parser.add_argument(
+        "--direction", type=float, default=0.0,
+        help="Wave propagation direction (rad CCW from +x, default 0)",
+    )
+    wavegen_parser.add_argument(
+        "--frames", type=int, default=60, help="Number of simulation frames (default 60)"
+    )
+    wavegen_parser.add_argument(
+        "--dt", type=float, default=0.0333, help="Time step per frame (s, default 0.0333)"
+    )
+    wavegen_parser.add_argument(
+        "--out", type=str, default="./flowave_out",
+        help="Output directory (default: ./flowave_out)",
+    )
+    wavegen_parser.add_argument(
+        "--no-particles", action="store_true", help="Disable marine-snow particles"
     )
 
     return parser
@@ -661,6 +904,11 @@ def main() -> None:
             _eval_robustness_suite(args)
         else:
             parser.parse_args(["eval", "--help"])
+    elif args.command == "flowave":
+        if args.flowave_command == "wavegen":
+            _flowave_wavegen(args)
+        else:
+            parser.parse_args(["flowave", "--help"])
     else:
         parser.print_help()
         sys.exit(1)

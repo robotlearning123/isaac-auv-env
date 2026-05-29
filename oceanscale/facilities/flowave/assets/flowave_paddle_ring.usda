@@ -1,0 +1,2535 @@
+#usda 1.0
+(
+    defaultPrim = "Tank"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Tank"
+{
+    def Xform "PaddleRing" (
+        kind = "group"
+    )
+    {
+        def Xform "Paddle_000" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 180
+            double3 xformOp:translate = (12.5, 0, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_001" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 182.14285
+            double3 xformOp:translate = (12.491258809854981, 0.4673899284540703, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_002" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 184.28572
+            double3 xformOp:translate = (12.465047464764751, 0.9341261698303032, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_003" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 186.42857
+            double3 xformOp:translate = (12.421402623665532, 1.3995559512913482, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_004" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 188.57143
+            double3 xformOp:translate = (12.360385327814107, 1.8630283272021806, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_005" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 190.71428
+            double3 xformOp:translate = (12.282080915416103, 2.3238950895364323, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_006" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 192.85715
+            double3 xformOp:translate = (12.186598902272795, 2.78151167445393, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_007" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 195
+            double3 xformOp:translate = (12.074072828613353, 3.2352380637815092, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_008" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 197.14285
+            double3 xformOp:translate = (11.944660072326759, 3.6844396801363026, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_009" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 199.28572
+            double3 xformOp:translate = (11.798541628854595, 4.128488274439588, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_010" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 201.42857
+            double3 xformOp:translate = (11.635921858052553, 4.5667628045799376, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_011" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 203.57143
+            double3 xformOp:translate = (11.457028198374703, 4.998650303996762, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_012" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 205.71428
+            double3 xformOp:translate = (11.262110848780239, 5.423546738969477, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_013" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 207.85715
+            double3 xformOp:translate = (11.051442418807621, 5.840857853413275, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_014" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 210
+            double3 xformOp:translate = (10.825317547305485, 6.249999999999999, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_015" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 212.14285
+            double3 xformOp:translate = (10.584052490353551, 6.6504009564417075, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_016" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 214.28572
+            double3 xformOp:translate = (10.327984678949937, 7.0415007257952755, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_017" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 216.42857
+            double3 xformOp:translate = (10.057472247083354, 7.4227523196687715, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_018" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 218.57143
+            double3 xformOp:translate = (9.772893530850373, 7.793622523234169, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_019" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 220.71428
+            double3 xformOp:translate = (9.474646539318163, 8.153592640976512, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_020" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 222.85715
+            double3 xformOp:translate = (9.16314839787283, 8.502159222136491, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_021" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 225
+            double3 xformOp:translate = (8.838834764831844, 8.838834764831843, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_022" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 227.14285
+            double3 xformOp:translate = (8.502159222136493, 9.163148397872828, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_023" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 229.28572
+            double3 xformOp:translate = (8.153592640976514, 9.474646539318162, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_024" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 231.42857
+            double3 xformOp:translate = (7.79362252323417, 9.772893530850373, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_025" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 233.57143
+            double3 xformOp:translate = (7.42275231966877, 10.057472247083354, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_026" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 235.71428
+            double3 xformOp:translate = (7.041500725795275, 10.327984678949937, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_027" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 237.85715
+            double3 xformOp:translate = (6.6504009564417075, 10.584052490353551, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_028" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 240
+            double3 xformOp:translate = (6.250000000000002, 10.825317547305483, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_029" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 242.14285
+            double3 xformOp:translate = (5.840857853413275, 11.051442418807621, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_030" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 244.28572
+            double3 xformOp:translate = (5.423546738969478, 11.262110848780239, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_031" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 246.42857
+            double3 xformOp:translate = (4.998650303996763, 11.4570281983747, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_032" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 248.57143
+            double3 xformOp:translate = (4.5667628045799376, 11.635921858052553, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_033" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 250.71428
+            double3 xformOp:translate = (4.128488274439589, 11.798541628854595, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_034" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 252.85715
+            double3 xformOp:translate = (3.6844396801363013, 11.94466007232676, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_035" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 255
+            double3 xformOp:translate = (3.235238063781512, 12.074072828613353, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_036" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 257.14285
+            double3 xformOp:translate = (2.7815116744539305, 12.186598902272795, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_037" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 259.2857
+            double3 xformOp:translate = (2.323895089536431, 12.282080915416103, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_038" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 261.42856
+            double3 xformOp:translate = (1.863028327202183, 12.360385327814107, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_039" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 263.57144
+            double3 xformOp:translate = (1.399555951291349, 12.421402623665532, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_040" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 265.7143
+            double3 xformOp:translate = (0.9341261698303049, 12.465047464764751, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_041" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 267.85715
+            double3 xformOp:translate = (0.46738992845407284, 12.491258809854981, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_042" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 270
+            double3 xformOp:translate = (7.654042494670958e-16, 12.5, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_043" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 272.14285
+            double3 xformOp:translate = (-0.46738992845406857, 12.491258809854983, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_044" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 274.2857
+            double3 xformOp:translate = (-0.9341261698303006, 12.465047464764751, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_045" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 276.42856
+            double3 xformOp:translate = (-1.3995559512913476, 12.421402623665532, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_046" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 278.57144
+            double3 xformOp:translate = (-1.8630283272021788, 12.360385327814107, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_047" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 280.7143
+            double3 xformOp:translate = (-2.3238950895364323, 12.282080915416103, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_048" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 282.85715
+            double3 xformOp:translate = (-2.781511674453929, 12.186598902272795, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_049" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 285
+            double3 xformOp:translate = (-3.235238063781508, 12.074072828613353, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_050" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 287.14285
+            double3 xformOp:translate = (-3.6844396801363026, 11.944660072326759, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_051" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 289.2857
+            double3 xformOp:translate = (-4.128488274439587, 11.798541628854595, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_052" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 291.42856
+            double3 xformOp:translate = (-4.566762804579938, 11.635921858052553, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_053" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 293.57144
+            double3 xformOp:translate = (-4.9986503039967625, 11.457028198374703, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_054" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 295.7143
+            double3 xformOp:translate = (-5.423546738969476, 11.262110848780239, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_055" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 297.85715
+            double3 xformOp:translate = (-5.840857853413276, 11.051442418807621, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_056" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 300
+            double3 xformOp:translate = (-6.249999999999997, 10.825317547305485, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_057" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 302.14285
+            double3 xformOp:translate = (-6.650400956441706, 10.584052490353553, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_058" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 304.2857
+            double3 xformOp:translate = (-7.0415007257952755, 10.327984678949935, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_059" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 306.42856
+            double3 xformOp:translate = (-7.422752319668769, 10.057472247083355, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_060" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 308.57144
+            double3 xformOp:translate = (-7.793622523234169, 9.772893530850373, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_061" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 310.7143
+            double3 xformOp:translate = (-8.153592640976514, 9.474646539318162, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_062" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 312.85715
+            double3 xformOp:translate = (-8.502159222136491, 9.163148397872831, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_063" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 315
+            double3 xformOp:translate = (-8.838834764831843, 8.838834764831844, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_064" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 317.14285
+            double3 xformOp:translate = (-9.16314839787283, 8.502159222136491, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_065" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 319.2857
+            double3 xformOp:translate = (-9.47464653931816, 8.153592640976516, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_066" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 321.42856
+            double3 xformOp:translate = (-9.772893530850373, 7.79362252323417, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_067" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 323.57144
+            double3 xformOp:translate = (-10.057472247083354, 7.42275231966877, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_068" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 325.7143
+            double3 xformOp:translate = (-10.327984678949937, 7.041500725795273, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_069" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 327.85715
+            double3 xformOp:translate = (-10.584052490353551, 6.650400956441708, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_070" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 330
+            double3 xformOp:translate = (-10.825317547305481, 6.250000000000004, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_071" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 332.14285
+            double3 xformOp:translate = (-11.051442418807623, 5.840857853413272, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_072" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 334.2857
+            double3 xformOp:translate = (-11.262110848780239, 5.423546738969478, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_073" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 336.42856
+            double3 xformOp:translate = (-11.457028198374699, 4.998650303996767, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_074" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 338.57144
+            double3 xformOp:translate = (-11.635921858052555, 4.566762804579935, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_075" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 340.7143
+            double3 xformOp:translate = (-11.798541628854595, 4.12848827443959, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_076" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 342.85715
+            double3 xformOp:translate = (-11.944660072326757, 3.6844396801363075, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_077" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 345
+            double3 xformOp:translate = (-12.074072828613353, 3.235238063781513, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_078" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 347.14285
+            double3 xformOp:translate = (-12.186598902272795, 2.7815116744539314, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_079" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 349.2857
+            double3 xformOp:translate = (-12.282080915416103, 2.323895089536432, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_080" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 351.42856
+            double3 xformOp:translate = (-12.360385327814107, 1.863028327202184, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_081" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 353.57144
+            double3 xformOp:translate = (-12.421402623665532, 1.3995559512913498, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_082" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 355.7143
+            double3 xformOp:translate = (-12.465047464764751, 0.9341261698303084, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_083" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 357.85715
+            double3 xformOp:translate = (-12.491258809854983, 0.46738992845406807, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_084" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 360
+            double3 xformOp:translate = (-12.5, 1.5308084989341915e-15, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_085" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 362.14285
+            double3 xformOp:translate = (-12.491258809854981, -0.46738992845407057, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_086" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 364.2857
+            double3 xformOp:translate = (-12.465047464764751, -0.9341261698302997, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_087" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 366.42856
+            double3 xformOp:translate = (-12.421402623665532, -1.3995559512913467, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_088" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 368.57144
+            double3 xformOp:translate = (-12.360385327814107, -1.8630283272021753, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_089" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 370.7143
+            double3 xformOp:translate = (-12.282080915416103, -2.323895089536434, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_090" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 372.85715
+            double3 xformOp:translate = (-12.186598902272795, -2.7815116744539283, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_091" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 375
+            double3 xformOp:translate = (-12.074072828613353, -3.23523806378151, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_092" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 377.14285
+            double3 xformOp:translate = (-11.94466007232676, -3.684439680136299, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_093" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 379.2857
+            double3 xformOp:translate = (-11.798541628854597, -4.128488274439582, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_094" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 381.42856
+            double3 xformOp:translate = (-11.635921858052553, -4.5667628045799376, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_095" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 383.57144
+            double3 xformOp:translate = (-11.4570281983747, -4.998650303996764, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_096" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 385.7143
+            double3 xformOp:translate = (-11.262110848780239, -5.423546738969475, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_097" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 387.85715
+            double3 xformOp:translate = (-11.051442418807625, -5.84085785341327, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_098" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 390
+            double3 xformOp:translate = (-10.825317547305485, -6.2499999999999964, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_099" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 392.14285
+            double3 xformOp:translate = (-10.58405249035355, -6.65040095644171, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_100" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 394.2857
+            double3 xformOp:translate = (-10.327984678949937, -7.0415007257952755, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_101" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 396.42856
+            double3 xformOp:translate = (-10.057472247083355, -7.422752319668767, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_102" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 398.57144
+            double3 xformOp:translate = (-9.772893530850373, -7.793622523234167, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_103" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 400.7143
+            double3 xformOp:translate = (-9.474646539318165, -8.15359264097651, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_104" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 402.85715
+            double3 xformOp:translate = (-9.163148397872828, -8.502159222136493, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_105" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 405
+            double3 xformOp:translate = (-8.838834764831846, -8.838834764831843, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_106" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 407.14285
+            double3 xformOp:translate = (-8.502159222136491, -9.16314839787283, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_107" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 409.2857
+            double3 xformOp:translate = (-8.153592640976512, -9.474646539318163, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_108" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 411.42856
+            double3 xformOp:translate = (-7.793622523234172, -9.772893530850371, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_109" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 413.57144
+            double3 xformOp:translate = (-7.422752319668775, -10.05747224708335, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_110" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 415.7143
+            double3 xformOp:translate = (-7.041500725795275, -10.327984678949937, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_111" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 417.85715
+            double3 xformOp:translate = (-6.650400956441708, -10.584052490353551, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_112" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 420
+            double3 xformOp:translate = (-6.250000000000005, -10.82531754730548, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_113" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 422.14285
+            double3 xformOp:translate = (-5.840857853413273, -11.051442418807623, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_114" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 424.2857
+            double3 xformOp:translate = (-5.4235467389694785, -11.262110848780239, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_115" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 426.42856
+            double3 xformOp:translate = (-4.998650303996757, -11.457028198374704, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_116" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 428.57144
+            double3 xformOp:translate = (-4.566762804579936, -11.635921858052555, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_117" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 430.7143
+            double3 xformOp:translate = (-4.128488274439591, -11.798541628854593, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_118" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 432.85715
+            double3 xformOp:translate = (-3.684439680136308, -11.944660072326757, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_119" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 435
+            double3 xformOp:translate = (-3.235238063781519, -12.074072828613351, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_120" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 437.14285
+            double3 xformOp:translate = (-2.7815116744539323, -12.186598902272795, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_121" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 439.2857
+            double3 xformOp:translate = (-2.323895089536427, -12.282080915416103, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_122" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 441.42856
+            double3 xformOp:translate = (-1.863028327202179, -12.360385327814107, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_123" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 443.57144
+            double3 xformOp:translate = (-1.3995559512913505, -12.421402623665532, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_124" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 445.7143
+            double3 xformOp:translate = (-0.934126169830309, -12.465047464764751, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_125" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 447.85715
+            double3 xformOp:translate = (-0.46738992845407995, -12.491258809854981, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_126" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 450
+            double3 xformOp:translate = (-2.296212748401287e-15, -12.5, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_127" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 452.14285
+            double3 xformOp:translate = (0.46738992845406424, -12.491258809854983, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_128" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 454.2857
+            double3 xformOp:translate = (0.9341261698303046, -12.465047464764751, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_129" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 456.42856
+            double3 xformOp:translate = (1.399555951291346, -12.421402623665532, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_130" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 458.57144
+            double3 xformOp:translate = (1.8630283272021746, -12.360385327814107, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_131" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 460.7143
+            double3 xformOp:translate = (2.3238950895364336, -12.282080915416103, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_132" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 462.85715
+            double3 xformOp:translate = (2.781511674453928, -12.186598902272795, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_133" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 465
+            double3 xformOp:translate = (3.2352380637815035, -12.074072828613355, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_134" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 467.14285
+            double3 xformOp:translate = (3.684439680136304, -11.944660072326759, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_135" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 469.2857
+            double3 xformOp:translate = (4.128488274439586, -11.798541628854595, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_136" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 471.42856
+            double3 xformOp:translate = (4.566762804579942, -11.635921858052551, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_137" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 473.57144
+            double3 xformOp:translate = (4.998650303996763, -11.457028198374703, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_138" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 475.7143
+            double3 xformOp:translate = (5.423546738969474, -11.26211084878024, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_139" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 477.85715
+            double3 xformOp:translate = (5.84085785341327, -11.051442418807625, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_140" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 480
+            double3 xformOp:translate = (6.249999999999992, -10.825317547305488, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_141" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 482.14285
+            double3 xformOp:translate = (6.650400956441704, -10.584052490353553, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_142" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 484.2857
+            double3 xformOp:translate = (7.04150072579528, -10.327984678949933, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_143" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 486.42856
+            double3 xformOp:translate = (7.4227523196687715, -10.057472247083354, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_144" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 488.57144
+            double3 xformOp:translate = (7.793622523234167, -9.772893530850373, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_145" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 490.7143
+            double3 xformOp:translate = (8.153592640976509, -9.474646539318167, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_146" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 492.85715
+            double3 xformOp:translate = (8.502159222136484, -9.163148397872837, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_147" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 495
+            double3 xformOp:translate = (8.838834764831843, -8.838834764831846, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_148" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 497.14285
+            double3 xformOp:translate = (9.163148397872831, -8.50215922213649, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_149" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 499.2857
+            double3 xformOp:translate = (9.474646539318163, -8.153592640976512, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_150" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 501.42856
+            double3 xformOp:translate = (9.772893530850371, -7.793622523234172, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_151" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 503.57144
+            double3 xformOp:translate = (10.05747224708335, -7.422752319668775, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_152" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 505.7143
+            double3 xformOp:translate = (10.327984678949932, -7.041500725795284, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_153" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 507.85715
+            double3 xformOp:translate = (10.58405249035355, -6.65040095644171, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_154" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 510
+            double3 xformOp:translate = (10.82531754730548, -6.250000000000005, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_155" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 512.1429
+            double3 xformOp:translate = (11.051442418807621, -5.840857853413274, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_156" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 514.2857
+            double3 xformOp:translate = (11.262110848780239, -5.423546738969479, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_157" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 516.4286
+            double3 xformOp:translate = (11.457028198374699, -4.998650303996769, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_158" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 518.5714
+            double3 xformOp:translate = (11.635921858052553, -4.566762804579937, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_159" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 520.7143
+            double3 xformOp:translate = (11.798541628854593, -4.128488274439592, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_160" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 522.8571
+            double3 xformOp:translate = (11.944660072326757, -3.684439680136309, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_161" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 525
+            double3 xformOp:translate = (12.074072828613353, -3.2352380637815084, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_162" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 527.1429
+            double3 xformOp:translate = (12.186598902272793, -2.781511674453933, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_163" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 529.2857
+            double3 xformOp:translate = (12.282080915416103, -2.323895089536439, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_164" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 531.4286
+            double3 xformOp:translate = (12.360385327814106, -1.863028327202191, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_165" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 533.5714
+            double3 xformOp:translate = (12.42140262366553, -1.3995559512913622, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_166" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 535.7143
+            double3 xformOp:translate = (12.465047464764751, -0.9341261698302988, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+
+        def Xform "Paddle_167" (
+            assetInfo = {
+                string identifier = "flowave_paddle"
+                string version = "0.1.0"
+            }
+            kind = "component"
+            prepend references = @./flowave_paddle.usda@</Paddle>
+        )
+        {
+            float xformOp:rotateX = 0
+            float xformOp:rotateZ = 537.8571
+            double3 xformOp:translate = (12.491258809854983, -0.4673899284540696, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:rotateX"]
+        }
+    }
+}
+

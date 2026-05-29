@@ -1,0 +1,57 @@
+#usda 1.0
+(
+    "FloWave cinematic cameras. 4 cameras for hero render. See docs/virtual_flowave_architecture.md §3.1."
+    upAxis = "Z"
+)
+
+def Xform "Cameras"
+{
+    def Camera "OverheadHero"
+    {
+        float2 clippingRange = (0.1, 100)
+        float focalLength = 35
+        float focusDistance = 10
+        float fStop = 2.8
+        float horizontalAperture = 36
+        float verticalAperture = 20.25
+        matrix4d xformOp:transform = ( (1, -0, 0, 0), (0, 1, 0, 0), (-0, -0, 1, 0), (0, 0, 9.5, 1) )
+        uniform token[] xformOpOrder = ["xformOp:transform"]
+    }
+
+    def Camera "SectionalCutaway"
+    {
+        float2 clippingRange = (0.1, 100)
+        float focalLength = 24
+        float focusDistance = 20
+        float fStop = 4
+        float horizontalAperture = 36
+        float verticalAperture = 20.25
+        matrix4d xformOp:transform = ( (0, 0.9999999999999999, -0, 0), (-0.09950371902099893, 0, 0.9950371902099893, 0), (0.9950371902099892, -0, 0.09950371902099892, 0), (20, 0, 3, 1) )
+        uniform token[] xformOpOrder = ["xformOp:transform"]
+    }
+
+    def Camera "CatwalkHandheld"
+    {
+        float2 clippingRange = (0.1, 100)
+        float focalLength = 50
+        float focusDistance = 14
+        float fStop = 2
+        float horizontalAperture = 36
+        float verticalAperture = 20.25
+        matrix4d xformOp:transform = ( (0, 1, -0, 0), (-0.2169304578186562, 0, 0.9761870601839528, 0), (0.9761870601839528, -0, 0.2169304578186562, 0), (13.5, 0, 4, 1) )
+        uniform token[] xformOpOrder = ["xformOp:transform"]
+    }
+
+    def Camera "BlueRovPov"
+    {
+        float2 clippingRange = (0.1, 100)
+        float focalLength = 28
+        float focusDistance = 3
+        float fStop = 2.8
+        float horizontalAperture = 36
+        float verticalAperture = 20.25
+        matrix4d xformOp:transform = ( (0, -1, 0, 0), (-0, 0, 1, 0), (-1, -0, -0, 0), (2, 0, -1, 1) )
+        uniform token[] xformOpOrder = ["xformOp:transform"]
+    }
+}
+

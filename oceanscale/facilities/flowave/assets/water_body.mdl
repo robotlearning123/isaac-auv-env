@@ -1,0 +1,68 @@
+// water_body.mdl — Custom procedural MDL for FloWave water body mesh.
+//
+// Applies to: /World/Tank/Water/Body (any cylindrical mesh — NOT UsdVol/VDB which requires cube)
+// Source: Report 09 §2.2 (custom material_volume recipe) + Architecture §3.2 (Body volume MDL)
+// MDL version: 1.8
+//
+// DEVIATIONS from architecture §3.2 snippet:
+//   1. surface.scattering uses df::specular_bsdf with named parameter `anisotropy` and
+//      base::ior() wrapper — Report 09 §2.2 uses this form.  Architecture §3.2 uses
+//      `ior: color(ior)` directly; MDL 1.8 spec §7.9 says specular_bsdf takes `ior` as
+//      a color, so both are legal.  We follow Report 09 which adds the base::ior() wrapper
+//      for MDL compiler compatibility noted in forum reference 13.
+//   2. volume.scattering: Report 09 uses keyword param `anisotropy:` while architecture uses
+//      `directional_bias:`.  MDL 1.8 spec §6.14 names the parameter `anisotropy` for
+//      df::anisotropic_vdf.  We use `anisotropy:` (spec-conformant).
+//   3. ior parameter: architecture §3.2 snippet omits ior from the exported interface;
+//      we retain it as Report 09 §2.2 does (needed for surface refraction lobe).
+//
+// Beer's law reference (clear FloWave tank water, from architecture §3.2):
+//   transmission_color = (0.35, 0.75, 0.92) at depth = 10 m
+//   σ_a per channel = -ln(c) / 10 m = (0.105, 0.029, 0.008) /m
+//   Interpretation: red absorbed fastest, blue least — subtle green-tinted clear tank water.
+//   Contrast with ocean-scale σ_a ≈ (2, 1, 0.6)/m which would be near-opaque at 2 m depth.
+
+mdl 1.8;
+import df::*;
+import base::*;
+
+export material water_body(
+    // Per-channel volumetric absorption coefficient [1/m].
+    // Clear FloWave tank water: -ln(0.35, 0.75, 0.92) / 10 m.
+    // Red absorbed fastest → subtle green-tinted cast at depth.
+    uniform color absorption_coefficient = color(0.105, 0.029, 0.008),
+
+    // Per-channel volumetric scattering coefficient [1/m].
+    // Low, achromatic — clear tank water, not turbid ocean.
+    uniform color scattering_coefficient = color(0.05, 0.05, 0.05),
+
+    // Henyey-Greenstein anisotropy g ∈ (-1, 1).
+    // 0.8 = strong forward scattering, characteristic of water.
+    uniform float anisotropy = 0.8,
+
+    // Index of refraction for the surface refraction lobe.
+    // Water at 20°C ≈ 1.333 (IEC 60825-1 / NIST SRD 67).
+    uniform float ior = 1.333
+) = material(
+    // Surface: specular transmit lobe only — no diffuse component.
+    // This gives the glassy water-body surface; the wave Surface mesh
+    // (/World/Tank/Water/Surface via OmniSurface.mdl) handles reflections.
+    surface: material_surface(
+        scattering: df::specular_bsdf(
+            mode: df::scatter_transmit,
+            ior: color(ior)
+        )
+    ),
+
+    // Volume: per-wavelength absorption + isotropic/anisotropic scattering.
+    // material_volume is defined in MDL 1.8 §5.8.
+    // absorption_coefficient and scattering_coefficient are color (vec3) in /m.
+    // df::anisotropic_vdf implements the Henyey-Greenstein phase function.
+    volume: material_volume(
+        absorption_coefficient: absorption_coefficient,
+        scattering_coefficient: scattering_coefficient,
+        scattering: df::anisotropic_vdf(anisotropy: anisotropy)
+    ),
+
+    geometry: material_geometry()
+);
