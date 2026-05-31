@@ -24,27 +24,8 @@
 
 mdl 1.8;
 
-// ── Inlined from df.mdl (distribution function standard library stub) ──
-// Ref: MDL 1.8 spec §6.14 (anisotropic_vdf), §7.9 (specular_bsdf).
-
-enum scatter_mode {
-    scatter_reflect = 0,
-    scatter_transmit = 1,
-    scatter_reflect_and_transmit = 2
-};
-
-bsdf specular_bsdf(
-    uniform scatter_mode mode = scatter_reflect,
-    color ior = color(1.5)
-);
-
-vdf anisotropic_vdf(
-    float anisotropy = 0.0
-);
-
-// ── Inlined from base.mdl ──
-
-color ior(uniform float i) = color(i);
+import df::*;
+import base::*;
 
 // ── Material definition ──────────────────────────────────────────────────
 
@@ -70,9 +51,9 @@ export material water_body(
     // This gives the glassy water-body surface; the wave Surface mesh
     // (/World/Tank/Water/Surface via OmniSurface.mdl) handles reflections.
     surface: material_surface(
-        scattering: specular_bsdf(
-            mode: scatter_transmit,
-            ior: color(ior)
+        scattering: df::specular_bsdf(
+            mode: df::scatter_transmit,
+            ior: base::ior(ior)
         )
     ),
 
@@ -83,7 +64,7 @@ export material water_body(
     volume: material_volume(
         absorption_coefficient: absorption_coefficient,
         scattering_coefficient: scattering_coefficient,
-        scattering: anisotropic_vdf(anisotropy: anisotropy)
+        scattering: df::anisotropic_vdf(anisotropy: anisotropy)
     ),
 
     geometry: material_geometry()

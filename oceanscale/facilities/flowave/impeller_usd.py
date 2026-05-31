@@ -4,7 +4,7 @@ Provides ImpellerRingUsd: per-frame blade angle writer for the 28-impeller
 floor ring (flowave_impeller_ring.usda).
 
 Blade rotation is xformOp:rotateZ (not Y) because the vertical axis is Z
-in our right-handed z-up frame. The rotateZ op is named "xformOp:rotateZ_blade"
+in our right-handed z-up frame. The rotateZ op is named "xformOp:rotateZ:_blade"
 on each Drive_NN prim so it does not conflict with any world-level rotation.
 
 Architecture reference: docs/virtual_flowave_architecture.md §3.1.
@@ -51,15 +51,15 @@ class ImpellerRingUsd:
                     "Run scripts/build_flowave_impeller_ring.py first."
                 )
             xformable = UsdGeom.Xformable(prim)
-            # Find the rotateZ_blade op by name
+            # Find the rotateZ:_blade op by name
             op = None
             for candidate in xformable.GetOrderedXformOps():
-                if candidate.GetOpName() == "xformOp:rotateZ_blade":
+                if candidate.GetOpName() == "xformOp:rotateZ:_blade":
                     op = candidate
                     break
             if op is None:
                 raise ValueError(
-                    f"xformOp:rotateZ_blade not found on {drive_path}. "
+                    f"xformOp:rotateZ:_blade not found on {drive_path}. "
                     "USD prim may be out of date — re-run build script."
                 )
             self._rotate_ops.append(op)
@@ -84,7 +84,7 @@ class ImpellerRingUsd:
         """Write blade rotation angle about Z (radians) to each of 28 impellers.
 
         The value is converted to degrees before writing to the USD
-        xformOp:rotateZ_blade attribute (USD stores degrees).
+        xformOp:rotateZ:_blade attribute (USD stores degrees).
 
         Parameters
         ----------
