@@ -4,7 +4,7 @@ Provides ImpellerRingUsd: per-frame blade angle writer for the 28-impeller
 floor ring (flowave_impeller_ring.usda).
 
 Blade rotation is xformOp:rotateZ (not Y) because the vertical axis is Z
-in our right-handed z-up frame. The rotateZ op is named "xformOp:rotateZ_blade"
+in our right-handed z-up frame. The rotateZ op is named "xformOp:rotateZ:_blade"
 on each Drive_NN prim so it does not conflict with any world-level rotation.
 
 Architecture reference: docs/virtual_flowave_architecture.md §3.1.
@@ -16,7 +16,6 @@ import math
 
 import numpy as np
 from pxr import Usd, UsdGeom
-
 
 _N_IMPELLERS = 28
 
@@ -52,7 +51,7 @@ class ImpellerRingUsd:
                     "Run scripts/build_flowave_impeller_ring.py first."
                 )
             xformable = UsdGeom.Xformable(prim)
-            # Find the rotateZ_blade op by name
+            # Find the rotateZ:_blade op by name
             op = None
             for candidate in xformable.GetOrderedXformOps():
                 if candidate.GetOpName() == "xformOp:rotateZ:_blade":
@@ -85,7 +84,7 @@ class ImpellerRingUsd:
         """Write blade rotation angle about Z (radians) to each of 28 impellers.
 
         The value is converted to degrees before writing to the USD
-        xformOp:rotateZ_blade attribute (USD stores degrees).
+        xformOp:rotateZ:_blade attribute (USD stores degrees).
 
         Parameters
         ----------
@@ -103,7 +102,7 @@ class ImpellerRingUsd:
         angles_deg = np.degrees(angles_rad)
         tc = Usd.TimeCode(time) if time is not None else Usd.TimeCode.Default()
 
-        for op, deg in zip(self._rotate_ops, angles_deg):
+        for op, deg in zip(self._rotate_ops, angles_deg, strict=True):
             op.Set(float(deg), tc)
 
         # Keep internal state in sync
@@ -128,9 +127,7 @@ class ImpellerRingUsd:
         """
         rpm_array = np.asarray(rpm_array, dtype=float)
         if rpm_array.shape != (_N_IMPELLERS,):
-            raise ValueError(
-                f"rpm_array must have shape ({_N_IMPELLERS},), got {rpm_array.shape}"
-            )
+            raise ValueError(f"rpm_array must have shape ({_N_IMPELLERS},), got {rpm_array.shape}")
 
         delta = 2.0 * math.pi * (rpm_array / 60.0) * dt
         self._angles_rad = self._angles_rad + delta
@@ -150,7 +147,5 @@ class ImpellerRingUsd:
             Shape (28,) array of blade angles in radians.
         """
         tc = Usd.TimeCode(time) if time is not None else Usd.TimeCode.Default()
-        angles_deg = np.array(
-            [float(op.Get(tc)) for op in self._rotate_ops], dtype=float
-        )
+        angles_deg = np.array([float(op.Get(tc)) for op in self._rotate_ops], dtype=float)
         return np.radians(angles_deg)

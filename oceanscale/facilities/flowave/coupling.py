@@ -14,11 +14,12 @@ Architecture reference: docs/virtual_flowave_architecture.md §2.5
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Callable
+from collections.abc import Callable
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import numpy as np
-from pxr import Gf, Usd, UsdGeom, Vt
+from pxr import Usd, UsdGeom, Vt
 
 from .impeller_array import ImpellerArray
 from .impeller_usd import ImpellerRingUsd
@@ -30,7 +31,7 @@ if TYPE_CHECKING:
     from .wave_probe import WaveProbe
 
 _TANK_RADIUS: float = 12.5  # m — working tank radius (architecture §1.1)
-_WATER_DEPTH: float = 2.0   # m — SWL above raisable floor (architecture §1.1)
+_WATER_DEPTH: float = 2.0  # m — SWL above raisable floor (architecture §1.1)
 _SWL: float = _WATER_DEPTH  # still-water level in z-up frame
 
 
@@ -108,9 +109,9 @@ class FloWaveCoupling:
         impeller_array: ImpellerArray,
         paddle_ring: PaddleRingUsd,
         impeller_ring: ImpellerRingUsd,
-        water_surface: "WaterSurfaceUsd",
+        water_surface: WaterSurfaceUsd,
         cfg: CouplingConfig,
-        probe: "WaveProbe | None" = None,
+        probe: WaveProbe | None = None,
     ) -> None:
         self._stage = stage
         self._paddle_array = paddle_array
@@ -129,7 +130,7 @@ class FloWaveCoupling:
             seed=cfg.spectrum_seed,
         )
         self._paddle_commands = synth.paddle_commands  # t → (N,)
-        self._eta_field = synth.eta_field               # (xy, t) → (M,)
+        self._eta_field = synth.eta_field  # (xy, t) → (M,)
 
         # --- Set impeller current target ---
         u_tgt, v_tgt = cfg.impeller_target
@@ -161,6 +162,8 @@ class FloWaveCoupling:
     # ------------------------------------------------------------------
 
     def step(self, t: float, dt: float) -> None:
+        if dt <= 0:
+            raise ValueError(f"dt must be positive, got {dt}")
         """Advance simulation by dt seconds and update all coupled USD attributes.
 
         Implements arrows A0, A1, A2. A3 is static (no per-frame work). A4
@@ -207,9 +210,7 @@ class FloWaveCoupling:
         """
         # Reset impeller filter
         rng = np.random.default_rng(self._cfg.rng_seed)
-        self._particles = _init_particles(
-            rng, self._n_particles, _TANK_RADIUS, _WATER_DEPTH
-        )
+        self._particles = _init_particles(rng, self._n_particles, _TANK_RADIUS, _WATER_DEPTH)
 
         # Reset impeller low-pass state by re-constructing it from scratch
         self._impeller_array._filtered_u = 0.0
@@ -220,7 +221,13 @@ class FloWaveCoupling:
         # Sync USD to t=0 state
         self._step_a0(t)
         self._step_a1(t)
-        self._step_a2(t, dt=0.0)
+        # Write reset particle positions to USD — cannot call _step_a2(t, dt=0)
+        # because impeller_array.step() rejects dt <= 0. The impeller filter
+        # and particle positions were already reset above, so only the USD
+        # PointInstancer write is needed here.
+        _pos_f32 = self._particles.astype(np.float32)
+        positions_vt = Vt.Vec3fArray.FromBuffer(memoryview(_pos_f32))
+        self._snow_instancer.GetPositionsAttr().Set(positions_vt, Usd.TimeCode(t))
 
     @property
     def particle_positions(self) -> np.ndarray:
@@ -251,8 +258,8 @@ class FloWaveCoupling:
               wp.launch(eta_kernel, ...) for GPU-parallel field evaluation.
         """
         xy = self._water_surface.xy_grid  # (M, 2) world (x, y) of surface vertices
-        eta = self._eta_field(xy, t)       # (M,)
-        z = _SWL + eta                     # (M,) — z-up, SWL = 2.0 m
+        eta = self._eta_field(xy, t)  # (M,)
+        z = _SWL + eta  # (M,) — z-up, SWL = 2.0 m
         self._water_surface.set_z_values(z, time=t)
 
     def _step_a2(self, t: float, dt: float) -> None:
@@ -277,10 +284,9 @@ class FloWaveCoupling:
         # Wrap particles back inside the cylinder (toroidal-cylinder topology)
         self._particles = _wrap_cylinder(self._particles, _TANK_RADIUS, _WATER_DEPTH)
 
-        # Write to USD PointInstancer
-        positions_vt = Vt.Vec3fArray(
-            [Gf.Vec3f(float(p[0]), float(p[1]), float(p[2])) for p in self._particles]
-        )
+        # Write to USD PointInstancer (bulk memoryview — avoids 50K Gf.Vec3f Python objects)
+        _pos_f32 = self._particles.astype(np.float32)
+        positions_vt = Vt.Vec3fArray.FromBuffer(memoryview(_pos_f32))
         tc = Usd.TimeCode(t)
         self._snow_instancer.GetPositionsAttr().Set(positions_vt, tc)
 
@@ -289,11 +295,13 @@ class FloWaveCoupling:
 # Module-level helpers
 # ------------------------------------------------------------------
 
+
 def _init_particles(
     rng: np.random.Generator,
     n: int,
     tank_radius: float,
     water_depth: float,
+    max_attempts: int = 1000,
 ) -> np.ndarray:
     """Initialise N particle positions uniformly inside the working cylinder.
 
@@ -319,7 +327,13 @@ def _init_particles(
     # Uniform sampling inside a disk via rejection sampling on a bounding square
     positions = np.empty((n, 3), dtype=np.float64)
     filled = 0
+    attempts = 0
     while filled < n:
+        attempts += 1
+        if attempts > max_attempts:
+            raise RuntimeError(
+                f"Particle placement failed after {max_attempts} attempts ({filled}/{n} placed)"
+            )
         batch = max(n - filled, 512)
         xy = rng.uniform(-tank_radius, tank_radius, size=(batch * 2, 2))
         r2 = xy[:, 0] ** 2 + xy[:, 1] ** 2
@@ -366,7 +380,7 @@ def _wrap_cylinder(
     # TODO: Warp kernel — wrap_cylinder_kernel(pos[:], R, h) on GPU.
     pos = positions.copy()
 
-    x, y, z = pos[:, 0], pos[:, 1], pos[:, 2]
+    x, y, _z = pos[:, 0], pos[:, 1], pos[:, 2]
     r = np.sqrt(x**2 + y**2)
 
     # Horizontal: re-inject at origin's diametrically opposite point

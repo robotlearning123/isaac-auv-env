@@ -23,8 +23,11 @@
 //   Contrast with ocean-scale σ_a ≈ (2, 1, 0.6)/m which would be near-opaque at 2 m depth.
 
 mdl 1.8;
+
 import df::*;
 import base::*;
+
+// ── Material definition ──────────────────────────────────────────────────
 
 export material water_body(
     // Per-channel volumetric absorption coefficient [1/m].
@@ -50,14 +53,14 @@ export material water_body(
     surface: material_surface(
         scattering: df::specular_bsdf(
             mode: df::scatter_transmit,
-            ior: color(ior)
+            ior: base::ior(ior)
         )
     ),
 
     // Volume: per-wavelength absorption + isotropic/anisotropic scattering.
     // material_volume is defined in MDL 1.8 §5.8.
     // absorption_coefficient and scattering_coefficient are color (vec3) in /m.
-    // df::anisotropic_vdf implements the Henyey-Greenstein phase function.
+    // anisotropic_vdf implements the Henyey-Greenstein phase function.
     volume: material_volume(
         absorption_coefficient: absorption_coefficient,
         scattering_coefficient: scattering_coefficient,

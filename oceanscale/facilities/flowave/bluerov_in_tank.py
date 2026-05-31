@@ -35,7 +35,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
-from pxr import Gf, Sdf, Usd, UsdGeom
+from pxr import Gf, Usd, UsdGeom
 
 from .impeller_array import ImpellerArray
 
@@ -45,9 +45,9 @@ if TYPE_CHECKING:
 # -------------------------------------------------------------------------
 # Physical constants (v1 stand-in model)
 # -------------------------------------------------------------------------
-_RHO_FRESH: float = 1000.0   # kg/m³ — FloWave uses fresh water
-_C_D: float = 1.0            # drag coefficient (bluff body)
-_DRAG_AREA: float = 0.06     # m² — representative projected area (side view)
+_RHO_FRESH: float = 1000.0  # kg/m³ — FloWave uses fresh water
+_C_D: float = 1.0  # drag coefficient (bluff body)
+_DRAG_AREA: float = 0.06  # m² — representative projected area (side view)
 
 
 class _Dynamics6DoFSimple:
@@ -112,10 +112,17 @@ class _Dynamics6DoFSimple:
         self.vel = self.vel + accel * dt
         self.pos = self.pos + self.vel * dt
 
+        # ── tank boundary enforcement ──
+        r = np.linalg.norm(self.pos[:2])
+        if r > 12.0:
+            self.pos[:2] *= 12.0 / r
+        self.pos[2] = np.clip(self.pos[2], 0.05, 2.0)
+
 
 # -------------------------------------------------------------------------
 # BlueROV2InTank
 # -------------------------------------------------------------------------
+
 
 class BlueROV2InTank:
     """BlueROV2 Heavy in the Virtual FloWave tank.
@@ -220,15 +227,19 @@ class BlueROV2InTank:
         dt : float
             Time step (s).
         """
+        if dt <= 0:
+            raise ValueError(f"dt must be positive, got {dt}")
         # (a) Sample current at vehicle CG
-        pos3 = self._dyn.pos[np.newaxis, :]          # (1, 3)
+        pos3 = self._dyn.pos[np.newaxis, :]  # (1, 3)
         current_3d = self._impeller_array.sample(pos3)  # (1, 3)
-        current = current_3d[0]                        # (3,)
+        current = current_3d[0]  # (3,)
 
         # (b) PD station-keeping thrust
-        err_pos = self.target_position - self._dyn.pos   # (3,)
-        err_vel = -self._dyn.vel                          # (3,) — dampen velocity
+        err_pos = self.target_position - self._dyn.pos  # (3,)
+        err_vel = -self._dyn.vel  # (3,) — dampen velocity
         thrust = self._kp * err_pos + self._kd * err_vel  # (3,) N
+        MAX_THRUST = 10.0  # BlueROV2 Heavy max ~10N per thruster
+        thrust = np.clip(thrust, -MAX_THRUST, MAX_THRUST)
 
         # (c) Step dynamics
         self._dyn.step(dt, thrust, current)
